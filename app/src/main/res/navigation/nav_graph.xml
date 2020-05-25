@@ -4,18 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/login">
-
     <fragment
         android:id="@+id/login"
         android:name="com.timenoteco.timenote.view.Login"
         android:label="fragment_login"
         tools:layout="@layout/fragment_login" >
         <action
-            android:id="@+id/action_login_to_preferenceCategory"
-            app:destination="@id/preferenceCategory" />
-        <action
             android:id="@+id/action_login_to_mainActivity"
             app:destination="@id/mainActivity" />
+        <action
+            android:id="@+id/action_login_to_signup"
+            app:destination="@id/signup" />
+        <argument
+            android:name="isFromLoginPage"
+            app:argType="boolean"/>
     </fragment>
     <fragment
         android:id="@+id/preferenceCategory"
@@ -23,13 +25,15 @@
         android:label="fragment_preference_category"
         tools:layout="@layout/fragment_preference_category" >
         <action
-            app:popUpToInclusive="true"
             android:id="@+id/action_preferenceCategory_to_preferenceSubCategory"
             app:destination="@id/navigation" />
         <action
-            app:popUpToInclusive="true"
             android:id="@+id/action_preferenceCategory_to_mainActivity"
             app:destination="@id/mainActivity" />
+        <argument
+            android:name="isFromSkipSelectionCategory"
+            app:argType="boolean"
+            android:defaultValue="false" />
     </fragment>
     <navigation
         android:id="@+id/navigation"
@@ -47,7 +51,12 @@
             android:id="@+id/preferenceSuggestion"
             android:name="com.timenoteco.timenote.view.PreferenceSuggestion"
             android:label="fragment_preference_suggestion"
-            tools:layout="@layout/fragment_preference_suggestion" />
+            tools:layout="@layout/fragment_preference_suggestion" >
+            <argument
+                android:name="isFromLoginCompleted"
+                app:argType="boolean"
+                android:defaultValue="false" />
+        </fragment>
         <action
             android:id="@+id/action_global_mainActivity"
             app:destination="@id/mainActivity" />
@@ -55,5 +64,17 @@
     <activity
         android:id="@+id/mainActivity"
         android:name="com.timenoteco.timenote.view.host.MainActivity"
-        android:label="MainActivity" />
+        android:label="MainActivity">
+        <argument
+            android:name="isFromLoginPage"
+            app:argType="boolean" />
+    </activity>
+    <fragment
+        android:id="@+id/signup"
+        android:name="com.timenoteco.timenote.view.Signup"
+        android:label="Signup" >
+        <action
+            android:id="@+id/action_signup_to_preferenceCategory"
+            app:destination="@id/preferenceCategory" />
+    </fragment>
 </navigation>

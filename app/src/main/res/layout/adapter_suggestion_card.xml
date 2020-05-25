@@ -16,16 +16,15 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:textStyle="bold"
-            android:id="@+id/pref_sub_category_title_category"
+            android:id="@+id/suggestion_title_category"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="10dp"
-            android:layout_marginTop="17dp"
+            android:layout_marginTop="28dp"
             android:textColor="@color/colorText"
-            android:textSize="18sp"
+            android:textSize="24sp"
             android:paddingBottom="8dp"
-            android:paddingStart="8dp"
+            android:paddingStart="17dp"
             android:paddingEnd="0dp"
             tools:text="Sports"
             android:layout_width="wrap_content"
@@ -33,7 +32,7 @@
 
         <TextView
             android:id="@+id/card_line"
-            app:layout_constraintTop_toBottomOf="@id/pref_sub_category_title_category"
+            app:layout_constraintTop_toBottomOf="@id/suggestion_title_category"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:background="@color/colorText"
@@ -41,8 +40,8 @@
             android:layout_height="0.1dp"/>
 
         <androidx.recyclerview.widget.RecyclerView
-            tools:listitem="@layout/item_pref_sub_category"
-            android:id="@+id/pref_sub_category_rv"
+            tools:listitem="@layout/item_suggestion"
+            android:id="@+id/suggestion_rv"
             app:layout_constraintTop_toBottomOf="@id/card_line"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

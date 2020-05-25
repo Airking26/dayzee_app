@@ -3,9 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation_graph_tab_1.xml"
-    app:startDestination="@id/profile">
+    app:startDestination="@id/home">
     <fragment
-        android:id="@+id/profile"
-        android:name="com.timenoteco.timenote.view.Profile"
-        android:label="Profile" />
+        android:id="@+id/home"
+        android:name="com.timenoteco.timenote.view.Home"
+        android:label="Home" >
+        <action
+            android:id="@+id/action_home_to_fakeFragment"
+            app:destination="@id/fakeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/fakeFragment"
+        android:name="com.timenoteco.timenote.view.FakeFragment"
+        android:label="FakeFragment" />
 </navigation>

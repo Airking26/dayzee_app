@@ -20,14 +20,10 @@ class SubCategoryCardAdapter(private var categories: Map<String, List<SubCategor
         fun onSeekBarModified(likedLevel: Int, categoryName: String, subCategoryPosition: Int)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder {
-        val viewItem = LayoutInflater.from(parent.context).inflate(R.layout.adapter_pref_sub_category_card, parent, false)
-        return CardViewHolder(viewItem)
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder =
+        CardViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.adapter_pref_sub_category_card, parent, false))
 
-    override fun getItemCount(): Int {
-        return categories.size
-    }
+    override fun getItemCount(): Int = categories.size
 
     override fun onBindViewHolder(holderCard: CardViewHolder, position: Int) {
         holderCard.bindSubCategories(categories, listener, position)

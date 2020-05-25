@@ -2,32 +2,47 @@ package com.timenoteco.timenote.view.host
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
+import androidx.navigation.navArgs
 import androidx.navigation.ui.NavigationUI
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ViewPagerAdapter
+import com.timenoteco.timenote.view.LoginArgs
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
+    private var isFromLoginPage: Boolean = false
     private lateinit var viewPagerAdapter: ViewPagerAdapter
+    private val args: LoginArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        displayMainOrLoginScreen()
+    }
 
-        viewPagerAdapter = ViewPagerAdapter(supportFragmentManager, lifecycle)
-        viewPager.adapter = viewPagerAdapter
+    private fun displayMainOrLoginScreen() {
+        if (intent.extras != null)
+            isFromLoginPage = args.isFromLoginPage
 
-        navigateBottomNavView()
+        if (isFromLoginPage) {
+            setContentView(R.layout.activity_main)
+            viewPagerAdapter = ViewPagerAdapter(supportFragmentManager, lifecycle)
+            viewPager.adapter = viewPagerAdapter
 
-        viewPager.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                selectPage(position)
-            }
-        })
+            navigateBottomNavView()
+
+            viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                override fun onPageSelected(position: Int) {
+                    selectPage(position)
+                }
+            })
+        } else {
+            setContentView(R.layout.activity_login)
+        }
     }
 
     private fun navigateBottomNavView() {

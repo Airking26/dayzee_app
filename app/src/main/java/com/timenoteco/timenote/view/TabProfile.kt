@@ -11,7 +11,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.timenoteco.timenote.R
 import kotlinx.android.synthetic.main.fragment_tab_settings.*
 
-class TabSettings: Fragment() {
+class TabProfile: Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_tab_settings, container, false)

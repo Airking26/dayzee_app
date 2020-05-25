@@ -28,7 +28,7 @@ private var chips: MutableList<String> = mutableListOf()
 lateinit var preferenceViewModel: PreferenceViewModel
 
 
-class PreferenceSubCategory : Fragment(), SubCategoryCardAdapter.SubCategorySeekBarListener, View.OnClickListener,
+class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekBarListener, View.OnClickListener,
     SubCategoryChipAdapter.SubCategoryChipListener {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -81,7 +81,6 @@ class PreferenceSubCategory : Fragment(), SubCategoryCardAdapter.SubCategorySeek
     override fun onSeekBarModified(likedLevel: Int, categoryName: String, subCategoryPosition: Int) =
         preferenceViewModel.setLikedLevelSubCategory(likedLevel, categoryName, subCategoryPosition)
 
-
     override fun onClick(v: View?) {
         when(v){
             pref_sub_category_btn_back -> Navigation.findNavController(v!!).popBackStack()
@@ -95,7 +94,6 @@ class PreferenceSubCategory : Fragment(), SubCategoryCardAdapter.SubCategorySeek
     }
 
     override fun onCloseChip(name: String) = preferenceViewModel.closeChip(name)
-
 
     private fun setListInSP(key: String, list: List<Any>){
         val prefs = defaultPrefs(requireContext())

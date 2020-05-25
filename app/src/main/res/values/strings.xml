@@ -20,4 +20,7 @@
     <string name="done">Done</string>
     <string name="how_much_do_you_like_it">How much do you like it?</string>
     <string name="back">Back</string>
+    <string name="suggestions">Suggestions</string>
+    <string name="ok">OK</string>
+    <string name="we_found_some_account_you_might_like">We found some account you might like :</string>
 </resources>

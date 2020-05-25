@@ -73,7 +73,7 @@ class PreferenceCategory : Fragment(), View.OnClickListener {
                 var count = 0
                 preferenceViewModel.getPreferences().value?.forEach { if(it.category.isSelected) count++}
                 if(count > 0) view?.findNavController()?.navigate(PreferenceCategoryDirections.actionPreferenceCategoryToPreferenceSubCategory())
-                else view?.findNavController()?.navigate(PreferenceCategoryDirections.actionPreferenceCategoryToMainActivity())
+                else view?.findNavController()?.navigate(PreferenceCategoryDirections.actionPreferenceCategoryToMainActivity(true))
             }
         }
     }
