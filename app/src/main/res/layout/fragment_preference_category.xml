@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.PreferenceCategory">
+
+    <androidx.appcompat.widget.Toolbar
+        android:theme="@style/ThemeOverlay.AppCompat.Dark"
+        android:id="@+id/pref_category_toolbar"
+        style="@style/AppTheme.Toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/preferrence"
+            android:textColor="@color/colorText"
+            android:textSize="17sp"
+            tools:text="Preferrence" />
+
+        <TextView
+            android:id="@+id/pref_category_btn_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="16dp"
+            android:text="@string/next"
+            android:textColor="@color/colorTextSecondary"
+            android:textSize="17sp"
+            tools:text="Next" />
+
+
+    </androidx.appcompat.widget.Toolbar>
+
+
+    <FrameLayout android:layout_width="match_parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pref_category_toolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="wrap_content">
+
+        <!-- **** Place Your Content Here **** -->
+
+        <View android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="@drawable/too"/>
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/select_what_you_like"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/select_what_you_like"
+        android:textColor="@color/colorText"
+        android:textSize="14sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pref_category_toolbar" />
+
+    <ImageView
+        android:id="@+id/pref_city_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:src="@drawable/ic_pref_city"
+        app:layout_constraintEnd_toStartOf="@+id/pref_sport_btn"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/select_what_you_like" />
+
+    <TextView
+        app:layout_constraintRight_toRightOf="@id/pref_city_btn"
+        app:layout_constraintLeft_toLeftOf="@id/pref_city_btn"
+        android:textColor="@color/colorText"
+        android:textSize="15sp"
+        android:layout_marginTop="8dp"
+        android:text="@string/my_city"
+        app:layout_constraintTop_toBottomOf="@id/pref_city_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <ImageView
+        android:id="@+id/pref_sport_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:src="@drawable/ic_pref_sport"
+        app:layout_constraintEnd_toStartOf="@+id/pref_music_btn"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/pref_city_btn"
+        app:layout_constraintTop_toBottomOf="@id/select_what_you_like" />
+
+    <TextView
+        app:layout_constraintLeft_toLeftOf="@id/pref_sport_btn"
+        app:layout_constraintRight_toRightOf="@id/pref_sport_btn"
+        android:textColor="@color/colorText"
+        android:textSize="15sp"
+        android:layout_marginTop="8dp"
+        android:text="@string/sports"
+        app:layout_constraintTop_toBottomOf="@id/pref_city_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <ImageView
+        android:id="@+id/pref_music_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:src="@drawable/ic_pref_music"
+        app:layout_constraintEnd_toStartOf="@+id/pref_esport_btn"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/pref_sport_btn"
+        app:layout_constraintTop_toBottomOf="@id/select_what_you_like" />
+
+    <TextView
+        app:layout_constraintRight_toRightOf="@id/pref_music_btn"
+        app:layout_constraintLeft_toLeftOf="@id/pref_music_btn"
+        android:textColor="@color/colorText"
+        android:textSize="15sp"
+        android:layout_marginTop="8dp"
+        android:text="@string/music"
+        app:layout_constraintTop_toBottomOf="@id/pref_city_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <ImageView
+        android:id="@+id/pref_esport_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:src="@drawable/ic_pref_esport"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/pref_music_btn"
+        app:layout_constraintTop_toBottomOf="@id/select_what_you_like" />
+
+    <TextView
+        app:layout_constraintLeft_toLeftOf="@id/pref_esport_btn"
+        app:layout_constraintRight_toRightOf="@id/pref_esport_btn"
+        android:textColor="@color/colorText"
+        android:textSize="15sp"
+        android:layout_marginTop="8dp"
+        android:text="@string/esports"
+        app:layout_constraintTop_toBottomOf="@id/pref_city_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <ImageView
+        android:id="@+id/pref_youtube_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="160dp"
+        android:src="@drawable/ic_pref_youtube"
+        app:layout_constraintEnd_toStartOf="@+id/pref_sport_btn"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/select_what_you_like" />
+
+    <TextView
+        app:layout_constraintRight_toRightOf="@id/pref_youtube_btn"
+        app:layout_constraintLeft_toLeftOf="@id/pref_youtube_btn"
+        android:textColor="@color/colorText"
+        android:textSize="15sp"
+        android:layout_marginTop="8dp"
+        android:text="@string/youtube"
+        app:layout_constraintTop_toBottomOf="@id/pref_youtube_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <ImageView
+        android:id="@+id/pref_religion_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="160dp"
+        android:src="@drawable/ic_pref_religion"
+        app:layout_constraintEnd_toStartOf="@+id/pref_culture_btn"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/pref_youtube_btn"
+        app:layout_constraintTop_toBottomOf="@id/select_what_you_like" />
+
+    <TextView
+        app:layout_constraintLeft_toLeftOf="@id/pref_religion_btn"
+        app:layout_constraintRight_toRightOf="@id/pref_religion_btn"
+        android:textColor="@color/colorText"
+        android:textSize="15sp"
+        android:layout_marginTop="8dp"
+        android:text="@string/religions"
+        app:layout_constraintTop_toBottomOf="@id/pref_religion_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <ImageView
+        android:id="@+id/pref_culture_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="160dp"
+        android:src="@drawable/ic_pref_culture"
+        app:layout_constraintEnd_toStartOf="@+id/pref_esport_btn"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/pref_religion_btn"
+        app:layout_constraintTop_toBottomOf="@id/select_what_you_like" />
+
+    <TextView
+        app:layout_constraintRight_toRightOf="@id/pref_culture_btn"
+        app:layout_constraintLeft_toLeftOf="@id/pref_culture_btn"
+        android:textColor="@color/colorText"
+        android:textSize="15sp"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="@string/culture_n_amp_loisirs"
+        app:layout_constraintTop_toBottomOf="@id/pref_culture_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <ImageView
+        android:id="@+id/pref_movie_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="160dp"
+        android:src="@drawable/ic_pref_movie"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/pref_culture_btn"
+        app:layout_constraintTop_toBottomOf="@id/select_what_you_like" />
+
+    <TextView
+        app:layout_constraintLeft_toLeftOf="@id/pref_movie_btn"
+        app:layout_constraintRight_toRightOf="@id/pref_movie_btn"
+        android:textColor="@color/colorText"
+        android:textSize="15sp"
+        android:gravity="center"
+        android:layout_marginTop="8dp"
+        android:text="@string/films_n_amp_series"
+        app:layout_constraintTop_toBottomOf="@id/pref_movie_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <ImageView
+        android:id="@+id/pref_shopping_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="280dp"
+        android:src="@drawable/ic_pref_shopping"
+        app:layout_constraintEnd_toStartOf="@+id/pref_holiday_btn"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/select_what_you_like" />
+
+    <TextView
+        app:layout_constraintRight_toRightOf="@id/pref_shopping_btn"
+        app:layout_constraintLeft_toLeftOf="@id/pref_shopping_btn"
+        android:textColor="@color/colorText"
+        android:textSize="15sp"
+        android:layout_marginTop="8dp"
+        android:text="@string/shopping"
+        app:layout_constraintTop_toBottomOf="@id/pref_shopping_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <ImageView
+        android:id="@+id/pref_holiday_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="280dp"
+        android:src="@drawable/ic_pref_holiday"
+        app:layout_constraintEnd_toStartOf="@+id/pref_music_btn"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/pref_shopping_btn"
+        app:layout_constraintTop_toBottomOf="@id/select_what_you_like" />
+
+    <TextView
+        app:layout_constraintLeft_toLeftOf="@id/pref_holiday_btn"
+        app:layout_constraintRight_toRightOf="@id/pref_holiday_btn"
+        android:textColor="@color/colorText"
+        android:textSize="15sp"
+        android:layout_marginTop="8dp"
+        android:text="@string/holidays"
+        app:layout_constraintTop_toBottomOf="@id/pref_holiday_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <ImageView
+        android:id="@+id/pref_calendar_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="280dp"
+        android:src="@drawable/ic_pref_calendar_to_follow"
+        app:layout_constraintEnd_toStartOf="@+id/pref_esport_btn"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/pref_holiday_btn"
+        app:layout_constraintTop_toBottomOf="@id/select_what_you_like" />
+
+    <TextView
+        app:layout_constraintRight_toRightOf="@id/pref_calendar_btn"
+        app:layout_constraintLeft_toLeftOf="@id/pref_calendar_btn"
+        android:textColor="@color/colorText"
+        android:textSize="15sp"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="@string/calendrier_n_interessant"
+        app:layout_constraintTop_toBottomOf="@id/pref_calendar_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

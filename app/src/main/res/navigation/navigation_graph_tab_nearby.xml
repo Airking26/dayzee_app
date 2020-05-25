@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_graph_tab_2.xml"
+    app:startDestination="@id/nearBy">
+    <fragment
+        android:id="@+id/nearBy"
+        android:name="com.timenoteco.timenote.view.NearBy"
+        android:label="NearBy" />
+</navigation>

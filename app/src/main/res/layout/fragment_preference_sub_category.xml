@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".view.PreferenceSubCategory">
+
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.Toolbar
+                android:theme="@style/ThemeOverlay.AppCompat.Dark"
+                android:id="@+id/pref_sub_category_toolbar"
+                style="@style/AppTheme.Toolbar"
+                tools:ignore="MissingConstraints">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/preferrence"
+                    android:textColor="@color/colorText"
+                    android:textSize="17sp"
+                    tools:text="Preference" />
+
+                <TextView
+                    android:id="@+id/pref_sub_category_btn_done"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/done"
+                    android:textColor="@color/colorTextSecondary"
+                    android:textSize="17sp"
+                    tools:text="Done" />
+
+                <TextView
+                    android:drawableStart="@drawable/ic_keyboard_arrow_left_purple_24dp"
+                    android:id="@+id/pref_sub_category_btn_back"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:text="@string/back"
+                    android:textColor="@color/colorTextSecondary"
+                    android:textSize="17sp"
+                    tools:text="Back" />
+
+            </androidx.appcompat.widget.Toolbar>
+
+            <FrameLayout android:layout_width="match_parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/pref_sub_category_toolbar"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_height="wrap_content">
+
+                <!-- **** Place Your Content Here **** -->
+
+                <View android:layout_width="match_parent"
+                    android:layout_height="5dp"
+                    android:background="@drawable/too"/>
+
+            </FrameLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_margin="12dp"
+                tools:listitem="@layout/item_pref_sub_category_chip"
+                android:id="@+id/pref_sub_category_rv_chips"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/pref_sub_category_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_gravity="center"
+                android:id="@+id/how_much_do_you_like_it"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="36dp"
+                android:text="@string/how_much_do_you_like_it"
+                android:textColor="@color/colorText"
+                android:textSize="14sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/pref_sub_category_rv_chips" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:padding="16dp"
+                tools:listitem="@layout/adapter_pref_sub_category_card"
+                android:id="@+id/pref_sub_category_card_rv"
+                android:layout_marginTop="12dp"
+                app:layout_constraintTop_toBottomOf="@id/how_much_do_you_like_it"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
