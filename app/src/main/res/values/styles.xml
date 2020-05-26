@@ -8,6 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorText">@color/colorText</item>
         <item name="colorTextSecondary">@color/colorTextSecondary</item>
+        <item name="colorTextThirdly">@color/colorTextThirdly</item>
     </style>
 
 

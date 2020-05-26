@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/profile_modify_ll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/pref_profil_modify_toolbar"
+            style="@style/AppTheme.Toolbar"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+            <TextView
+                android:id="@+id/profile_modify_name_toolbar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="@color/colorText"
+                android:textSize="17sp"
+                tools:text="Ronny" />
+
+            <TextView
+                android:id="@+id/profile_modify_done_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginEnd="16dp"
+                android:textColor="@color/colorTextSecondary"
+                android:text="@string/done"
+                android:textSize="17sp"/>
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/pref_sub_category_toolbar">
+
+            <!-- **** Place Your Content Here **** -->
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="@drawable/too" />
+
+        </FrameLayout>
+    </LinearLayout>
+
+    <ScrollView
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/profile_modify_ll"
+        android:layout_width="0dp"
+        android:layout_height="0dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                app:layout_constraintTop_toTopOf="parent"
+                android:id="@+id/profile_modify_pic_imageview"
+                android:src="@drawable/ic_pref_holiday_clicked"
+                android:layout_marginTop="24dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_width="92dp"
+                android:layout_height="92dp"/>
+
+            <mehdi.sakout.fancybuttons.FancyButton
+                android:layout_marginTop="16dp"
+                fancy:fb_defaultColor="@color/colorPrimary"
+                fancy:fb_radius="5dp"
+                fancy:fb_text="@string/share_profile"
+                android:paddingVertical="6dp"
+                android:paddingHorizontal="24dp"
+                fancy:fb_textColor="@android:color/white"
+                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@id/profile_modify_pic_imageview"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:id="@+id/profile_modify_share_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <EditText
+                android:id="@+id/profile_modify_name_appearance"
+                android:drawablePadding="8dp"
+                android:hint="@string/name_you_want_to_appear"
+                android:textSize="15sp"
+                android:padding="16dp"
+                android:drawableStart="@drawable/ic_profile_name_to_appear"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/profile_modify_share_btn"
+                android:layout_marginTop="36dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <EditText
+                android:id="@+id/profile_modify_name"
+                android:drawablePadding="8dp"
+                android:hint="@string/your_name"
+                android:textSize="15sp"
+                android:padding="16dp"
+                android:drawableStart="@drawable/ic_profile_name"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/profile_modify_name_appearance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <EditText
+                android:id="@+id/profile_modify_from"
+                android:drawablePadding="8dp"
+                android:hint="@string/from"
+                android:textSize="15sp"
+                android:padding="16dp"
+                android:drawableStart="@drawable/ic_profile_from"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/profile_modify_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <EditText
+                android:focusable="false"
+                android:id="@+id/profile_modify_birthday"
+                android:drawablePadding="8dp"
+                android:text="@string/birthday"
+                android:textColor="@color/colorText"
+                android:textSize="15sp"
+                android:padding="16dp"
+                android:drawableStart="@drawable/ic_profile_birthday"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/profile_modify_from"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <EditText
+                android:focusable="false"
+                android:id="@+id/profile_modify_gender"
+                android:drawablePadding="8dp"
+                android:text="@string/gender"
+                android:textColor="@color/colorText"
+                android:textSize="15sp"
+                android:padding="16dp"
+                android:drawableStart="@drawable/ic_profile_gender"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/profile_modify_birthday"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <EditText
+                android:focusable="false"
+                android:id="@+id/profile_modify_account_status"
+                android:drawablePadding="8dp"
+                android:text="@string/account_status"
+                android:textColor="@color/colorText"
+                android:textSize="15sp"
+                android:padding="16dp"
+                android:drawableStart="@drawable/ic_profile_account_status"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/profile_modify_gender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <EditText
+                android:focusable="false"
+                android:id="@+id/profile_modify_format_timenote"
+                android:drawablePadding="8dp"
+                android:text="@string/timenote_date_format"
+                android:textColor="@color/colorText"
+                android:textSize="15sp"
+                android:padding="16dp"
+                android:drawableStart="@drawable/ic_profile_date_format"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/profile_modify_account_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <EditText
+                android:focusable="false"
+                android:id="@+id/profile_modify_youtube_channel"
+                android:drawablePadding="8dp"
+                android:text="@string/youtube_channel"
+                android:textColor="@color/colorText"
+                android:textSize="15sp"
+                android:padding="16dp"
+                android:drawableStart="@drawable/ic_profile_youtube"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/profile_modify_format_timenote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+
+            <EditText
+                android:id="@+id/profile_modify_description"
+                android:drawablePadding="8dp"
+                android:text="Describe yourself"
+                android:textColor="@color/colorText"
+                android:textSize="15sp"
+                android:padding="16dp"
+                android:drawableStart="@drawable/ic_profile_description"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/profile_modify_youtube_channel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+

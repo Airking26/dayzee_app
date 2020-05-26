@@ -34,7 +34,7 @@
         fancy:fb_borderWidth="1dp"
         fancy:fb_borderColor="@color/colorPrimary"
         fancy:fb_radius="5dp"
-        fancy:fb_text="Follow"
+        fancy:fb_text="@string/follow"
         android:paddingVertical="6dp"
         android:paddingHorizontal="24dp"
         fancy:fb_textColor="@color/colorPrimary"
