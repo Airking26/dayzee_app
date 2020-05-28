@@ -3,25 +3,25 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/profileId"
+        android:id="@+id/navigation_graph_tab_1"
         android:icon="@android:drawable/ic_dialog_info"
         android:title=""
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/nearById"
+        android:id="@+id/navigation_graph_tab_2"
         android:icon="@android:drawable/ic_dialog_dialer"
         android:title=""
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/searchId"
+        android:id="@+id/navigation_graph_tab_3"
         android:icon="@android:drawable/ic_popup_reminder"
         android:title=""
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/settingsId"
+        android:id="@+id/navigation_graph_tab_4"
         android:icon="@android:drawable/ic_dialog_alert"
         android:title=""
         app:showAsAction="always" />

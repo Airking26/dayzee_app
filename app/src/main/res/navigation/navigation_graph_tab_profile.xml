@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/navigation_graph_tab_settings.xml"
+    android:id="@+id/navigation_graph_tab_4"
     app:startDestination="@id/profile">
     <fragment
         android:id="@+id/profile"
@@ -18,9 +18,7 @@
         android:name="com.timenoteco.timenote.view.ProfilModify"
         android:label="ProfilModify" >
         <action
-            android:id="@+id/action_profilModify_to_profile"
-            app:destination="@id/profile"
-            app:popUpTo="@id/profile"
-            app:popUpToInclusive="true" />
+            android:id="@+id/action_profilModify_to_profile2"
+            app:popUpTo="@id/profile" />
     </fragment>
 </navigation>
