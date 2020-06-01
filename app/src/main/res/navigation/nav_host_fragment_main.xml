@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/nav_host_fragment.xml"
+    app:startDestination="@id/tabHome">
+
+    <fragment
+        android:id="@+id/tabHome"
+        android:name="com.timenoteco.timenote.view.TabHome"
+        android:label="TabHome" />
+    <fragment
+        android:id="@+id/tabNearby"
+        android:name="com.timenoteco.timenote.view.TabNearby"
+        android:label="TabNearby" />
+    <fragment
+        android:id="@+id/tabSearch"
+        android:name="com.timenoteco.timenote.view.TabSearch"
+        android:label="TabSearch" />
+    <fragment
+        android:id="@+id/tabProfile"
+        android:name="com.timenoteco.timenote.view.TabProfile"
+        android:label="TabProfile" />
+</navigation>

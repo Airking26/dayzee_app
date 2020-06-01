@@ -7,8 +7,8 @@
     app:cardCornerRadius="10dp"
     android:padding="8dp"
     android:layout_marginEnd="-10dp"
-    android:layout_marginTop="8dp"
     android:layout_marginStart="8dp"
+    android:layout_marginBottom="8dp"
     android:background="@android:color/white"
     android:elevation="4dp"
     tools:targetApi="lollipop">
@@ -20,7 +20,6 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/item_card"
-            app:cardElevation="10dp"
             app:cardCornerRadius="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -31,7 +30,6 @@
             <ImageView
                 android:id="@+id/profile_item_pic_event_imageview"
                 android:scaleType="centerCrop"
-                android:src="@drawable/test"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 
@@ -71,6 +69,7 @@
             android:layout_height="24dp"/>
 
         <TextView
+            android:id="@+id/profile_item_date_event"
             tools:text="Dans 12 jours"
             android:textColor="@color/colorText"
             android:textSize="14sp"

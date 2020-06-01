@@ -36,4 +36,21 @@
     <string name="account_status">Account status</string>
     <string name="timenote_date_format">Timenote date format</string>
     <string name="youtube_channel">Youtube channel</string>
+    <string name="describe_yourself">Describe yourself</string>
+    <string name="settings">Settings</string>
+    <string name="general">GENERAL</string>
+    <string name="edit_my_personnals_informations">Edit my personnals informations</string>
+    <string name="change_password">Change password</string>
+    <string name="private_account">Private Account</string>
+    <string name="asked_sent">Asked sent</string>
+    <string name="push">PUSH</string>
+    <string name="push_notifications">Push notifications</string>
+    <string name="certified_push_notifications">Certified\' push notifications</string>
+    <string name="default_settings">DEFAULT SETTINGS</string>
+    <string name="timenote_visibility_format">Timenote visibility format</string>
+    <string name="timenote_visibility">Timenote visibility</string>
+    <string name="others">OTHERS</string>
+    <string name="confidentiality_politic">Confidentiality politic</string>
+    <string name="send_comments">Send comments</string>
+    <string name="disconnect">DISCONNECT</string>
 </resources>

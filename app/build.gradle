@@ -23,7 +23,7 @@ android {
     defaultConfig {
         multiDexEnabled true
         applicationId "com.timenoteco.timenote"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -77,8 +77,13 @@ dependencies {
     implementation "com.google.code.gson:gson:2.8.5"
 
     implementation 'com.github.medyo:fancybuttons:1.9.1'
-    implementation  'com.dialog:plus:4.1.4'
+    implementation 'com.dialog:plus:4.1.4'
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'com.android.support:multidex:1.0.3'
     kapt 'com.android.databinding:compiler:3.2.0-alpha10'
+
+    implementation 'com.github.shrikanth7698:Collapsible-Calendar-View-Android:v1.0.3'
+    implementation 'com.ernestoyaquello.dragdropswiperecyclerview:drag-drop-swipe-recyclerview:0.6.0'
+
+
 }

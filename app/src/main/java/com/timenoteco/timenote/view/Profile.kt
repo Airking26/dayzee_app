@@ -1,30 +1,84 @@
 package com.timenoteco.timenote.view
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.timenoteco.timenote.R
+import com.timenoteco.timenote.adapter.ListStyleTimenoteAdapter
+import com.timenoteco.timenote.garbage.BaseThroughFragment
+import com.timenoteco.timenote.model.Event
 import kotlinx.android.synthetic.main.fragment_profile.*
 
-class Profile : Fragment() {
+class Profile : BaseThroughFragment(), View.OnClickListener {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val k = savedInstanceState
-       return inflater.inflate(R.layout.fragment_profile, container, false)
-    }
+    private lateinit var eventAdapter: ListStyleTimenoteAdapter
+    private var events: MutableList<Event> = mutableListOf()
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?  =
+        getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_profile)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val k = savedInstanceState
-        profile_modify_btn.setOnClickListener {
-            profile_modify_btn.setBorderColor(R.color.colorPrimaryDark)
-            profile_modify_btn.setBorderWidth(5)
-            profile_pic_imageview.setImageDrawable(resources.getDrawable(R.drawable.ic_pref_city_clicked))
-            view.findNavController().navigate(ProfileDirections.actionProfileToProfilModify())
+        profile_modify_btn.setOnClickListener(this)
+        profile_calendar_btn.setOnClickListener(this)
+        profile_settings_btn.setOnClickListener(this)
+
+        events = mutableListOf(
+            Event("Beach Party",
+                "34 Olhio Street",
+                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
+                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
+                "Dans 25 jours"), Event("Beach Party",
+                "34 Olhio Street",
+                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
+                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
+                "Dans 25 jours"), Event("Beach Party",
+                "34 Olhio Street",
+                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
+                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
+                "Dans 25 jours"), Event("Beach Party",
+                "34 Olhio Street",
+                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
+                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
+                "Dans 25 jours"), Event("Beach Party",
+                "34 Olhio Street",
+                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
+                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
+                "Dans 25 jours"), Event("Beach Party",
+                "34 Olhio Street",
+                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
+                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
+                "Dans 25 jours"), Event("Beach Party",
+                "34 Olhio Street",
+                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
+                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
+                "Dans 25 jours"), Event("Beach Party",
+                "34 Olhio Street",
+                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
+                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
+                "Dans 25 jours"), Event("Beach Party",
+                "34 Olhio Street",
+                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
+                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
+                "Dans 25 jours")
+        )
+
+        eventAdapter = ListStyleTimenoteAdapter(events)
+
+        profile_rv.apply {
+            layoutManager = LinearLayoutManager(view.context)
+            adapter = eventAdapter
         }
     }
 
+    override fun onClick(v: View?) {
+        when(v){
+            profile_modify_btn -> findNavController().navigate(ProfileDirections.actionProfileToProfilModify())
+            profile_calendar_btn -> findNavController().navigate(ProfileDirections.actionProfileToProfileCalendar())
+            profile_settings_btn -> findNavController().navigate(ProfileDirections.actionProfileToSettings())
+        }
+    }
 
 }

@@ -198,10 +198,9 @@
                 android:layout_height="wrap_content"/>
 
             <EditText
-                android:focusable="false"
                 android:id="@+id/profile_modify_youtube_channel"
                 android:drawablePadding="8dp"
-                android:text="@string/youtube_channel"
+                android:hint="@string/youtube_channel"
                 android:textColor="@color/colorText"
                 android:textSize="15sp"
                 android:padding="16dp"
@@ -216,7 +215,7 @@
             <EditText
                 android:id="@+id/profile_modify_description"
                 android:drawablePadding="8dp"
-                android:text="Describe yourself"
+                android:hint="@string/describe_yourself"
                 android:textColor="@color/colorText"
                 android:textSize="15sp"
                 android:padding="16dp"

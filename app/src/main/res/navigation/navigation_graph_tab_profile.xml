@@ -12,13 +12,25 @@
         <action
             android:id="@+id/action_profile_to_profilModify"
             app:destination="@id/profilModify" />
+        <action
+            android:id="@+id/action_profile_to_profileCalendar"
+            app:destination="@id/profileCalendar" />
+        <action
+            android:id="@+id/action_profile_to_settings"
+            app:destination="@id/settings" />
     </fragment>
     <fragment
         android:id="@+id/profilModify"
         android:name="com.timenoteco.timenote.view.ProfilModify"
         android:label="ProfilModify" >
-        <action
-            android:id="@+id/action_profilModify_to_profile2"
-            app:popUpTo="@id/profile" />
     </fragment>
+    <fragment
+        android:id="@+id/profileCalendar"
+        android:name="com.timenoteco.timenote.view.ProfileCalendar"
+        android:label="ProfileCalendar" />
+    <fragment
+        android:id="@+id/settings"
+        android:name="com.timenoteco.timenote.view.Settings"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
 </navigation>
