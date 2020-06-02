@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".view.createTimenoteFlow.CreateTimenote">
+
+    <LinearLayout
+        android:id="@+id/create_timenote_ll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/create_timenote_toolbar"
+            style="@style/AppTheme.Toolbar"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark"
+            tools:ignore="MissingConstraints">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="@color/colorText"
+                android:textSize="17sp"
+                android:text="@string/new_timenote" />
+
+            <TextView
+                android:id="@+id/create_timenote_next_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginEnd="16dp"
+                android:text="@string/next"
+                android:textColor="@color/colorTextSecondary"
+                android:textSize="17sp" />
+
+
+        </androidx.appcompat.widget.Toolbar>
+
+            <View
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/create_timenote_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="@drawable/too" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/create_timenote_take_add_pic"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toBottomOf="@id/create_timenote_ll"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textSize="14sp"
+        android:textAllCaps="true"
+        android:drawablePadding="8dp"
+        android:drawableBottom="@drawable/ic_new_timenote_add_iamge"
+        android:textColor="@color/colorText"
+        android:text="@string/take_add_a_picture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:layout_marginTop="12dp"
+        android:id="@+id/card_line_0"
+        app:layout_constraintTop_toBottomOf="@id/create_timenote_take_add_pic"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="#60000000"
+        android:layout_width="200dp"
+        android:layout_height="0.1dp"/>
+
+    <TextView
+        android:id="@+id/choose_color_label"
+        android:layout_marginTop="12dp"
+        android:textAllCaps="true"
+        android:text="@string/choose_a_color"
+        android:textColor="@color/colorText"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/card_line_0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <mehdi.sakout.fancybuttons.FancyButton
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="16dp"
+        fancy:fb_defaultColor="@android:color/holo_orange_dark"
+        fancy:fb_radius="5dp"
+        fancy:fb_text=""
+        fancy:fb_textColor="@android:color/white"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/choose_color_label"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/create_timenote_second_color"
+        android:id="@+id/create_timenote_first_color"
+        android:layout_width="40dp"
+        android:layout_height="40dp"/>
+
+    <mehdi.sakout.fancybuttons.FancyButton
+        android:layout_marginTop="16dp"
+        fancy:fb_defaultColor="@android:color/holo_red_dark"
+        fancy:fb_radius="5dp"
+        fancy:fb_text=""
+        fancy:fb_textColor="@android:color/white"
+        android:gravity="center"
+        app:layout_constraintEnd_toStartOf="@+id/create_timenote_third_color"
+        app:layout_constraintTop_toBottomOf="@id/choose_color_label"
+        app:layout_constraintStart_toEndOf="@+id/create_timenote_first_color"
+        android:id="@+id/create_timenote_second_color"
+        android:layout_width="40dp"
+        android:layout_height="40dp"/>
+
+    <mehdi.sakout.fancybuttons.FancyButton
+        android:layout_marginTop="16dp"
+        fancy:fb_defaultColor="@android:color/holo_blue_dark"
+        fancy:fb_radius="5dp"
+        fancy:fb_text=""
+        fancy:fb_textColor="@android:color/white"
+        android:gravity="center"
+        app:layout_constraintEnd_toStartOf="@+id/create_timenote_fourth_color"
+        app:layout_constraintTop_toBottomOf="@id/choose_color_label"
+        app:layout_constraintStart_toEndOf="@+id/create_timenote_second_color"
+        android:id="@+id/create_timenote_third_color"
+        android:layout_width="40dp"
+        android:layout_height="40dp"/>
+
+    <mehdi.sakout.fancybuttons.FancyButton
+        android:layout_marginTop="16dp"
+        fancy:fb_defaultColor="@android:color/holo_purple"
+        fancy:fb_radius="5dp"
+        fancy:fb_text=""
+        fancy:fb_textColor="@android:color/white"
+        android:gravity="center"
+        app:layout_constraintEnd_toStartOf="@+id/create_timenote_fifth_color"
+        app:layout_constraintTop_toBottomOf="@id/choose_color_label"
+        app:layout_constraintStart_toEndOf="@+id/create_timenote_third_color"
+        android:id="@+id/create_timenote_fourth_color"
+        android:layout_width="40dp"
+        android:layout_height="40dp"/>
+
+    <mehdi.sakout.fancybuttons.FancyButton
+        android:layout_marginEnd="48dp"
+        android:layout_marginTop="16dp"
+        fancy:fb_defaultColor="@android:color/holo_green_dark"
+        fancy:fb_radius="5dp"
+        fancy:fb_text=""
+        fancy:fb_textColor="@android:color/white"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/choose_color_label"
+        app:layout_constraintStart_toEndOf="@+id/create_timenote_fourth_color"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/create_timenote_fifth_color"
+        android:layout_width="40dp"
+        android:layout_height="40dp"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:background="@android:color/white"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/create_timenote_third_color"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/when_cardview"
+            app:cardElevation="5dp"
+            app:cardCornerRadius="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="24dp"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginHorizontal="24dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:padding="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/when_label"
+                    android:drawablePadding="8dp"
+                    android:drawableStart="@drawable/ic_new_timenote_when"
+                    android:textColor="@color/colorText"
+                    android:textSize="14sp"
+                    android:text="@string/when"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/from_label"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/from"
+                    android:textSize="14sp"
+                    android:textColor="@color/colorTextSecondary"
+                    app:layout_constraintTop_toBottomOf="@id/when_label"
+                    app:layout_constraintEnd_toEndOf="@id/when_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/to_label"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/to"
+                    android:textSize="14sp"
+                    android:textColor="@color/colorTextSecondary"
+                    app:layout_constraintTop_toBottomOf="@id/from_label"
+                    app:layout_constraintEnd_toEndOf="@id/when_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/create_timenote_from"
+                    android:layout_marginTop="8dp"
+                    tools:text="14 Janvier 2020"
+                    android:textColor="@color/colorText"
+                    android:textSize="14sp"
+                    app:layout_constraintTop_toBottomOf="@id/when_label"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/create_timenote_to"
+                    android:layout_marginTop="8dp"
+                    tools:text="15 Janvier 2020"
+                    android:textColor="@color/colorText"
+                    android:textSize="14sp"
+                    app:layout_constraintTop_toBottomOf="@id/create_timenote_from"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/where_cardview"
+            app:cardElevation="5dp"
+            app:cardCornerRadius="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="12dp"
+            app:layout_constraintTop_toBottomOf="@id/when_cardview"
+            android:layout_marginHorizontal="24dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:padding="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/create_timenote_where_btn"
+                    android:drawablePadding="8dp"
+                    android:drawableStart="@drawable/ic_profile_from"
+                    android:textColor="@color/colorText"
+                    android:textSize="14sp"
+                    android:text="@string/where"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/share_with_cardview"
+            app:cardElevation="5dp"
+            app:cardCornerRadius="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="12dp"
+            app:layout_constraintTop_toBottomOf="@id/where_cardview"
+            android:layout_marginHorizontal="24dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:padding="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/create_timenote_share_with_btn"
+                    android:drawablePadding="8dp"
+                    android:drawableStart="@drawable/ic_new_timenote_share_with"
+                    android:textColor="@color/colorText"
+                    android:textSize="14sp"
+                    android:text="@string/share_with"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/category_cardview"
+            app:cardElevation="5dp"
+            app:cardCornerRadius="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="12dp"
+            app:layout_constraintTop_toBottomOf="@id/share_with_cardview"
+            android:layout_marginHorizontal="24dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:padding="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/create_timenote_category"
+                    android:drawablePadding="8dp"
+                    android:textColor="@color/colorText"
+                    android:textSize="14sp"
+                    android:text="@string/category"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:drawablePadding="8dp"
+                    android:textColor="@color/colorTextSecondary"
+                    android:textSize="14sp"
+                    android:text="@string/none"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/title_cardview"
+            app:cardElevation="5dp"
+            app:cardCornerRadius="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="12dp"
+            app:layout_constraintTop_toBottomOf="@id/category_cardview"
+            android:layout_marginHorizontal="24dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:padding="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/create_timenote_title_with_btn"
+                    android:drawablePadding="8dp"
+                    android:drawableStart="@drawable/ic_profile_name"
+                    android:textColor="@color/colorText"
+                    android:textSize="14sp"
+                    android:text="@string/title"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

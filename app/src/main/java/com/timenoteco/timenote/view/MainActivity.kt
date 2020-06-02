@@ -1,15 +1,18 @@
-package com.timenoteco.timenote.view.host
+package com.timenoteco.timenote.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.navArgs
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.garbage.setupWithNavController
-import com.timenoteco.timenote.view.LoginArgs
+import com.timenoteco.timenote.view.loginFlow.LoginArgs
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(){
 
@@ -34,17 +37,27 @@ class MainActivity : AppCompatActivity(){
     }
 
     private fun setupBottomNavigationBar() {
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavView)
+        val navGraphIds = listOf(R.navigation.navigation_graph_tab_home, R.navigation.navigation_graph_tab_nearby,
+            R.navigation.navigation_graph_tab_search, R.navigation.navigation_graph_tab_profile, R.navigation.navigation_graph_tab_create_timenote)
 
-        val navGraphIds = listOf(R.navigation.navigation_graph_tab_home, R.navigation.navigation_graph_tab_nearby, R.navigation.navigation_graph_tab_search, R.navigation.navigation_graph_tab_profile)
-
-        // Setup the bottom navigation view with a list of navigation graphs
-        val controller = bottomNavigationView.setupWithNavController(
+        val controller = bottomNavView.setupWithNavController(
             navGraphIds = navGraphIds,
             fragmentManager = supportFragmentManager,
             containerId = R.id.nav_host_fragment_main,
             intent = intent
         )
+
+        controller.observe(this, Observer {
+            it.addOnDestinationChangedListener { _, destination, _ ->
+                when(destination.id){
+                    R.id.search -> bottomNavView.visibility = View.VISIBLE
+                    R.id.nearBy -> bottomNavView.visibility = View.VISIBLE
+                    R.id.profile -> bottomNavView.visibility = View.VISIBLE
+                    R.id.home -> bottomNavView.visibility = View.VISIBLE
+                    R.id.createTimenote -> bottomNavView.visibility = View.GONE
+                }
+            }
+        })
 
         currentNavController = controller
     }

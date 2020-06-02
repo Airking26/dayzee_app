@@ -4,10 +4,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.timenoteco.timenote.view.TabHome
-import com.timenoteco.timenote.view.TabNearby
-import com.timenoteco.timenote.view.TabSearch
-import com.timenoteco.timenote.view.TabProfile
+import com.timenoteco.timenote.view.homeFlow.TabHome
+import com.timenoteco.timenote.view.nearByFlow.TabNearby
+import com.timenoteco.timenote.view.searchFlow.TabSearch
+import com.timenoteco.timenote.view.profileFlow.TabProfile
 
 class ViewPagerAdapter(fm: FragmentManager?, lifecycle: Lifecycle) : FragmentStateAdapter(fm!!, lifecycle) {
 

@@ -6,6 +6,6 @@
     app:startDestination="@id/nearBy">
     <fragment
         android:id="@+id/nearBy"
-        android:name="com.timenoteco.timenote.view.NearBy"
+        android:name="com.timenoteco.timenote.view.nearByFlow.NearBy"
         android:label="NearBy" />
 </navigation>

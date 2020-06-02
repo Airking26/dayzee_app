@@ -1,4 +1,4 @@
-package com.timenoteco.timenote.view
+package com.timenoteco.timenote.view.profileFlow
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,10 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.shrikanthravi.collapsiblecalendarview.widget.CollapsibleCalendar
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ItemCalendarAdapter
-import com.timenoteco.timenote.model.Event
 import com.timenoteco.timenote.model.EventCalendar
 import kotlinx.android.synthetic.main.fragment_profile_calendar.*
 import java.util.*
@@ -23,10 +21,6 @@ class ProfileCalendar: Fragment() {
         inflater.inflate(R.layout.fragment_profile_calendar, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val o = GregorianCalendar()
-        val i = o.get(Calendar.YEAR)
-        val d = o.get(Calendar.MONTH)
-        val c = o.get(Calendar.DAY_OF_MONTH)
 
         eventsCalendar = mutableListOf(
             EventCalendar("Beach Party",
@@ -41,24 +35,12 @@ class ProfileCalendar: Fragment() {
                 "34 Olhio Street",
                 "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),            EventCalendar("Beach Party",
                 "34 Olhio Street",
-                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),            EventCalendar("Beach Party",
-                "34 Olhio Street",
-                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),            EventCalendar("Beach Party",
-                "34 Olhio Street",
-                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),            EventCalendar("Beach Party",
-                "34 Olhio Street",
-                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),            EventCalendar("Beach Party",
-                "34 Olhio Street",
-                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),            EventCalendar("Beach Party",
-                "34 Olhio Street",
-                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),            EventCalendar("Beach Party",
-                "34 Olhio Street",
-                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),            EventCalendar("Beach Party",
-                "34 Olhio Street",
                 "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg")
         )
 
-        calendarAdapter = ItemCalendarAdapter(eventsCalendar)
+        calendarAdapter = ItemCalendarAdapter(
+            eventsCalendar
+        )
 
         profile_calendar_rv.apply {
             layoutManager = LinearLayoutManager(view.context)

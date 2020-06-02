@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/white"
     xmlns:fancy="http://schemas.android.com/apk/res-auto"
-    tools:context=".view.Profile">
+    tools:context=".view.profileFlow.Profile">
 
      <LinearLayout
          android:id="@+id/profile_ll"
@@ -30,7 +30,7 @@
                     android:layout_gravity="center"
                     android:textColor="@color/colorText"
                     android:textSize="17sp"
-                    tools:text="Ronny" />
+                    android:text="Ronny" />
 
                 <ImageView
                     android:id="@+id/profile_settings_btn"
@@ -68,7 +68,7 @@
 
     <TextView
         android:id="@+id/profile_nbr_followers"
-        tools:text="654"
+        android:text="654"
         android:textColor="@color/colorText"
         android:textSize="17sp"
         android:textStyle="bold"
@@ -83,7 +83,6 @@
     <TextView
         android:id="@+id/profile_followers_label"
         android:text="@string/followers"
-        tools:text="Followers"
         android:textSize="15sp"
         android:layout_marginStart="24dp"
         app:layout_constraintTop_toBottomOf="@id/profile_nbr_followers"
@@ -93,7 +92,7 @@
 
     <TextView
         android:id="@+id/profile_nbr_following"
-        tools:text="233"
+        android:text="233"
         android:textColor="@color/colorText"
         android:textSize="17sp"
         android:textStyle="bold"
@@ -139,7 +138,7 @@
         android:textColor="@color/colorText"
         android:textSize="14sp"
         android:drawableStart="@drawable/ic_profile_from"
-        tools:text=" Israel"
+        android:text=" Israel"
         android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -167,7 +166,7 @@
 
     <TextView
         android:id="@+id/profile_desc"
-        tools:text="Founder of Timenote"
+        android:text="Founder of Timenote"
         android:textSize="15sp"
         android:layout_marginTop="8dp"
         app:layout_constraintTop_toBottomOf="@id/profile_modify_btn"
@@ -229,9 +228,10 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/profile_rv"
-        android:paddingTop="8dp"
-        android:background="#60aaaaaa"
-        android:paddingBottom="56dp"
+        android:background="#20aaaaaa"
+        android:paddingBottom="12dp"
+        android:clipToPadding="false"
+        android:layout_marginBottom="56dp"
         tools:listitem="@layout/item_profile_timenote_list_style"
         app:layout_constraintTop_toBottomOf="@+id/view_demarcation"
         app:layout_constraintEnd_toEndOf="parent"

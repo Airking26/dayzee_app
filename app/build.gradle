@@ -85,5 +85,7 @@ dependencies {
     implementation 'com.github.shrikanth7698:Collapsible-Calendar-View-Android:v1.0.3'
     implementation 'com.ernestoyaquello.dragdropswiperecyclerview:drag-drop-swipe-recyclerview:0.6.0'
 
+    implementation 'com.agilie:swipe2delete:1.0'
+
 
 }

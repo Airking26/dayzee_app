@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_graph_tab_5"
+    app:startDestination="@id/createTimenote">
+    <fragment
+        android:id="@+id/createTimenote"
+        android:name="com.timenoteco.timenote.view.createTimenoteFlow.CreateTimenote"
+        android:label="fragment_create_timenote"
+        tools:layout="@layout/fragment_create_timenote" >
+        <action
+            android:id="@+id/action_createTimenote_to_previewTimenoteCreated"
+            app:destination="@id/previewTimenoteCreated" />
+    </fragment>
+    <fragment
+        android:id="@+id/previewTimenoteCreated"
+        android:name="com.timenoteco.timenote.view.createTimenoteFlow.PreviewTimenoteCreated"
+        android:label="fragment_preview_timenote_created"
+        tools:layout="@layout/fragment_preview_timenote_created" />
+</navigation>

@@ -1,4 +1,4 @@
-package com.timenoteco.timenote.view
+package com.timenoteco.timenote.view.homeFlow
 
 import android.os.Bundle
 import android.view.LayoutInflater

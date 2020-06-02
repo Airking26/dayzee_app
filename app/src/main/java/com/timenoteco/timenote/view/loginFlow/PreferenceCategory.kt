@@ -1,4 +1,4 @@
-package com.timenoteco.timenote.view
+package com.timenoteco.timenote.view.loginFlow
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -73,7 +73,11 @@ class PreferenceCategory : Fragment(), View.OnClickListener {
                 var count = 0
                 preferenceViewModel.getPreferences().value?.forEach { if(it.category.isSelected) count++}
                 if(count > 0) view?.findNavController()?.navigate(PreferenceCategoryDirections.actionPreferenceCategoryToPreferenceSubCategory())
-                else view?.findNavController()?.navigate(PreferenceCategoryDirections.actionPreferenceCategoryToMainActivity(true))
+                else view?.findNavController()?.navigate(
+                    PreferenceCategoryDirections.actionPreferenceCategoryToMainActivity(
+                        true
+                    )
+                )
             }
         }
     }

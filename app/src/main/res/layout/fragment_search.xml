@@ -4,4 +4,4 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/holo_red_dark"
-    tools:context=".view.Search"/>
+    tools:context=".view.searchFlow.Search"/>

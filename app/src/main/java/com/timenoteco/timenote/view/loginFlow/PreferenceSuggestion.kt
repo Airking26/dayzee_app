@@ -1,4 +1,4 @@
-package com.timenoteco.timenote.view
+package com.timenoteco.timenote.view.loginFlow
 
 import android.os.Bundle
 import android.view.KeyEvent
@@ -7,13 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
-import com.timenoteco.timenote.common.PreferenceHelper
-import com.timenoteco.timenote.model.Preference
 import kotlinx.android.synthetic.main.fragment_preference_suggestion.*
-import java.lang.reflect.Type
 
 
 class PreferenceSuggestion : Fragment() {
@@ -36,7 +31,11 @@ class PreferenceSuggestion : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         suggestion_ok_btn.setOnClickListener {
-            view.findNavController().navigate(PreferenceSuggestionDirections.actionGlobalMainActivity(true))
+            view.findNavController().navigate(
+                PreferenceSuggestionDirections.actionGlobalMainActivity(
+                    true
+                )
+            )
         }
 
         /*val prefs = PreferenceHelper.defaultPrefs(requireContext())

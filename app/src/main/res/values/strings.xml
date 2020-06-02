@@ -53,4 +53,16 @@
     <string name="confidentiality_politic">Confidentiality politic</string>
     <string name="send_comments">Send comments</string>
     <string name="disconnect">DISCONNECT</string>
+    <string name="new_timenote">New Timenote</string>
+    <string name="take_add_a_picture">TAKE/ADD A PICTURE</string>
+    <string name="choose_a_color">CHOOSE A COLOR</string>
+    <string name="when">When</string>
+    <string name="to">To</string>
+    <string name="where">Where</string>
+    <string name="share_with">Share with</string>
+    <string name="category">Category</string>
+    <string name="none">None</string>
+    <string name="title">Title</string>
+    <string name="preview">Preview</string>
+    <string name="share_to">Share to</string>
 </resources>

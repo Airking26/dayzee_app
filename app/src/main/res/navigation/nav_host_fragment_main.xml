@@ -5,18 +5,22 @@
 
     <fragment
         android:id="@+id/tabHome"
-        android:name="com.timenoteco.timenote.view.TabHome"
+        android:name="com.timenoteco.timenote.view.homeFlow.TabHome"
         android:label="TabHome" />
     <fragment
         android:id="@+id/tabNearby"
-        android:name="com.timenoteco.timenote.view.TabNearby"
+        android:name="com.timenoteco.timenote.view.nearByFlow.TabNearby"
         android:label="TabNearby" />
     <fragment
         android:id="@+id/tabSearch"
-        android:name="com.timenoteco.timenote.view.TabSearch"
+        android:name="com.timenoteco.timenote.view.searchFlow.TabSearch"
         android:label="TabSearch" />
     <fragment
         android:id="@+id/tabProfile"
-        android:name="com.timenoteco.timenote.view.TabProfile"
+        android:name="com.timenoteco.timenote.view.profileFlow.TabProfile"
         android:label="TabProfile" />
+    <fragment
+        android:id="@+id/createTimenote"
+        android:name="com.timenoteco.timenote.view.createTimenoteFlow.TabCreateTimenote"
+        android:label="CreateTimenote" />
 </navigation>

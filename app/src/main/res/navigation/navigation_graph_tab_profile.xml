@@ -6,7 +6,7 @@
     app:startDestination="@id/profile">
     <fragment
         android:id="@+id/profile"
-        android:name="com.timenoteco.timenote.view.Profile"
+        android:name="com.timenoteco.timenote.view.profileFlow.Profile"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" >
         <action
@@ -21,16 +21,27 @@
     </fragment>
     <fragment
         android:id="@+id/profilModify"
-        android:name="com.timenoteco.timenote.view.ProfilModify"
+        android:name="com.timenoteco.timenote.view.profileFlow.ProfilModify"
         android:label="ProfilModify" >
+        <action
+            android:id="@+id/action_profilModify_to_profile"
+            app:popUpTo="@id/profile" />
     </fragment>
     <fragment
         android:id="@+id/profileCalendar"
-        android:name="com.timenoteco.timenote.view.ProfileCalendar"
-        android:label="ProfileCalendar" />
+        android:name="com.timenoteco.timenote.view.profileFlow.ProfileCalendar"
+        android:label="ProfileCalendar" >
+        <action
+            android:id="@+id/action_profileCalendar_to_profile"
+            app:popUpTo="@id/profile" />
+    </fragment>
     <fragment
         android:id="@+id/settings"
-        android:name="com.timenoteco.timenote.view.Settings"
+        android:name="com.timenoteco.timenote.view.profileFlow.Settings"
         android:label="fragment_settings"
-        tools:layout="@layout/fragment_settings" />
+        tools:layout="@layout/fragment_settings" >
+        <action
+            android:id="@+id/action_settings_to_profile"
+            app:popUpTo="@id/profile" />
+    </fragment>
 </navigation>

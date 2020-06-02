@@ -1,22 +1,16 @@
-package com.timenoteco.timenote.view
+package com.timenoteco.timenote.view.profileFlow
 
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import androidx.activity.OnBackPressedCallback
-import androidx.annotation.Nullable
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
-import com.dialog.plus.ui.DatePickerDialog
-import com.dialog.plus.ui.DialogPlus
+import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.dialog.plus.ui.DialogPlusBuilder
 import com.dialog.plus.ui.MultiOptionsDialog
 import com.timenoteco.timenote.R
@@ -35,22 +29,18 @@ class ProfilModify: Fragment(), View.OnClickListener {
     @SuppressLint("RestrictedApi")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        Glide
+            .with(this)
+            .load("https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792")
+            .apply(RequestOptions.circleCropTransform())
+            .into(profile_modify_pic_imageview)
 
         profile_modify_gender.setOnClickListener(this)
         profile_modify_birthday.setOnClickListener(this)
         profile_modify_account_status.setOnClickListener(this)
         profile_modify_format_timenote.setOnClickListener(this)
-        profile_modify_done_btn.setOnClickListener {
-        }
+        profile_modify_done_btn.setOnClickListener(this)
 
-        //profile_modify_done_btn.setOnClickListener {view.findNavController().navigate(ProfilModifyDirections.actionProfilModifyToProfile())}
-    }
-
-    override fun onCreate(@Nullable savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        //val callback: OnBackPressedCallback = object : OnBackPressedCallback(true) { override fun handleOnBackPressed() { view?.findNavController()?.popBackStack(R.id.profile, false) } }
-        //requireActivity().onBackPressedDispatcher.addCallback(this, callback)
     }
 
     override fun onClick(v: View?) {
@@ -60,6 +50,7 @@ class ProfilModify: Fragment(), View.OnClickListener {
                 .buildDatePickerDialog(2020) { pickedYear, pickedMonth, pickedDay -> TODO("Not yet implemented") }.show(childFragmentManager, "")
             profile_modify_account_status -> createDialogPicker(R.string.account_status, listOf("Private", "Public"))
             profile_modify_format_timenote -> createDialogPicker(R.string.timenote_date_format, listOf("X", "Y"))
+            profile_modify_done_btn -> findNavController().navigate(ProfilModifyDirections.actionProfilModifyToProfile())
         }
     }
 

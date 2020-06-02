@@ -1,11 +1,10 @@
-package com.timenoteco.timenote.view
+package com.timenoteco.timenote.view.loginFlow
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.edit
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
@@ -47,13 +46,15 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
     }
 
     private fun setRvAndAdapters(view: View) {
-        chipAdapter = SubCategoryChipAdapter(chips, this)
+        chipAdapter = SubCategoryChipAdapter(
+            chips, this)
         pref_sub_category_rv_chips.apply {
             layoutManager = LinearLayoutManager(view.context, LinearLayoutManager.HORIZONTAL, false)
             adapter = chipAdapter
         }
 
-        cardAdapter = SubCategoryCardAdapter(subcategories, this)
+        cardAdapter = SubCategoryCardAdapter(
+            subcategories, this)
         pref_sub_category_card_rv.apply {
             layoutManager = LinearLayoutManager(view.context)
             adapter = cardAdapter

@@ -6,7 +6,7 @@
     app:startDestination="@id/login">
     <fragment
         android:id="@+id/login"
-        android:name="com.timenoteco.timenote.view.Login"
+        android:name="com.timenoteco.timenote.view.loginFlow.Login"
         android:label="fragment_login"
         tools:layout="@layout/fragment_login" >
         <action
@@ -21,7 +21,7 @@
     </fragment>
     <fragment
         android:id="@+id/preferenceCategory"
-        android:name="com.timenoteco.timenote.view.PreferenceCategory"
+        android:name="com.timenoteco.timenote.view.loginFlow.PreferenceCategory"
         android:label="fragment_preference_category"
         tools:layout="@layout/fragment_preference_category" >
         <action
@@ -40,7 +40,7 @@
         app:startDestination="@id/preferenceSubCategory" >
         <fragment
             android:id="@+id/preferenceSubCategory"
-            android:name="com.timenoteco.timenote.view.PreferenceSubCategory"
+            android:name="com.timenoteco.timenote.view.loginFlow.PreferenceSubCategory"
             android:label="fragment_preference_sub_category"
             tools:layout="@layout/fragment_preference_sub_category">
             <action
@@ -49,7 +49,7 @@
         </fragment>
         <fragment
             android:id="@+id/preferenceSuggestion"
-            android:name="com.timenoteco.timenote.view.PreferenceSuggestion"
+            android:name="com.timenoteco.timenote.view.loginFlow.PreferenceSuggestion"
             android:label="fragment_preference_suggestion"
             tools:layout="@layout/fragment_preference_suggestion" >
             <argument
@@ -63,7 +63,7 @@
     </navigation>
     <activity
         android:id="@+id/mainActivity"
-        android:name="com.timenoteco.timenote.view.host.MainActivity"
+        android:name="com.timenoteco.timenote.view.MainActivity"
         android:label="MainActivity">
         <argument
             android:name="isFromLoginPage"
@@ -71,7 +71,7 @@
     </activity>
     <fragment
         android:id="@+id/signup"
-        android:name="com.timenoteco.timenote.view.Signup"
+        android:name="com.timenoteco.timenote.view.loginFlow.Signup"
         android:label="Signup" >
         <action
             android:id="@+id/action_signup_to_preferenceCategory"

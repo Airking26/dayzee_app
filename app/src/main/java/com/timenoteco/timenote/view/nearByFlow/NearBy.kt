@@ -1,4 +1,4 @@
-package com.timenoteco.timenote.view
+package com.timenoteco.timenote.view.nearByFlow
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
