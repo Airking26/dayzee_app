@@ -15,17 +15,8 @@
         app:layout_constraintBottom_toTopOf="@id/bottomNavView"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar_home"
         app:layout_constraintTop_toTopOf="parent"
         app:navGraph="@navigation/nav_host_fragment_main" />
-
-    <include
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:id="@+id/toolbar_home"
-        layout="@layout/toolbar_home"
-        android:visibility="gone"/>
 
 
     <com.google.android.material.bottomnavigation.BottomNavigationView

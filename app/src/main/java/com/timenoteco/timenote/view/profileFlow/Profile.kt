@@ -32,6 +32,8 @@ class Profile : BaseThroughFragment(), View.OnClickListener {
         profile_modify_btn.setOnClickListener(this)
         profile_calendar_btn.setOnClickListener(this)
         profile_settings_btn.setOnClickListener(this)
+        profile_view_type_btn.setOnClickListener(this)
+        profile_filter_btn.setOnClickListener(this)
 
         events = mutableListOf(
             Event("Beach Party",
@@ -111,6 +113,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener {
                 findNavController().navigate(ProfileDirections.actionProfileToProfilModify())}
             profile_calendar_btn -> findNavController().navigate(ProfileDirections.actionProfileToProfileCalendar())
             profile_settings_btn -> findNavController().navigate(ProfileDirections.actionProfileToSettings())
+            profile_view_type_btn -> eventAdapter.switchViewType()
         }
     }
 
