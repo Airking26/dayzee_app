@@ -7,5 +7,14 @@
     <fragment
         android:id="@+id/nearBy"
         android:name="com.timenoteco.timenote.view.nearByFlow.NearBy"
-        android:label="NearBy" />
+        android:label="NearBy" >
+        <action
+            android:id="@+id/action_nearBy_to_nearbyFilters"
+            app:destination="@id/nearbyFilters" />
+    </fragment>
+    <fragment
+        android:id="@+id/nearbyFilters"
+        android:name="com.timenoteco.timenote.view.nearByFlow.NearbyFilters"
+        android:label="fragment_nearby_filters"
+        tools:layout="@layout/fragment_nearby_filters" />
 </navigation>

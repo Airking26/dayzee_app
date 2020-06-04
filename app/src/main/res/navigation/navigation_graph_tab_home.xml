@@ -8,12 +8,5 @@
         android:id="@+id/home"
         android:name="com.timenoteco.timenote.view.homeFlow.Home"
         android:label="Home" >
-        <action
-            android:id="@+id/action_home_to_fakeFragment"
-            app:destination="@id/fakeFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/fakeFragment"
-        android:name="com.timenoteco.timenote.view.FakeFragment"
-        android:label="FakeFragment" />
 </navigation>

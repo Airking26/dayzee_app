@@ -50,11 +50,36 @@ class MainActivity : AppCompatActivity(){
         controller.observe(this, Observer {
             it.addOnDestinationChangedListener { _, destination, _ ->
                 when(destination.id){
-                    R.id.search -> bottomNavView.visibility = View.VISIBLE
-                    R.id.nearBy -> bottomNavView.visibility = View.VISIBLE
-                    R.id.profile -> bottomNavView.visibility = View.VISIBLE
-                    R.id.home -> bottomNavView.visibility = View.VISIBLE
-                    R.id.createTimenote -> bottomNavView.visibility = View.GONE
+                    R.id.search -> {
+                        toolbar_home.visibility = View.GONE
+                        bottomNavView.visibility = View.VISIBLE}
+                    R.id.nearBy -> {
+                        toolbar_home.visibility = View.GONE
+                        bottomNavView.visibility = View.VISIBLE}
+                    R.id.nearbyFilters -> {
+                        toolbar_home.visibility = View.GONE
+                        bottomNavView.visibility = View.VISIBLE}
+                    R.id.profile -> {
+                        toolbar_home.visibility = View.GONE
+                        bottomNavView.visibility = View.VISIBLE}
+                    R.id.profilModify -> {
+                        toolbar_home.visibility = View.GONE
+                        bottomNavView.visibility = View.VISIBLE}
+                    R.id.profileCalendar -> {
+                        toolbar_home.visibility = View.GONE
+                        bottomNavView.visibility = View.VISIBLE}
+                    R.id.settings -> {
+                        toolbar_home.visibility = View.GONE
+                        bottomNavView.visibility = View.VISIBLE}
+                    R.id.home -> {
+                        toolbar_home.visibility = View.VISIBLE
+                        bottomNavView.visibility = View.VISIBLE}
+                    R.id.createTimenote -> {
+                        toolbar_home.visibility = View.GONE
+                        bottomNavView.visibility = View.GONE}
+                    R.id.previewTimenoteCreated -> {
+                        toolbar_home.visibility = View.GONE
+                        bottomNavView.visibility = View.GONE}
                 }
             }
         })
