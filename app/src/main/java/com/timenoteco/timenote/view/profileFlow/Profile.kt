@@ -17,7 +17,6 @@ import com.timenoteco.timenote.garbage.BaseThroughFragment
 import com.timenoteco.timenote.model.Event
 import kotlinx.android.synthetic.main.fragment_profile.*
 
-
 class Profile : BaseThroughFragment(), View.OnClickListener {
 
     private lateinit var eventAdapter: ListStyleTimenoteAdapter
@@ -27,7 +26,6 @@ class Profile : BaseThroughFragment(), View.OnClickListener {
         getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_profile)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
 
         profile_modify_btn.setOnClickListener(this)
         profile_calendar_btn.setOnClickListener(this)

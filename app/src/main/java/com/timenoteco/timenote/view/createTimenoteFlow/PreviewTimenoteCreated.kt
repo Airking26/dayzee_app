@@ -17,7 +17,6 @@ class PreviewTimenoteCreated : Fragment() {
          inflater.inflate(R.layout.fragment_preview_timenote_created, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        preview_created_timenote_toolbar.elevation = 5.0f
         Glide
             .with(this)
             .load("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg")

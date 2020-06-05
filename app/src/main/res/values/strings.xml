@@ -70,4 +70,7 @@
     <string name="distance">Distance</string>
     <string name="distance_km">Distance (km)</string>
     <string name="timeline">Timeline</string>
+    <string name="see_more">See more</string>
+    <string name="timenote_to_come">TIMENOTE TO COME</string>
+    <string name="posted_recently">POSTED RECENTLY</string>
 </resources>

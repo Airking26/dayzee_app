@@ -9,16 +9,18 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ItemTimenoteRegularAdapter
+import com.timenoteco.timenote.garbage.BaseThroughFragment
 import com.timenoteco.timenote.model.Timenote
 import kotlinx.android.synthetic.main.fragment_home.*
 
-class Home : Fragment() {
+class Home : BaseThroughFragment() {
 
     private var timenotes: List<Timenote> = listOf()
     private lateinit var timenoteAdapter: ItemTimenoteRegularAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        inflater.inflate(R.layout.fragment_home, container, false)
+        getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_home)
+        //inflater.inflate(R.layout.fragment_home, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
@@ -30,9 +32,14 @@ class Home : Fragment() {
                 "23 Herzl Street",
                 "34 Likes",
             "See 63 comments",
-                "#Beach#Sunset#Love#Summer#Dance#Party",
-                true
-            ),            Timenote(
+                "#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party",
+                true,
+                "2020",
+                "10\nAug",
+                "15:30",
+                "Beach Party"
+            ),
+            Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
                 "Samuel",
@@ -40,8 +47,13 @@ class Home : Fragment() {
                 "34 Likes",
             "See 63 comments",
                 "#Beach#Sunset#Love#Summer#Dance#Party",
-                true
-            ),            Timenote(
+                true,
+                "2020",
+                "10\nAug",
+                "15:30",
+                "Beach Party"
+            ),
+            Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
                 "Samuel",
@@ -49,8 +61,13 @@ class Home : Fragment() {
                 "34 Likes",
             "See 63 comments",
                 "#Beach#Sunset#Love#Summer#Dance#Party",
-                true
-            ),            Timenote(
+                true,
+                "2020",
+                "10\nAug",
+                "15:30",
+                "Beach Party"
+            ),
+            Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
                 "Samuel",
@@ -58,8 +75,13 @@ class Home : Fragment() {
                 "34 Likes",
             "See 63 comments",
                 "#Beach#Sunset#Love#Summer#Dance#Party",
-                true
-            ),            Timenote(
+                true,
+                "2020",
+                "10\nAug",
+                "15:30",
+                "Beach Party"
+            ),
+            Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
                 "Samuel",
@@ -67,8 +89,13 @@ class Home : Fragment() {
                 "34 Likes",
             "See 63 comments",
                 "#Beach#Sunset#Love#Summer#Dance#Party",
-                true
-            ),            Timenote(
+                true,
+                "2020",
+                "10\nAug",
+                "15:30",
+                "Beach Party"
+            ),
+            Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
                 "Samuel",
@@ -76,8 +103,13 @@ class Home : Fragment() {
                 "34 Likes",
             "See 63 comments",
                 "#Beach#Sunset#Love#Summer#Dance#Party",
-                true
-            ),            Timenote(
+                true,
+                "2020",
+                "10\nAug",
+                "15:30",
+                "Beach Party"
+            ),
+            Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
                 "Samuel",
@@ -85,8 +117,13 @@ class Home : Fragment() {
                 "34 Likes",
             "See 63 comments",
                 "#Beach#Sunset#Love#Summer#Dance#Party",
-                true
-            ),            Timenote(
+                true,
+                "2020",
+                "10\nAug",
+                "15:30",
+                "Beach Party"
+            ),
+            Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
                 "Samuel",
@@ -94,8 +131,13 @@ class Home : Fragment() {
                 "34 Likes",
             "See 63 comments",
                 "#Beach#Sunset#Love#Summer#Dance#Party",
-                true
-            ),            Timenote(
+                true,
+                "2020",
+                "10\nAug",
+                "15:30",
+                "Beach Party"
+            ),
+            Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
                 "Samuel",
@@ -103,41 +145,18 @@ class Home : Fragment() {
                 "34 Likes",
             "See 63 comments",
                 "#Beach#Sunset#Love#Summer#Dance#Party",
-                true
-            ),            Timenote(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                "Samuel",
-                "23 Herzl Street",
-                "34 Likes",
-            "See 63 comments",
-                "#Beach#Sunset#Love#Summer#Dance#Party",
-                true
-            ),            Timenote(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                "Samuel",
-                "23 Herzl Street",
-                "34 Likes",
-            "See 63 comments",
-                "#Beach#Sunset#Love#Summer#Dance#Party",
-                true
-            ),            Timenote(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                "Samuel",
-                "23 Herzl Street",
-                "34 Likes",
-            "See 63 comments",
-                "#Beach#Sunset#Love#Summer#Dance#Party",
-                true
+                true,
+                "2020",
+                "10\nAug",
+                "15:30",
+                "Beach Party"
             )
         )
-        timenoteAdapter = ItemTimenoteRegularAdapter(timenotes)
+        timenoteAdapter = ItemTimenoteRegularAdapter(timenotes, timenotes)
+
         home_rv.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = timenoteAdapter
         }
-
     }
 }

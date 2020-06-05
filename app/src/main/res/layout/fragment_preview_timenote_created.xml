@@ -55,7 +55,7 @@
 
     <ImageView
         android:layout_marginTop="24dp"
-        android:background="@color/colorTextSecondary"
+        android:background="@android:color/white"
         android:id="@+id/preview_created_timenote_pic_imageview"
         app:layout_constraintTop_toBottomOf="@id/preview_created_timenote_ll"
         app:layout_constraintStart_toStartOf="parent"
@@ -64,6 +64,10 @@
         android:layout_height="300dp"/>
 
     <TextView
+        android:shadowDy="1"
+        android:shadowDx="1"
+        android:shadowRadius="1.5"
+        android:shadowColor="@android:color/black"
         android:id="@+id/preview_created_timenote_title"
         android:textSize="18sp"
         android:text="BEACH PARTY"
@@ -77,6 +81,10 @@
         android:layout_height="wrap_content"/>
 
     <TextView
+        android:shadowDy="1"
+        android:shadowDx="1"
+        android:shadowRadius="1.5"
+        android:shadowColor="@android:color/black"
         android:layout_marginBottom="16dp"
         android:layout_marginStart="104dp"
         android:id="@+id/preview_created_timenote_year"
@@ -90,6 +98,10 @@
         android:layout_height="wrap_content"/>
 
     <TextView
+        android:shadowDy="1"
+        android:shadowDx="1"
+        android:shadowRadius="1.5"
+        android:shadowColor="@android:color/black"
         android:layout_marginBottom="8dp"
         android:id="@+id/separator_1"
         android:background="@android:color/white"
@@ -100,6 +112,10 @@
         android:layout_height="48dp"/>
 
     <TextView
+        android:shadowDy="1"
+        android:shadowDx="1"
+        android:shadowRadius="1.5"
+        android:shadowColor="@android:color/black"
         android:layout_marginBottom="8dp"
         android:textStyle="bold"
         android:gravity="center"
@@ -114,6 +130,10 @@
         android:layout_height="wrap_content"/>
 
     <TextView
+        android:shadowDy="1"
+        android:shadowDx="1"
+        android:shadowRadius="1.5"
+        android:shadowColor="@android:color/black"
         android:layout_marginBottom="8dp"
         android:id="@+id/separator_2"
         android:background="@android:color/white"
@@ -124,6 +144,10 @@
         android:layout_height="48dp"/>
 
     <TextView
+        android:shadowDy="1"
+        android:shadowDx="1"
+        android:shadowRadius="1.5"
+        android:shadowColor="@android:color/black"
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="104dp"
         android:id="@+id/preview_created_timenote_time"
