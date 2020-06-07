@@ -16,36 +16,59 @@ import kotlinx.android.synthetic.main.item_profile_calendar.view.*
 import kotlinx.android.synthetic.main.item_timenote.view.*
 import kotlinx.android.synthetic.main.item_timenote_recent.view.*
 
-class ItemTimenoteRegularAdapter(val timenotes: List<Timenote>, val timenotesToCome: List<Timenote>): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+class ItemTimenoteAdapter(val timenotes: List<Timenote>, val timenotesToCome: List<Timenote>, val isHeterogeneous: Boolean): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     var itemViewType: Int = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return when(viewType){
-            0 -> TimenoteToComeViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.adapter_timenote_recent, parent, false))
-            else -> TimenoteViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_timenote, parent, false))
+        return if(isHeterogeneous) {
+            when (viewType) {
+                0 -> TimenoteToComeViewHolder(
+                    LayoutInflater.from(parent.context)
+                        .inflate(R.layout.adapter_timenote_recent, parent, false)
+                )
+                else -> TimenoteViewHolder(
+                    LayoutInflater.from(parent.context)
+                        .inflate(R.layout.item_timenote, parent, false)
+                )
+            }
+        } else {
+            TimenoteViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_timenote, parent, false))
         }
 
     }
 
     override fun getItemCount(): Int{
-        return when(itemViewType){
-            0 -> timenotesToCome.size
-            else -> timenotes.size
+        return if(isHeterogeneous) {
+            when (itemViewType) {
+                0 -> timenotesToCome.size
+                else -> timenotes.size
+            }
+        } else {
+            timenotes.size
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when(itemViewType){
-            0 -> (holder as TimenoteToComeViewHolder).bindTimenoteTocome(timenotesToCome)
-            else -> (holder as TimenoteViewHolder).bindTimenote(timenotes[position])
+        if(isHeterogeneous){
+            when(itemViewType){
+                0 -> (holder as TimenoteToComeViewHolder).bindTimenoteTocome(timenotesToCome)
+                else -> (holder as TimenoteViewHolder).bindTimenote(timenotes[position])
+            }
+        } else {
+            (holder as TimenoteViewHolder).bindTimenote(timenotes[position])
         }
+
     }
 
 
     override fun getItemViewType(position: Int): Int {
-        itemViewType = position % 4 * 5
-        return itemViewType
+        return if(isHeterogeneous) {
+            itemViewType = position % 4 * 5
+            itemViewType
+        } else {
+            super.getItemViewType(position)
+        }
     }
 
     class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
@@ -111,7 +134,7 @@ class ItemTimenoteToComeAdapter(val timenotesToCome: List<Timenote>): RecyclerVi
                 .into(itemView.timenote_recent_pic_imageview)
 
             itemView.timenote_recent_title.text = timenote.title
-            itemView.timenote_recent_date.text = timenote.date
+            itemView.timenote_recent_date.text = timenote.dateIn
         }
     }
 

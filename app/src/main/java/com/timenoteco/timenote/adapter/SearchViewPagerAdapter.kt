@@ -9,18 +9,16 @@ import com.timenoteco.timenote.view.nearByFlow.TabNearby
 import com.timenoteco.timenote.view.searchFlow.TabSearch
 import com.timenoteco.timenote.view.profileFlow.TabProfile
 
-class ViewPagerAdapter(fm: FragmentManager?, lifecycle: Lifecycle) : FragmentStateAdapter(fm!!, lifecycle) {
+class SearchViewPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
 
     override fun getItemCount(): Int {
-        return 4
+        return 2
     }
 
     override fun createFragment(position: Int): Fragment {
         return when(position){
             0 -> TabHome()
             1 -> TabNearby()
-            2 -> TabSearch()
-            3 -> TabProfile()
             else -> TabHome()
         }
     }

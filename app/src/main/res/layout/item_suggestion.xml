@@ -7,6 +7,7 @@
     xmlns:fancy="http://schemas.android.com/apk/res-auto">
 
     <ImageView
+        android:src="@drawable/beach"
         android:id="@+id/suggestion_imageview"
         android:layout_marginVertical="22dp"
         android:layout_marginStart="26dp"

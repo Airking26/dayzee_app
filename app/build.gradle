@@ -84,9 +84,8 @@ dependencies {
     kapt 'com.android.databinding:compiler:3.2.0-alpha10'
 
     implementation 'com.github.shrikanth7698:Collapsible-Calendar-View-Android:v1.0.3'
-    implementation 'com.ernestoyaquello.dragdropswiperecyclerview:drag-drop-swipe-recyclerview:0.6.0'
 
-    implementation 'com.agilie:swipe2delete:1.0'
+    implementation "com.paulrybitskyi.persistentsearchview:persistentsearchview:1.1.2"
 
 
 }

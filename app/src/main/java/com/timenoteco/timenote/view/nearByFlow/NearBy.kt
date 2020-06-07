@@ -5,11 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.Toolbar
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -17,15 +13,14 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.timenoteco.timenote.R
-import com.timenoteco.timenote.adapter.ItemTimenoteRegularAdapter
+import com.timenoteco.timenote.adapter.ItemTimenoteAdapter
 import com.timenoteco.timenote.model.Timenote
-import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_near_by.*
 
 class NearBy : Fragment() {
 
     private var timenotes: List<Timenote> = listOf()
-    private lateinit var timenoteAdapter: ItemTimenoteRegularAdapter
+    private lateinit var timenoteAdapter: ItemTimenoteAdapter
     private val callback = OnMapReadyCallback { googleMap ->
         val sydney = LatLng(-34.0, 151.0)
         googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
@@ -48,12 +43,13 @@ class NearBy : Fragment() {
                 "23 Herzl Street",
                 "34 Likes",
                 "See 63 comments",
-                "#Beach#Sunset#Love#Summer#Dance#Party",
+                "#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party",
                 true,
                 "2020",
                 "10\nAug",
                 "15:30",
-                "Beach Party"
+                "Beach Party",
+                "In 23 days"
             ),
             Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
@@ -62,12 +58,13 @@ class NearBy : Fragment() {
                 "23 Herzl Street",
                 "34 Likes",
                 "See 63 comments",
-                "#Beach#Sunset#Love#Summer#Dance#Party",
+                "#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party",
                 true,
                 "2020",
                 "10\nAug",
                 "15:30",
-                "Beach Party"
+                "Beach Party",
+                "In 23 days"
             ),
             Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
@@ -76,12 +73,13 @@ class NearBy : Fragment() {
                 "23 Herzl Street",
                 "34 Likes",
                 "See 63 comments",
-                "#Beach#Sunset#Love#Summer#Dance#Party",
+                "#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party",
                 true,
                 "2020",
                 "10\nAug",
                 "15:30",
-                "Beach Party"
+                "Beach Party",
+                "In 23 days"
             ),
             Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
@@ -90,12 +88,13 @@ class NearBy : Fragment() {
                 "23 Herzl Street",
                 "34 Likes",
                 "See 63 comments",
-                "#Beach#Sunset#Love#Summer#Dance#Party",
+                "#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party",
                 true,
                 "2020",
                 "10\nAug",
                 "15:30",
-                "Beach Party"
+                "Beach Party",
+                "In 23 days"
             ),
             Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
@@ -104,12 +103,13 @@ class NearBy : Fragment() {
                 "23 Herzl Street",
                 "34 Likes",
                 "See 63 comments",
-                "#Beach#Sunset#Love#Summer#Dance#Party",
+                "#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party",
                 true,
                 "2020",
                 "10\nAug",
                 "15:30",
-                "Beach Party"
+                "Beach Party",
+                "In 23 days"
             ),
             Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
@@ -118,12 +118,13 @@ class NearBy : Fragment() {
                 "23 Herzl Street",
                 "34 Likes",
                 "See 63 comments",
-                "#Beach#Sunset#Love#Summer#Dance#Party",
+                "#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party",
                 true,
                 "2020",
                 "10\nAug",
                 "15:30",
-                "Beach Party"
+                "Beach Party",
+                "In 23 days"
             ),
             Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
@@ -132,12 +133,13 @@ class NearBy : Fragment() {
                 "23 Herzl Street",
                 "34 Likes",
                 "See 63 comments",
-                "#Beach#Sunset#Love#Summer#Dance#Party",
+                "#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party",
                 true,
                 "2020",
                 "10\nAug",
                 "15:30",
-                "Beach Party"
+                "Beach Party",
+                "In 23 days"
             ),
             Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
@@ -146,12 +148,13 @@ class NearBy : Fragment() {
                 "23 Herzl Street",
                 "34 Likes",
                 "See 63 comments",
-                "#Beach#Sunset#Love#Summer#Dance#Party",
+                "#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party",
                 true,
                 "2020",
                 "10\nAug",
                 "15:30",
-                "Beach Party"
+                "Beach Party",
+                "In 23 days"
             ),
             Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
@@ -160,15 +163,16 @@ class NearBy : Fragment() {
                 "23 Herzl Street",
                 "34 Likes",
                 "See 63 comments",
-                "#Beach#Sunset#Love#Summer#Dance#Party",
+                "#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party",
                 true,
                 "2020",
                 "10\nAug",
                 "15:30",
-                "Beach Party"
+                "Beach Party",
+                "In 23 days"
             )
         )
-        timenoteAdapter = ItemTimenoteRegularAdapter(timenotes, timenotes)
+        timenoteAdapter = ItemTimenoteAdapter(timenotes, timenotes, false)
         nearby_rv.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = timenoteAdapter

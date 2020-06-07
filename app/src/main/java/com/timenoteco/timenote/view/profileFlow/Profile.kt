@@ -13,7 +13,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ListStyleTimenoteAdapter
-import com.timenoteco.timenote.garbage.BaseThroughFragment
+import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.model.Event
 import kotlinx.android.synthetic.main.fragment_profile.*
 

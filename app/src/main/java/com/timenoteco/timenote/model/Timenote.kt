@@ -11,4 +11,5 @@ data class Timenote(val pic_user: String,
                     val year: String,
                     val month: String,
                     val date: String,
-                    val title: String)
+                    val title: String,
+                    val dateIn: String)

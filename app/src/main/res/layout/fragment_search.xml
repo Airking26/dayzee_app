@@ -1,7 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/holo_red_dark"
-    tools:context=".view.searchFlow.Search"/>
+    android:background="@android:color/white"
+    tools:context=".view.searchFlow.Search">
+
+    <com.paulrybitskyi.persistentsearchview.PersistentSearchView
+        app:cardCornerRadius="5dp"
+        app:cardElevation="5dp"
+        app:queryInputBarIconColor="@android:color/darker_gray"
+        app:queryInputHintColor="@android:color/darker_gray"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:isVoiceInputButtonEnabled="false"
+        app:isProgressBarEnabled="true"
+        app:isDismissableOnTouchOutside="true"
+        android:id="@+id/persistent_searchview"
+        android:padding="4dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <com.google.android.material.tabs.TabLayout
+        app:layout_constraintTop_toBottomOf="@id/persistent_searchview"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/search_tablayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/search_viewpager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/search_tablayout"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

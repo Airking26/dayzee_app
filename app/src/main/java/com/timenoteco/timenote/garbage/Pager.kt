@@ -1,23 +1,5 @@
 package com.timenoteco.timenote.garbage
 
-import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManager
-import androidx.navigation.Navigation
-import androidx.navigation.ui.NavigationUI
-import androidx.viewpager.widget.ViewPager
-import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.timenoteco.timenote.R
-import com.timenoteco.timenote.adapter.ViewPagerAdapter
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_pager.*
-
 
 /*class Pager : Fragment() {
 

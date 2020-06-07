@@ -1,4 +1,4 @@
-package com.timenoteco.timenote.garbage
+package com.timenoteco.timenote.common
 
 import android.os.Bundle
 import android.view.LayoutInflater

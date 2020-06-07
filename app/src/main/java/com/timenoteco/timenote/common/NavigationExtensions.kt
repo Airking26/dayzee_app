@@ -1,4 +1,4 @@
-package com.timenoteco.timenote.garbage
+package com.timenoteco.timenote.common
 
 import android.content.Intent
 import android.util.SparseArray
@@ -36,12 +36,13 @@ fun BottomNavigationView.setupWithNavController(
         val fragmentTag = getFragmentTag(index)
 
         // Find or create the Navigation host fragment
-        val navHostFragment = obtainNavHostFragment(
-            fragmentManager,
-            fragmentTag,
-            navGraphId,
-            containerId
-        )
+        val navHostFragment =
+            obtainNavHostFragment(
+                fragmentManager,
+                fragmentTag,
+                navGraphId,
+                containerId
+            )
 
         // Obtain its id
         val graphId = navHostFragment.navController.graph.id
@@ -57,9 +58,16 @@ fun BottomNavigationView.setupWithNavController(
         if (this.selectedItemId == graphId) {
             // Update livedata with the selected graph
             selectedNavController.value = navHostFragment.navController
-            attachNavHostFragment(fragmentManager, navHostFragment, index == 0)
+            attachNavHostFragment(
+                fragmentManager,
+                navHostFragment,
+                index == 0
+            )
         } else {
-            detachNavHostFragment(fragmentManager, navHostFragment)
+            detachNavHostFragment(
+                fragmentManager,
+                navHostFragment
+            )
         }
     }
 
@@ -149,12 +157,13 @@ private fun BottomNavigationView.setupDeepLinks(
         val fragmentTag = getFragmentTag(index)
 
         // Find or create the Navigation host fragment
-        val navHostFragment = obtainNavHostFragment(
-            fragmentManager,
-            fragmentTag,
-            navGraphId,
-            containerId
-        )
+        val navHostFragment =
+            obtainNavHostFragment(
+                fragmentManager,
+                fragmentTag,
+                navGraphId,
+                containerId
+            )
         // Handle Intent
         if (navHostFragment.navController.handleDeepLink(intent)
             && selectedItemId != navHostFragment.navController.graph.id) {
