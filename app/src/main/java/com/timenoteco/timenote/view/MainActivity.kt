@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity(){
                     R.id.nearBy -> bottomNavView.visibility = View.VISIBLE
                     R.id.profile -> bottomNavView.visibility = View.VISIBLE
                     R.id.home -> bottomNavView.visibility = View.VISIBLE
-                    R.id.createTimenote -> bottomNavView.visibility = View.VISIBLE
+                    R.id.createTimenote -> bottomNavView.visibility = View.GONE
 
                 }
             }
