@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity(){
         controller.observe(this, Observer {
             it.addOnDestinationChangedListener { _, destination, _ ->
                 when(destination.id){
-                    R.id.search -> bottomNavView.visibility = View.VISIBLE
+                    R.id.search -> bottomNavView.visibility = View.GONE
                     R.id.nearBy -> bottomNavView.visibility = View.VISIBLE
                     R.id.profile -> bottomNavView.visibility = View.VISIBLE
                     R.id.home -> bottomNavView.visibility = View.VISIBLE
