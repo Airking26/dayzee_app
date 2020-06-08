@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -9,21 +10,23 @@
         android:id="@+id/search_explore_category"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingTop="16dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="4dp"
         android:textSize="17sp"
-        android:textColor="@color/colorTextSecondary"
+        android:textColor="@color/colorText"
+        app:layout_constraintBottom_toBottomOf="@id/search_explore_divider"
         tools:text="CULTURE"
         android:textAllCaps="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
     <ImageView
+        app:layout_constraintBottom_toBottomOf="@id/search_explore_divider"
         android:id="@+id/search_explore_see_subcategory"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:padding="16dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="4dp"
         android:src="@drawable/ic_keyboard_arrow_down_black_24dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>

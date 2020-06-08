@@ -28,7 +28,7 @@ class Search : Fragment() {
             }
         }.attach()
 
-        with(persistent_searchview) {
+       /* with(persistent_searchview) {
             setOnLeftBtnClickListener {
                 // Handle the left button click
             }
@@ -38,9 +38,7 @@ class Search : Fragment() {
 
 
             setOnSearchConfirmedListener { searchView, query ->
-                // Handle a search confirmation. This is the place where you'd
-                // want to save a new query and perform a search against your
-                // data provider.
+
             }
 
             setOnSearchQueryChangeListener { searchView, oldQuery, newQuery ->
@@ -61,7 +59,7 @@ class Search : Fragment() {
                 }
 
             })
-        }
+        }*/
     }
 
 }

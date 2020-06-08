@@ -69,8 +69,10 @@ class SearchExploreCategoryAdapter(val explores: Map<String, List<String>>, val 
 }
 
 class SearchExploreSubCategoryAdapter(
-    val subCategory: List<String>,
-    val subCategoryListener: SearchExploreCategoryAdapter.SearchSubCategoryListener
+
+    private val subCategory: List<String>,
+    private val subCategoryListener: SearchExploreCategoryAdapter.SearchSubCategoryListener
+
 ): RecyclerView.Adapter<SearchExploreSubCategoryAdapter.ItemSearchExploreHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemSearchExploreHolder =
