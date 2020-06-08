@@ -8,49 +8,41 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.SuggestionAdapter
+import com.timenoteco.timenote.adapter.SuggestionItemAdapter
 import com.timenoteco.timenote.model.UserSuggested
-import kotlinx.android.synthetic.main.fragment_search_top.*
+import kotlinx.android.synthetic.main.fragment_search_explore_clicked.*
 
-class SearchTop: Fragment(), SuggestionAdapter.SuggestionItemListener {
+class SearchExploreClicked: Fragment(), SuggestionAdapter.SuggestionItemListener {
 
-    private lateinit var topAdapter: SuggestionAdapter
-    private var tops: Map<String, List<UserSuggested>> = mapOf()
+    private var suggestions: List<UserSuggested> = listOf()
+    private lateinit var suggestionItemAdapter: SuggestionItemAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        inflater.inflate(R.layout.fragment_search_top, container, false)
+        inflater.inflate(R.layout.fragment_search_explore_clicked, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        tops = mapOf(
-            "Football" to listOf(UserSuggested(
+        suggestions = listOf(UserSuggested(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-            "Ligue 1",
-            false),UserSuggested(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-            "Ligue 1",
-            false),UserSuggested(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-            "Ligue 1",
-            false),UserSuggested(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-            "Ligue 1",
-            false)),
-            "Music" to listOf(UserSuggested(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                "Techno",
+                "Ligue 1",
                 false),UserSuggested(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                "Techno",
+                "Ligue 1",
                 false),UserSuggested(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                "Techno",
-                false)))
-        topAdapter = SuggestionAdapter(tops, this)
-        search_top_rv.apply {
+                "Ligue 1",
+                false),UserSuggested(
+                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
+                "Ligue 1",
+                false))
+
+        suggestionItemAdapter = SuggestionItemAdapter(suggestions, this)
+        search_explore_clicked_rv.apply {
             layoutManager = LinearLayoutManager(view.context)
-            adapter = topAdapter
+            adapter = suggestionItemAdapter
         }
     }
 
     override fun onItemSelected() {
+
     }
 }

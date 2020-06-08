@@ -10,4 +10,17 @@
         android:name="com.timenoteco.timenote.view.searchFlow.Search"
         android:label="fragment_search"
         tools:layout="@layout/fragment_search" />
+    <fragment
+        android:id="@+id/searchExplore"
+        android:name="com.timenoteco.timenote.view.searchFlow.SearchExplore"
+        android:label="SearchExplore" />
+    <fragment
+        android:id="@+id/searchExploreClicked"
+        android:name="com.timenoteco.timenote.view.searchFlow.SearchExploreClicked"
+        android:label="SearchExploreClicked" />
+    <fragment
+        android:id="@+id/searchTop"
+        android:name="com.timenoteco.timenote.view.searchFlow.SearchTop"
+        android:label="SearchTop" />
+    <action android:id="@+id/action_global_searchExploreClicked" app:destination="@id/searchExploreClicked" />
 </navigation>

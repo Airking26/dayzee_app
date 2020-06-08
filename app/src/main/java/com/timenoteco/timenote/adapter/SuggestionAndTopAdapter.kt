@@ -30,12 +30,13 @@ class SuggestionAdapter(private var suggestions: Map<String, List<UserSuggested>
     class CardViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
         fun bindSuggestions(suggestions: Map<String, List<UserSuggested>>, position: Int, listener: SuggestionItemListener) {
+            itemView.suggestion_title_category.text = suggestions.keys.elementAt(position)
+
             itemView.suggestion_rv.apply {
                 layoutManager = LinearLayoutManager(itemView.context)
                 isNestedScrollingEnabled = false
+                adapter = SuggestionItemAdapter(suggestions.values.elementAt(position), listener)
             }
-            itemView.suggestion_title_category.text = suggestions.keys.elementAt(position)
-            itemView.suggestion_rv.adapter = SuggestionItemAdapter(suggestions.values.elementAt(position), listener)
         }
 
     }
