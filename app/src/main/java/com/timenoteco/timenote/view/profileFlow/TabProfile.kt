@@ -1,25 +1,11 @@
 package com.timenoteco.timenote.view.profileFlow
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
-import androidx.annotation.Nullable
 import androidx.fragment.app.Fragment
-import androidx.navigation.Navigation
-import androidx.navigation.Navigation.findNavController
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.plusAssign
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.NavigationUI
-import androidx.navigation.ui.setupWithNavController
 import com.timenoteco.timenote.R
-import com.timenoteco.timenote.garbage.KeepStateNavigator
-import kotlinx.android.synthetic.main.fragment_tab_profile.*
 
 class TabProfile: Fragment() {
 

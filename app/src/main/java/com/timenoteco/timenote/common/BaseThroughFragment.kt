@@ -17,7 +17,6 @@ open class BaseThroughFragment : Fragment(){
         } else {
             (rootView?.parent as? ViewGroup)?.removeView(rootView)
         }
-
         return rootView
     }
 }

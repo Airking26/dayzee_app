@@ -32,12 +32,7 @@ class SearchExploreCategoryAdapter(val explores: Map<String, List<String>>, val 
 
         var expanded : Boolean = false
 
-        fun bindCategory(
-            list: Map<String, List<String>>,
-            position: Int,
-            categoryListener: SearchCategoryListener,
-            subCategoryListener: SearchSubCategoryListener
-        ) {
+        fun bindCategory(list: Map<String, List<String>>, position: Int, categoryListener: SearchCategoryListener, subCategoryListener: SearchSubCategoryListener) {
             itemView.search_explore_category.text = list.keys.elementAt(position)
             itemView.search_explore_category.setOnClickListener { categoryListener.onCategorySelected() }
             if(list.values.elementAt(position).isNullOrEmpty()) {

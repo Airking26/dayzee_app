@@ -10,14 +10,20 @@
 
     <com.mancj.materialsearchbar.MaterialSearchBar
         app:mt_roundedSearchBarEnabled="true"
-        android:padding="12dp"
-        app:mt_searchBarColor="#03DAC5"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="16dp"
+        app:mt_searchBarColor="@android:color/darker_gray"
         app:mt_searchIconTint="@android:color/white"
         app:mt_placeholderColor="@android:color/white"
+        app:mt_backIconTint="@android:color/white"
+        app:mt_hintColor="@android:color/white"
+        app:mt_textColor="@android:color/white"
         app:mt_placeholder="Search"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:mt_clearIconTint="@android:color/white"
+        app:mt_borderlessRippleEnabled="true"
         style="@style/MaterialSearchBarLight"
         app:mt_speechMode="false"
         app:mt_hint="Search People, Tags..."
@@ -27,7 +33,6 @@
         android:id="@+id/searchBar" />
 
     <com.google.android.material.tabs.TabLayout
-        android:layout_marginTop="8dp"
         app:layout_constraintTop_toBottomOf="@id/searchBar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -49,9 +49,10 @@
         android:layout_height="wrap_content"/>
 
     <ImageView
+        android:src="@drawable/beach"
+        android:background="#20aaaaaa"
         android:scaleType="centerCrop"
         android:id="@+id/timenote_pic_imageview"
-        android:src="@drawable/beach"
         android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -94,17 +95,13 @@
         android:layout_height="wrap_content"/>
 
     <TextView
-        android:shadowDy="1"
-        android:shadowDx="1"
-        android:shadowRadius="1.5"
-        android:shadowColor="@android:color/black"
+        android:background="@drawable/custom"
         android:layout_marginBottom="8dp"
         android:id="@+id/separator_1"
-        android:background="@android:color/white"
         app:layout_constraintEnd_toStartOf="@id/timenote_day_month"
         app:layout_constraintStart_toEndOf="@id/timenote_year"
         app:layout_constraintBottom_toBottomOf="@id/timenote_pic_imageview"
-        android:layout_width="1dp"
+        android:layout_width="2dp"
         android:layout_height="48dp"/>
 
     <TextView
@@ -125,17 +122,13 @@
         android:layout_height="wrap_content"/>
 
     <TextView
-        android:shadowDy="1"
-        android:shadowDx="1"
-        android:shadowRadius="1.5"
-        android:shadowColor="@android:color/black"
+        android:background="@drawable/custom"
         android:layout_marginBottom="8dp"
         android:id="@+id/separator_2"
-        android:background="@android:color/white"
         app:layout_constraintEnd_toStartOf="@id/timenote_time"
         app:layout_constraintStart_toEndOf="@id/timenote_day_month"
         app:layout_constraintBottom_toBottomOf="@id/timenote_pic_imageview"
-        android:layout_width="1dp"
+        android:layout_width="2dp"
         android:layout_height="48dp"/>
 
     <TextView

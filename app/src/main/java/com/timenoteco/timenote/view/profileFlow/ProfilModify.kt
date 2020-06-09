@@ -16,6 +16,7 @@ import com.dialog.plus.ui.MultiOptionsDialog
 import com.timenoteco.timenote.R
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_profil_modify.*
+import kotlinx.android.synthetic.main.fragment_profile.*
 
 
 class ProfilModify: Fragment(), View.OnClickListener {
