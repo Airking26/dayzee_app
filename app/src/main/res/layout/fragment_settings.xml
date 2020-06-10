@@ -244,12 +244,33 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
+                android:id="@+id/card_line_6"
+                app:layout_constraintTop_toBottomOf="@id/push_notification_certified_cl"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:background="#60000000"
+                android:layout_width="match_parent"
+                android:layout_height="0.1dp"/>
+
+            <TextView
+                android:id="@+id/profile_settings_notification_manager"
+                android:background="#20aaaaaa"
+                android:padding="16dp"
+                android:textColor="@android:color/black"
+                android:text="@string/notification_manager_settings"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/card_line_6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <TextView
                 android:id="@+id/default_settings_label"
                 android:textColor="@android:color/black"
                 android:text="@string/default_settings"
                 android:textAllCaps="true"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/push_notification_certified_cl"
+                app:layout_constraintTop_toBottomOf="@id/profile_settings_notification_manager"
                 android:layout_marginTop="24dp"
                 android:layout_marginStart="16dp"
                 android:layout_width="wrap_content"

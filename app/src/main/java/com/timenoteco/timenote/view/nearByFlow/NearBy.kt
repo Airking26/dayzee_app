@@ -17,7 +17,7 @@ import com.timenoteco.timenote.adapter.ItemTimenoteAdapter
 import com.timenoteco.timenote.model.Timenote
 import kotlinx.android.synthetic.main.fragment_near_by.*
 
-class NearBy : Fragment() {
+class NearBy : Fragment(), ItemTimenoteAdapter.CommentListener {
 
     private var timenotes: List<Timenote> = listOf()
     private lateinit var timenoteAdapter: ItemTimenoteAdapter
@@ -172,12 +172,16 @@ class NearBy : Fragment() {
                 "In 23 days"
             )
         )
-        timenoteAdapter = ItemTimenoteAdapter(timenotes, timenotes, false)
+        timenoteAdapter = ItemTimenoteAdapter(timenotes, timenotes, false, this)
         nearby_rv.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = timenoteAdapter
         }
 
+    }
+
+    override fun onCommentClicked() {
+        //findNavController().navigate(R.id.action_global_comments)
     }
 
 }

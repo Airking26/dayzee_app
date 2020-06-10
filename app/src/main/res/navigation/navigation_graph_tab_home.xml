@@ -8,5 +8,13 @@
         android:id="@+id/home"
         android:name="com.timenoteco.timenote.view.homeFlow.Home"
         android:label="Home" >
+        <action
+            android:id="@+id/action_home_to_comments"
+            app:destination="@id/comments" />
     </fragment>
+    <fragment
+        android:id="@+id/comments"
+        android:name="com.timenoteco.timenote.view.homeFlow.Comments"
+        android:label="fragment_comments"
+        tools:layout="@layout/fragment_comments" />
 </navigation>

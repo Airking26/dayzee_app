@@ -12,20 +12,26 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
-import com.timenoteco.timenote.adapter.ListStyleTimenoteAdapter
+import com.timenoteco.timenote.adapter.ItemProfileEventAdapter
 import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.model.Event
 import kotlinx.android.synthetic.main.fragment_profile.*
 
 class Profile : BaseThroughFragment(), View.OnClickListener {
 
-    private lateinit var eventAdapter: ListStyleTimenoteAdapter
+    private lateinit var eventAdapter: ItemProfileEventAdapter
     private var events: MutableList<Event> = mutableListOf()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?  =
         getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_profile)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        Glide
+            .with(this)
+            .load("https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792")
+            .apply(RequestOptions.circleCropTransform())
+            .into(profile_pic_imageview)
 
         profile_modify_btn.setOnClickListener(this)
         profile_calendar_btn.setOnClickListener(this)
@@ -74,7 +80,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener {
                 "Dans 25 jours")
         )
 
-        eventAdapter = ListStyleTimenoteAdapter(events)
+        eventAdapter = ItemProfileEventAdapter(events)
 
         profile_rv.apply {
             layoutManager = LinearLayoutManager(view.context)
@@ -102,14 +108,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when(v){
-            profile_modify_btn -> {
-                Glide
-                    .with(this)
-                    .load("https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792")
-                    .apply(RequestOptions.circleCropTransform())
-                    .into(profile_pic_imageview)
-
-                findNavController().navigate(ProfileDirections.actionProfileToProfilModify())}
+            profile_modify_btn -> findNavController().navigate(ProfileDirections.actionProfileToProfilModify())
             profile_calendar_btn -> findNavController().navigate(ProfileDirections.actionProfileToProfileCalendar())
             profile_settings_btn -> findNavController().navigate(ProfileDirections.actionProfileToSettings())
             profile_notif_btn -> findNavController().navigate(ProfileDirections.actionProfileToNotifications())

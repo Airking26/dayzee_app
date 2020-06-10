@@ -38,10 +38,19 @@
         android:id="@+id/settings"
         android:name="com.timenoteco.timenote.view.profileFlow.Settings"
         android:label="fragment_settings"
-        tools:layout="@layout/fragment_settings" />
+        tools:layout="@layout/fragment_settings" >
+        <action
+            android:id="@+id/action_settings_to_notificationManager"
+            app:destination="@id/notificationManager" />
+    </fragment>
     <fragment
         android:id="@+id/notifications"
         android:name="com.timenoteco.timenote.view.profileFlow.Notifications"
         android:label="fragment_notifications"
         tools:layout="@layout/fragment_notifications" />
+    <fragment
+        android:id="@+id/notificationManager"
+        android:name="com.timenoteco.timenote.view.profileFlow.NotificationManager"
+        android:label="fragment_notification_manager"
+        tools:layout="@layout/fragment_notification_manager" />
 </navigation>

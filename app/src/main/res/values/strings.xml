@@ -74,4 +74,8 @@
     <string name="timenote_to_come">TIMENOTE TO COME</string>
     <string name="posted_recently">POSTED RECENTLY</string>
     <string name="notifications">Notifications</string>
+    <string name="notification_manager">Notification Manager</string>
+    <string name="allow_notifications_for">Allow notifications for :</string>
+    <string name="notification_manager_settings">Notification manager</string>
+    <string name="comments">Comments</string>
 </resources>

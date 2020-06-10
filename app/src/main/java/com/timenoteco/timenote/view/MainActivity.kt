@@ -53,6 +53,7 @@ class MainActivity : AppCompatActivity(){
                     R.id.profile -> bottomNavView.visibility = View.VISIBLE
                     R.id.home -> bottomNavView.visibility = View.VISIBLE
                     R.id.createTimenote -> bottomNavView.visibility = View.GONE
+                    R.id.comments -> bottomNavView.visibility = View.GONE
 
                 }
             }

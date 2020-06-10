@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.item_profile_timenote_grid_style.view.*
 import kotlinx.android.synthetic.main.item_profile_timenote_list_style.view.*
 import kotlinx.android.synthetic.main.item_suggestion.view.*
 
-class ListStyleTimenoteAdapter(private var events: List<Event>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ItemProfileEventAdapter(private var events: List<Event>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var style: Int = 0
 

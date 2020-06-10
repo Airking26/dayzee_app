@@ -28,17 +28,11 @@ class SubCategoryChipAdapter(private val chips: MutableList<String>, private val
     }
 
     class ChipViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-
-        fun bindChip(
-            name: String,
-            listener: SubCategoryChipListener,
-            position: Int
-        ) {
+        fun bindChip(name: String, listener: SubCategoryChipListener, position: Int) {
             itemView.chip.text = name
             itemView.chip.onCloseClickListener = OnCloseClickListener {
                 listener.onCloseChip(name)
             }
         }
-
     }
 }
