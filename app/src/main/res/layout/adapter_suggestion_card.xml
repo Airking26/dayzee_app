@@ -20,24 +20,27 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="10dp"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="24dp"
             android:textColor="@color/colorText"
             android:textSize="24sp"
             android:paddingBottom="8dp"
-            android:paddingStart="17dp"
+            android:paddingStart="8dp"
             android:paddingEnd="0dp"
             tools:text="Sports"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
         <androidx.recyclerview.widget.RecyclerView
-            tools:listitem="@layout/item_suggestion"
+            android:clipToPadding="false"
+            android:paddingBottom="8dp"
             android:id="@+id/suggestion_rv"
-            app:layout_constraintTop_toBottomOf="@id/suggestion_title_category"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/suggestion_title_category"
+            tools:listitem="@layout/item_suggestion" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

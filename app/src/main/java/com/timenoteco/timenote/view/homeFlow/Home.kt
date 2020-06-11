@@ -11,8 +11,9 @@ import com.timenoteco.timenote.adapter.ItemTimenoteAdapter
 import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.model.Timenote
 import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.item_timenote.*
 
-class Home : BaseThroughFragment(), ItemTimenoteAdapter.CommentListener {
+class Home : BaseThroughFragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdapter.PlusListener {
 
     private var timenotes: List<Timenote> = listOf()
     private lateinit var timenoteAdapter: ItemTimenoteAdapter
@@ -160,7 +161,7 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.CommentListener {
                 "In 23 days"
             )
         )
-        timenoteAdapter = ItemTimenoteAdapter(timenotes, timenotes, true, this)
+        timenoteAdapter = ItemTimenoteAdapter(timenotes, timenotes, true, this, this)
 
         home_rv.apply {
             layoutManager = LinearLayoutManager(context)
@@ -170,5 +171,10 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.CommentListener {
 
     override fun onCommentClicked() {
         findNavController().navigate(HomeDirections.actionHomeToComments())
+    }
+
+
+    override fun onPlusClicked() {
+        findNavController().navigate(HomeDirections.actionHomeToDetailedTimenote())
     }
 }

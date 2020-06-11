@@ -8,8 +8,8 @@
     <ImageView
         android:src="@drawable/beach"
         android:id="@+id/notification_user_pic_imageview"
-        android:layout_marginVertical="12dp"
-        android:layout_marginStart="12dp"
+        android:layout_marginVertical="4dp"
+        android:layout_marginStart="8dp"
         android:layout_width="36dp"
         android:layout_height="36dp"
         app:layout_constraintBottom_toBottomOf="parent"

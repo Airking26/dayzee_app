@@ -87,4 +87,6 @@ dependencies {
 
     implementation "com.paulrybitskyi.persistentsearchview:persistentsearchview:1.1.2"
     implementation 'com.github.mancj:MaterialSearchBar:0.8.5'
+
+    implementation 'com.github.noowenz:CustomDateTimePicker:1.01'
 }

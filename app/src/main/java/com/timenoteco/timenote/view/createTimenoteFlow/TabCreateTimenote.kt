@@ -17,12 +17,4 @@ class TabCreateTimenote: Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_tab_create_timenote, container, false)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val navHostFragment = childFragmentManager.findFragmentById(R.id.tab_create_timenote_nav_host_fragment) as NavHostFragment
-        val navController = navHostFragment.navController
-        val appBarConfig = AppBarConfiguration(navController.graph)
-        tab_create_timenote_toolbar.setupWithNavController(navController, appBarConfig)
-    }
-
 }

@@ -13,10 +13,16 @@ import kotlinx.android.synthetic.main.adapter_timenote_recent.view.*
 import kotlinx.android.synthetic.main.item_timenote.view.*
 import kotlinx.android.synthetic.main.item_timenote_recent.view.*
 
-class ItemTimenoteAdapter(val timenotes: List<Timenote>, val timenotesToCome: List<Timenote>, val isHeterogeneous: Boolean, val commentListener: CommentListener): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+class ItemTimenoteAdapter(val timenotes: List<Timenote>, val timenotesToCome: List<Timenote>,
+                          val isHeterogeneous: Boolean, val commentListener: CommentListener, val plusListener: PlusListener)
+    : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     interface CommentListener{
         fun onCommentClicked()
+    }
+
+    interface PlusListener{
+        fun onPlusClicked()
     }
 
     var itemViewType: Int = 0
@@ -54,10 +60,14 @@ class ItemTimenoteAdapter(val timenotes: List<Timenote>, val timenotesToCome: Li
         if(isHeterogeneous){
             when(itemViewType){
                 0 -> (holder as TimenoteToComeViewHolder).bindTimenoteTocome(timenotesToCome)
-                else -> (holder as TimenoteViewHolder).bindTimenote(timenotes[position], commentListener)
+                else -> (holder as TimenoteViewHolder).bindTimenote(timenotes[position], commentListener, plusListener)
             }
         } else {
-            (holder as TimenoteViewHolder).bindTimenote(timenotes[position], commentListener)
+            (holder as TimenoteViewHolder).bindTimenote(
+                timenotes[position],
+                commentListener,
+                plusListener
+            )
         }
 
     }
@@ -77,7 +87,8 @@ class ItemTimenoteAdapter(val timenotes: List<Timenote>, val timenotesToCome: Li
 
         fun bindTimenote(
             timenote: Timenote,
-            commentListener: CommentListener
+            commentListener: CommentListener,
+            plusListener: PlusListener
         ) {
 
             Glide
@@ -100,6 +111,7 @@ class ItemTimenoteAdapter(val timenotes: List<Timenote>, val timenotesToCome: Li
             itemView.timenote_day_month.text = timenote.month
             itemView.timenote_time.text = timenote.date
             itemView.timenote_comment.setOnClickListener { commentListener.onCommentClicked() }
+            itemView.timenote_plus.setOnClickListener { plusListener.onPlusClicked() }
 
         }
 

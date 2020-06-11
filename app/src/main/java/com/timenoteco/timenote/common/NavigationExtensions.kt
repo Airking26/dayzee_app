@@ -17,12 +17,7 @@ import com.timenoteco.timenote.R
  *
  * This sample is a workaround until the Navigation Component supports multiple back stacks.
  */
-fun BottomNavigationView.setupWithNavController(
-    navGraphIds: List<Int>,
-    fragmentManager: FragmentManager,
-    containerId: Int,
-    intent: Intent
-): LiveData<NavController> {
+fun BottomNavigationView.setupWithNavController(navGraphIds: List<Int>, fragmentManager: FragmentManager, containerId: Int, intent: Intent): LiveData<NavController> {
 
     // Map of tags
     val graphIdToTagMap = SparseArray<String>()
@@ -36,8 +31,7 @@ fun BottomNavigationView.setupWithNavController(
         val fragmentTag = getFragmentTag(index)
 
         // Find or create the Navigation host fragment
-        val navHostFragment =
-            obtainNavHostFragment(
+        val navHostFragment = obtainNavHostFragment(
                 fragmentManager,
                 fragmentTag,
                 navGraphId,
@@ -147,12 +141,7 @@ fun BottomNavigationView.setupWithNavController(
     return selectedNavController
 }
 
-private fun BottomNavigationView.setupDeepLinks(
-    navGraphIds: List<Int>,
-    fragmentManager: FragmentManager,
-    containerId: Int,
-    intent: Intent
-) {
+private fun BottomNavigationView.setupDeepLinks(navGraphIds: List<Int>, fragmentManager: FragmentManager,containerId: Int, intent: Intent) {
     navGraphIds.forEachIndexed { index, navGraphId ->
         val fragmentTag = getFragmentTag(index)
 
@@ -172,10 +161,7 @@ private fun BottomNavigationView.setupDeepLinks(
     }
 }
 
-private fun BottomNavigationView.setupItemReselected(
-    graphIdToTagMap: SparseArray<String>,
-    fragmentManager: FragmentManager
-) {
+private fun BottomNavigationView.setupItemReselected(graphIdToTagMap: SparseArray<String>, fragmentManager: FragmentManager) {
     setOnNavigationItemReselectedListener { item ->
         val newlySelectedItemTag = graphIdToTagMap[item.itemId]
         val selectedFragment = fragmentManager.findFragmentByTag(newlySelectedItemTag)
@@ -188,20 +174,13 @@ private fun BottomNavigationView.setupItemReselected(
     }
 }
 
-private fun detachNavHostFragment(
-    fragmentManager: FragmentManager,
-    navHostFragment: NavHostFragment
-) {
+private fun detachNavHostFragment(fragmentManager: FragmentManager, navHostFragment: NavHostFragment) {
     fragmentManager.beginTransaction()
         .detach(navHostFragment)
         .commitNow()
 }
 
-private fun attachNavHostFragment(
-    fragmentManager: FragmentManager,
-    navHostFragment: NavHostFragment,
-    isPrimaryNavFragment: Boolean
-) {
+private fun attachNavHostFragment(fragmentManager: FragmentManager, navHostFragment: NavHostFragment, isPrimaryNavFragment: Boolean) {
     fragmentManager.beginTransaction()
         .attach(navHostFragment)
         .apply {
@@ -213,12 +192,7 @@ private fun attachNavHostFragment(
 
 }
 
-private fun obtainNavHostFragment(
-    fragmentManager: FragmentManager,
-    fragmentTag: String,
-    navGraphId: Int,
-    containerId: Int
-): NavHostFragment {
+private fun obtainNavHostFragment(fragmentManager: FragmentManager, fragmentTag: String, navGraphId: Int, containerId: Int): NavHostFragment {
     // If the Nav Host fragment exists, return it
     val existingFragment = fragmentManager.findFragmentByTag(fragmentTag) as NavHostFragment?
     existingFragment?.let { return it }
