@@ -10,51 +10,28 @@
 
      <LinearLayout
          android:id="@+id/profile_ll"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+         style="@style/AppTheme.Toolbar.LinearLayout">
 
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/pref_sub_category_toolbar"
-                style="@style/AppTheme.Toolbar"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark"
-                tools:ignore="MissingConstraints">
+            <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
 
                 <TextView
                     android:id="@+id/profile_name_toolbar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:textColor="@color/colorText"
-                    android:textSize="17sp"
+                    style="@style/AppTheme.Toolbar.Title"
                     android:text="Ronny" />
 
                 <ImageView
                     android:id="@+id/profile_settings_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:layout_marginEnd="16dp"
+                    style="@style/AppTheme.Toolbar.ImageRight"
                     android:src="@drawable/ic_settings_black_24dp" />
 
                 <ImageView
                     android:id="@+id/profile_notif_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start"
+                    style="@style/AppTheme.Toolbar.ImageLeft"
                     android:src="@drawable/ic_flag_black_24dp" />
 
             </androidx.appcompat.widget.Toolbar>
 
-         <TextView
-             app:layout_constraintStart_toStartOf="parent"
-             app:layout_constraintEnd_toEndOf="parent"
-             android:background="#60000000"
-             android:layout_width="match_parent"
-             android:layout_height="0.1dp"/>
+         <TextView style="@style/AppTheme.Divider.Toolbar"/>
 
         </LinearLayout>
 
@@ -208,15 +185,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
-        <View
-            android:id="@+id/view_demarcation"
-            android:layout_marginTop="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/profile_arrow_back_btn"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@drawable/too" />
+    <TextView
+        app:layout_constraintTop_toBottomOf="@id/profile_arrow_back_btn"
+        android:id="@+id/view_demarcation"
+        android:layout_marginTop="8dp"
+        style="@style/AppTheme.Divider.Toolbar"/>
+    
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/profile_rv"

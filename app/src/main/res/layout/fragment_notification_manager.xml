@@ -9,33 +9,17 @@
 
     <LinearLayout
         android:id="@+id/notification_manager_ll"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        style="@style/AppTheme.Toolbar.LinearLayout">
 
-        <androidx.appcompat.widget.Toolbar
-            android:theme="@style/ThemeOverlay.AppCompat.Dark"
-            style="@style/AppTheme.Toolbar"
-            tools:ignore="MissingConstraints">
+        <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/notification_manager"
-                android:textColor="@android:color/black"
-                android:textSize="17sp"/>
+                style="@style/AppTheme.Toolbar.Title"
+                android:text="@string/notification_manager"/>
 
         </androidx.appcompat.widget.Toolbar>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="5dp"
-            android:background="@drawable/too" />
-
+        <TextView style="@style/AppTheme.Divider.Toolbar"/>
     </LinearLayout>
 
     <TextView

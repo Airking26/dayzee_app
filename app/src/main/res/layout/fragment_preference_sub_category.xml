@@ -16,58 +16,32 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <androidx.appcompat.widget.Toolbar
-                android:theme="@style/ThemeOverlay.AppCompat.Dark"
-                android:id="@+id/pref_sub_category_toolbar"
-                style="@style/AppTheme.Toolbar"
-                tools:ignore="MissingConstraints">
+        <LinearLayout
+            android:id="@+id/preference_subcategory_ll"
+            style="@style/AppTheme.Toolbar.LinearLayout">
+
+        <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="@string/preferrence"
-                    android:textColor="@color/colorText"
-                    android:textSize="17sp"
-                    tools:text="Preference" />
+                    style="@style/AppTheme.Toolbar.Title"
+                    android:text="@string/preferrence" />
 
                 <TextView
                     android:id="@+id/pref_sub_category_btn_done"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:layout_marginEnd="16dp"
-                    android:text="@string/done"
-                    android:textColor="@color/colorTextSecondary"
-                    android:textSize="17sp"
-                    tools:text="Done" />
+                    style="@style/AppTheme.Toolbar.TextLeft"
+                    android:text="@string/done"/>
 
                 <TextView
                     android:drawableStart="@drawable/ic_keyboard_arrow_left_purple_24dp"
                     android:id="@+id/pref_sub_category_btn_back"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:text="@string/back"
-                    android:textColor="@color/colorTextSecondary"
-                    android:textSize="17sp"
-                    tools:text="Back" />
+                    style="@style/AppTheme.Toolbar.TextRight"
+                    android:text="@string/back" />
 
             </androidx.appcompat.widget.Toolbar>
 
-            <FrameLayout android:layout_width="match_parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/pref_sub_category_toolbar"
-                app:layout_constraintStart_toStartOf="parent"
-                android:layout_height="wrap_content">
+            <TextView style="@style/AppTheme.Divider.Toolbar"/>
 
-                <!-- **** Place Your Content Here **** -->
-
-                <View android:layout_width="match_parent"
-                    android:layout_height="5dp"
-                    android:background="@drawable/too"/>
-
-            </FrameLayout>
+        </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:layout_margin="12dp"
@@ -75,7 +49,7 @@
                 android:id="@+id/pref_sub_category_rv_chips"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/pref_sub_category_toolbar"
+                app:layout_constraintTop_toBottomOf="@id/preference_subcategory_ll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 

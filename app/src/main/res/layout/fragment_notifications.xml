@@ -9,37 +9,18 @@
 
     <LinearLayout
         android:id="@+id/notifications_ll"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        style="@style/AppTheme.Toolbar.LinearLayout">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/notifications_toolbar"
-            style="@style/AppTheme.Toolbar"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark"
-            tools:ignore="MissingConstraints">
+        <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
 
             <TextView
-                android:id="@+id/notifications_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:textColor="@color/colorText"
-                android:textSize="17sp"
+                style="@style/AppTheme.Toolbar.Title"
                 android:text="@string/notifications" />
 
         </androidx.appcompat.widget.Toolbar>
 
-        <View
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/notifications_toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="5dp"
-                android:background="@drawable/too" />
+        <TextView style="@style/AppTheme.Divider.Toolbar"/>
+
 
     </LinearLayout>
 

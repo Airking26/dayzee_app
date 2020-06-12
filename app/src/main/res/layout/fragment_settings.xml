@@ -9,33 +9,17 @@
 
     <LinearLayout
         android:id="@+id/profile_settings_ll"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        style="@style/AppTheme.Toolbar.LinearLayout">
 
-        <androidx.appcompat.widget.Toolbar
-            android:theme="@style/ThemeOverlay.AppCompat.Dark"
-            android:id="@+id/profile_settings_toolbar"
-            style="@style/AppTheme.Toolbar"
-            tools:ignore="MissingConstraints">
+        <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/settings"
-                android:textColor="@android:color/black"
-                android:textSize="17sp"/>
+                style="@style/AppTheme.Toolbar.Title"
+                android:text="@string/settings"/>
 
         </androidx.appcompat.widget.Toolbar>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="5dp"
-            android:background="@drawable/too" />
+        <TextView style="@style/AppTheme.Divider.Toolbar"/>
 
     </LinearLayout>
 
@@ -82,11 +66,7 @@
             <TextView
                 android:id="@+id/card_line_0"
                 app:layout_constraintTop_toBottomOf="@id/profile_settings_edit_personnal_infos"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:background="#60000000"
-                android:layout_width="match_parent"
-                android:layout_height="0.1dp"/>
+                style="@style/AppTheme.Divider.Toolbar" />
 
             <TextView
                 android:id="@+id/profile_settings_change_password"
@@ -103,11 +83,7 @@
             <TextView
                 android:id="@+id/card_line_1"
                 app:layout_constraintTop_toBottomOf="@id/profile_settings_change_password"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:background="#60000000"
-                android:layout_width="match_parent"
-                android:layout_height="0.1dp"/>
+                style="@style/AppTheme.Divider.Toolbar"/>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/private_account_cl"
@@ -143,11 +119,7 @@
             <TextView
                 android:id="@+id/card_line_2"
                 app:layout_constraintTop_toBottomOf="@id/private_account_cl"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:background="#60000000"
-                android:layout_width="match_parent"
-                android:layout_height="0.1dp"/>
+                style="@style/AppTheme.Divider.Toolbar"/>
 
             <TextView
                 android:id="@+id/profile_settings_asked_sent"
@@ -207,11 +179,7 @@
             <TextView
                 android:id="@+id/card_line_3"
                 app:layout_constraintTop_toBottomOf="@id/push_notification_cl"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:background="#60000000"
-                android:layout_width="match_parent"
-                android:layout_height="0.1dp"/>
+                style="@style/AppTheme.Divider.Toolbar"/>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/push_notification_certified_cl"
@@ -246,11 +214,7 @@
             <TextView
                 android:id="@+id/card_line_6"
                 app:layout_constraintTop_toBottomOf="@id/push_notification_certified_cl"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:background="#60000000"
-                android:layout_width="match_parent"
-                android:layout_height="0.1dp"/>
+                style="@style/AppTheme.Divider.Toolbar"/>
 
             <TextView
                 android:id="@+id/profile_settings_notification_manager"
@@ -292,11 +256,7 @@
             <TextView
                 android:id="@+id/card_line_4"
                 app:layout_constraintTop_toBottomOf="@id/profile_settings_date_format"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:background="#60000000"
-                android:layout_width="match_parent"
-                android:layout_height="0.1dp"/>
+                style="@style/AppTheme.Divider.Toolbar"/>
 
             <TextView
                 android:id="@+id/profile_settings_timenote_format"
@@ -313,11 +273,7 @@
             <TextView
                 android:id="@+id/card_line_5"
                 app:layout_constraintTop_toBottomOf="@id/profile_settings_timenote_format"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:background="#60000000"
-                android:layout_width="match_parent"
-                android:layout_height="0.1dp"/>
+                style="@style/AppTheme.Divider.Toolbar"/>
 
             <TextView
                 android:id="@+id/profile_settings_timenote_visibility"
@@ -355,6 +311,11 @@
                 app:layout_constraintTop_toBottomOf="@id/others_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/card_line_7"
+                app:layout_constraintTop_toBottomOf="@id/profile_settings_confidentiality_politic"
+                style="@style/AppTheme.Divider.Toolbar"/>
 
             <TextView
                 android:id="@+id/profile_settings_send_comments"

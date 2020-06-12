@@ -57,8 +57,7 @@ class ProfilModify: Fragment(), View.OnClickListener {
 
     private fun createDialogPicker(title: Int, choices: List<String>) {
         DialogPlusBuilder().setTitle(resources.getString(title))
-            .setHeaderBgColor(R.color.colorPrimary).setHeaderTextColor(android.R.color.white)
-            .hideCloseIcon().blurBackground().buildMultiOptionsDialog(
+            .hideCloseIcon().blurBackground().setPrimaryDrawable(R.drawable.too).buildMultiOptionsDialog(
                 choices, object : MultiOptionsDialog.ActionListener() {
                     override fun onActionClicked(clickedOption: String?, position: Int) {
 

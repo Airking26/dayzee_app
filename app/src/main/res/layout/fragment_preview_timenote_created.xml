@@ -9,47 +9,23 @@
 
     <LinearLayout
         android:id="@+id/preview_created_timenote_ll"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        style="@style/AppTheme.Toolbar.LinearLayout">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/preview_created_timenote_toolbar"
-            style="@style/AppTheme.Toolbar"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark"
-            tools:ignore="MissingConstraints">
+        <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:textColor="@color/colorText"
-                android:textSize="17sp"
+                style="@style/AppTheme.Toolbar.Title"
                 android:text="@string/preview" />
 
             <TextView
                 android:id="@+id/preview_created_timenote_next_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_marginEnd="16dp"
-                android:text="@string/done"
-                android:textColor="@color/colorTextSecondary"
-                android:textSize="17sp" />
+                style="@style/AppTheme.Toolbar.TextLeft"
+                android:text="@string/done" />
 
 
         </androidx.appcompat.widget.Toolbar>
 
-        <View
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/preview_created_timenote_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="5dp"
-            android:background="@drawable/too" />
+        <TextView style="@style/AppTheme.Divider.Toolbar"/>
 
     </LinearLayout>
 
