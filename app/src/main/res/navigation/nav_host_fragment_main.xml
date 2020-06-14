@@ -1,14 +1,71 @@
-<?xml version="1.0" encoding="utf-8"?>
-<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?><navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_host_fragment.xml"
+    android:id="@+id/nav_host_fragment"
     app:startDestination="@id/tabHome">
 
     <fragment
         android:id="@+id/tabHome"
         android:name="com.timenoteco.timenote.view.homeFlow.TabHome"
         android:label="TabHome" />
+    <fragment
+        android:id="@+id/login"
+        android:name="com.timenoteco.timenote.view.loginFlow.Login"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_login_to_signup"
+            app:destination="@id/signup" />
+        <argument
+            android:name="x"
+            app:argType="boolean" />
+    </fragment>
+    <fragment
+        android:id="@+id/preferenceCategory"
+        android:name="com.timenoteco.timenote.view.loginFlow.PreferenceCategory"
+        android:label="fragment_preference_category"
+        tools:layout="@layout/fragment_preference_category" >
+        <action
+            android:id="@+id/action_preferenceCategory_to_preferenceSubCategory"
+            app:destination="@id/preferenceSubCategory" />
+        <action
+            android:id="@+id/action_preferenceCategory_to_login"
+            app:destination="@id/login" />
+    </fragment>
+    <fragment
+        android:id="@+id/preferenceSubCategory"
+        android:name="com.timenoteco.timenote.view.loginFlow.PreferenceSubCategory"
+        android:label="fragment_preference_sub_category"
+        tools:layout="@layout/fragment_preference_sub_category">
+        <action
+            android:id="@+id/action_preferenceSubCategory_to_preferenceSuggestion"
+            app:destination="@id/preferenceSuggestion" />
+    </fragment>
+    <fragment
+        android:id="@+id/preferenceSuggestion"
+        android:name="com.timenoteco.timenote.view.loginFlow.PreferenceSuggestion"
+        android:label="fragment_preference_suggestion"
+        tools:layout="@layout/fragment_preference_suggestion" >
+        <action
+            android:id="@+id/action_preferenceSuggestion_to_login"
+            app:destination="@id/login" />
+    </fragment>
+    <fragment
+        android:id="@+id/signup"
+        android:name="com.timenoteco.timenote.view.loginFlow.Signup"
+        android:label="Signup" >
+        <action
+            android:id="@+id/action_signup_to_preferenceCategory"
+            app:destination="@id/preferenceCategory" />
+    </fragment>
+    <fragment
+        android:id="@+id/tabProfile"
+        android:name="com.timenoteco.timenote.view.profileFlow.TabProfile"
+        android:label="TabProfile" />
+    <fragment
+        android:id="@+id/tabCreateTimenote"
+        android:name="com.timenoteco.timenote.view.createTimenoteFlow.TabCreateTimenote"
+        android:label="TabCreateTimenote" />
     <fragment
         android:id="@+id/tabNearby"
         android:name="com.timenoteco.timenote.view.nearByFlow.TabNearby"
@@ -17,13 +74,4 @@
         android:id="@+id/tabSearch"
         android:name="com.timenoteco.timenote.view.searchFlow.TabSearch"
         android:label="TabSearch" />
-    <fragment
-        android:id="@+id/tabProfile"
-        android:name="com.timenoteco.timenote.view.profileFlow.TabProfile"
-        android:label="TabProfile" />
-    <fragment
-        android:id="@+id/createTimenote"
-        android:name="com.timenoteco.timenote.view.createTimenoteFlow.TabCreateTimenote"
-        android:label="CreateTimenote" />
-    <include app:graph="@navigation/navigation_graph_tab_home" />
 </navigation>

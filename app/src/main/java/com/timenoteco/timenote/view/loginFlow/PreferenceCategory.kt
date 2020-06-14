@@ -1,21 +1,29 @@
 package com.timenoteco.timenote.view.loginFlow
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.activity.addCallback
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.timenoteco.timenote.R
+import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.PreferenceViewModel
 import kotlinx.android.synthetic.main.fragment_preference_category.*
 
 class PreferenceCategory : Fragment(), View.OnClickListener {
 
     lateinit var preferenceViewModel: PreferenceViewModel
+    private val viewModel: LoginViewModel by activityViewModels()
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_preference_category, container, false)
@@ -73,11 +81,9 @@ class PreferenceCategory : Fragment(), View.OnClickListener {
                 var count = 0
                 preferenceViewModel.getPreferences().value?.forEach { if(it.category.isSelected) count++}
                 if(count > 0) view?.findNavController()?.navigate(PreferenceCategoryDirections.actionPreferenceCategoryToPreferenceSubCategory())
-                else view?.findNavController()?.navigate(
-                    PreferenceCategoryDirections.actionPreferenceCategoryToMainActivity(
-                        true
-                    )
-                )
+                else {
+                    viewModel.authenticationState.value = LoginViewModel.AuthenticationState.UNAUTHENTICATED_CHOOSED
+                }
             }
         }
     }

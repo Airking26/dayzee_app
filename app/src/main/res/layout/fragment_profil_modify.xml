@@ -72,6 +72,7 @@
                 android:drawablePadding="8dp"
                 android:hint="@string/name_you_want_to_appear"
                 android:textSize="15sp"
+                android:backgroundTint="#60000000"
                 android:padding="16dp"
                 android:drawableStart="@drawable/ic_profile_name_to_appear"
                 app:layout_constraintStart_toStartOf="parent"
@@ -86,6 +87,7 @@
                 android:drawablePadding="8dp"
                 android:hint="@string/your_name"
                 android:textSize="15sp"
+                android:backgroundTint="#60000000"
                 android:padding="16dp"
                 android:drawableStart="@drawable/ic_profile_name"
                 app:layout_constraintStart_toStartOf="parent"
@@ -100,6 +102,7 @@
                 android:hint="@string/from"
                 android:textSize="15sp"
                 android:padding="16dp"
+                android:backgroundTint="#60000000"
                 android:drawableStart="@drawable/ic_profile_from"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -107,7 +110,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
-            <EditText
+            <TextView
                 android:focusable="false"
                 android:id="@+id/profile_modify_birthday"
                 android:drawablePadding="8dp"
@@ -115,6 +118,7 @@
                 android:textColor="@color/colorText"
                 android:textSize="15sp"
                 android:padding="16dp"
+                android:gravity="bottom"
                 android:drawableStart="@drawable/ic_profile_birthday"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -122,7 +126,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
-            <EditText
+            <TextView
+                app:layout_constraintTop_toBottomOf="@id/profile_modify_birthday"
+                style="@style/AppTheme.Divider.Toolbar"/>
+
+            <TextView
                 android:focusable="false"
                 android:id="@+id/profile_modify_gender"
                 android:drawablePadding="8dp"
@@ -137,7 +145,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
-            <EditText
+            <TextView
+                app:layout_constraintTop_toBottomOf="@id/profile_modify_gender"
+                style="@style/AppTheme.Divider.Toolbar"/>
+
+            <TextView
                 android:focusable="false"
                 android:id="@+id/profile_modify_account_status"
                 android:drawablePadding="8dp"
@@ -152,7 +164,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
-            <EditText
+            <TextView
+                app:layout_constraintTop_toBottomOf="@id/profile_modify_account_status"
+                style="@style/AppTheme.Divider.Toolbar"/>
+
+            <TextView
                 android:focusable="false"
                 android:id="@+id/profile_modify_format_timenote"
                 android:drawablePadding="8dp"
@@ -167,6 +183,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
+            <TextView
+                app:layout_constraintTop_toBottomOf="@id/profile_modify_format_timenote"
+                style="@style/AppTheme.Divider.Toolbar"/>
+
             <EditText
                 android:id="@+id/profile_modify_youtube_channel"
                 android:drawablePadding="8dp"
@@ -174,6 +194,7 @@
                 android:textColor="@color/colorText"
                 android:textSize="15sp"
                 android:padding="16dp"
+                android:backgroundTint="#60000000"
                 android:drawableStart="@drawable/ic_profile_youtube"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -187,6 +208,7 @@
                 android:drawablePadding="8dp"
                 android:hint="@string/describe_yourself"
                 android:textColor="@color/colorText"
+                android:backgroundTint="#60000000"
                 android:textSize="15sp"
                 android:padding="16dp"
                 android:drawableStart="@drawable/ic_profile_description"

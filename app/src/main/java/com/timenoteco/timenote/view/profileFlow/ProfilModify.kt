@@ -9,6 +9,13 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.afollestad.materialdialogs.LayoutMode
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.bottomsheets.BasicGridItem
+import com.afollestad.materialdialogs.bottomsheets.BottomSheet
+import com.afollestad.materialdialogs.datetime.datePicker
+import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
+import com.afollestad.materialdialogs.list.listItems
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.dialog.plus.ui.DialogPlusBuilder
@@ -16,7 +23,6 @@ import com.dialog.plus.ui.MultiOptionsDialog
 import com.timenoteco.timenote.R
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_profil_modify.*
-import kotlinx.android.synthetic.main.fragment_profile.*
 
 
 class ProfilModify: Fragment(), View.OnClickListener {
@@ -46,23 +52,26 @@ class ProfilModify: Fragment(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when(v){
-            profile_modify_gender -> createDialogPicker(R.string.gender, listOf("Male", "Female", "None"))
-            profile_modify_birthday -> DialogPlusBuilder().blurBackground().setHeaderBgColor(R.color.colorPrimary).setHeaderTextColor(android.R.color.white)
-                .buildDatePickerDialog(2020) { pickedYear, pickedMonth, pickedDay -> TODO("Not yet implemented") }.show(childFragmentManager, "")
-            profile_modify_account_status -> createDialogPicker(R.string.account_status, listOf("Private", "Public"))
-            profile_modify_format_timenote -> createDialogPicker(R.string.timenote_date_format, listOf("X", "Y"))
+            profile_modify_gender -> createDialogBottomSheet(R.string.gender, listOf("Male", "Female", "None"))
+            profile_modify_birthday -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                datePicker { dialog, datetime ->
+
+                }
+            }
+            profile_modify_account_status -> createDialogBottomSheet(R.string.account_status, listOf("Private", "Public"))
+            profile_modify_format_timenote -> createDialogBottomSheet(R.string.timenote_date_format, listOf("X", "Y"))
             profile_modify_done_btn -> findNavController().navigate(ProfilModifyDirections.actionProfilModifyToProfile())
         }
     }
 
-    private fun createDialogPicker(title: Int, choices: List<String>) {
-        DialogPlusBuilder().setTitle(resources.getString(title))
-            .hideCloseIcon().blurBackground().setPrimaryDrawable(R.drawable.too).buildMultiOptionsDialog(
-                choices, object : MultiOptionsDialog.ActionListener() {
-                    override fun onActionClicked(clickedOption: String?, position: Int) {
 
-                    }
+    private fun createDialogBottomSheet(title: Int, choices: List<String>) {
+        MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            title(null, resources.getString(title))
+            listItems(null, choices) { dialog, index, text ->
 
-                }).show(childFragmentManager, "")
+            }
+            lifecycleOwner(this@ProfilModify)
+        }
     }
 }

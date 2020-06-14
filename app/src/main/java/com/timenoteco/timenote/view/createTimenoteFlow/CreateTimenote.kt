@@ -7,7 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
-import com.noowenz.customdatetimepicker.CustomDateTimePicker
+import com.afollestad.materialdialogs.LayoutMode
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.bottomsheets.BottomSheet
+import com.afollestad.materialdialogs.datetime.dateTimePicker
+import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.timenoteco.timenote.R
 import kotlinx.android.synthetic.main.fragment_create_timenote.*
 import java.util.*
@@ -25,18 +29,11 @@ class CreateTimenote : Fragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when(v){
             create_timenote_next_btn ->findNavController().navigate(CreateTimenoteDirections.actionCreateTimenoteToPreviewTimenoteCreated())
-            from_label -> CustomDateTimePicker(requireActivity(), object: CustomDateTimePicker.ICustomDateTimeListener{
-                override fun onCancel() {}
-                override fun onSet(dialog: Dialog, calendarSelected: Calendar, dateSelected: Date, year: Int,
-                                   monthFullName: String, monthShortName: String, monthNumber: Int, day: Int,
-                                   weekDayFullName: String, weekDayShortName: String, hour24: Int, hour12: Int,
-                                   min: Int, sec: Int, AM_PM: String) {
+            from_label -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                dateTimePicker { dialog, datetime ->
 
                 }
-
-            }).apply {
-                setDate(Calendar.getInstance())
-                showDialog()
+                lifecycleOwner(this@CreateTimenote)
             }
         }
     }

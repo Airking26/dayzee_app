@@ -117,7 +117,6 @@ fun BottomNavigationView.setupWithNavController(navGraphIds: List<Int>, fragment
             }
         }
     }
-
     // Optional: on item reselected, pop back stack to the destination of the graph
     setupItemReselected(graphIdToTagMap, fragmentManager)
 

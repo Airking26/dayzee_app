@@ -20,7 +20,6 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.CommentListener, ItemTim
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_home)
-        //inflater.inflate(R.layout.fragment_home, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
