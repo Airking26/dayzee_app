@@ -9,18 +9,20 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.model.Event
+import com.timenoteco.timenote.model.Timenote
 import kotlinx.android.synthetic.main.item_profile_timenote_grid_style.view.*
 import kotlinx.android.synthetic.main.item_profile_timenote_list_style.view.*
 import kotlinx.android.synthetic.main.item_suggestion.view.*
+import kotlinx.android.synthetic.main.item_timenote.view.*
 
-class ItemProfileEventAdapter(private var events: List<Event>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ItemProfileEventAdapter(private var events: List<Timenote>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var style: Int = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
        return when(this.style){
            0 -> TimenoteListHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_profile_timenote_list_style, parent, false))
-           else -> TimenoteGridHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_profile_timenote_grid_style, parent, false))
+           else -> TimenoteGridHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_timenote, parent, false))
        }
         }
 
@@ -45,37 +47,43 @@ class ItemProfileEventAdapter(private var events: List<Event>): RecyclerView.Ada
     }
 
     class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        fun bindListStyleItem(event: Event) {
-            itemView.profile_item_name_event.text = event.name
-            itemView.profile_item_address_event.text = event.address
-            itemView.profile_item_date_event.text = event.date
+        fun bindListStyleItem(event: Timenote) {
+            itemView.profile_item_name_event.text = event.title
+            itemView.profile_item_address_event.text = event.place
+            itemView.profile_item_date_event.text = event.dateIn
             Glide
                 .with(itemView)
-                .load(event.eventPic)
+                .load(event.pic)
                 .into(itemView.profile_item_pic_event_imageview)
 
             Glide
                 .with(itemView)
-                .load(event.profilePic)
+                .load(event.pic_user)
                 .apply(RequestOptions.circleCropTransform())
                 .into(itemView.profile_item_pic_profile_imageview)
         }
     }
     class TimenoteGridHolder(itemView: View): RecyclerView.ViewHolder(itemView){
-        fun bindGridStyleItem(event: Event){
-            itemView.profile_item_timenote_grid_username.text = event.name
-            itemView.profile_item_timenote_grid_place.text = event.address
-            itemView.profile_item_timenote_grid_date.text = event.date
+        fun bindGridStyleItem(timenote: Timenote){
             Glide
                 .with(itemView)
-                .load(event.eventPic)
-                .into(itemView.profile_item_timenote_grid_pic)
+                .load(timenote.pic_user)
+                .apply(RequestOptions.circleCropTransform())
+                .into(itemView.timenote_pic_user_imageview)
 
             Glide
                 .with(itemView)
-                .load(event.profilePic)
-                .apply(RequestOptions.circleCropTransform())
-                .into(itemView.profile_item_timenote_grid_user_pic)
+                .load(timenote.pic)
+                .centerCrop()
+                .into(itemView.timenote_pic_imageview)
+
+            itemView.timenote_username.text = timenote.username
+            itemView.timenote_place.text = timenote.place
+            itemView.timenote_username_desc.text = timenote.desc
+            itemView.timenote_title.text = timenote.title
+            itemView.timenote_year.text = timenote.year
+            itemView.timenote_day_month.text = timenote.month
+            itemView.timenote_time.text = timenote.date
         }
     }
 

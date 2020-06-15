@@ -110,6 +110,15 @@ class ItemTimenoteAdapter(val timenotes: List<Timenote>, val timenotesToCome: Li
             itemView.timenote_year.text = timenote.year
             itemView.timenote_day_month.text = timenote.month
             itemView.timenote_time.text = timenote.date
+            itemView.timenote_day_month.setOnClickListener {
+                itemView.separator_1.visibility = View.GONE
+                itemView.separator_2.visibility = View.GONE
+                itemView.timenote_day_month.visibility = View.GONE
+                itemView.timenote_time.visibility = View.GONE
+                itemView.timenote_year.visibility = View.GONE
+                itemView.timerProgramCountdown.visibility = View.VISIBLE
+                itemView.timerProgramCountdown.startCountDown(99999999)
+            }
             itemView.timenote_comment.setOnClickListener { commentListener.onCommentClicked() }
             itemView.timenote_plus.setOnClickListener { plusListener.onPlusClicked() }
 

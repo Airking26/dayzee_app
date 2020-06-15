@@ -1,5 +1,9 @@
 package com.timenoteco.timenote.view
 
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -11,11 +15,18 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.transition.Transition
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.setupWithNavController
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel.AuthenticationState
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.item_profile_calendar.view.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,9 +40,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.authenticationState.observe(this, Observer {
             when (it) {
                 AuthenticationState.AUTHENTICATED -> setupController(true)
-                AuthenticationState.UNAUTHENTICATED -> findNavController(R.id.nav_host_fragment_main).navigate(
-                    R.id.login
-                )
+                AuthenticationState.UNAUTHENTICATED -> findNavController(R.id.nav_host_fragment_main).navigate(R.id.login)
                 AuthenticationState.INVALID_AUTHENTICATION -> Log.d("", "")
                 AuthenticationState.UNAUTHENTICATED_CHOOSED -> setupController(false)
             }
@@ -44,7 +53,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupController(finished: Boolean) {
-        var x = finished
         val navGraphIds: List<Int> =
             listOf(
                 R.navigation.navigation_graph_tab_home,
@@ -61,12 +69,31 @@ class MainActivity : AppCompatActivity() {
             intent = intent
         )
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            bottomNavView.menu[2].iconTintList = null
+            bottomNavView.menu[4].iconTintList = null
+            bottomNavView.menu[2].iconTintMode = null
+            bottomNavView.menu[4].iconTintMode = null
+        }
+
+        bottomNavView.menu[2].icon = resources.getDrawable(R.drawable.logo)
+        if(!finished) bottomNavView.selectedItemId = R.id.navigation_graph_tab_2
+        Glide
+            .with(this)
+            .asBitmap()
+            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+            .load("https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792")
+            .apply(RequestOptions.circleCropTransform())
+            .into(object: CustomTarget<Bitmap>(){
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                    bottomNavView.menu[4].icon = BitmapDrawable(resources, resource)
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {}
+            })
+
         controller.observe(this, Observer {
             it.addOnDestinationChangedListener { navController, destination, arguments ->
-                if(!x) {
-                    bottomNavView.selectedItemId = R.id.navigation_graph_tab_2
-                    x = !x
-                }
                 when (destination.id) {
                     R.id.login -> bottomNavView.visibility = View.GONE
                     R.id.search -> bottomNavView.visibility = View.VISIBLE

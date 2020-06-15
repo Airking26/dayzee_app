@@ -3,6 +3,7 @@ package com.timenoteco.timenote.view.profileFlow
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.bottomsheets.BasicGridItem
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.datetime.datePicker
+import com.afollestad.materialdialogs.input.input
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
 import com.bumptech.glide.Glide
@@ -46,6 +48,11 @@ class ProfilModify: Fragment(), View.OnClickListener {
         profile_modify_birthday.setOnClickListener(this)
         profile_modify_account_status.setOnClickListener(this)
         profile_modify_format_timenote.setOnClickListener(this)
+        profile_modify_name_appearance.setOnClickListener(this)
+        profile_modify_name.setOnClickListener(this)
+        profile_modify_from.setOnClickListener(this)
+        profile_modify_youtube_channel.setOnClickListener(this)
+        profile_modify_description.setOnClickListener(this)
         profile_modify_done_btn.setOnClickListener(this)
 
     }
@@ -60,6 +67,11 @@ class ProfilModify: Fragment(), View.OnClickListener {
             }
             profile_modify_account_status -> createDialogBottomSheet(R.string.account_status, listOf("Private", "Public"))
             profile_modify_format_timenote -> createDialogBottomSheet(R.string.timenote_date_format, listOf("X", "Y"))
+            profile_modify_name_appearance -> createInputDialog(R.string.name_you_want_to_appear)
+            profile_modify_name -> createInputDialog(R.string.your_name)
+            profile_modify_from -> createInputDialog(R.string.from)
+            profile_modify_youtube_channel -> createInputDialog(R.string.youtube_channel)
+            profile_modify_description -> createInputDialog(R.string.describe_yourself)
             profile_modify_done_btn -> findNavController().navigate(ProfilModifyDirections.actionProfilModifyToProfile())
         }
     }
@@ -71,6 +83,17 @@ class ProfilModify: Fragment(), View.OnClickListener {
             listItems(null, choices) { dialog, index, text ->
 
             }
+            lifecycleOwner(this@ProfilModify)
+        }
+    }
+
+    private fun createInputDialog(title: Int){
+        MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            title(null, resources.getString(title))
+            input(inputType = InputType.TYPE_CLASS_TEXT){ _, text ->
+
+            }
+            positiveButton(R.string.done)
             lifecycleOwner(this@ProfilModify)
         }
     }

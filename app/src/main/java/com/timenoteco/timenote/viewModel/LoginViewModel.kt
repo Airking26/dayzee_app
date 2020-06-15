@@ -16,7 +16,7 @@ class LoginViewModel: ViewModel() {
     var username: String
 
     init {
-        authenticationState.value = AuthenticationState.UNAUTHENTICATED
+        authenticationState.value = AuthenticationState.AUTHENTICATED
         username = ""
     }
 

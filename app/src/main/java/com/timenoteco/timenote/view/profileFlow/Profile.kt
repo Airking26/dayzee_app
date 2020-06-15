@@ -15,12 +15,14 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ItemProfileEventAdapter
 import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.model.Event
+import com.timenoteco.timenote.model.Timenote
 import kotlinx.android.synthetic.main.fragment_profile.*
 
 class Profile : BaseThroughFragment(), View.OnClickListener {
 
     private lateinit var eventAdapter: ItemProfileEventAdapter
     private var events: MutableList<Event> = mutableListOf()
+    private var timenotes: List<Timenote> = listOf()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?  =
         getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_profile)
@@ -79,8 +81,146 @@ class Profile : BaseThroughFragment(), View.OnClickListener {
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 "Dans 25 jours")
         )
+        timenotes = listOf(
+            Timenote(
+                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
+                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
+                "Samuel",
+                "23 Herzl Street",
+                "34 Likes",
+                "See 63 comments",
+                "#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party",
+                true,
+                "2020",
+                "10\nAug",
+                "15:30",
+                "Beach Party",
+                "In 23 days"
+            ),
+            Timenote(
+                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
+                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
+                "Samuel",
+                "23 Herzl Street",
+                "34 Likes",
+                "See 63 comments",
+                "#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party",
+                true,
+                "2020",
+                "10\nAug",
+                "15:30",
+                "Beach Party",
+                "In 23 days"
+            ),
+            Timenote(
+                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
+                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
+                "Samuel",
+                "23 Herzl Street",
+                "34 Likes",
+                "See 63 comments",
+                "#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party",
+                true,
+                "2020",
+                "10\nAug",
+                "15:30",
+                "Beach Party",
+                "In 23 days"
+            ),
+            Timenote(
+                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
+                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
+                "Samuel",
+                "23 Herzl Street",
+                "34 Likes",
+                "See 63 comments",
+                "#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party",
+                true,
+                "2020",
+                "10\nAug",
+                "15:30",
+                "Beach Party",
+                "In 23 days"
+            ),
+            Timenote(
+                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
+                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
+                "Samuel",
+                "23 Herzl Street",
+                "34 Likes",
+                "See 63 comments",
+                "#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party",
+                true,
+                "2020",
+                "10\nAug",
+                "15:30",
+                "Beach Party",
+                "In 23 days"
+            ),
+            Timenote(
+                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
+                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
+                "Samuel",
+                "23 Herzl Street",
+                "34 Likes",
+                "See 63 comments",
+                "#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party",
+                true,
+                "2020",
+                "10\nAug",
+                "15:30",
+                "Beach Party",
+                "In 23 days"
+            ),
+            Timenote(
+                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
+                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
+                "Samuel",
+                "23 Herzl Street",
+                "34 Likes",
+                "See 63 comments",
+                "#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party",
+                true,
+                "2020",
+                "10\nAug",
+                "15:30",
+                "Beach Party",
+                "In 23 days"
+            ),
+            Timenote(
+                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
+                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
+                "Samuel",
+                "23 Herzl Street",
+                "34 Likes",
+                "See 63 comments",
+                "#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party",
+                true,
+                "2020",
+                "10\nAug",
+                "15:30",
+                "Beach Party",
+                "In 23 days"
+            ),
+            Timenote(
+                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
+                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
+                "Samuel",
+                "23 Herzl Street",
+                "34 Likes",
+                "See 63 comments",
+                "#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party",
+                true,
+                "2020",
+                "10\nAug",
+                "15:30",
+                "Beach Party",
+                "In 23 days"
+            )
+        )
 
-        eventAdapter = ItemProfileEventAdapter(events)
+
+        eventAdapter = ItemProfileEventAdapter(timenotes)
 
         profile_rv.apply {
             layoutManager = LinearLayoutManager(view.context)

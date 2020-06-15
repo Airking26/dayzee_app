@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:flipTimer="http://schemas.android.com/apk/res-auto">
 
     <ImageView
         android:src="@drawable/ic_linkedin"
@@ -147,6 +148,33 @@
         app:layout_constraintBottom_toBottomOf="@id/timenote_pic_imageview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
+
+    <com.asp.fliptimerviewlibrary.CountDownClock
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="@id/timenote_pic_imageview"
+        android:id="@+id/timerProgramCountdown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        flipTimer:almostFinishedCallbackTimeInSeconds="5"
+        flipTimer:digitTopDrawable="@drawable/background_top_countdown"
+        flipTimer:digitBottomDrawable="@drawable/background_bottom_countdown"
+        flipTimer:animationDuration="850"
+        flipTimer:countdownTickInterval="1000"
+        flipTimer:digitDividerColor="@color/transparent"
+        flipTimer:digitPadding="2dp"
+        flipTimer:digitTextColor="@color/black"
+        flipTimer:digitTextSize="18sp"
+        flipTimer:digitWidth="21dp"
+        flipTimer:halfDigitHeight="16dp"
+        flipTimer:resetSymbol="8"
+        flipTimer:splitterPadding="0dp"
+        />
 
     <ImageView
         app:layout_constraintStart_toStartOf="parent"
