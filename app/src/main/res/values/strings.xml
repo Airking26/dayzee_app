@@ -55,7 +55,7 @@
     <string name="disconnect">DISCONNECT</string>
     <string name="new_timenote">New Timenote</string>
     <string name="take_add_a_picture">TAKE/ADD A PICTURE</string>
-    <string name="choose_a_color">CHOOSE A COLOR</string>
+    <string name="choose_a_color">OR CHOOSE A BACKGROUND COLOR</string>
     <string name="when">When</string>
     <string name="to">To</string>
     <string name="where">Where</string>
@@ -169,4 +169,10 @@
         "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
         "when a user tries to pick up one of cards.\n\n"
     </string>
+    <string name="create_new_group">Create a new group</string>
+    <string name="contacts">Contacts</string>
+    <string name="name_group">Group\'s name</string>
+    <string name="colors">Colors</string>
+    <string name="take_a_photo">Take a photo</string>
+    <string name="choose_from_gallery">Choose from gallery</string>
 </resources>

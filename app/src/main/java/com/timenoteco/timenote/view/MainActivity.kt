@@ -78,6 +78,7 @@ class MainActivity : AppCompatActivity() {
 
         bottomNavView.menu[2].icon = resources.getDrawable(R.drawable.logo)
         if(!finished) bottomNavView.selectedItemId = R.id.navigation_graph_tab_2
+
         Glide
             .with(this)
             .asBitmap()
