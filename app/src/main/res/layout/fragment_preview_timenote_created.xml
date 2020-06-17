@@ -18,7 +18,7 @@
                 android:text="@string/preview" />
 
             <TextView
-                android:id="@+id/preview_created_timenote_next_btn"
+                android:id="@+id/preview_created_timenote_done_btn"
                 style="@style/AppTheme.Toolbar.TextLeft"
                 android:text="@string/done" />
 

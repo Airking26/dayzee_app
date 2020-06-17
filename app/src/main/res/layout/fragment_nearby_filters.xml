@@ -20,7 +20,13 @@
             <TextView
                 android:id="@+id/nearby_filter_clear_btn"
                 style="@style/AppTheme.Toolbar.TextLeft"
-                android:text="@string/clear" />
+                android:text="@string/done" />
+
+            <TextView
+                android:id="@+id/nearby_filter_done_btn"
+                style="@style/AppTheme.Toolbar.TextRight"
+                android:text="@string/clear"
+                />
 
         </androidx.appcompat.widget.Toolbar>
 
@@ -56,6 +62,7 @@
                 android:layout_height="wrap_content"/>
 
             <TextView
+                android:id="@+id/nearby_filter_category_tv"
                 android:drawablePadding="8dp"
                 android:textColor="@color/colorTextSecondary"
                 android:textSize="14sp"
@@ -97,6 +104,7 @@
                 android:layout_height="wrap_content"/>
 
             <TextView
+                android:id="@+id/nearby_filter_from_tv"
                 android:drawablePadding="8dp"
                 android:textColor="@color/colorTextSecondary"
                 android:textSize="14sp"

@@ -1,15 +1,31 @@
 package com.timenoteco.timenote.model
 
-data class Timenote(val pic_user: String,
-                    val pic: String,
-                    val username: String,
-                    val place: String,
-                    val nbrLikes: String,
-                    val seeComments: String,
-                    val desc: String,
-                    val liked: Boolean,
-                    val year: String,
-                    val month: String,
-                    val date: String,
-                    val title: String,
-                    val dateIn: String)
+import androidx.annotation.Nullable
+
+data class Timenote(
+    @Nullable
+    var pic_user: String?,
+    @Nullable
+    var pic: String?,
+    @Nullable
+    var username: String?,
+    @Nullable
+    var place: String?,
+    @Nullable
+    var nbrLikes: String?,
+    @Nullable
+    var seeComments: String?,
+    @Nullable
+    var desc: String?,
+    @Nullable
+    var liked: Boolean?,
+    @Nullable
+    var year: String?,
+    @Nullable
+    var month: String?,
+    @Nullable
+    var date: String?,
+    @Nullable
+    var title: String?,
+    @Nullable
+    var dateIn: String?)

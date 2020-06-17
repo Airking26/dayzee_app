@@ -175,4 +175,6 @@
     <string name="colors">Colors</string>
     <string name="take_a_photo">Take a photo</string>
     <string name="choose_from_gallery">Choose from gallery</string>
+    <string name="resize">Resize</string>
+    <string name="picture_successfully_added">PICTURE SUCCESSFULLY ADDED</string>
 </resources>

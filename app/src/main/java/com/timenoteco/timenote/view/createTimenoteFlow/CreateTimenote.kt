@@ -7,22 +7,19 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.location.Geocoder
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
 import android.provider.MediaStore
-import android.text.Editable
 import android.text.InputType
-import android.text.TextUtils
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AutoCompleteTextView
+import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
@@ -36,16 +33,22 @@ import com.afollestad.materialdialogs.input.input
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
 import com.afollestad.materialdialogs.list.listItemsMultiChoice
+import com.takusemba.cropme.CropLayout
+import com.takusemba.cropme.OnCropListener
+import com.timenoteco.timenote.listeners.PlacePickerListener
 import com.timenoteco.timenote.R
-import com.timenoteco.timenote.adapter.AutoSuggestAdapter
-import kotlinx.android.synthetic.main.autocomplete_search_address.view.*
+import com.timenoteco.timenote.common.Utils
+import com.timenoteco.timenote.viewModel.CreationTimenoteViewModel
+import kotlinx.android.synthetic.main.cropview.view.*
 import kotlinx.android.synthetic.main.fragment_create_timenote.*
 import mehdi.sakout.fancybuttons.FancyButton
 import java.text.SimpleDateFormat
 import java.util.*
 
-class CreateTimenote : Fragment(), View.OnClickListener{
+class CreateTimenote : Fragment(), View.OnClickListener, OnCropListener,
+    PlacePickerListener {
 
+    private val creationTimenoteViewModel: CreationTimenoteViewModel by activityViewModels()
     private lateinit var categoryTv: TextView
     private lateinit var fromTv: TextView
     private lateinit var toTv: TextView
@@ -56,11 +59,9 @@ class CreateTimenote : Fragment(), View.OnClickListener{
     private lateinit var secondColorTv: FancyButton
     private lateinit var thirdColorTv: FancyButton
     private lateinit var fourthColorTv: FancyButton
+    private lateinit var takeAddPicTv: TextView
+    private lateinit var progressBar: ProgressBar
     private var listSharedWith: MutableList<String> = mutableListOf()
-    private var places : MutableList<String> = mutableListOf()
-    private val TRIGGER_AUTO_COMPLETE = 100
-    private val AUTO_COMPLETE_DELAY: Long = 300
-    private lateinit var handler: Handler
     private val DATE_FORMAT = "EEE, d MMM yyyy hh:mm aaa"
     private lateinit var dateFormat : SimpleDateFormat
     private val PERMISSIONS_STORAGE = arrayOf(
@@ -84,6 +85,10 @@ class CreateTimenote : Fragment(), View.OnClickListener{
         secondColorTv = create_timenote_second_color
         thirdColorTv = create_timenote_third_color
         fourthColorTv = create_timenote_fourth_color
+        takeAddPicTv = create_timenote_take_add_pic
+        progressBar = create_timenote_pb
+
+        titleTv.text = creationTimenoteViewModel.getDescription() ?: getString(R.string.title)
 
         create_timenote_next_btn.setOnClickListener(this)
         from_label.setOnClickListener(this)
@@ -130,39 +135,8 @@ class CreateTimenote : Fragment(), View.OnClickListener{
                 dateTimePicker { dialog, datetime -> toTv.text = dateFormat.format(datetime.time.time)}
                 lifecycleOwner(this@CreateTimenote)
             }
-            where_cardview -> placePicker()
-            share_with_cardview -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                title(R.string.share_with)
-                listItemsMultiChoice(items = listOf("LeFramboisier", "La Famille")){_, index, text ->
-                    listSharedWith.add(text.toString())
-                }
-                positiveButton(R.string.done){ shareWithTv.text = listSharedWith.toString() }
-                negativeButton(R.string.contacts){
-                    MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                        title(R.string.contacts)
-                        listItemsMultiChoice(items = listOf("Pierre", "Paul")){_, index, text ->
-                            listSharedWith.add(text.toString())
-                        }
-                        positiveButton(R.string.done){
-                            shareWithTv.text = listSharedWith.toString()
-                        }
-                        negativeButton(R.string.create_new_group){
-                            MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                                title(R.string.name_group)
-                                input(inputType = InputType.TYPE_CLASS_TEXT){ _, text ->
-
-                                }
-                                positiveButton(R.string.done){
-                                    shareWithTv.text = listSharedWith.toString()
-                                }
-                                lifecycleOwner(this@CreateTimenote)
-                            }
-                        }
-                        lifecycleOwner(this@CreateTimenote)
-                    }
-                }
-                lifecycleOwner(this@CreateTimenote)
-            }
+            where_cardview -> Utils().placePicker(requireContext(), this@CreateTimenote, create_timenote_where_btn, this)
+            share_with_cardview -> shareWith()
             category_cardview -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.category)
                 listItems(items = listOf("Judaisme", "Bouddhisme", "Techno", "Pop", "Football", "Tennis",
@@ -174,8 +148,9 @@ class CreateTimenote : Fragment(), View.OnClickListener{
             }
             title_cardview -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.title)
-                input(inputType = InputType.TYPE_CLASS_TEXT, maxLength = 100){ _, text ->
+                input(inputType = InputType.TYPE_CLASS_TEXT, maxLength = 100, prefill = creationTimenoteViewModel.getDescription()){ _, text ->
                     titleTv.text = text
+                    creationTimenoteViewModel.setDescription(text.toString())
                 }
                 positiveButton(R.string.done)
                 lifecycleOwner(this@CreateTimenote)
@@ -202,6 +177,8 @@ class CreateTimenote : Fragment(), View.OnClickListener{
                 title(R.string.take_add_a_picture)
                 listItems(items = listOf(getString(R.string.take_a_photo), getString(R.string.choose_from_gallery))){ _, index, text ->
                     if(checkIfPermissionGranted()) {
+                        takeAddPicTv.visibility = View.GONE
+                        progressBar.visibility = View.VISIBLE
                         when (text) {
                             getString(R.string.take_a_photo) -> startActivityForResult(Intent(MediaStore.ACTION_IMAGE_CAPTURE), 0)
                             getString(R.string.choose_from_gallery) -> startActivityForResult(Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI), 1)
@@ -213,11 +190,65 @@ class CreateTimenote : Fragment(), View.OnClickListener{
         }
     }
 
+    private fun shareWith() {
+        MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            title(R.string.share_with)
+            listItems(
+                items = listOf(
+                    "Groups",
+                    "Friends",
+                    "Create a new group"
+                )
+            ) { dialog, index, text ->
+                when (text) {
+                    "Groups" -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                        title(R.string.share_with)
+                        listItemsMultiChoice(items = listOf("LeFramboisier", "La Famille")) { _, index, text ->
+                            listSharedWith.add(text.joinToString())
+                            shareWithTv.text = listSharedWith.joinToString()
+                        }
+                        positiveButton(R.string.done)
+                        lifecycleOwner(this@CreateTimenote)
+                    }
+                    "Friends" -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                        title(R.string.contacts)
+                        listItemsMultiChoice(items = listOf("Pierre", "Paul")) { _, index, text ->
+                            listSharedWith.add(text.joinToString())
+                            shareWithTv.text = listSharedWith.joinToString()
+                        }
+                        positiveButton(R.string.done)
+                        lifecycleOwner(this@CreateTimenote)
+                    }
+                    "Create a new group" -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                        title(R.string.contacts)
+                        listItemsMultiChoice(items = listOf("Pierre", "Paul")) { _, index, text ->
+                            listSharedWith.add(text.toString())
+                            shareWithTv.text = listSharedWith.toString()
+                            MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                                title(R.string.name_group)
+                                input(inputType = InputType.TYPE_CLASS_TEXT, maxLength = 20) { materialDialog, charSequence ->
+                                }
+                                positiveButton(R.string.done)
+                                lifecycleOwner(this@CreateTimenote)
+                            }
+                        }
+                        positiveButton(R.string.name_group)
+                        lifecycleOwner(this@CreateTimenote)
+                    }
+                }
+            }
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when(requestCode){
             0 -> {
                 if(resultCode == RESULT_OK && data != null){
                     val selectedImage: Bitmap = data.extras?.get("data") as Bitmap
+                    cropImage(selectedImage)
+                } else {
+                    progressBar.visibility =View.GONE
+                    takeAddPicTv.visibility = View.VISIBLE
                 }
             }
             1 -> {
@@ -232,60 +263,34 @@ class CreateTimenote : Fragment(), View.OnClickListener{
                             val picturePath: String = cursor.getString(columnIndex)
                             val bitmap = BitmapFactory.decodeFile(picturePath)
                             cursor.close()
+                            cropImage(bitmap)
                         }
                     }
+                } else {
+                    progressBar.visibility =View.GONE
+                    takeAddPicTv.visibility = View.VISIBLE
                 }
             }
         }
     }
 
-    private fun placePicker(){
-        val dialog = MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-            title(R.string.where)
-            customView(R.layout.autocomplete_search_address, scrollable = true, horizontalPadding = true)
-            positiveButton(R.string.done)
+    private fun cropImage(bitmap: Bitmap) {
+        var cropView: CropLayout? = null
+        val dialog = MaterialDialog(requireContext()).show {
+            customView(R.layout.cropview)
+            title(R.string.resize)
+            positiveButton(R.string.done) {
+                val p = cropView?.crop()
+                cropView?.addOnCropListener(this@CreateTimenote)
+            }
             lifecycleOwner(this@CreateTimenote)
-        }
-        val customView = dialog.getCustomView()
-        val autoCompleteTextView = customView.autocompleteTextview_Address as AutoCompleteTextView
-        val geocoder = Geocoder(requireContext())
-        val autocompleteAdapter = AutoSuggestAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line)
-        autoCompleteTextView.threshold = 3
-        autoCompleteTextView.setAdapter(autocompleteAdapter)
-        autoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
-            dialog.dismiss()
-            create_timenote_where_btn.text = autocompleteAdapter.getObject(position)
-        }
-        handler = Handler(Handler.Callback { msg ->
-            if (msg.what == TRIGGER_AUTO_COMPLETE) {
-                if (!TextUtils.isEmpty(autoCompleteTextView.text)) {
-                    places.clear()
-                    val i = geocoder.getFromLocationName(autoCompleteTextView.text.toString(), 3)
-                    if(!i.isNullOrEmpty()){
-                        for(y in i){
-                            val city: String = y.locality ?: ""
-                            val country: String = y.countryName ?: ""
-                            val address: String = y.getAddressLine(0) ?: ""
-                            places.add("$address, $city, $country")
-                        }
-                        autocompleteAdapter.setData(places)
-                        autocompleteAdapter.notifyDataSetChanged()
-                    }
-                }
-            }
-            false;
-        })
-        autoCompleteTextView.addTextChangedListener(object: TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-            }
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                handler.removeMessages(TRIGGER_AUTO_COMPLETE);
-                handler.sendEmptyMessageDelayed(TRIGGER_AUTO_COMPLETE, AUTO_COMPLETE_DELAY);
-            }
 
-        })
+        }
+
+        cropView = dialog.getCustomView().crop_view as CropLayout
+        cropView.setBitmap(bitmap)
+        cropView.isOffFrame()
+        cropView.crop()
     }
 
     private fun colorChoosed(fancyButton1: FancyButton, fancyButton2: FancyButton, fancyButton3: FancyButton, fancyButton4: FancyButton, fancyButton5: FancyButton){
@@ -298,5 +303,20 @@ class CreateTimenote : Fragment(), View.OnClickListener{
         fancyButton4.setBorderWidth(24)
         fancyButton4.setBorderColor(android.R.color.black)
         fancyButton5.setBorderWidth(0)
+    }
+
+    override fun onFailure(e: Exception) {
+        e.toString()
+    }
+
+    override fun onSuccess(bitmap: Bitmap) {
+        create_timenote_take_add_pic.visibility = View.GONE
+        create_timenote_pb.visibility = View.GONE
+        create_timenote_pic.visibility = View.VISIBLE
+        create_timenote_pic.setImageBitmap(bitmap)
+    }
+
+    override fun onPlacePicked(address: String) {
+        Toast.makeText(requireContext(), address, Toast.LENGTH_SHORT).show()
     }
 }

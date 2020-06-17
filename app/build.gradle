@@ -94,5 +94,7 @@ dependencies {
     implementation 'com.afollestad.material-dialogs:color:3.3.0'
 
     implementation 'com.github.anugotta:FlipTimerView:v1.5'
+    implementation 'com.github.takusemba:cropme:2.0.5'
+
 
 }

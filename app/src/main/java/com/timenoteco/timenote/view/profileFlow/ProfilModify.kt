@@ -79,7 +79,7 @@ class ProfilModify: Fragment(), View.OnClickListener {
 
     private fun createDialogBottomSheet(title: Int, choices: List<String>) {
         MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-            title(null, resources.getString(title))
+            title(title)
             listItems(null, choices) { dialog, index, text ->
 
             }

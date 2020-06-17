@@ -69,6 +69,8 @@ class MainActivity : AppCompatActivity() {
             intent = intent
         )
 
+        bottomNavView.itemIconTintList = null
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             bottomNavView.menu[2].iconTintList = null
             bottomNavView.menu[4].iconTintList = null
