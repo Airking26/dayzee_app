@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.view.createTimenoteFlow
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -9,11 +10,19 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
+import com.timenoteco.timenote.listeners.BackToHomeListener
 import kotlinx.android.synthetic.main.fragment_preference_sub_category.*
 import kotlinx.android.synthetic.main.fragment_preview_timenote_created.*
 import kotlinx.android.synthetic.main.fragment_profile.*
 
 class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
+
+    private lateinit var backToHomeListener: BackToHomeListener
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        backToHomeListener = context as BackToHomeListener
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
          inflater.inflate(R.layout.fragment_preview_timenote_created, container, false)
@@ -31,8 +40,15 @@ class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when(v){
-            //preview_created_timenote_done_btn -> findNavController().navigate(PreviewTimenoteCreatedDirections.actionPreviewTimenoteCreatedToHome())
+            preview_created_timenote_done_btn -> {
+                clearPopAndBackHome()
+            }
         }
+    }
+
+    private fun clearPopAndBackHome() {
+        findNavController().popBackStack()
+        backToHomeListener.onBackHome()
     }
 
 

@@ -1,13 +1,24 @@
 package com.timenoteco.timenote.common
 
+import android.Manifest
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.res.Resources
 import android.location.Geocoder
 import android.os.Handler
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
+import android.view.View
 import android.widget.AutoCompleteTextView
 import android.widget.TextView
+import androidx.core.app.ActivityCompat.requestPermissions
+import androidx.core.app.ActivityCompat.startActivityForResult
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
@@ -15,6 +26,7 @@ import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
+import com.afollestad.materialdialogs.list.listItems
 import com.timenoteco.timenote.listeners.PlacePickerListener
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.AutoSuggestAdapter
@@ -75,6 +87,46 @@ class Utils {
             }
 
         })
+    }
+
+    fun picChooserMaterialDialog(context: Context, resources: Resources, view: View, view1: View, fragment: Fragment) {
+        val PERMISSIONS_STORAGE = arrayOf(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+
+
+        MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            title(R.string.take_add_a_picture)
+            listItems(
+                items = listOf(
+                    resources.getString(R.string.take_a_photo),
+                    resources.getString(R.string.choose_from_gallery)
+                )
+            ) { _, index, text ->
+                if (ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                    ) == PackageManager.PERMISSION_GRANTED
+                    && ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    view.visibility = View.GONE
+                    view1.visibility = View.VISIBLE
+                    when (text) {
+                        resources.getString(R.string.take_a_photo) -> fragment.startActivityForResult(Intent(MediaStore.ACTION_IMAGE_CAPTURE), 0)
+                        resources.getString(R.string.choose_from_gallery) -> fragment.startActivityForResult(Intent(
+                                Intent.ACTION_PICK,
+                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                            ), 1
+                        )
+                    }
+                } else fragment.requestPermissions(PERMISSIONS_STORAGE, 2)
+            }
+            lifecycleOwner(fragment)
+        }
     }
 
 }

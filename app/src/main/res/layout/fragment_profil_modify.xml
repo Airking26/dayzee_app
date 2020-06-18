@@ -53,6 +53,16 @@
                 android:layout_width="92dp"
                 android:layout_height="92dp"/>
 
+            <ProgressBar
+                android:visibility="invisible"
+                android:id="@+id/profile_modify_pb"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="24dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
             <mehdi.sakout.fancybuttons.FancyButton
                 android:layout_marginTop="16dp"
                 fancy:fb_defaultColor="@color/colorPrimary"
@@ -74,6 +84,7 @@
                 android:drawablePadding="8dp"
                 android:hint="@string/name_you_want_to_appear"
                 android:textSize="15sp"
+                android:textColor="@color/colorText"
                 android:backgroundTint="#60000000"
                 android:padding="16dp"
                 android:drawableStart="@drawable/ic_profile_name_to_appear"
@@ -90,6 +101,7 @@
 
 
             <TextView
+                android:textColor="@color/colorText"
                 android:id="@+id/profile_modify_name"
                 android:drawablePadding="8dp"
                 android:hint="@string/your_name"
@@ -107,6 +119,7 @@
                 style="@style/AppTheme.Divider.Toolbar"/>
 
             <TextView
+                android:textColor="@color/colorText"
                 android:id="@+id/profile_modify_from"
                 android:drawablePadding="8dp"
                 android:hint="@string/from"

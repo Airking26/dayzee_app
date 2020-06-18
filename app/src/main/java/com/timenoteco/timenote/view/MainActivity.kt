@@ -23,12 +23,13 @@ import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.setupWithNavController
+import com.timenoteco.timenote.listeners.BackToHomeListener
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel.AuthenticationState
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_profile_calendar.view.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), BackToHomeListener {
 
     private lateinit var viewModel: LoginViewModel
     private var currentNavController: LiveData<NavController>? = null
@@ -115,5 +116,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSupportNavigateUp(): Boolean {
         return currentNavController?.value?.navigateUp() ?: false
+    }
+
+    override fun onBackHome() {
+        bottomNavView.selectedItemId = R.id.navigation_graph_tab_1
     }
 }

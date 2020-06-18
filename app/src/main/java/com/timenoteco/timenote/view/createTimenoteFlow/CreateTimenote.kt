@@ -1,6 +1,5 @@
 package com.timenoteco.timenote.view.createTimenoteFlow
 
-import android.Manifest
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -17,7 +16,6 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -45,8 +43,7 @@ import mehdi.sakout.fancybuttons.FancyButton
 import java.text.SimpleDateFormat
 import java.util.*
 
-class CreateTimenote : Fragment(), View.OnClickListener, OnCropListener,
-    PlacePickerListener {
+class CreateTimenote : Fragment(), View.OnClickListener, OnCropListener, PlacePickerListener {
 
     private val creationTimenoteViewModel: CreationTimenoteViewModel by activityViewModels()
     private lateinit var categoryTv: TextView
@@ -64,10 +61,6 @@ class CreateTimenote : Fragment(), View.OnClickListener, OnCropListener,
     private var listSharedWith: MutableList<String> = mutableListOf()
     private val DATE_FORMAT = "EEE, d MMM yyyy hh:mm aaa"
     private lateinit var dateFormat : SimpleDateFormat
-    private val PERMISSIONS_STORAGE = arrayOf(
-        Manifest.permission.READ_EXTERNAL_STORAGE,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE
-    )
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_create_timenote, container, false)
@@ -88,8 +81,6 @@ class CreateTimenote : Fragment(), View.OnClickListener, OnCropListener,
         takeAddPicTv = create_timenote_take_add_pic
         progressBar = create_timenote_pb
 
-        titleTv.text = creationTimenoteViewModel.getDescription() ?: getString(R.string.title)
-
         create_timenote_next_btn.setOnClickListener(this)
         from_label.setOnClickListener(this)
         to_label.setOnClickListener(this)
@@ -106,20 +97,10 @@ class CreateTimenote : Fragment(), View.OnClickListener, OnCropListener,
 
     }
 
-    private fun checkIfPermissionGranted(): Boolean {
-        if (checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-            && checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            return true
-        } else {
-            requestPermissions(PERMISSIONS_STORAGE, 2)
-            return false
-        }
-    }
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if(requestCode == 2){
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                checkIfPermissionGranted()
+                Utils().picChooserMaterialDialog(requireContext(), resources, create_timenote_pb, create_timenote_take_add_pic, this@CreateTimenote)
             }
         }
     }
@@ -150,7 +131,6 @@ class CreateTimenote : Fragment(), View.OnClickListener, OnCropListener,
                 title(R.string.title)
                 input(inputType = InputType.TYPE_CLASS_TEXT, maxLength = 100, prefill = creationTimenoteViewModel.getDescription()){ _, text ->
                     titleTv.text = text
-                    creationTimenoteViewModel.setDescription(text.toString())
                 }
                 positiveButton(R.string.done)
                 lifecycleOwner(this@CreateTimenote)
@@ -163,30 +143,17 @@ class CreateTimenote : Fragment(), View.OnClickListener, OnCropListener,
                     allowCustomArgb = true,
                     showAlphaSelector = true) { _, color ->
                     moreColorTv.setBackgroundColor(color)
-                    colorChoosed(firstColorTv, secondColorTv, thirdColorTv, fourthColorTv, moreColorTv)
+                    colorChoosedUI(firstColorTv, secondColorTv, thirdColorTv, fourthColorTv, moreColorTv)
                 }
                 positiveButton(R.string.done)
                 negativeButton(android.R.string.cancel)
                 lifecycleOwner(this@CreateTimenote)
             }
-            create_timenote_first_color -> colorChoosed(secondColorTv, thirdColorTv, fourthColorTv, moreColorTv, firstColorTv)
-            create_timenote_second_color -> colorChoosed(thirdColorTv, fourthColorTv, moreColorTv, firstColorTv, secondColorTv)
-            create_timenote_third_color -> colorChoosed(fourthColorTv, moreColorTv, firstColorTv, secondColorTv, thirdColorTv)
-            create_timenote_fourth_color -> colorChoosed(thirdColorTv, moreColorTv, firstColorTv, secondColorTv, fourthColorTv)
-            create_timenote_take_add_pic -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                title(R.string.take_add_a_picture)
-                listItems(items = listOf(getString(R.string.take_a_photo), getString(R.string.choose_from_gallery))){ _, index, text ->
-                    if(checkIfPermissionGranted()) {
-                        takeAddPicTv.visibility = View.GONE
-                        progressBar.visibility = View.VISIBLE
-                        when (text) {
-                            getString(R.string.take_a_photo) -> startActivityForResult(Intent(MediaStore.ACTION_IMAGE_CAPTURE), 0)
-                            getString(R.string.choose_from_gallery) -> startActivityForResult(Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI), 1)
-                        }
-                    }
-                }
-                lifecycleOwner(this@CreateTimenote)
-            }
+            create_timenote_first_color -> colorChoosedUI(secondColorTv, thirdColorTv, fourthColorTv, moreColorTv, firstColorTv)
+            create_timenote_second_color -> colorChoosedUI(thirdColorTv, fourthColorTv, moreColorTv, firstColorTv, secondColorTv)
+            create_timenote_third_color -> colorChoosedUI(fourthColorTv, moreColorTv, firstColorTv, secondColorTv, thirdColorTv)
+            create_timenote_fourth_color -> colorChoosedUI(thirdColorTv, moreColorTv, firstColorTv, secondColorTv, fourthColorTv)
+            create_timenote_take_add_pic -> Utils().picChooserMaterialDialog(requireContext(), resources, create_timenote_take_add_pic, create_timenote_pb, this@CreateTimenote)
         }
     }
 
@@ -247,7 +214,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, OnCropListener,
                     val selectedImage: Bitmap = data.extras?.get("data") as Bitmap
                     cropImage(selectedImage)
                 } else {
-                    progressBar.visibility =View.GONE
+                    progressBar.visibility =View.INVISIBLE
                     takeAddPicTv.visibility = View.VISIBLE
                 }
             }
@@ -267,7 +234,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, OnCropListener,
                         }
                     }
                 } else {
-                    progressBar.visibility =View.GONE
+                    progressBar.visibility =View.INVISIBLE
                     takeAddPicTv.visibility = View.VISIBLE
                 }
             }
@@ -280,7 +247,6 @@ class CreateTimenote : Fragment(), View.OnClickListener, OnCropListener,
             customView(R.layout.cropview)
             title(R.string.resize)
             positiveButton(R.string.done) {
-                val p = cropView?.crop()
                 cropView?.addOnCropListener(this@CreateTimenote)
             }
             lifecycleOwner(this@CreateTimenote)
@@ -293,7 +259,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, OnCropListener,
         cropView.crop()
     }
 
-    private fun colorChoosed(fancyButton1: FancyButton, fancyButton2: FancyButton, fancyButton3: FancyButton, fancyButton4: FancyButton, fancyButton5: FancyButton){
+    private fun colorChoosedUI(fancyButton1: FancyButton, fancyButton2: FancyButton, fancyButton3: FancyButton, fancyButton4: FancyButton, fancyButton5: FancyButton){
         fancyButton1.setBorderWidth(24)
         fancyButton1.setBorderColor(android.R.color.black)
         fancyButton2.setBorderWidth(24)
