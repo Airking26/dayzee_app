@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.navigation.fragment.findNavController
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
@@ -28,6 +29,7 @@ class NearbyFilters : Fragment(), View.OnClickListener {
 
         nearby_filter_from.setOnClickListener(this)
         nearby_filter_category.setOnClickListener(this)
+        nearby_filter_done_btn.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
@@ -48,6 +50,7 @@ class NearbyFilters : Fragment(), View.OnClickListener {
                 }
                 lifecycleOwner(this@NearbyFilters)
             }
+            nearby_filter_done_btn -> findNavController().navigate(NearbyFiltersDirections.actionNearbyFiltersToNearBy())
         }
     }
 

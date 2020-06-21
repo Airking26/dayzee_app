@@ -80,11 +80,12 @@
                 <ImageView
                     android:layout_gravity="center"
                     android:layout_marginBottom="12dp"
-                    android:id="@+id/create_timenote_pic"
                     android:visibility="gone"
+                    android:id="@+id/create_timenote_pic"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:scaleType="centerCrop"
+                    android:layout_width="350dp"
+                    android:layout_height="150dp"/>
 
                 <TextView
                     android:layout_gravity="center"

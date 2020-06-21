@@ -1,22 +1,19 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="200dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="400dp">
 
-    <com.takusemba.cropme.CropLayout
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:id="@+id/crop_view"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        app:cropme_background_alpha="0%"
-        app:cropme_frame_height_percent="100%"
-        app:cropme_frame_width_percent="100%"
-        app:cropme_max_scale="2.0"
-        app:cropme_overlay_shape="rectangle"
-        app:cropme_with_border="true" />
+<com.theartofdev.edmodo.cropper.CropImageView
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    android:id="@+id/crop_view"
+    app:cropScaleType="centerCrop"
+    android:layout_width="match_parent"
+    android:layout_height="400dp"
+    app:cropAspectRatioX="16"
+    app:cropAspectRatioY="9"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

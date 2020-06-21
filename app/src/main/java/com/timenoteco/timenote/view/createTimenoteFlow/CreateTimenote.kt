@@ -13,6 +13,7 @@ import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
@@ -31,11 +32,10 @@ import com.afollestad.materialdialogs.input.input
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
 import com.afollestad.materialdialogs.list.listItemsMultiChoice
-import com.takusemba.cropme.CropLayout
-import com.takusemba.cropme.OnCropListener
-import com.timenoteco.timenote.listeners.PlacePickerListener
+import com.theartofdev.edmodo.cropper.CropImageView
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.Utils
+import com.timenoteco.timenote.listeners.PlacePickerListener
 import com.timenoteco.timenote.viewModel.CreationTimenoteViewModel
 import kotlinx.android.synthetic.main.cropview.view.*
 import kotlinx.android.synthetic.main.fragment_create_timenote.*
@@ -43,8 +43,9 @@ import mehdi.sakout.fancybuttons.FancyButton
 import java.text.SimpleDateFormat
 import java.util.*
 
-class CreateTimenote : Fragment(), View.OnClickListener, OnCropListener, PlacePickerListener {
+class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener{
 
+    private lateinit var dialog: MaterialDialog
     private val creationTimenoteViewModel: CreationTimenoteViewModel by activityViewModels()
     private lateinit var categoryTv: TextView
     private lateinit var fromTv: TextView
@@ -58,6 +59,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, OnCropListener, PlacePi
     private lateinit var fourthColorTv: FancyButton
     private lateinit var takeAddPicTv: TextView
     private lateinit var progressBar: ProgressBar
+    private lateinit var pic: ImageView
     private var listSharedWith: MutableList<String> = mutableListOf()
     private val DATE_FORMAT = "EEE, d MMM yyyy hh:mm aaa"
     private lateinit var dateFormat : SimpleDateFormat
@@ -80,6 +82,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, OnCropListener, PlacePi
         fourthColorTv = create_timenote_fourth_color
         takeAddPicTv = create_timenote_take_add_pic
         progressBar = create_timenote_pb
+        pic = create_timenote_pic
 
         create_timenote_next_btn.setOnClickListener(this)
         from_label.setOnClickListener(this)
@@ -100,7 +103,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, OnCropListener, PlacePi
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if(requestCode == 2){
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                Utils().picChooserMaterialDialog(requireContext(), resources, create_timenote_pb, create_timenote_take_add_pic, this@CreateTimenote)
+                Utils().picturePicker(requireContext(), resources, takeAddPicTv, progressBar, this)
             }
         }
     }
@@ -153,7 +156,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, OnCropListener, PlacePi
             create_timenote_second_color -> colorChoosedUI(thirdColorTv, fourthColorTv, moreColorTv, firstColorTv, secondColorTv)
             create_timenote_third_color -> colorChoosedUI(fourthColorTv, moreColorTv, firstColorTv, secondColorTv, thirdColorTv)
             create_timenote_fourth_color -> colorChoosedUI(thirdColorTv, moreColorTv, firstColorTv, secondColorTv, fourthColorTv)
-            create_timenote_take_add_pic -> Utils().picChooserMaterialDialog(requireContext(), resources, create_timenote_take_add_pic, create_timenote_pb, this@CreateTimenote)
+            create_timenote_take_add_pic -> Utils().picturePicker(requireContext(), resources, takeAddPicTv, progressBar, this)
         }
     }
 
@@ -208,55 +211,27 @@ class CreateTimenote : Fragment(), View.OnClickListener, OnCropListener, PlacePi
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when(requestCode){
-            0 -> {
-                if(resultCode == RESULT_OK && data != null){
-                    val selectedImage: Bitmap = data.extras?.get("data") as Bitmap
-                    cropImage(selectedImage)
-                } else {
-                    progressBar.visibility =View.INVISIBLE
-                    takeAddPicTv.visibility = View.VISIBLE
-                }
-            }
-            1 -> {
-                if(resultCode == RESULT_OK && data != null){
-                    val selectedImage : Uri? = data.data
-                    val filePathColumn: Array<String> = arrayOf(MediaStore.Images.Media.DATA)
-                    if(selectedImage != null){
-                        val cursor: Cursor? = requireActivity().contentResolver.query(selectedImage, filePathColumn, null, null, null)
-                        if(cursor != null){
-                            cursor.moveToFirst()
-                            val columnIndex: Int = cursor.getColumnIndex(filePathColumn[0])
-                            val picturePath: String = cursor.getString(columnIndex)
-                            val bitmap = BitmapFactory.decodeFile(picturePath)
-                            cursor.close()
-                            cropImage(bitmap)
-                        }
-                    }
-                } else {
-                    progressBar.visibility =View.INVISIBLE
-                    takeAddPicTv.visibility = View.VISIBLE
-                }
-            }
-        }
+        Utils().picturePickerResult(requestCode, resultCode, data, progressBar, takeAddPicTv, pic, requireActivity(), this::cropView)
     }
 
-    private fun cropImage(bitmap: Bitmap) {
-        var cropView: CropLayout? = null
+
+    private fun cropView(bitmap: Bitmap) {
+        var cropView: CropImageView? = null
         val dialog = MaterialDialog(requireContext()).show {
             customView(R.layout.cropview)
             title(R.string.resize)
             positiveButton(R.string.done) {
-                cropView?.addOnCropListener(this@CreateTimenote)
+                progressBar.visibility = View.GONE
+                takeAddPicTv.visibility = View.GONE
+                pic.visibility = View.VISIBLE
+                val o = cropView?.croppedImage
+                pic.setImageBitmap(cropView?.croppedImage)
             }
             lifecycleOwner(this@CreateTimenote)
-
         }
 
-        cropView = dialog.getCustomView().crop_view as CropLayout
-        cropView.setBitmap(bitmap)
-        cropView.isOffFrame()
-        cropView.crop()
+        cropView = dialog.getCustomView().crop_view as CropImageView
+        cropView.setImageBitmap(bitmap)
     }
 
     private fun colorChoosedUI(fancyButton1: FancyButton, fancyButton2: FancyButton, fancyButton3: FancyButton, fancyButton4: FancyButton, fancyButton5: FancyButton){
@@ -271,18 +246,8 @@ class CreateTimenote : Fragment(), View.OnClickListener, OnCropListener, PlacePi
         fancyButton5.setBorderWidth(0)
     }
 
-    override fun onFailure(e: Exception) {
-        e.toString()
-    }
-
-    override fun onSuccess(bitmap: Bitmap) {
-        create_timenote_take_add_pic.visibility = View.GONE
-        create_timenote_pb.visibility = View.GONE
-        create_timenote_pic.visibility = View.VISIBLE
-        create_timenote_pic.setImageBitmap(bitmap)
-    }
-
     override fun onPlacePicked(address: String) {
         Toast.makeText(requireContext(), address, Toast.LENGTH_SHORT).show()
     }
+
 }

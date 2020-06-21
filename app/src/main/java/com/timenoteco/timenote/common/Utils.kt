@@ -1,11 +1,16 @@
 package com.timenoteco.timenote.common
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
+import android.database.Cursor
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.location.Geocoder
+import android.net.Uri
 import android.os.Handler
 import android.provider.MediaStore
 import android.text.Editable
@@ -27,10 +32,12 @@ import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
+import com.theartofdev.edmodo.cropper.CropImageView
 import com.timenoteco.timenote.listeners.PlacePickerListener
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.AutoSuggestAdapter
 import kotlinx.android.synthetic.main.autocomplete_search_address.view.*
+import kotlinx.android.synthetic.main.cropview.view.*
 
 class Utils {
 
@@ -89,12 +96,11 @@ class Utils {
         })
     }
 
-    fun picChooserMaterialDialog(context: Context, resources: Resources, view: View, view1: View, fragment: Fragment) {
+    fun picturePicker(context: Context, resources: Resources, view: View, view1: View, fragment: Fragment) {
         val PERMISSIONS_STORAGE = arrayOf(
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
-
 
         MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             title(R.string.take_add_a_picture)
@@ -126,6 +132,48 @@ class Utils {
                 } else fragment.requestPermissions(PERMISSIONS_STORAGE, 2)
             }
             lifecycleOwner(fragment)
+        }
+    }
+
+    fun picturePickerResult(requestCode: Int, resultCode: Int, data: Intent?, view: View, view1: View, view2: View?, activity: Activity, croper: (Bitmap) -> Unit) {
+        when (requestCode) {
+            0 -> {
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    val selectedImage: Bitmap = data.extras?.get("data") as Bitmap
+                    croper(selectedImage)
+                } else {
+                    view.visibility = View.GONE
+                    view1.visibility = View.VISIBLE
+                    view2?.visibility = View.GONE
+                }
+            }
+            1 -> {
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    val selectedImage: Uri? = data.data
+                    val filePathColumn: Array<String> = arrayOf(MediaStore.Images.Media.DATA)
+                    if (selectedImage != null) {
+                        val cursor: Cursor? = activity.contentResolver.query(
+                            selectedImage,
+                            filePathColumn,
+                            null,
+                            null,
+                            null
+                        )
+                        if (cursor != null) {
+                            cursor.moveToFirst()
+                            val columnIndex: Int = cursor.getColumnIndex(filePathColumn[0])
+                            val picturePath: String = cursor.getString(columnIndex)
+                            val bitmap = BitmapFactory.decodeFile(picturePath)
+                            cursor.close()
+                            croper(bitmap)
+                        }
+                    }
+                } else {
+                    view2?.visibility = View.GONE
+                    view.visibility = View.GONE
+                    view1.visibility = View.VISIBLE
+                }
+            }
         }
     }
 

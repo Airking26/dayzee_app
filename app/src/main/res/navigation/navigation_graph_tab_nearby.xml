@@ -22,7 +22,11 @@
         android:id="@+id/nearbyFilters"
         android:name="com.timenoteco.timenote.view.nearByFlow.NearbyFilters"
         android:label="fragment_nearby_filters"
-        tools:layout="@layout/fragment_nearby_filters" />
+        tools:layout="@layout/fragment_nearby_filters" >
+        <action
+            android:id="@+id/action_nearbyFilters_to_nearBy"
+            app:popUpTo="@id/nearBy" />
+    </fragment>
     <fragment
         android:id="@+id/comments"
         android:name="com.timenoteco.timenote.view.homeFlow.Comments"

@@ -18,12 +18,12 @@
                 android:text="@string/filters" />
 
             <TextView
-                android:id="@+id/nearby_filter_clear_btn"
+                android:id="@+id/nearby_filter_done_btn"
                 style="@style/AppTheme.Toolbar.TextLeft"
                 android:text="@string/done" />
 
             <TextView
-                android:id="@+id/nearby_filter_done_btn"
+                android:id="@+id/nearby_filter_clear_btn"
                 style="@style/AppTheme.Toolbar.TextRight"
                 android:text="@string/clear"
                 />

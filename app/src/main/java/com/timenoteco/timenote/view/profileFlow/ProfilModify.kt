@@ -15,6 +15,9 @@ import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -35,22 +38,22 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.dialog.plus.ui.DialogPlusBuilder
 import com.dialog.plus.ui.MultiOptionsDialog
-import com.takusemba.cropme.CropLayout
-import com.takusemba.cropme.OnCropListener
+import com.theartofdev.edmodo.cropper.CropImageView
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.viewModel.ProfileModifyViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.cropview.view.*
 import kotlinx.android.synthetic.main.cropview_circle.view.*
-import kotlinx.android.synthetic.main.fragment_create_timenote.*
 import kotlinx.android.synthetic.main.fragment_profil_modify.*
 import java.text.SimpleDateFormat
 import java.util.*
 
 
-class ProfilModify: Fragment(), View.OnClickListener, OnCropListener {
+class ProfilModify: Fragment(), View.OnClickListener{
 
+    private lateinit var profileModifyPicIv : ImageView
+    private lateinit var profileModifyPb: ProgressBar
     private val profileModifyViewModel: ProfileModifyViewModel by activityViewModels()
     private val DATE_FORMAT = "dd MMMM yyyy"
     private var dateFormat : SimpleDateFormat
@@ -66,10 +69,17 @@ class ProfilModify: Fragment(), View.OnClickListener, OnCropListener {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        setListeners()
-        setPicProfile()
-        setProfilModifyViewModel()
+        profileModifyPb = profile_modify_pb
+        profileModifyPicIv = profile_modify_pic_imageview
+        Glide
+            .with(this)
+            .load("https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792")
+            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+            .apply(RequestOptions.circleCropTransform())
+            .into(profile_modify_pic_imageview)
 
+        setListeners()
+        setProfilModifyViewModel()
     }
 
     private fun setProfilModifyViewModel() {
@@ -111,10 +121,10 @@ class ProfilModify: Fragment(), View.OnClickListener, OnCropListener {
         })
     }
 
-    private fun setPicProfile() {
+    private fun setPicProfile(bitmap: Bitmap) {
         Glide
             .with(this)
-            .load("https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792")
+            .load(bitmap)
             .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
             .apply(RequestOptions.circleCropTransform())
             .into(profile_modify_pic_imageview)
@@ -202,7 +212,7 @@ class ProfilModify: Fragment(), View.OnClickListener, OnCropListener {
                 positiveButton(R.string.done)
                 lifecycleOwner(this@ProfilModify)
             }
-            profile_modify_pic_imageview -> Utils().picChooserMaterialDialog(requireContext(), resources, profile_modify_pic_imageview, profile_modify_pb, this@ProfilModify)
+            profile_modify_pic_imageview -> Utils().picturePicker(requireContext(), resources, profile_modify_pic_imageview, profile_modify_pb, this@ProfilModify)
             profile_modify_done_btn -> findNavController().navigate(ProfilModifyDirections.actionProfilModifyToProfile())
         }
     }
@@ -210,73 +220,29 @@ class ProfilModify: Fragment(), View.OnClickListener, OnCropListener {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if(requestCode == 2){
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                Utils().picChooserMaterialDialog(requireContext(), resources, profile_modify_pic_imageview, profile_modify_pb, this@ProfilModify)
+                Utils().picturePicker(requireContext(), resources, profile_modify_pic_imageview, profile_modify_pb, this@ProfilModify)
             }
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when(requestCode){
-            0 -> {
-                if(resultCode == Activity.RESULT_OK && data != null){
-                    val selectedImage: Bitmap = data.extras?.get("data") as Bitmap
-                    cropImage(selectedImage)
-                } else {
-                    profile_modify_pb.visibility =View.GONE
-                    profile_modify_pic_imageview.visibility = View.VISIBLE
-                }
-            }
-            1 -> {
-                if(resultCode == Activity.RESULT_OK && data != null){
-                    val selectedImage : Uri? = data.data
-                    val filePathColumn: Array<String> = arrayOf(MediaStore.Images.Media.DATA)
-                    if(selectedImage != null){
-                        val cursor: Cursor? = requireActivity().contentResolver.query(selectedImage, filePathColumn, null, null, null)
-                        if(cursor != null){
-                            cursor.moveToFirst()
-                            val columnIndex: Int = cursor.getColumnIndex(filePathColumn[0])
-                            val picturePath: String = cursor.getString(columnIndex)
-                            val bitmap = BitmapFactory.decodeFile(picturePath)
-                            cursor.close()
-                            cropImage(bitmap)
-                        }
-                    }
-                } else {
-                    profile_modify_pb.visibility =View.GONE
-                    profile_modify_pic_imageview.visibility = View.VISIBLE
-                }
-            }
-        }
-
+        Utils().picturePickerResult(requestCode, resultCode, data, profile_modify_pb, profile_modify_pic_imageview, null, requireActivity(), this::cropImage)
     }
 
-
     private fun cropImage(bitmap: Bitmap) {
-        var cropView: CropLayout? = null
+        var cropView: CropImageView? = null
         val dialog = MaterialDialog(requireContext()).show {
             customView(R.layout.cropview_circle)
             title(R.string.resize)
             positiveButton(R.string.done) {
-                val c = cropView
-                cropView?.addOnCropListener(this@ProfilModify)
+                profileModifyPb.visibility = View.GONE
+                profileModifyPicIv.visibility = View.VISIBLE
+                setPicProfile(cropView?.croppedImage!!)
             }
             lifecycleOwner(this@ProfilModify)
-
         }
 
-        cropView = dialog.getCustomView().crop_view_circle as CropLayout
-        cropView.setBitmap(bitmap)
-        cropView.isOffFrame()
-        cropView.crop()
-    }
-
-    override fun onFailure(e: Exception) {
-        e.message
-    }
-
-    override fun onSuccess(bitmap: Bitmap) {
-        profile_modify_pb.visibility =View.GONE
-        profile_modify_pic_imageview.visibility = View.VISIBLE
-        profile_modify_pic_imageview.setImageBitmap(bitmap)
+        cropView = dialog.getCustomView().crop_view_circle as CropImageView
+        cropView.setImageBitmap(bitmap)
     }
 }
