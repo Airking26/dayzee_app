@@ -21,6 +21,7 @@ class Settings : Fragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when(v){
             profile_settings_notification_manager -> findNavController().navigate(SettingsDirections.actionSettingsToNotificationManager())
+            profile_settings_edit_personnal_infos -> findNavController().navigate(SettingsDirections.actionSettingsToProfilModify())
         }
     }
 }

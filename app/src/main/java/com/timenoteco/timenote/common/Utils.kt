@@ -9,6 +9,7 @@ import android.content.res.Resources
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.location.Address
 import android.location.Geocoder
 import android.net.Uri
 import android.os.Handler
@@ -32,6 +33,7 @@ import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
+import com.google.android.gms.maps.model.LatLng
 import com.theartofdev.edmodo.cropper.CropImageView
 import com.timenoteco.timenote.listeners.PlacePickerListener
 import com.timenoteco.timenote.R
@@ -42,9 +44,9 @@ import kotlinx.android.synthetic.main.cropview.view.*
 class Utils {
 
     fun placePicker(context: Context, lifecycleOwner: LifecycleOwner, textView: TextView, placePickerListener: PlacePickerListener){
-        val places : MutableList<String> = mutableListOf()
+        val places : MutableList<Address> = mutableListOf()
         val TRIGGER_AUTO_COMPLETE = 250
-        val AUTO_COMPLETE_DELAY: Long = 500
+        val AUTO_COMPLETE_DELAY: Long = 250
         lateinit var handler: Handler
 
         val dialog = MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
@@ -62,7 +64,7 @@ class Utils {
         autoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
             dialog.dismiss()
             placePickerListener.onPlacePicked(autocompleteAdapter.getObject(position))
-            textView.text = autocompleteAdapter.getObject(position)
+            textView.text = autocompleteAdapter.getObject(position).getAddressLine(0)
         }
         handler = Handler(Handler.Callback { msg ->
             if (msg.what == TRIGGER_AUTO_COMPLETE) {
@@ -74,7 +76,8 @@ class Utils {
                             //val city: String = y.locality ?: ""
                             //val country: String = y.countryName ?: ""
                             val address: String = y.getAddressLine(0) ?: ""
-                            places.add(address)
+                            val latLong: LatLng = LatLng(y.latitude, y.longitude)
+                            places.add(y)
                         }
                         autocompleteAdapter.setData(places)
                         autocompleteAdapter.notifyDataSetChanged()

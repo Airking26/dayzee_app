@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.location.Address
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -42,6 +43,9 @@ import kotlinx.android.synthetic.main.fragment_create_timenote.*
 import mehdi.sakout.fancybuttons.FancyButton
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.time.ExperimentalTime
+import kotlin.time.milliseconds
+import kotlin.time.seconds
 
 class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener{
 
@@ -61,7 +65,10 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener{
     private lateinit var progressBar: ProgressBar
     private lateinit var pic: ImageView
     private var listSharedWith: MutableList<String> = mutableListOf()
-    private val DATE_FORMAT = "EEE, d MMM yyyy hh:mm aaa"
+    private val DATE_FORMAT_SAME_DAY_SAME_TIME = "EEE, d MMM yyyy hh:mm aaa"
+    private val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = "EEE, d MMM yyyy hh:mm aaa"
+    private val DATE_FORMAT_DIFFERENT_DAY_DIFFERENT_TIME = "EEE, d MMM yyyy hh:mm aaa"
+    private val DATE_FORMAT_DIFFERENT_DAY_SAME_TIME = "EEE, d MMM yyyy hh:mm aaa"
     private lateinit var dateFormat : SimpleDateFormat
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
@@ -69,7 +76,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener{
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        dateFormat = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
+        dateFormat = SimpleDateFormat(DATE_FORMAT_SAME_DAY_SAME_TIME, Locale.getDefault())
         fromTv = create_timenote_from
         toTv = create_timenote_to
         categoryTv = create_timenote_category
@@ -108,11 +115,14 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener{
         }
     }
 
+    @ExperimentalTime
     override fun onClick(v: View?) {
         when(v){
             create_timenote_next_btn -> findNavController().navigate(CreateTimenoteDirections.actionCreateTimenoteToPreviewTimenoteCreated())
             from_label -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                dateTimePicker { _, datetime -> fromTv.text = dateFormat.format(datetime.time.time) }
+                dateTimePicker { _, datetime ->
+                    fromTv.text = dateFormat.format(datetime.time.time)
+                }
                 lifecycleOwner(this@CreateTimenote)
             }
             to_label -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
@@ -246,8 +256,8 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener{
         fancyButton5.setBorderWidth(0)
     }
 
-    override fun onPlacePicked(address: String) {
-        Toast.makeText(requireContext(), address, Toast.LENGTH_SHORT).show()
+    override fun onPlacePicked(address: Address) {
+        Toast.makeText(requireContext(), address.getAddressLine(0), Toast.LENGTH_SHORT).show()
     }
 
 }

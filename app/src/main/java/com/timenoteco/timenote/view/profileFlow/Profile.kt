@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.view.profileFlow
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -41,6 +42,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener {
         profile_view_type_btn.setOnClickListener(this)
         profile_filter_btn.setOnClickListener(this)
         profile_notif_btn.setOnClickListener(this)
+        profile_arrow_forward_btn.setOnClickListener(this)
 
         events = mutableListOf(
             Event("Beach Party",
@@ -252,7 +254,12 @@ class Profile : BaseThroughFragment(), View.OnClickListener {
             profile_calendar_btn -> findNavController().navigate(ProfileDirections.actionProfileToProfileCalendar())
             profile_settings_btn -> findNavController().navigate(ProfileDirections.actionProfileToSettings())
             profile_notif_btn -> findNavController().navigate(ProfileDirections.actionProfileToNotifications())
-            profile_view_type_btn -> eventAdapter.switchViewType()
+            profile_view_type_btn -> {
+                val type = eventAdapter.switchViewType()
+                if(type == 1) profile_view_type_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_view_list_black_24dp))
+                else profile_view_type_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_view_module_black_24dp))
+            }
+            profile_arrow_forward_btn -> profile_arrow_forward_btn.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
         }
     }
 

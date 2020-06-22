@@ -31,16 +31,16 @@
 
         <TextView
             android:id="@+id/profile_calendar_item_name_event"
-            android:layout_marginStart="8dp"
-            android:textSize="14sp"
-            android:textColor="@color/colorText"
-            android:textStyle="bold"
-            android:textAllCaps="true"
-            tools:text="beach Volley"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/profile_calendar_item_pic_event_imageview"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textAllCaps="true"
+            android:textColor="@color/colorText"
+            android:textSize="14sp"
+            android:textStyle="normal"
+            app:layout_constraintStart_toEndOf="@+id/profile_calendar_item_pic_event_imageview"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="beach Volley" />
 
         <TextView
             android:id="@+id/profile_calendar_item_address_event"

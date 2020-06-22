@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.view.nearByFlow
 
+import android.location.Address
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -37,12 +38,7 @@ class NearBy : Fragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdap
     private lateinit var dateFormat : SimpleDateFormat
     private lateinit var timenoteAdapter: ItemTimenoteAdapter
     private lateinit var googleMap: GoogleMap
-    private val callback = OnMapReadyCallback { googleMap ->
-        this.googleMap = googleMap
-        val sydney = LatLng(-34.0, 151.0)
-        googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-    }
+    private val callback = OnMapReadyCallback { googleMap -> this.googleMap = googleMap }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_near_by, container, false)
@@ -224,9 +220,10 @@ class NearBy : Fragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdap
         }
     }
 
-    override fun onPlacePicked(address: String) {
-        googleMap.addMarker(MarkerOptions().position(LatLng(45.0, 108.0)))
-        this.googleMap.moveCamera(CameraUpdateFactory.newLatLng(LatLng(45.0, 108.0)))
+    override fun onPlacePicked(address: Address) {
+        this.googleMap.addMarker(MarkerOptions().position(LatLng(address.latitude, address.longitude)))
+        this.googleMap.moveCamera(CameraUpdateFactory.newLatLng(LatLng(address.latitude, address.longitude)))
+        this.googleMap.animateCamera(CameraUpdateFactory.zoomBy(13.0f))
     }
 
 }

@@ -13,4 +13,8 @@ class CreationTimenoteData {
         return timenote
     }
 
+    fun loadCreateTimenoteData(): Timenote? {
+        return timenote
+    }
+
 }

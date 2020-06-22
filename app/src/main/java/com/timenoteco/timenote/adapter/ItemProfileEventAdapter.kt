@@ -36,10 +36,11 @@ class ItemProfileEventAdapter(private var events: List<Timenote>): RecyclerView.
     }
 
 
-    fun switchViewType() {
+    fun switchViewType() : Int{
         if(this.style == 0) this.style = 1
         else this.style = 0
         notifyDataSetChanged()
+        return this.style
     }
 
     override fun getItemViewType(position: Int): Int {

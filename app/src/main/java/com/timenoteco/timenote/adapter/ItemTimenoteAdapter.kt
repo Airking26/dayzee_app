@@ -159,6 +159,13 @@ class ItemTimenoteToComeAdapter(val timenotesToCome: List<Timenote>): RecyclerVi
                 .centerCrop()
                 .into(itemView.timenote_recent_pic_imageview)
 
+            Glide
+                .with(itemView)
+                .load(timenote.pic_user)
+                .apply(RequestOptions.circleCropTransform())
+                .into(itemView.timenote_recent_pic_user_imageview)
+
+            itemView.timenote_recent_username.text = timenote.username
             itemView.timenote_recent_title.text = timenote.title
             itemView.timenote_recent_date.text = timenote.dateIn
         }

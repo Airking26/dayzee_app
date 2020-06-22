@@ -42,6 +42,9 @@
         <action
             android:id="@+id/action_settings_to_notificationManager"
             app:destination="@id/notificationManager" />
+        <action
+            android:id="@+id/action_settings_to_profilModify"
+            app:destination="@id/profilModify" />
     </fragment>
     <fragment
         android:id="@+id/notifications"

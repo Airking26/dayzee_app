@@ -40,7 +40,6 @@
             android:layout_marginStart="8dp"
             android:textSize="16sp"
             android:textColor="@color/colorText"
-            android:textStyle="bold"
             android:textAllCaps="true"
             tools:text="beach Volley"
             app:layout_constraintTop_toTopOf="parent"
