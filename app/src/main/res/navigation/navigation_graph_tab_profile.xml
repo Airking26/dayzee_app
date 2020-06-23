@@ -21,6 +21,9 @@
         <action
             android:id="@+id/action_profile_to_notifications"
             app:destination="@id/notifications" />
+        <action
+            android:id="@+id/action_profile_to_collapFragment"
+            app:destination="@id/collapFragment" />
     </fragment>
     <fragment
         android:id="@+id/profilModify"
@@ -56,4 +59,8 @@
         android:name="com.timenoteco.timenote.view.profileFlow.NotificationManager"
         android:label="fragment_notification_manager"
         tools:layout="@layout/fragment_notification_manager" />
+    <fragment
+        android:id="@+id/collapFragment"
+        android:name="com.timenoteco.timenote.garbage.CollapFragment"
+        android:label="CollapFragment" />
 </navigation>

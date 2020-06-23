@@ -68,6 +68,18 @@
             android:layout_height="24dp"/>
 
         <TextView
+            android:gravity="center"
+            app:layout_constraintStart_toEndOf="@id/profile_item_pic_profile_imageview"
+            android:textSize="12sp"
+            android:textColor="@color/colorText"
+            android:layout_marginStart="4dp"
+            android:text="Samuel"
+            app:layout_constraintTop_toTopOf="@id/profile_item_pic_profile_imageview"
+            app:layout_constraintBottom_toBottomOf="@id/profile_item_pic_profile_imageview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
             android:id="@+id/profile_item_date_event"
             tools:text="Dans 12 jours"
             android:textColor="@color/colorText"

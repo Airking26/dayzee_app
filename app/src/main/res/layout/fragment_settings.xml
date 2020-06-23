@@ -2,18 +2,21 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@android:color/white"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".view.profileFlow.Settings">
+    tools:context=".view.profileFlow.Settings"
+    android:background="#F5F5F5">
 
     <LinearLayout
         android:id="@+id/profile_settings_ll"
         style="@style/AppTheme.Toolbar.LinearLayout">
 
-        <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
+        <androidx.appcompat.widget.Toolbar
+            android:background="@color/colorPrimary"
+            style="@style/AppTheme.Toolbar">
 
             <TextView
+                android:textColor="@color/white"
                 style="@style/AppTheme.Toolbar.Title"
                 android:text="@string/settings"/>
 
@@ -22,7 +25,6 @@
         <TextView style="@style/AppTheme.Divider.Toolbar"/>
 
     </LinearLayout>
-
 
     <ScrollView
         app:layout_constraintStart_toStartOf="parent"
@@ -33,7 +35,6 @@
         android:layout_height="0dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:background="@android:color/white"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -50,8 +51,8 @@
                 android:layout_height="wrap_content"/>
 
             <TextView
+                android:background="@color/white"
                 android:id="@+id/profile_settings_edit_personnal_infos"
-                android:background="#20aaaaaa"
                 android:padding="16dp"
                 android:textColor="@android:color/black"
                 android:text="@string/edit_my_personnals_informations"
@@ -69,7 +70,7 @@
 
             <TextView
                 android:id="@+id/profile_settings_change_password"
-                android:background="#20aaaaaa"
+                android:background="@color/white"
                 android:padding="16dp"
                 android:textColor="@android:color/black"
                 android:text="@string/change_password"
@@ -86,7 +87,7 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/private_account_cl"
-                android:background="#20aaaaaa"
+                android:background="@color/white"
                 android:padding="16dp"
                 app:layout_constraintTop_toBottomOf="@id/card_line_1"
                 app:layout_constraintStart_toStartOf="parent"
@@ -122,7 +123,7 @@
 
             <TextView
                 android:id="@+id/profile_settings_asked_sent"
-                android:background="#20aaaaaa"
+                android:background="@color/white"
                 android:padding="16dp"
                 android:textColor="@android:color/black"
                 android:text="@string/asked_sent"
@@ -147,7 +148,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_marginTop="8dp"
                 android:id="@+id/push_notification_cl"
-                android:background="#20aaaaaa"
+                android:background="@color/white"
                 android:padding="16dp"
                 app:layout_constraintTop_toBottomOf="@id/push_label"
                 app:layout_constraintStart_toStartOf="parent"
@@ -182,7 +183,7 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/push_notification_certified_cl"
-                android:background="#20aaaaaa"
+                android:background="@color/white"
                 android:padding="16dp"
                 app:layout_constraintTop_toBottomOf="@id/card_line_3"
                 app:layout_constraintStart_toStartOf="parent"
@@ -217,7 +218,7 @@
 
             <TextView
                 android:id="@+id/profile_settings_notification_manager"
-                android:background="#20aaaaaa"
+                android:background="@color/white"
                 android:padding="16dp"
                 android:textColor="@android:color/black"
                 android:text="@string/notification_manager_settings"
@@ -242,7 +243,7 @@
             <TextView
                 android:layout_marginTop="8dp"
                 android:id="@+id/profile_settings_date_format"
-                android:background="#20aaaaaa"
+                android:background="@color/white"
                 android:padding="16dp"
                 android:textColor="@android:color/black"
                 android:text="@string/timenote_date_format"
@@ -259,7 +260,7 @@
 
             <TextView
                 android:id="@+id/profile_settings_timenote_format"
-                android:background="#20aaaaaa"
+                android:background="@color/white"
                 android:padding="16dp"
                 android:textColor="@android:color/black"
                 android:text="@string/timenote_visibility_format"
@@ -276,7 +277,7 @@
 
             <TextView
                 android:id="@+id/profile_settings_timenote_visibility"
-                android:background="#20aaaaaa"
+                android:background="@color/white"
                 android:padding="16dp"
                 android:textColor="@android:color/black"
                 android:text="@string/timenote_visibility"
@@ -300,7 +301,7 @@
 
             <TextView
                 android:id="@+id/profile_settings_confidentiality_politic"
-                android:background="#20aaaaaa"
+                android:background="@color/white"
                 android:padding="16dp"
                 android:layout_marginTop="8dp"
                 android:textColor="@android:color/black"
@@ -318,7 +319,7 @@
 
             <TextView
                 android:id="@+id/profile_settings_send_comments"
-                android:background="#20aaaaaa"
+                android:background="@color/white"
                 android:padding="16dp"
                 android:textColor="@android:color/black"
                 android:text="@string/send_comments"
@@ -334,7 +335,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="24dp"
-                android:background="#20aaaaaa"
+                android:background="@color/white"
                 android:padding="16dp"
                 android:gravity="center"
                 android:text="@string/disconnect"

@@ -22,8 +22,7 @@ import kotlinx.android.synthetic.main.fragment_profile.*
 class Profile : BaseThroughFragment(), View.OnClickListener {
 
     private lateinit var eventAdapter: ItemProfileEventAdapter
-    private var events: MutableList<Event> = mutableListOf()
-    private var timenotes: List<Timenote> = listOf()
+    private var timenotes: MutableList<Timenote> = mutableListOf()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?  =
         getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_profile)
@@ -43,47 +42,9 @@ class Profile : BaseThroughFragment(), View.OnClickListener {
         profile_filter_btn.setOnClickListener(this)
         profile_notif_btn.setOnClickListener(this)
         profile_arrow_forward_btn.setOnClickListener(this)
+        profile_arrow_back_btn.setOnClickListener(this)
 
-        events = mutableListOf(
-            Event("Beach Party",
-                "34 Olhio Street",
-                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                "Dans 25 jours"), Event("Beach Party",
-                "34 Olhio Street",
-                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                "Dans 25 jours"), Event("Beach Party",
-                "34 Olhio Street",
-                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                "Dans 25 jours"), Event("Beach Party",
-                "34 Olhio Street",
-                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                "Dans 25 jours"), Event("Beach Party",
-                "34 Olhio Street",
-                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                "Dans 25 jours"), Event("Beach Party",
-                "34 Olhio Street",
-                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                "Dans 25 jours"), Event("Beach Party",
-                "34 Olhio Street",
-                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                "Dans 25 jours"), Event("Beach Party",
-                "34 Olhio Street",
-                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                "Dans 25 jours"), Event("Beach Party",
-                "34 Olhio Street",
-                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                "Dans 25 jours")
-        )
-        timenotes = listOf(
+        timenotes = mutableListOf(
             Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -239,7 +200,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener {
                 Toast.makeText(context, "on Swiped ", Toast.LENGTH_SHORT).show()
                 //Remove swiped item from list and notify the RecyclerView
                 val position = viewHolder.adapterPosition
-                events.removeAt(position)
+                timenotes.removeAt(position)
                 eventAdapter.notifyDataSetChanged()
             }
         }
@@ -253,12 +214,19 @@ class Profile : BaseThroughFragment(), View.OnClickListener {
             profile_modify_btn -> findNavController().navigate(ProfileDirections.actionProfileToProfilModify())
             profile_calendar_btn -> findNavController().navigate(ProfileDirections.actionProfileToProfileCalendar())
             profile_settings_btn -> findNavController().navigate(ProfileDirections.actionProfileToSettings())
-            profile_notif_btn -> findNavController().navigate(ProfileDirections.actionProfileToNotifications())
+            profile_notif_btn -> findNavController().navigate(ProfileDirections.actionProfileToCollapFragment())
             profile_view_type_btn -> {
                 val type = eventAdapter.switchViewType()
-                if(type == 1) profile_view_type_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_view_list_black_24dp))
+                if(type == 1) {
+                    profile_view_type_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_view_list_black_24dp))
+                    profile_rv.setBackgroundColor(resources.getColor(android.R.color.white))
+                }
                 else profile_view_type_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_view_module_black_24dp))
             }
+            profile_arrow_forward_btn -> profile_rv.setBackgroundColor(resources.getColor(R.color.colorBackgroundForward))
+            profile_arrow_back_btn -> profile_rv.setBackgroundColor(resources.getColor(R.color.colorBackgroundBackward))
+
+
             profile_arrow_forward_btn -> profile_arrow_forward_btn.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
         }
     }

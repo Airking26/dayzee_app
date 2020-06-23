@@ -3,5 +3,7 @@
     <attr name="colorText" format="reference|color" />
     <attr name="colorTextSecondary" format="reference|color" />
     <attr name="colorTextThirdly" format="reference|color" />
+    <attr name="colorBackgroundForward" format="reference|color" />
+    <attr name="colorBackgroundBackward" format="reference|color" />
 
 </resources>

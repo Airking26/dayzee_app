@@ -223,7 +223,7 @@ class NearBy : Fragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdap
     override fun onPlacePicked(address: Address) {
         this.googleMap.addMarker(MarkerOptions().position(LatLng(address.latitude, address.longitude)))
         this.googleMap.moveCamera(CameraUpdateFactory.newLatLng(LatLng(address.latitude, address.longitude)))
-        this.googleMap.animateCamera(CameraUpdateFactory.zoomBy(13.0f))
+        this.googleMap.animateCamera(CameraUpdateFactory.zoomTo(13.0f))
     }
 
 }

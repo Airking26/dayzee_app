@@ -122,6 +122,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener{
             from_label -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 dateTimePicker { _, datetime ->
                     fromTv.text = dateFormat.format(datetime.time.time)
+                    creationTimenoteViewModel.setYear(datetime.time.time)
                 }
                 lifecycleOwner(this@CreateTimenote)
             }
@@ -142,8 +143,9 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener{
             }
             title_cardview -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.title)
-                input(inputType = InputType.TYPE_CLASS_TEXT, maxLength = 100, prefill = creationTimenoteViewModel.getDescription()){ _, text ->
+                input(inputType = InputType.TYPE_CLASS_TEXT, maxLength = 100, prefill = creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.title){ _, text ->
                     titleTv.text = text
+                    creationTimenoteViewModel.setDescription(text.toString())
                 }
                 positiveButton(R.string.done)
                 lifecycleOwner(this@CreateTimenote)
@@ -234,8 +236,8 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener{
                 progressBar.visibility = View.GONE
                 takeAddPicTv.visibility = View.GONE
                 pic.visibility = View.VISIBLE
-                val o = cropView?.croppedImage
                 pic.setImageBitmap(cropView?.croppedImage)
+                creationTimenoteViewModel.setPicUser(cropView?.croppedImage!!)
             }
             lifecycleOwner(this@CreateTimenote)
         }
@@ -257,7 +259,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener{
     }
 
     override fun onPlacePicked(address: Address) {
-        Toast.makeText(requireContext(), address.getAddressLine(0), Toast.LENGTH_SHORT).show()
+        creationTimenoteViewModel.setLocation(address.getAddressLine(0))
     }
 
 }

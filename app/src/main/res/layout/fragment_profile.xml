@@ -1,220 +1,275 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
-    xmlns:fancy="http://schemas.android.com/apk/res-auto"
-    tools:context=".view.profileFlow.Profile">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-     <LinearLayout
-         android:id="@+id/profile_ll"
-         style="@style/AppTheme.Toolbar.LinearLayout">
+    <LinearLayout
+        android:id="@+id/profile_ll"
+        style="@style/AppTheme.Toolbar.LinearLayout">
 
-            <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
+        <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
 
-                <TextView
-                    android:id="@+id/profile_name_toolbar"
-                    style="@style/AppTheme.Toolbar.Title"
-                    android:text="Ronny" />
+            <TextView
+                android:id="@+id/profile_name_toolbar"
+                style="@style/AppTheme.Toolbar.Title"
+                android:text="Ronny" />
 
-                <ImageView
-                    android:id="@+id/profile_settings_btn"
-                    style="@style/AppTheme.Toolbar.ImageRight"
-                    android:src="@drawable/ic_settings_black_24dp" />
+            <ImageView
+                android:id="@+id/profile_settings_btn"
+                style="@style/AppTheme.Toolbar.ImageRight"
+                android:src="@drawable/ic_settings_black_24dp" />
 
-                <ImageView
-                    android:id="@+id/profile_notif_btn"
-                    style="@style/AppTheme.Toolbar.ImageLeft"
-                    android:src="@drawable/ic_flag_black_24dp" />
+            <ImageView
+                android:id="@+id/profile_notif_btn"
+                style="@style/AppTheme.Toolbar.ImageLeft"
+                android:src="@drawable/ic_flag_black_24dp" />
 
-            </androidx.appcompat.widget.Toolbar>
+        </androidx.appcompat.widget.Toolbar>
 
-         <TextView style="@style/AppTheme.Divider.Toolbar"/>
+        <TextView style="@style/AppTheme.Divider.Toolbar"/>
 
-        </LinearLayout>
+    </LinearLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/profile_cl"
-        app:layout_constraintStart_toStartOf="parent"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/profile_ll"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-    <TextView
-        android:id="@+id/profile_nbr_followers"
-        android:text="654"
-        android:textColor="@color/colorText"
-        android:textSize="17sp"
-        android:textStyle="bold"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="24dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-
-    <TextView
-        android:id="@+id/profile_followers_label"
-        android:text="@string/followers"
-        android:textSize="15sp"
-        android:layout_marginStart="24dp"
-        app:layout_constraintTop_toBottomOf="@id/profile_nbr_followers"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <TextView
-        android:id="@+id/profile_nbr_following"
-        android:text="233"
-        android:textColor="@color/colorText"
-        android:textSize="17sp"
-        android:textStyle="bold"
-        android:layout_marginTop="15dp"
-        android:layout_marginStart="24dp"
-        app:layout_constraintTop_toBottomOf="@id/profile_followers_label"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <TextView
-        android:text="@string/following"
-        tools:text="Following"
-        android:textSize="15sp"
-        android:layout_marginStart="24dp"
-        app:layout_constraintTop_toBottomOf="@id/profile_nbr_following"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <ImageView
-        android:id="@+id/profile_calendar_btn"
-        android:layout_marginEnd="24dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:src="@drawable/ic_event_note_black_24dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <ImageView
-        android:id="@+id/profile_pic_imageview"
-        android:src="@drawable/ic_pref_holiday_clicked"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_width="108dp"
-        android:layout_height="108dp"/>
-
-    <TextView
-        android:id="@+id/profile_location"
-        android:textColor="@color/colorText"
-        android:textSize="14sp"
-        android:drawableStart="@drawable/ic_profile_from"
-        android:text=" Israel"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/profile_pic_imageview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-
-    <mehdi.sakout.fancybuttons.FancyButton
-        android:layout_marginTop="16dp"
-        fancy:fb_defaultColor="@android:color/holo_orange_dark"
-        fancy:fb_radius="5dp"
-        fancy:fb_text="@string/modify"
-        android:paddingVertical="4dp"
-        android:paddingHorizontal="18dp"
-        fancy:fb_textColor="@android:color/white"
-        android:gravity="center"
-        app:layout_constraintTop_toBottomOf="@id/profile_location"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:id="@+id/profile_modify_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-
-    <TextView
-        android:id="@+id/profile_desc"
-        android:text="Founder of Timenote"
-        android:textSize="15sp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/profile_modify_btn"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <ImageView
-        app:layout_constraintEnd_toStartOf="@id/profile_arrow_forward_btn"
-        android:id="@+id/profile_arrow_back_btn"
-        android:src="@drawable/ic_arrow_back_black_24dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/profile_desc"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <ImageView
-        app:layout_constraintEnd_toStartOf="@id/profile_view_type_btn"
-        android:id="@+id/profile_arrow_forward_btn"
-        android:src="@drawable/ic_arrow_forward_black_24dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/profile_desc"
-        app:layout_constraintStart_toEndOf="@id/profile_arrow_back_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-
-    <ImageView
-        android:id="@+id/profile_view_type_btn"
-        android:src="@drawable/ic_view_module_black_24dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toStartOf="@id/profile_filter_btn"
-        app:layout_constraintTop_toBottomOf="@id/profile_desc"
-        app:layout_constraintStart_toEndOf="@id/profile_arrow_forward_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <ImageView
-        app:layout_constraintEnd_toEndOf="parent"
-        android:id="@+id/profile_filter_btn"
-        android:src="@drawable/logo"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/profile_desc"
-        app:layout_constraintStart_toEndOf="@id/profile_view_type_btn"
-        android:tint="@color/black"
-        android:layout_width="22dp"
-        android:layout_height="22dp"/>
-
-    <TextView
-        app:layout_constraintTop_toBottomOf="@id/profile_arrow_back_btn"
-        android:id="@+id/view_demarcation"
-        android:layout_marginTop="8dp"
-        style="@style/AppTheme.Divider.Toolbar"/>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_gravity="bottom"
-        android:id="@+id/profile_rv"
-        android:background="#105A599D"
-        android:paddingBottom="12dp"
-        android:clipToPadding="false"
-        tools:listitem="@layout/item_profile_timenote_list_style"
-        app:layout_constraintTop_toBottomOf="@+id/profile_cl"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/profile_ll"
+        android:id="@+id/content"
         android:layout_width="match_parent"
-        android:layout_height="0dp"/>
+        android:layout_height="0dp"
+        android:fitsSystemWindows="false"
+        android:background="@color/white">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:background="@color/white"
+            android:id="@+id/app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.timenoteco.timenote.androidView.CollapsibleToolbar xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:id="@+id/motionLayout"
+                xmlns:fancy="http://schemas.android.com/apk/res-auto"
+                tools:context=".view.profileFlow.Profile"
+                app:layoutDescription="@xml/motion_scene"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:minHeight="0dp"
+                android:fitsSystemWindows="false"
+                app:layout_scrollFlags="scroll|enterAlways|snap|exitUntilCollapsed">
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/background"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/profile_ll">
+
+                    <TextView
+                        android:id="@+id/profile_nbr_followers"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="16dp"
+                        android:text="654"
+                        android:textColor="@color/colorText"
+                        android:textSize="17sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+
+                    <TextView
+                        android:id="@+id/profile_followers_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:text="@string/followers"
+                        android:textSize="15sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/profile_nbr_followers" />
+
+                    <TextView
+                        android:id="@+id/profile_nbr_following"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="15dp"
+                        android:text="233"
+                        android:textColor="@color/colorText"
+                        android:textSize="17sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/profile_followers_label" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:text="@string/following"
+                        android:textSize="15sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/profile_nbr_following"
+                        tools:text="Following" />
+
+                    <ImageView
+                        android:id="@+id/profile_calendar_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="24dp"
+                        android:src="@drawable/ic_event_note_black_24dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/profile_pic_imageview"
+                        android:layout_width="108dp"
+                        android:layout_height="108dp"
+                        android:layout_marginTop="16dp"
+                        android:src="@drawable/ic_pref_holiday_clicked"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/profile_location"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:drawableStart="@drawable/ic_profile_from"
+                        android:text=" Israel"
+                        android:textColor="@color/colorText"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/profile_pic_imageview" />
+
+
+                    <mehdi.sakout.fancybuttons.FancyButton
+                        android:id="@+id/profile_modify_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:gravity="center"
+                        android:paddingHorizontal="18dp"
+                        android:paddingVertical="4dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/profile_location"
+                        fancy:fb_defaultColor="@android:color/holo_orange_dark"
+                        fancy:fb_radius="5dp"
+                        fancy:fb_text="@string/modify"
+                        fancy:fb_textColor="@android:color/white" />
+
+
+                    <TextView
+                        android:id="@+id/profile_desc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Founder of Timenote"
+                        android:textSize="15sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/profile_modify_btn" />
+
+                    <ImageView
+                        android:id="@+id/profile_arrow_back_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:src="@drawable/ic_arrow_back_black_24dp"
+                        app:layout_constraintEnd_toStartOf="@id/profile_arrow_forward_btn"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/profile_desc" />
+
+                    <ImageView
+                        android:id="@+id/profile_arrow_forward_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:src="@drawable/ic_arrow_forward_black_24dp"
+                        app:layout_constraintEnd_toStartOf="@id/profile_view_type_btn"
+                        app:layout_constraintStart_toEndOf="@id/profile_arrow_back_btn"
+                        app:layout_constraintTop_toBottomOf="@id/profile_desc" />
+
+
+                    <ImageView
+                        android:id="@+id/profile_view_type_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:src="@drawable/ic_view_module_black_24dp"
+                        app:layout_constraintEnd_toStartOf="@id/profile_filter_btn"
+                        app:layout_constraintStart_toEndOf="@id/profile_arrow_forward_btn"
+                        app:layout_constraintTop_toBottomOf="@id/profile_desc" />
+
+                    <ImageView
+                        android:id="@+id/profile_filter_btn"
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_marginTop="16dp"
+                        android:src="@drawable/logo"
+                        android:tint="@color/black"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/profile_view_type_btn"
+                        app:layout_constraintTop_toBottomOf="@id/profile_desc" />
+
+                    <TextView
+                        android:id="@+id/view_demarcation"
+                        style="@style/AppTheme.Divider.Toolbar"
+                        android:layout_marginTop="8dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/profile_arrow_back_btn" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.timenoteco.timenote.androidView.CollapsibleToolbar>
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/scrollable"
+            android:layout_width="match_parent"
+            android:fillViewport="true"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <LinearLayout
+                android:focusableInTouchMode="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:nestedScrollingEnabled="false"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                    android:layout_gravity="bottom"
+                    android:id="@+id/profile_rv"
+                    android:background="@color/colorBackgroundForward"
+                    android:paddingBottom="12dp"
+                    android:clipToPadding="false"
+                    tools:listitem="@layout/item_profile_timenote_list_style"
+                    app:layout_constraintTop_toBottomOf="@+id/profile_cl"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

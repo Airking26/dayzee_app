@@ -12,6 +12,8 @@
         <item name="colorText">@color/colorText</item>
         <item name="colorTextSecondary">@color/colorTextSecondary</item>
         <item name="colorTextThirdly">@color/colorTextThirdly</item>
+        <item name="colorBackgroundForward">@color/colorBackgroundForward</item>
+        <item name="colorBackgroundBackward">@color/colorBackgroundBackward</item>
     </style>
 
 
