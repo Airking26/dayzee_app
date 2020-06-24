@@ -13,8 +13,9 @@ import kotlinx.android.synthetic.main.adapter_timenote_recent.view.*
 import kotlinx.android.synthetic.main.item_timenote.view.*
 import kotlinx.android.synthetic.main.item_timenote_recent.view.*
 
-class ItemTimenoteAdapter(val timenotes: List<Timenote>, val timenotesToCome: List<Timenote>,
-                          val isHeterogeneous: Boolean, val commentListener: CommentListener, val plusListener: PlusListener)
+class ItemTimenoteAdapter(
+    private val timenotes: List<Timenote>, private val timenotesToCome: List<Timenote>,
+    private val isHeterogeneous: Boolean, private val commentListener: CommentListener, private val plusListener: PlusListener)
     : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     interface CommentListener{
@@ -25,7 +26,7 @@ class ItemTimenoteAdapter(val timenotes: List<Timenote>, val timenotesToCome: Li
         fun onPlusClicked()
     }
 
-    var itemViewType: Int = 0
+    private var itemViewType: Int = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if(isHeterogeneous) {
@@ -136,7 +137,7 @@ class ItemTimenoteAdapter(val timenotes: List<Timenote>, val timenotesToCome: Li
 
 }
 
-class ItemTimenoteToComeAdapter(val timenotesToCome: List<Timenote>): RecyclerView.Adapter<ItemTimenoteToComeAdapter.ItemAdapter>(){
+class ItemTimenoteToComeAdapter(private val timenotesToCome: List<Timenote>): RecyclerView.Adapter<ItemTimenoteToComeAdapter.ItemAdapter>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemAdapter {
         return ItemAdapter(LayoutInflater.from(parent.context).inflate(R.layout.item_timenote_recent, parent, false))

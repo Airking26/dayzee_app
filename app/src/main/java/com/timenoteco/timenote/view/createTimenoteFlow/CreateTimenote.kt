@@ -6,11 +6,14 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.location.Address
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.InputType
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +23,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
@@ -33,6 +37,8 @@ import com.afollestad.materialdialogs.input.input
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
 import com.afollestad.materialdialogs.list.listItemsMultiChoice
+import com.google.android.gms.common.util.Hex
+import com.google.android.gms.common.util.HexDumpUtils
 import com.theartofdev.edmodo.cropper.CropImageView
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.Utils
@@ -49,7 +55,8 @@ import kotlin.time.seconds
 
 class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener{
 
-    private lateinit var dialog: MaterialDialog
+    private var formCompleted: Boolean = true
+    private var startDate: Long? = null
     private val creationTimenoteViewModel: CreationTimenoteViewModel by activityViewModels()
     private lateinit var categoryTv: TextView
     private lateinit var fromTv: TextView
@@ -66,9 +73,6 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener{
     private lateinit var pic: ImageView
     private var listSharedWith: MutableList<String> = mutableListOf()
     private val DATE_FORMAT_SAME_DAY_SAME_TIME = "EEE, d MMM yyyy hh:mm aaa"
-    private val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = "EEE, d MMM yyyy hh:mm aaa"
-    private val DATE_FORMAT_DIFFERENT_DAY_DIFFERENT_TIME = "EEE, d MMM yyyy hh:mm aaa"
-    private val DATE_FORMAT_DIFFERENT_DAY_SAME_TIME = "EEE, d MMM yyyy hh:mm aaa"
     private lateinit var dateFormat : SimpleDateFormat
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
@@ -105,6 +109,36 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener{
         create_timenote_fourth_color.setOnClickListener(this)
         create_timenote_take_add_pic.setOnClickListener(this)
 
+        creationTimenoteViewModel.getCreateTimeNoteLiveData().observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            if(it.category.isNullOrBlank()) create_timenote_category.text = getString(R.string.none) else create_timenote_category.text = it.category
+            if(it.pic == null){
+                takeAddPicTv.visibility = View.VISIBLE
+                progressBar.visibility = View.GONE
+                pic.visibility = View.GONE
+            } else {
+                takeAddPicTv.visibility = View.GONE
+                progressBar.visibility =View.GONE
+                pic.visibility = View.VISIBLE
+                pic.setImageBitmap(it.pic)
+            }
+            if(it.desc.isNullOrBlank()) titleTv.text = getString(R.string.title) else titleTv.text = it.desc
+            if(it.place.isNullOrBlank()) create_timenote_where_btn.text = getString(R.string.where) else create_timenote_where_btn.text = it.place
+            if(it.startDate.isNullOrBlank()) fromTv.text = "" else fromTv.text = it.startDate
+            if(it.endDate.isNullOrBlank()) toTv.text = "" else toTv.text = it.endDate
+            if(!it.color.isNullOrBlank()) {
+                when(it.color){
+                    "#ffff8800" -> colorChoosedUI(secondColorTv, thirdColorTv, fourthColorTv, moreColorTv, firstColorTv)
+                    "#ffcc0000" -> colorChoosedUI(thirdColorTv, fourthColorTv, moreColorTv, firstColorTv, secondColorTv)
+                    "#ff0099cc" -> colorChoosedUI(fourthColorTv, moreColorTv, firstColorTv, secondColorTv, thirdColorTv)
+                    "#ffaa66cc" -> colorChoosedUI(thirdColorTv, moreColorTv, firstColorTv, secondColorTv, fourthColorTv)
+                    else -> {
+                        colorChoosedUI(firstColorTv, secondColorTv, thirdColorTv, fourthColorTv, moreColorTv)
+                        moreColorTv.setBackgroundColor(Color.parseColor(it.color))
+                    }
+
+                }
+            }
+        })
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -115,19 +149,26 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener{
         }
     }
 
-    @ExperimentalTime
     override fun onClick(v: View?) {
         when(v){
-            create_timenote_next_btn -> findNavController().navigate(CreateTimenoteDirections.actionCreateTimenoteToPreviewTimenoteCreated())
+            create_timenote_next_btn -> {
+                //if(checkFormCompleted())
+                    findNavController().navigate(CreateTimenoteDirections.actionCreateTimenoteToPreviewTimenoteCreated())
+            }
             from_label -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 dateTimePicker { _, datetime ->
+                    startDate = datetime.time.time
                     fromTv.text = dateFormat.format(datetime.time.time)
                     creationTimenoteViewModel.setYear(datetime.time.time)
+                    creationTimenoteViewModel.setStartDate(datetime.time.time)
                 }
                 lifecycleOwner(this@CreateTimenote)
             }
             to_label -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                dateTimePicker { dialog, datetime -> toTv.text = dateFormat.format(datetime.time.time)}
+                dateTimePicker { dialog, datetime -> toTv.text = dateFormat.format(datetime.time.time)
+                    creationTimenoteViewModel.setEndDate(datetime.time.time)
+                    creationTimenoteViewModel.setFormatedStartDate(startDate!!, datetime.time.time)
+                }
                 lifecycleOwner(this@CreateTimenote)
             }
             where_cardview -> Utils().placePicker(requireContext(), this@CreateTimenote, create_timenote_where_btn, this)
@@ -138,12 +179,13 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener{
                     "Judaisme", "Bouddhisme", "Techno", "Pop", "Football", "Tennis", "Judaisme", "Bouddhisme",
                     "Techno", "Pop", "Football", "Tennis")){_, index, text ->
                     categoryTv.text = text
+                    creationTimenoteViewModel.setCategory(text.toString())
                 }
                 lifecycleOwner(this@CreateTimenote)
             }
             title_cardview -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.title)
-                input(inputType = InputType.TYPE_CLASS_TEXT, maxLength = 100, prefill = creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.title){ _, text ->
+                input(inputType = InputType.TYPE_CLASS_TEXT, maxLength = 100, prefill = creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.desc){ _, text ->
                     titleTv.text = text
                     creationTimenoteViewModel.setDescription(text.toString())
                 }
@@ -152,22 +194,31 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener{
             }
             create_timenote_fifth_color ->  MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.colors)
-                colorChooser(
-                    colors = ColorPalette.Primary,
-                    subColors = ColorPalette.PrimarySub,
-                    allowCustomArgb = true,
-                    showAlphaSelector = true) { _, color ->
-                    moreColorTv.setBackgroundColor(color)
+                colorChooser(colors = ColorPalette.Primary, subColors = ColorPalette.PrimarySub, allowCustomArgb = true, showAlphaSelector = true) { _, color ->
+                    val colorHex = '#' + Integer.toHexString(color)
+                    moreColorTv.setBackgroundColor(Color.parseColor(colorHex))
+                    creationTimenoteViewModel.setColor(colorHex)
                     colorChoosedUI(firstColorTv, secondColorTv, thirdColorTv, fourthColorTv, moreColorTv)
                 }
-                positiveButton(R.string.done)
-                negativeButton(android.R.string.cancel)
+
                 lifecycleOwner(this@CreateTimenote)
             }
-            create_timenote_first_color -> colorChoosedUI(secondColorTv, thirdColorTv, fourthColorTv, moreColorTv, firstColorTv)
-            create_timenote_second_color -> colorChoosedUI(thirdColorTv, fourthColorTv, moreColorTv, firstColorTv, secondColorTv)
-            create_timenote_third_color -> colorChoosedUI(fourthColorTv, moreColorTv, firstColorTv, secondColorTv, thirdColorTv)
-            create_timenote_fourth_color -> colorChoosedUI(thirdColorTv, moreColorTv, firstColorTv, secondColorTv, fourthColorTv)
+            create_timenote_first_color -> {
+                colorChoosedUI(secondColorTv, thirdColorTv, fourthColorTv, moreColorTv, firstColorTv)
+                creationTimenoteViewModel.setColor("#ffff8800")
+            }
+            create_timenote_second_color -> {
+                colorChoosedUI(thirdColorTv, fourthColorTv, moreColorTv, firstColorTv, secondColorTv)
+                creationTimenoteViewModel.setColor("#ffcc0000")
+            }
+            create_timenote_third_color -> {
+                colorChoosedUI(fourthColorTv, moreColorTv, firstColorTv, secondColorTv, thirdColorTv)
+                creationTimenoteViewModel.setColor("#ff0099cc")
+            }
+            create_timenote_fourth_color -> {
+                colorChoosedUI(thirdColorTv, moreColorTv, firstColorTv, secondColorTv, fourthColorTv)
+                creationTimenoteViewModel.setColor("#ffaa66cc")
+            }
             create_timenote_take_add_pic -> Utils().picturePicker(requireContext(), resources, takeAddPicTv, progressBar, this)
         }
     }
@@ -177,6 +228,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener{
             title(R.string.share_with)
             listItems(
                 items = listOf(
+                    "All",
                     "Groups",
                     "Friends",
                     "Create a new group"
@@ -226,7 +278,6 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener{
         Utils().picturePickerResult(requestCode, resultCode, data, progressBar, takeAddPicTv, pic, requireActivity(), this::cropView)
     }
 
-
     private fun cropView(bitmap: Bitmap) {
         var cropView: CropImageView? = null
         val dialog = MaterialDialog(requireContext()).show {
@@ -262,4 +313,15 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener{
         creationTimenoteViewModel.setLocation(address.getAddressLine(0))
     }
 
+    fun checkFormCompleted(): Boolean {
+        val values = creationTimenoteViewModel.getCreateTimeNoteLiveData().value
+        if(values?.pic == null) formCompleted = false
+        if(values?.endDate.isNullOrBlank()) formCompleted = false
+        if(values?.startDate.isNullOrBlank()) formCompleted = false
+        if(values?.place.isNullOrBlank()) formCompleted = false
+        if(values?.desc.isNullOrBlank()) formCompleted = false
+        if(values?.category.isNullOrBlank()) formCompleted = false
+        if(!formCompleted) Toast.makeText(requireContext(), getString(R.string.error_message_filling), Toast.LENGTH_SHORT).show()
+        return formCompleted
+    }
 }

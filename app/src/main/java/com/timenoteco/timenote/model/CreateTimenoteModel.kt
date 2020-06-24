@@ -3,7 +3,7 @@ package com.timenoteco.timenote.model
 import android.graphics.Bitmap
 import androidx.annotation.Nullable
 
-data class CreateTimenote (
+data class CreateTimenoteModel (
     @Nullable
     var pic: Bitmap?,
     @Nullable
@@ -13,11 +13,13 @@ data class CreateTimenote (
     @Nullable
     var year: String?,
     @Nullable
-    var month: String?,
+    var startDate: String?,
     @Nullable
-    var date: String?,
+    var endDate: String?,
     @Nullable
-    var title: String?,
+    var category: String?,
     @Nullable
-    var dateIn: String?
+    var color: String?,
+    var formatedStartDate: String?,
+    var formatedEndDate: String?
 )

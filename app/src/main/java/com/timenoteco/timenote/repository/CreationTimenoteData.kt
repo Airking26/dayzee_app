@@ -1,36 +1,70 @@
 package com.timenoteco.timenote.repository
 
 import android.graphics.Bitmap
-import com.timenoteco.timenote.model.CreateTimenote
-import com.timenoteco.timenote.model.Timenote
+import com.timenoteco.timenote.model.CreateTimenoteModel
 
-private var timenote: CreateTimenote =
-    CreateTimenote(null, null, null, null, null, null, null, null)
+private var timenoteModel: CreateTimenoteModel =
+    CreateTimenoteModel(null, null, null, null, null, null, null, null, null, null)
 
 class CreationTimenoteData {
 
-    fun loadCreateTimenoteData(): CreateTimenote? {
-        return timenote
+    fun loadCreateTimenoteData(): CreateTimenoteModel? {
+        return timenoteModel
     }
 
-    fun setDescription(description: String): CreateTimenote{
-        timenote.title = description
-        return timenote
+    fun setPic(pic: Bitmap): CreateTimenoteModel {
+        timenoteModel.pic = pic
+        return timenoteModel
     }
 
-    fun setPicUser(pic: Bitmap): CreateTimenote {
-        timenote.pic = pic
-        return timenote
+    fun setPlace(location: String): CreateTimenoteModel {
+        timenoteModel.place = location
+        return timenoteModel
     }
 
-    fun setPlace(location: String): CreateTimenote {
-        timenote.place = location
-        return timenote
+    fun setDescription(description: String): CreateTimenoteModel{
+        timenoteModel.desc = description
+        return timenoteModel
     }
 
-    fun setYear(year: String): CreateTimenote{
-        timenote.year = year
-        return timenote
+    fun setYear(year: String): CreateTimenoteModel{
+        timenoteModel.year = year
+        return timenoteModel
+    }
+
+    fun setCategory(category: String): CreateTimenoteModel{
+        timenoteModel.category = category
+        return timenoteModel
+    }
+
+    fun setStartDate(startDate: String): CreateTimenoteModel{
+        timenoteModel.startDate = startDate
+        return timenoteModel
+    }
+
+    fun setEndDate(endDate: String): CreateTimenoteModel{
+        timenoteModel.endDate = endDate
+        return timenoteModel
+    }
+
+    fun setFormatedStartDate(startDate: String): CreateTimenoteModel{
+        timenoteModel.formatedStartDate = startDate
+        return timenoteModel
+    }
+
+    fun setFormatedEndDate(endDate: String): CreateTimenoteModel{
+        timenoteModel.formatedEndDate = endDate
+        return timenoteModel
+    }
+
+    fun clear(): CreateTimenoteModel {
+        timenoteModel = CreateTimenoteModel(null, null, null, null, null, null, null, null, null, null)
+        return timenoteModel
+    }
+
+    fun setColor(color: String): CreateTimenoteModel {
+        timenoteModel.color = color
+        return timenoteModel
     }
 
 }

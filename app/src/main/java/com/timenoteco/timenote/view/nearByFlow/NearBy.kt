@@ -1,12 +1,20 @@
 package com.timenoteco.timenote.view.nearByFlow
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context.LOCATION_SERVICE
+import android.content.pm.PackageManager
 import android.location.Address
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.app.ActivityCompat
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.LayoutMode
@@ -25,13 +33,12 @@ import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.PlacePickerListener
 import com.timenoteco.timenote.model.Timenote
 import kotlinx.android.synthetic.main.fragment_near_by.*
-import kotlinx.android.synthetic.main.fragment_profil_modify.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-class NearBy : Fragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdapter.PlusListener,
-    View.OnClickListener, PlacePickerListener {
+class NearBy : Fragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdapter.PlusListener, View.OnClickListener, PlacePickerListener {
 
+    private lateinit var locationManager: LocationManager
     private lateinit var nearbyDateTv: TextView
     private var timenotes: List<Timenote> = listOf()
     private val DATE_FORMAT = "EEE, d MMM yyyy"
@@ -39,12 +46,38 @@ class NearBy : Fragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdap
     private lateinit var timenoteAdapter: ItemTimenoteAdapter
     private lateinit var googleMap: GoogleMap
     private val callback = OnMapReadyCallback { googleMap -> this.googleMap = googleMap }
+    private val locationListener: LocationListener = object: LocationListener {
+        override fun onLocationChanged(location: Location?) {
+            googleMap.addMarker(MarkerOptions().position(LatLng(location?.latitude!!, location.longitude)))
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(LatLng(location.latitude, location.longitude)))
+            googleMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f))
+
+        }
+
+        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+        }
+
+        override fun onProviderEnabled(provider: String?) {
+        }
+
+        override fun onProviderDisabled(provider: String?) {
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_near_by, container, false)
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        locationManager = requireContext().getSystemService(LOCATION_SERVICE) as LocationManager
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            this.requestPermissions(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), 3)
+        } else {
+            locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null)
+        }
         dateFormat = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
         nearbyDateTv = nearby_time
 
@@ -198,6 +231,19 @@ class NearBy : Fragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdap
             adapter = timenoteAdapter
         }
 
+    }
+
+    @SuppressLint("MissingPermission")
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if(requestCode == 3){
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null)
+            }
+        }
     }
 
     override fun onCommentClicked() {

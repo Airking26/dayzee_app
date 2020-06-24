@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.robertlevonyan.views.chip.Chip
+    android:id="@+id/chip_profile_filter"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    tools:text="Avec Alarme"
+    android:layout_margin="4dp"
+    app:mcv_backgroundColor="@color/white"
+    app:mcv_textColor="@color/colorPrimary"
+    app:mcv_selectedTextColor="@color/white"
+    app:mcv_selectedBackgroundColor="@color/colorPrimary"
+    app:mcv_strokeColor="@color/colorPrimary"
+    app:mcv_strokeSize="1dp"
+    app:mcv_closable="false"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto" />

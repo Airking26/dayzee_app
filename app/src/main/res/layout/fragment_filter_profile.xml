@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/profile_filter_ll"
+                style="@style/AppTheme.Toolbar.LinearLayout">
+
+                <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
+
+                    <TextView
+                        style="@style/AppTheme.Toolbar.Title"
+                        android:text="@string/sorting" />
+
+                    <TextView
+                        android:drawableStart="@drawable/ic_keyboard_arrow_left_purple_24dp"
+                        android:id="@+id/pref_sub_category_btn_back"
+                        style="@style/AppTheme.Toolbar.TextRight"
+                        android:text="@string/back" />
+
+                </androidx.appcompat.widget.Toolbar>
+
+                <TextView style="@style/AppTheme.Divider.Toolbar"/>
+
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:paddingHorizontal="8dp"
+                android:clipToPadding="false"
+                android:layout_marginVertical="8dp"
+                tools:listitem="@layout/item_pref_filter_chip"
+                android:id="@+id/profile_filter_rv_chips"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/preference_subcategory_ll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                tools:listitem="@layout/item_timenote"
+                android:id="@+id/profile_filter_card_rv"
+                app:layout_constraintTop_toBottomOf="@id/how_much_do_you_like_it"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
