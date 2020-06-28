@@ -2,16 +2,14 @@ package com.timenoteco.timenote.view.nearByFlow
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context.LOCATION_SERVICE
 import android.content.pm.PackageManager
-import android.location.Address
-import android.location.Location
-import android.location.LocationListener
-import android.location.LocationManager
+import android.graphics.Color
+import android.location.*
+import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
@@ -33,6 +31,7 @@ import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.PlacePickerListener
 import com.timenoteco.timenote.model.Timenote
 import kotlinx.android.synthetic.main.fragment_near_by.*
+import okhttp3.internal.Util
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -44,40 +43,24 @@ class NearBy : Fragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdap
     private val DATE_FORMAT = "EEE, d MMM yyyy"
     private lateinit var dateFormat : SimpleDateFormat
     private lateinit var timenoteAdapter: ItemTimenoteAdapter
-    private lateinit var googleMap: GoogleMap
-    private val callback = OnMapReadyCallback { googleMap -> this.googleMap = googleMap }
-    private val locationListener: LocationListener = object: LocationListener {
-        override fun onLocationChanged(location: Location?) {
-            googleMap.addMarker(MarkerOptions().position(LatLng(location?.latitude!!, location.longitude)))
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(LatLng(location.latitude, location.longitude)))
-            googleMap.animateCamera(CameraUpdateFactory.zoomTo(15.0f))
-
-        }
-
-        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-        }
-
-        override fun onProviderEnabled(provider: String?) {
-        }
-
-        override fun onProviderDisabled(provider: String?) {
-        }
+    private var googleMap: GoogleMap? = null
+    private val callback = OnMapReadyCallback { googleMap ->
+        this.googleMap = googleMap
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        inflater.inflate(R.layout.fragment_near_by, container, false)
+    init {
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+       val view =  inflater.inflate(R.layout.fragment_near_by, container, false)
+        return view
+    }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        locationManager = requireContext().getSystemService(LOCATION_SERVICE) as LocationManager
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            this.requestPermissions(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), 3)
-        } else {
-            locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null)
-        }
+
+        checkIfCanGetLocation()
+
         dateFormat = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
         nearbyDateTv = nearby_time
 
@@ -233,15 +216,49 @@ class NearBy : Fragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdap
 
     }
 
+    private fun checkIfCanGetLocation() {
+        locationManager = requireContext().getSystemService(LOCATION_SERVICE) as LocationManager
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            this.requestPermissions(
+                arrayOf(
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ), 3
+            )
+        } else {
+            getLocation()
+        }
+    }
+
     @SuppressLint("MissingPermission")
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
+    private fun getLocation() {
+        val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+        val geocoder = Geocoder(requireContext())
+        //googleMap?.addMarker(MarkerOptions().position(LatLng(location?.latitude!!, location.longitude)))
+        googleMap?.moveCamera(
+            CameraUpdateFactory.newLatLng(
+                LatLng(
+                    location?.latitude!!,
+                    location.longitude
+                )
+            )
+        )
+        googleMap?.animateCamera(CameraUpdateFactory.zoomTo(15.0f))
+        nearby_place.text = geocoder.getFromLocation(location?.latitude!!, location.longitude, 1)[0].getAddressLine(0)
+
+    }
+
+    @SuppressLint("MissingPermission")
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if(requestCode == 3){
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null)
+                getLocation()
             }
         }
     }
@@ -267,9 +284,9 @@ class NearBy : Fragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdap
     }
 
     override fun onPlacePicked(address: Address) {
-        this.googleMap.addMarker(MarkerOptions().position(LatLng(address.latitude, address.longitude)))
-        this.googleMap.moveCamera(CameraUpdateFactory.newLatLng(LatLng(address.latitude, address.longitude)))
-        this.googleMap.animateCamera(CameraUpdateFactory.zoomTo(13.0f))
+        //this.googleMap?.addMarker(MarkerOptions().position(LatLng(address.latitude, address.longitude)))
+        this.googleMap?.moveCamera(CameraUpdateFactory.newLatLng(LatLng(address.latitude, address.longitude)))
+        this.googleMap?.animateCamera(CameraUpdateFactory.zoomTo(13.0f))
     }
 
 }

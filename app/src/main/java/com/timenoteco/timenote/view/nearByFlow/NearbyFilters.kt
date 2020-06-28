@@ -1,10 +1,14 @@
 package com.timenoteco.timenote.view.nearByFlow
 
+import android.app.Activity
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.TextView
 import androidx.navigation.fragment.findNavController
 import com.afollestad.materialdialogs.LayoutMode
@@ -24,6 +28,7 @@ class NearbyFilters : Fragment(), View.OnClickListener {
         inflater.inflate(R.layout.fragment_nearby_filters, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
         nearbyFilterCategoryTv = nearby_filter_category_tv
         nearbyFilterFromTv = nearby_filter_from_tv
 

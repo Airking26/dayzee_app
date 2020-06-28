@@ -1,14 +1,19 @@
 package com.timenoteco.timenote.view
 
+import android.app.Activity
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.ActionProvider
 import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
+import androidx.core.view.ViewCompat
+import androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener
 import androidx.core.view.get
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -19,7 +24,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.setupWithNavController
@@ -27,7 +31,7 @@ import com.timenoteco.timenote.listeners.BackToHomeListener
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel.AuthenticationState
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.item_profile_calendar.view.*
+import kotlinx.android.synthetic.main.fragment_near_by.*
 
 class MainActivity : AppCompatActivity(), BackToHomeListener {
 
@@ -46,6 +50,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener {
                 AuthenticationState.UNAUTHENTICATED_CHOOSED -> setupController(false)
             }
         })
+
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -54,6 +59,9 @@ class MainActivity : AppCompatActivity(), BackToHomeListener {
     }
 
     private fun setupController(finished: Boolean) {
+
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+
         val navGraphIds: List<Int> =
             listOf(
                 R.navigation.navigation_graph_tab_home,
@@ -121,4 +129,6 @@ class MainActivity : AppCompatActivity(), BackToHomeListener {
     override fun onBackHome() {
         bottomNavView.selectedItemId = R.id.navigation_graph_tab_1
     }
+
+
 }

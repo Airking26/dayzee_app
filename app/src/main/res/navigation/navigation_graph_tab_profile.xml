@@ -61,7 +61,7 @@
         tools:layout="@layout/fragment_notification_manager" />
     <fragment
         android:id="@+id/filterProfile"
-        android:name="com.timenoteco.timenote.FilterProfile"
+        android:name="com.timenoteco.timenote.view.profileFlow.FilterProfile"
         android:label="fragment_filter_profile"
         tools:layout="@layout/fragment_filter_profile" />
 </navigation>

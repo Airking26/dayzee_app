@@ -23,13 +23,12 @@ class Login : Fragment() {
     private val args: LoginArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_login, container, false)
+        val view =  inflater.inflate(R.layout.fragment_login, container, false)
+        requireActivity().window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        button.setOnClickListener {
-            viewModel.authenticate(login_email.text.toString(), login_password.text.toString())
-        }
 
         button1.setOnClickListener {
             findNavController().navigate(LoginDirections.actionLoginToSignup())

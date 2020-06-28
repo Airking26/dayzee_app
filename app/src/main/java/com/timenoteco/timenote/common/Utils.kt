@@ -2,6 +2,7 @@ package com.timenoteco.timenote.common
 
 import android.Manifest
 import android.app.Activity
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -9,20 +10,23 @@ import android.content.res.Resources
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.location.Address
 import android.location.Geocoder
 import android.net.Uri
+import android.os.Build
 import android.os.Handler
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.AutoCompleteTextView
 import android.widget.TextView
-import androidx.core.app.ActivityCompat.requestPermissions
-import androidx.core.app.ActivityCompat.startActivityForResult
-import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
@@ -34,12 +38,11 @@ import com.afollestad.materialdialogs.customview.getCustomView
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
 import com.google.android.gms.maps.model.LatLng
-import com.theartofdev.edmodo.cropper.CropImageView
-import com.timenoteco.timenote.listeners.PlacePickerListener
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.AutoSuggestAdapter
+import com.timenoteco.timenote.listeners.PlacePickerListener
 import kotlinx.android.synthetic.main.autocomplete_search_address.view.*
-import kotlinx.android.synthetic.main.cropview.view.*
+import java.util.*
 
 class Utils {
 
@@ -175,6 +178,81 @@ class Utils {
                     view2?.visibility = View.GONE
                     view.visibility = View.GONE
                     view1.visibility = View.VISIBLE
+                }
+            }
+        }
+    }
+
+    fun Activity.makeStatusBarTransparent() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.apply {
+                clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+                addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    decorView.systemUiVisibility =
+                        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                } else {
+                    decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                }
+                statusBarColor = Color.TRANSPARENT
+            }
+        }
+    }
+
+    fun View.setMarginTop(marginTop: Int) {
+        val menuLayoutParams = this.layoutParams as ViewGroup.MarginLayoutParams
+        menuLayoutParams.setMargins(0, marginTop, 0, 0)
+        this.layoutParams = menuLayoutParams
+    }
+
+    fun transparentStatusBar(
+        activity: Activity,
+        isTransparent: Boolean,
+        fullscreen: Boolean
+    ) {
+        if (isTransparent) {
+            activity.window.decorView.systemUiVisibility =
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            (Objects.requireNonNull(activity) as AppCompatActivity).getSupportActionBar()?.hide()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                activity.window
+                    .addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+                activity.window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+                // FOR TRANSPARENT NAVIGATION BAR
+                //activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+                activity.window.statusBarColor = Color.TRANSPARENT
+                Log.d(
+                    TAG,""
+                )
+            } else {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    Log.d(TAG, "Setting Color Trans " + Color.TRANSPARENT)
+                    activity.window
+                        .addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+                }
+            }
+        } else {
+            if (fullscreen) {
+                val decorView = activity.window.decorView
+                val uiOptions = (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        or View.SYSTEM_UI_FLAG_FULLSCREEN)
+                decorView.systemUiVisibility = uiOptions
+            } else {
+                (Objects.requireNonNull(activity) as AppCompatActivity).getSupportActionBar()?.show()
+                activity.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    activity.window
+                        .clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
+                    activity.window
+                        .addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+                    activity.window
+                        .clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+                    activity.window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                } else {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        activity.window
+                            .clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+                    }
                 }
             }
         }
