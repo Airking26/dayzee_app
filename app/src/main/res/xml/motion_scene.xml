@@ -18,7 +18,7 @@
             android:id="@id/background"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:alpha="0.0"
+            android:alpha="1.0"
             motion:layout_constraintBottom_toBottomOf="parent" />
     </ConstraintSet>
 

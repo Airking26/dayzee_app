@@ -1,87 +1,147 @@
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@android:color/white"
     android:id="@+id/nearBy_cl"
-    xmlns:fancy="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:fancy="http://schemas.android.com/apk/res-auto">
 
-    <fragment
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         app:layout_constraintEnd_toEndOf="parent"
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="250dp"
-        tools:context=".MapsFragment" />
-
-    <TextView
-        android:shadowDy="1"
-        android:shadowDx="1"
-        android:shadowRadius="1.5"
-        android:shadowColor="@android:color/black"
-        android:drawablePadding="8dp"
-        android:drawableStart="@drawable/ic_toolbar_location"
-        android:text="Tel Aviv"
-        android:id="@+id/nearby_place"
-        android:textSize="17sp"
-        android:maxLines="1"
-        android:ellipsize="end"
-        android:textColor="@android:color/white"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"
-        app:layout_constraintTop_toTopOf="@id/map"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"/>
-
-    <TextView
-        android:shadowDy="1"
-        android:shadowDx="1"
-        android:shadowRadius="1.5"
-        android:shadowColor="@android:color/black"
-        android:text="Today"
-        android:id="@+id/nearby_time"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/map"
-        android:textColor="@android:color/white"
-        android:textSize="17sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-
-    <mehdi.sakout.fancybuttons.FancyButton
-        android:layout_marginBottom="8dp"
-        fancy:fb_defaultColor="@android:color/transparent"
-        fancy:fb_borderWidth="2dp"
-        fancy:fb_borderColor="@android:color/white"
-        fancy:fb_radius="5dp"
-        fancy:fb_text="@string/filters"
-        android:paddingVertical="6dp"
-        android:paddingHorizontal="24dp"
-        fancy:fb_textColor="@android:color/white"
-        android:gravity="center"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/map"
-        android:id="@+id/nearby_filter_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:background="@android:color/white"
-        android:clipToPadding="false"
-        android:paddingBottom="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/map"
-        android:id="@+id/nearby_rv"
+        app:layout_constraintTop_toTopOf="parent"
         android:layout_width="match_parent"
-        android:layout_height="0dp"/>
+        android:layout_height="0dp">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.timenoteco.timenote.androidView.CollapsibleToolbar
+                android:layout_width="match_parent"
+                android:minHeight="150dp"
+                android:fitsSystemWindows="false"
+                app:layout_scrollFlags="scroll|enterAlways|snap|exitUntilCollapsed"
+                app:layoutDescription="@xml/motion_scene"
+                android:layout_height="match_parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/background"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <fragment
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:id="@+id/map"
+                        android:name="com.google.android.gms.maps.SupportMapFragment"
+                        android:layout_width="match_parent"
+                        android:layout_height="350dp"
+                        tools:context=".MapsFragment" />
+
+                    <TextView
+                        android:shadowDy="1"
+                        android:shadowDx="1"
+                        android:shadowRadius="1.5"
+                        android:shadowColor="@android:color/black"
+                        android:drawablePadding="8dp"
+                        android:drawableStart="@drawable/ic_toolbar_location"
+                        android:text="Tel Aviv"
+                        android:id="@+id/nearby_place"
+                        android:textSize="17sp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:textColor="@android:color/white"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginStart="16dp"
+                        app:layout_constraintTop_toTopOf="@id/map"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:shadowDy="1"
+                        android:shadowDx="1"
+                        android:shadowRadius="1.5"
+                        android:shadowColor="@android:color/black"
+                        android:text="Today"
+                        android:id="@+id/nearby_time"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginTop="16dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/map"
+                        android:textColor="@android:color/white"
+                        android:textSize="17sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+
+                    <mehdi.sakout.fancybuttons.FancyButton
+                        android:layout_marginBottom="8dp"
+                        fancy:fb_defaultColor="@android:color/transparent"
+                        fancy:fb_borderWidth="2dp"
+                        fancy:fb_borderColor="@android:color/white"
+                        fancy:fb_radius="5dp"
+                        fancy:fb_text="@string/filters"
+                        android:paddingVertical="6dp"
+                        android:paddingHorizontal="24dp"
+                        fancy:fb_textColor="@android:color/white"
+                        android:gravity="center"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="@id/map"
+                        android:id="@+id/nearby_filter_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            </com.timenoteco.timenote.androidView.CollapsibleToolbar>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollable"
+            android:layout_width="match_parent"
+            android:fillViewport="true"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <LinearLayout
+                android:focusableInTouchMode="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    tools:listitem="@layout/item_timenote"
+                    android:background="@android:color/white"
+                    android:clipToPadding="false"
+                    android:paddingBottom="8dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/map"
+                    android:id="@+id/nearby_rv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+

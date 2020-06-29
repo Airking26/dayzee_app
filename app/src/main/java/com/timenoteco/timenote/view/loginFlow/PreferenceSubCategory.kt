@@ -1,21 +1,20 @@
 package com.timenoteco.timenote.view.loginFlow
 
+import android.os.Build
 import android.os.Bundle
-import android.view.KeyEvent
+import android.view.*
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.SubCategoryCardAdapter
 import com.timenoteco.timenote.adapter.SubCategoryChipAdapter
-import com.timenoteco.timenote.common.PreferenceHelper.defaultPrefs
 import com.timenoteco.timenote.model.Preference
 import com.timenoteco.timenote.model.SubCategory
 import com.timenoteco.timenote.viewModel.PreferenceViewModel
@@ -31,8 +30,9 @@ lateinit var preferenceViewModel: PreferenceViewModel
 class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekBarListener, View.OnClickListener,
     SubCategoryChipAdapter.SubCategoryChipListener {
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_preference_sub_category, container, false).apply {
+        val view =  inflater.inflate(R.layout.fragment_preference_sub_category, container, false).apply {
             isFocusableInTouchMode = true
             requestFocus()
             setOnKeyListener { _, keyCode, event ->
@@ -42,6 +42,10 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
                 true
             }
         }
+
+        requireActivity().window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -107,7 +111,7 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
     override fun onCloseChip(name: String) = preferenceViewModel.closeChip(name)
 
     private fun setListInSP(key: String, list: List<Any>){
-        val prefs = defaultPrefs(requireContext())
+        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         prefs.edit().putString(key, Gson().toJson(list)).apply()
     }
 

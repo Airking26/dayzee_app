@@ -1,58 +1,72 @@
 package com.timenoteco.timenote.repository
 
+import android.content.Context
+import android.content.SharedPreferences
+import androidx.preference.PreferenceManager
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.model.ProfilModifyModel
+import java.lang.reflect.Type
 
-class ProfileModifyData {
+class ProfileModifyData(context: Context) {
 
-    private var profilModifyModel:  ProfilModifyModel = ProfilModifyModel(null, null, null, null,
-        null, null, null, null, null)
+    private val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+    private val type: Type = object : TypeToken<ProfilModifyModel?>() {}.type
 
-    fun loadProfileModifyModel(): ProfilModifyModel{
+    private var profilModifyModel: ProfilModifyModel? = Gson().fromJson<ProfilModifyModel>(prefs.getString("profile",
+        Gson().toJson(ProfilModifyModel(null, null, null, null, null, null, null, null, null))), type)
+
+    fun loadProfileModifyModel(): ProfilModifyModel? {
         return profilModifyModel
     }
 
-    fun setNameAppearance(nameAppearance: String): ProfilModifyModel{
-        profilModifyModel.nameAppearance = nameAppearance
-        return profilModifyModel
+    fun setNameAppearance(nameAppearance: String) {
+        profilModifyModel?.nameAppearance = nameAppearance
+        notifyProfileDataChanged()
     }
 
-    fun setName(name: String): ProfilModifyModel{
-        profilModifyModel.name = name
-        return profilModifyModel
+    private fun notifyProfileDataChanged() {
+        prefs.edit().putString("profile", Gson().toJson(profilModifyModel)).apply()
     }
 
-    fun setLocation(location: String): ProfilModifyModel{
-        profilModifyModel.location = location
-        return profilModifyModel
+    fun setName(name: String){
+        profilModifyModel?.name = name
+        notifyProfileDataChanged()
     }
 
-    fun setBirthday(birthday: String): ProfilModifyModel{
-        profilModifyModel.birthday = birthday
-        return profilModifyModel
+    fun setLocation(location: String) {
+        profilModifyModel?.location = location
+        notifyProfileDataChanged()
     }
 
-    fun setGender(gender: Int):ProfilModifyModel{
-        profilModifyModel.gender = gender
-        return profilModifyModel
+    fun setBirthday(birthday: String) {
+        profilModifyModel?.birthday = birthday
+        notifyProfileDataChanged()
     }
 
-    fun setStatusAccount(statusAccount: Int): ProfilModifyModel {
-        profilModifyModel.statusAccount = statusAccount
-        return profilModifyModel
+    fun setGender(gender: Int) {
+        profilModifyModel?.gender = gender
+        notifyProfileDataChanged()
     }
 
-    fun setFormatTimenote(formatTimenote: Int): ProfilModifyModel{
-        profilModifyModel.formatTimenote = formatTimenote
-        return profilModifyModel
+    fun setStatusAccount(statusAccount: Int) {
+        profilModifyModel?.statusAccount = statusAccount
+        notifyProfileDataChanged()
     }
 
-    fun setLink(link: String): ProfilModifyModel{
-        profilModifyModel.link = link
-        return profilModifyModel
+    fun setFormatTimenote(formatTimenote: Int) {
+        profilModifyModel?.formatTimenote = formatTimenote
+        notifyProfileDataChanged()
     }
 
-    fun setDescription(description: String): ProfilModifyModel {
-        profilModifyModel.description = description
-        return profilModifyModel
+    fun setLink(link: String) {
+        profilModifyModel?.link = link
+        notifyProfileDataChanged()
     }
+
+    fun setDescription(description: String) {
+        profilModifyModel?.description = description
+        notifyProfileDataChanged()
+    }
+
 }

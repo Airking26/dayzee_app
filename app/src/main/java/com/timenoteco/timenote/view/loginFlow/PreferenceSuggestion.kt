@@ -1,10 +1,9 @@
 package com.timenoteco.timenote.view.loginFlow
 
+import android.os.Build
 import android.os.Bundle
-import android.view.KeyEvent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
@@ -16,6 +15,7 @@ import kotlinx.android.synthetic.main.fragment_preference_suggestion.*
 class PreferenceSuggestion : Fragment() {
 
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view =  inflater.inflate(R.layout.fragment_preference_suggestion, container, false)
         view.isFocusableInTouchMode = true;
@@ -28,6 +28,9 @@ class PreferenceSuggestion : Fragment() {
             }
             true
         }
+
+        requireActivity().window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         return view
     }
 

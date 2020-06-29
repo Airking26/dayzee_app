@@ -1,19 +1,15 @@
 package com.timenoteco.timenote.view
 
-import android.app.Activity
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import android.view.WindowManager
-import androidx.core.view.ViewCompat
-import androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -31,13 +27,13 @@ import com.timenoteco.timenote.listeners.BackToHomeListener
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel.AuthenticationState
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_near_by.*
 
 class MainActivity : AppCompatActivity(), BackToHomeListener {
 
     private lateinit var viewModel: LoginViewModel
     private var currentNavController: LiveData<NavController>? = null
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -53,14 +49,14 @@ class MainActivity : AppCompatActivity(), BackToHomeListener {
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         setupController(true)
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun setupController(finished: Boolean) {
-
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
 
         val navGraphIds: List<Int> =
             listOf(
@@ -107,13 +103,52 @@ class MainActivity : AppCompatActivity(), BackToHomeListener {
         controller.observe(this, Observer {
             it.addOnDestinationChangedListener { navController, destination, arguments ->
                 when (destination.id) {
-                    R.id.login -> bottomNavView.visibility = View.GONE
-                    R.id.search -> bottomNavView.visibility = View.VISIBLE
-                    R.id.nearBy -> bottomNavView.visibility = View.VISIBLE
-                    R.id.profile -> bottomNavView.visibility = View.VISIBLE
-                    R.id.home -> bottomNavView.visibility = View.VISIBLE
-                    R.id.createTimenote -> bottomNavView.visibility = View.GONE
-                    R.id.comments -> bottomNavView.visibility = View.GONE
+                    R.id.login -> {
+                        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        bottomNavView.visibility = View.GONE
+                    }
+                    R.id.search -> {
+                        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                        bottomNavView.visibility = View.VISIBLE
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                    }
+                    R.id.nearBy -> {
+                        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        bottomNavView.visibility = View.VISIBLE
+                    }
+                    R.id.nearbyFilters -> {
+                        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                        bottomNavView.visibility = View.VISIBLE
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                    }
+                    R.id.profile -> {
+                        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                        bottomNavView.visibility = View.VISIBLE
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                    }
+                    R.id.profileCalendar -> {
+                        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        bottomNavView.visibility = View.GONE
+                    }
+                    R.id.settings -> {
+                        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        bottomNavView.visibility = View.GONE
+                    }
+                    R.id.home -> {
+                        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                        bottomNavView.visibility = View.VISIBLE
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                    }
+                    R.id.createTimenote -> {
+                        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                        bottomNavView.visibility = View.GONE
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                    }
+                    R.id.comments -> {
+                        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.STATUS_BAR_VISIBLE
+                        bottomNavView.visibility = View.GONE
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                    }
                 }
             }
 

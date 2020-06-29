@@ -12,10 +12,12 @@
         style="@style/AppTheme.Toolbar.LinearLayout">
 
         <androidx.appcompat.widget.Toolbar
+            android:layout_height="96dp"
             android:background="@color/colorPrimary"
             style="@style/AppTheme.Toolbar">
 
             <TextView
+                android:paddingTop="16dp"
                 android:textColor="@color/white"
                 style="@style/AppTheme.Toolbar.Title"
                 android:text="@string/settings"/>
@@ -325,7 +327,7 @@
                 android:text="@string/send_comments"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/profile_settings_confidentiality_politic"
+                app:layout_constraintTop_toBottomOf="@id/card_line_7"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 

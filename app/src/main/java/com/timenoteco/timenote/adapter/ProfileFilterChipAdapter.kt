@@ -30,15 +30,15 @@ class ProfileFilterChipAdapter(private val chips: MutableList<String>): Recycler
         fun bindChip(name: String) {
             itemView.chip_profile_filter.text = name
             itemView.chip_profile_filter.setOnClickListener {
-                if((it as Chip).chipBackgroundColor == itemView.context.resources.getColor(R.color.white)) {
+                if((it as Chip).chipTextColor == itemView.context.resources.getColor(R.color.black)) {
                     it.apply {
-                        chipBackgroundColor = itemView.context.resources.getColor(R.color.colorPrimary)
-                        chipTextColor = itemView.context.resources.getColor(R.color.white)
+                        chipBackgroundColor = itemView.context.resources.getColor(R.color.white)
+                        chipTextColor = itemView.context.resources.getColor(R.color.colorPrimary)
                     }
                 } else {
                     it.apply {
                         chipBackgroundColor = itemView.context.resources.getColor(R.color.white)
-                        chipTextColor = itemView.context.resources.getColor(R.color.colorPrimary)
+                        chipTextColor = itemView.context.resources.getColor(R.color.black)
                     }
                 }
 

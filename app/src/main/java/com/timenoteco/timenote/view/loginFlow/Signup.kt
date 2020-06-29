@@ -38,8 +38,5 @@ class Signup: Fragment() {
             viewModel.authenticationState.postValue(LoginViewModel.AuthenticationState.UNAUTHENTICATED_CHOOSED)
         }
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            viewModel.refuseAuthentication()
-        }
     }
 }
