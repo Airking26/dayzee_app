@@ -26,6 +26,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.AutoCompleteTextView
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -41,21 +42,24 @@ import com.google.android.gms.maps.model.LatLng
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.AutoSuggestAdapter
 import com.timenoteco.timenote.listeners.PlacePickerListener
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.autocomplete_search_address.view.*
 import java.util.*
 
 class Utils {
 
-    fun placePicker(context: Context, lifecycleOwner: LifecycleOwner, textView: TextView, placePickerListener: PlacePickerListener){
+    fun placePicker(context: Context, lifecycleOwner: LifecycleOwner, textView: TextView, placePickerListener: PlacePickerListener, fromNearby: Boolean, activity: Activity){
         val places : MutableList<Address> = mutableListOf()
-        val TRIGGER_AUTO_COMPLETE = 250
-        val AUTO_COMPLETE_DELAY: Long = 250
+        val TRIGGER_AUTO_COMPLETE = 500
+        val AUTO_COMPLETE_DELAY: Long = 500
         lateinit var handler: Handler
 
         val dialog = MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             title(R.string.where)
             customView(R.layout.autocomplete_search_address, scrollable = true, horizontalPadding = true)
-            positiveButton(R.string.done)
+            positiveButton(R.string.done){
+                if(fromNearby) hideStatusBar(activity)
+            }
             lifecycleOwner(lifecycleOwner)
         }
         val customView = dialog.getCustomView()
@@ -183,4 +187,13 @@ class Utils {
         }
     }
 
+    fun hideStatusBar(activity: Activity){
+        activity.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_IMMERSIVE
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun showStatusBar(activity: Activity){
+        activity.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        activity.window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+    }
 }

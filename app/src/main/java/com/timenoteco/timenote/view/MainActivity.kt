@@ -1,5 +1,7 @@
 package com.timenoteco.timenote.view
 
+import android.content.Context
+import android.content.Context.*
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
@@ -8,6 +10,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
@@ -22,6 +25,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.timenoteco.timenote.R
+import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.setupWithNavController
 import com.timenoteco.timenote.listeners.BackToHomeListener
 import com.timenoteco.timenote.viewModel.LoginViewModel
@@ -32,6 +36,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener {
 
     private lateinit var viewModel: LoginViewModel
     private var currentNavController: LiveData<NavController>? = null
+    private val utils = Utils()
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,6 +62,12 @@ class MainActivity : AppCompatActivity(), BackToHomeListener {
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun setupController(finished: Boolean) {
+
+        val view = this.currentFocus
+        view?.let { v ->
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            imm?.hideSoftInputFromWindow(v.windowToken, 0)
+        }
 
         val navGraphIds: List<Int> =
             listOf(
@@ -104,50 +115,44 @@ class MainActivity : AppCompatActivity(), BackToHomeListener {
             it.addOnDestinationChangedListener { navController, destination, arguments ->
                 when (destination.id) {
                     R.id.login -> {
-                        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        utils.hideStatusBar(this)
                         bottomNavView.visibility = View.GONE
                     }
                     R.id.search -> {
-                        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                        utils.showStatusBar(this)
                         bottomNavView.visibility = View.VISIBLE
-                        window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
                     }
                     R.id.nearBy -> {
-                        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        utils.hideStatusBar(this)
                         bottomNavView.visibility = View.VISIBLE
                     }
                     R.id.nearbyFilters -> {
-                        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
                         bottomNavView.visibility = View.VISIBLE
-                        window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                        utils.showStatusBar(this)
                     }
                     R.id.profile -> {
-                        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                        utils.showStatusBar(this)
                         bottomNavView.visibility = View.VISIBLE
-                        window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
                     }
                     R.id.profileCalendar -> {
-                        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        utils.hideStatusBar(this)
                         bottomNavView.visibility = View.GONE
                     }
                     R.id.settings -> {
-                        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        utils.hideStatusBar(this)
                         bottomNavView.visibility = View.GONE
                     }
                     R.id.home -> {
-                        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
                         bottomNavView.visibility = View.VISIBLE
-                        window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                        utils.showStatusBar(this)
                     }
                     R.id.createTimenote -> {
-                        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                        utils.showStatusBar(this)
                         bottomNavView.visibility = View.GONE
-                        window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
                     }
                     R.id.comments -> {
-                        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.STATUS_BAR_VISIBLE
+                        utils.showStatusBar(this)
                         bottomNavView.visibility = View.GONE
-                        window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
                     }
                 }
             }

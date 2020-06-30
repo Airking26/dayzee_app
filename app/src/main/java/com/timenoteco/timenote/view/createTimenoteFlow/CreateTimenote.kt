@@ -171,7 +171,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener{
                 }
                 lifecycleOwner(this@CreateTimenote)
             }
-            where_cardview -> Utils().placePicker(requireContext(), this@CreateTimenote, create_timenote_where_btn, this)
+            where_cardview -> Utils().placePicker(requireContext(), this@CreateTimenote, create_timenote_where_btn, this, false, requireActivity())
             share_with_cardview -> shareWith()
             category_cardview -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.category)

@@ -1,5 +1,8 @@
 package com.timenoteco.timenote.viewModel
 
+import android.content.Context
+import android.view.inputmethod.InputMethodManager
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 

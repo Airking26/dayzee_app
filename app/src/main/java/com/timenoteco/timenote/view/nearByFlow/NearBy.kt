@@ -56,7 +56,6 @@ class NearBy : Fragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdap
         return view
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         checkIfCanGetLocation()
@@ -273,10 +272,13 @@ class NearBy : Fragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdap
 
     override fun onClick(v: View?) {
         when(v){
-            nearby_place -> Utils().placePicker(requireContext(), this@NearBy, nearby_place, this)
+            nearby_place -> {
+                Utils().placePicker(requireContext(), this@NearBy, nearby_place, this, true, requireActivity())
+            }
             nearby_time -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 datePicker { dialog, datetime ->
                     nearbyDateTv.text = dateFormat.format(datetime.time.time)
+                    Utils().hideStatusBar(requireActivity())
                 }
             }
             nearby_filter_btn -> findNavController().navigate(NearByDirections.actionNearByToNearbyFilters())
@@ -284,6 +286,7 @@ class NearBy : Fragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdap
     }
 
     override fun onPlacePicked(address: Address) {
+        Utils().hideStatusBar(requireActivity())
         //this.googleMap?.addMarker(MarkerOptions().position(LatLng(address.latitude, address.longitude)))
         this.googleMap?.moveCamera(CameraUpdateFactory.newLatLng(LatLng(address.latitude, address.longitude)))
         this.googleMap?.animateCamera(CameraUpdateFactory.zoomTo(13.0f))

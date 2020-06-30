@@ -13,6 +13,7 @@
         <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
 
             <TextView
+                android:text="Football"
                 android:id="@+id/search_explore_clicked_title_toolbar"
                 style="@style/AppTheme.Toolbar.Title"/>
 
