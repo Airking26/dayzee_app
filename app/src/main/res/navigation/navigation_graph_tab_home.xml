@@ -14,6 +14,9 @@
         <action
             android:id="@+id/action_home_to_detailedTimenote"
             app:destination="@id/detailedTimenote" />
+        <action
+            android:id="@+id/action_home_to_profile"
+            app:destination="@id/profile" />
     </fragment>
     <fragment
         android:id="@+id/comments"
@@ -28,5 +31,13 @@
         <action
             android:id="@+id/action_detailedTimenote_to_comments"
             app:destination="@id/comments" />
+    </fragment>
+    <fragment
+        android:id="@+id/profile"
+        android:name="com.timenoteco.timenote.view.profileFlow.Profile"
+        android:label="Profile" >
+        <argument
+            android:name="whereFrom"
+            app:argType="boolean"/>
     </fragment>
 </navigation>

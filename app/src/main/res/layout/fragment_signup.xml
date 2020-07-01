@@ -16,7 +16,7 @@
     <androidx.cardview.widget.CardView
         app:cardElevation="0dp"
         android:id="@+id/signup_cv"
-    app:cardBackgroundColor="#90FFFFFF"
+        app:cardBackgroundColor="#90FFFFFF"
         app:cardCornerRadius="10dp"
         android:background="@android:color/holo_red_dark"
         android:layout_marginHorizontal="24dp"

@@ -15,7 +15,9 @@ import kotlinx.android.synthetic.main.item_timenote_recent.view.*
 
 class ItemTimenoteAdapter(
     private val timenotes: List<Timenote>, private val timenotesToCome: List<Timenote>,
-    private val isHeterogeneous: Boolean, private val commentListener: CommentListener, private val plusListener: PlusListener)
+    private val isHeterogeneous: Boolean, private val commentListener: CommentListener,
+    private val plusListener: PlusListener, private val pictureProfileListener: PictureProfileListener,
+    private val timenoteRecentClicked: TimenoteRecentClicked?)
     : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     interface CommentListener{
@@ -24,6 +26,15 @@ class ItemTimenoteAdapter(
 
     interface PlusListener{
         fun onPlusClicked()
+    }
+
+    interface PictureProfileListener{
+        fun onPictureClicked()
+    }
+
+
+    interface TimenoteRecentClicked{
+        fun onTimenoteRecentClicked()
     }
 
     private var itemViewType: Int = 0
@@ -60,14 +71,15 @@ class ItemTimenoteAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if(isHeterogeneous){
             when(itemViewType){
-                0 -> (holder as TimenoteToComeViewHolder).bindTimenoteTocome(timenotesToCome)
-                else -> (holder as TimenoteViewHolder).bindTimenote(timenotes[position], commentListener, plusListener)
+                0 -> (holder as TimenoteToComeViewHolder).bindTimenoteTocome(timenotesToCome, timenoteRecentClicked)
+                else -> (holder as TimenoteViewHolder).bindTimenote(timenotes[position], commentListener, plusListener, pictureProfileListener)
             }
         } else {
             (holder as TimenoteViewHolder).bindTimenote(
                 timenotes[position],
                 commentListener,
-                plusListener
+                plusListener,
+                pictureProfileListener
             )
         }
 
@@ -89,7 +101,8 @@ class ItemTimenoteAdapter(
         fun bindTimenote(
             timenote: Timenote,
             commentListener: CommentListener,
-            plusListener: PlusListener
+            plusListener: PlusListener,
+            pictureProfileListener: PictureProfileListener
         ) {
 
             Glide
@@ -120,6 +133,7 @@ class ItemTimenoteAdapter(
                 itemView.timerProgramCountdown.visibility = View.VISIBLE
                 itemView.timerProgramCountdown.startCountDown(99999999)
             }
+            itemView.timenote_pic_user_imageview.setOnClickListener { pictureProfileListener.onPictureClicked() }
             itemView.timenote_comment.setOnClickListener { commentListener.onCommentClicked() }
             itemView.timenote_plus.setOnClickListener { plusListener.onPlusClicked() }
 
@@ -129,15 +143,16 @@ class ItemTimenoteAdapter(
 
     class TimenoteToComeViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
 
-        fun bindTimenoteTocome(timenote: List<Timenote>){
+        fun bindTimenoteTocome(timenote: List<Timenote>, timenoteRecentClicked: TimenoteRecentClicked?){
             itemView.home_recent_rv.layoutManager = LinearLayoutManager(itemView.context, LinearLayoutManager.HORIZONTAL, false)
-            itemView.home_recent_rv.adapter = ItemTimenoteToComeAdapter(timenote)
+            itemView.home_recent_rv.adapter = ItemTimenoteToComeAdapter(timenote, timenoteRecentClicked)
         }
     }
 
 }
 
-class ItemTimenoteToComeAdapter(private val timenotesToCome: List<Timenote>): RecyclerView.Adapter<ItemTimenoteToComeAdapter.ItemAdapter>(){
+class ItemTimenoteToComeAdapter(private val timenotesToCome: List<Timenote>, private val timenoteClicked: ItemTimenoteAdapter.TimenoteRecentClicked?): RecyclerView.Adapter<ItemTimenoteToComeAdapter.ItemAdapter>(){
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemAdapter {
         return ItemAdapter(LayoutInflater.from(parent.context).inflate(R.layout.item_timenote_recent, parent, false))
@@ -148,12 +163,12 @@ class ItemTimenoteToComeAdapter(private val timenotesToCome: List<Timenote>): Re
     }
 
     override fun onBindViewHolder(holder: ItemAdapter, position: Int) {
-        holder.bindItem(timenotesToCome[position])
+        holder.bindItem(timenotesToCome[position], timenoteClicked)
     }
 
 
     class ItemAdapter(itemView: View): RecyclerView.ViewHolder(itemView) {
-        fun bindItem(timenote: Timenote){
+        fun bindItem(timenote: Timenote, timenoteClicked: ItemTimenoteAdapter.TimenoteRecentClicked?){
             Glide
                 .with(itemView)
                 .load(timenote.pic)
@@ -169,6 +184,7 @@ class ItemTimenoteToComeAdapter(private val timenotesToCome: List<Timenote>): Re
             itemView.timenote_recent_username.text = timenote.username
             itemView.timenote_recent_title.text = timenote.title
             itemView.timenote_recent_date.text = timenote.dateIn
+            itemView.setOnClickListener { timenoteClicked?.onTimenoteRecentClicked() }
         }
     }
 

@@ -32,6 +32,7 @@
 
                 <ImageView
                     android:src="@drawable/ic_pref_culture"
+                    android:id="@+id/detailed_timenote_pic_user"
                     android:layout_marginEnd="8dp"
                     app:layout_constraintEnd_toStartOf="@id/detailed_timenote_username"
                     app:layout_constraintTop_toTopOf="parent"

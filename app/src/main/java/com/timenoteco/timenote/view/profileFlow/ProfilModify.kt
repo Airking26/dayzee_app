@@ -215,7 +215,7 @@ class ProfilModify: Fragment(), View.OnClickListener{
                 lifecycleOwner(this@ProfilModify)
             }
             profile_modify_pic_imageview -> Utils().picturePicker(requireContext(), resources, profile_modify_pic_imageview, profile_modify_pb, this@ProfilModify)
-            profile_modify_done_btn -> findNavController().navigate(ProfilModifyDirections.actionProfilModifyToProfile())
+            profile_modify_done_btn -> findNavController().popBackStack()
         }
     }
 

@@ -183,4 +183,5 @@
     <string name="private_label">Private</string>
     <string name="sorting">Sorting</string>
     <string name="error_message_filling">Please fill in all the fields</string>
+    <string name="message">MESSAGE</string>
 </resources>

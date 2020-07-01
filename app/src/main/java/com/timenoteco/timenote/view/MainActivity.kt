@@ -154,6 +154,14 @@ class MainActivity : AppCompatActivity(), BackToHomeListener {
                         utils.showStatusBar(this)
                         bottomNavView.visibility = View.GONE
                     }
+                    R.id.profilModify -> {
+                        bottomNavView.visibility = View.VISIBLE
+                        utils.showStatusBar(this)
+                    }
+                    R.id.detailedTimenote -> {
+                        bottomNavView.visibility = View.VISIBLE
+                        utils.showStatusBar(this)
+                    }
                 }
             }
 

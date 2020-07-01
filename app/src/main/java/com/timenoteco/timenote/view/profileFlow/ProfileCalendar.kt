@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.shrikanthravi.collapsiblecalendarview.widget.CollapsibleCalendar
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ItemCalendarAdapter
 import com.timenoteco.timenote.model.EventCalendar
@@ -48,7 +49,7 @@ class ProfileCalendar: Fragment() {
         }
 
         calendarView.addEventTag(2020, 8, 5, R.color.colorAccent)
-        /*calendarView.setCalendarListener(object: CollapsibleCalendar.CalendarListener{
+        calendarView.setCalendarListener(object: CollapsibleCalendar.CalendarListener{
             override fun onClickListener() {
                 TODO("Not yet implemented")
             }
@@ -77,7 +78,7 @@ class ProfileCalendar: Fragment() {
                 TODO("Not yet implemented")
             }
 
-        })*/
+        })
 
     }
 }

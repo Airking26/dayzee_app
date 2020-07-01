@@ -34,6 +34,7 @@ import androidx.lifecycle.LifecycleOwner
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
+import com.afollestad.materialdialogs.callbacks.onDismiss
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
@@ -56,10 +57,9 @@ class Utils {
 
         val dialog = MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             title(R.string.where)
+            onDismiss {if(fromNearby) hideStatusBar(activity)}
             customView(R.layout.autocomplete_search_address, scrollable = true, horizontalPadding = true)
-            positiveButton(R.string.done){
-                if(fromNearby) hideStatusBar(activity)
-            }
+            positiveButton(R.string.done)
             lifecycleOwner(lifecycleOwner)
         }
         val customView = dialog.getCustomView()

@@ -28,7 +28,7 @@
 
                     <TextView
                         android:drawableStart="@drawable/ic_keyboard_arrow_left_purple_24dp"
-                        android:id="@+id/pref_sub_category_btn_back"
+                        android:id="@+id/profile_sorting_btn_back"
                         style="@style/AppTheme.Toolbar.TextRight"
                         android:text="@string/back" />
 

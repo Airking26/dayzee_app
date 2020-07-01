@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ProfileFilterAdapter
@@ -12,7 +13,7 @@ import com.timenoteco.timenote.adapter.ProfileFilterChipAdapter
 import com.timenoteco.timenote.model.Timenote
 import kotlinx.android.synthetic.main.fragment_filter_profile.*
 
-class FilterProfile : Fragment() {
+class ProfileSorting : Fragment() {
 
     private lateinit var chipProfileFilterAdapter: ProfileFilterChipAdapter
     private lateinit var timenoteAdapter: ProfileFilterAdapter
@@ -174,6 +175,8 @@ class FilterProfile : Fragment() {
             layoutManager = LinearLayoutManager(view.context)
             adapter = timenoteAdapter
         }
+
+        profile_sorting_btn_back.setOnClickListener { findNavController().popBackStack() }
     }
 
 

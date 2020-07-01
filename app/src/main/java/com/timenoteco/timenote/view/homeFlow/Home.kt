@@ -14,7 +14,8 @@ import com.timenoteco.timenote.model.Timenote
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.item_timenote.*
 
-class Home : BaseThroughFragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdapter.PlusListener {
+class Home : BaseThroughFragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdapter.PlusListener,
+    ItemTimenoteAdapter.PictureProfileListener, ItemTimenoteAdapter.TimenoteRecentClicked {
 
     private var timenotes: List<Timenote> = listOf()
     private lateinit var timenoteAdapter: ItemTimenoteAdapter
@@ -161,7 +162,7 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.CommentListener, ItemTim
                 "In 23 days"
             )
         )
-        timenoteAdapter = ItemTimenoteAdapter(timenotes, timenotes, true, this, this)
+        timenoteAdapter = ItemTimenoteAdapter(timenotes, timenotes, true, this, this, this, this)
 
         home_rv.apply {
             layoutManager = LinearLayoutManager(context)
@@ -175,6 +176,14 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.CommentListener, ItemTim
 
 
     override fun onPlusClicked() {
+        findNavController().navigate(HomeDirections.actionHomeToDetailedTimenote())
+    }
+
+    override fun onPictureClicked() {
+        findNavController().navigate(HomeDirections.actionHomeToProfile(true))
+    }
+
+    override fun onTimenoteRecentClicked() {
         findNavController().navigate(HomeDirections.actionHomeToDetailedTimenote())
     }
 }

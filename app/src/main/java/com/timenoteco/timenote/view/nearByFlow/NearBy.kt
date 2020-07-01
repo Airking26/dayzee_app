@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
+import com.afollestad.materialdialogs.callbacks.onDismiss
 import com.afollestad.materialdialogs.datetime.datePicker
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -35,7 +36,8 @@ import okhttp3.internal.Util
 import java.text.SimpleDateFormat
 import java.util.*
 
-class NearBy : Fragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdapter.PlusListener, View.OnClickListener, PlacePickerListener {
+class NearBy : Fragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdapter.PlusListener, View.OnClickListener, PlacePickerListener,
+    ItemTimenoteAdapter.PictureProfileListener {
 
     private lateinit var locationManager: LocationManager
     private lateinit var nearbyDateTv: TextView
@@ -46,9 +48,6 @@ class NearBy : Fragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdap
     private var googleMap: GoogleMap? = null
     private val callback = OnMapReadyCallback { googleMap ->
         this.googleMap = googleMap
-    }
-
-    init {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -207,7 +206,7 @@ class NearBy : Fragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdap
                 "In 23 days"
             )
         )
-        timenoteAdapter = ItemTimenoteAdapter(timenotes, timenotes, false, this, this)
+        timenoteAdapter = ItemTimenoteAdapter(timenotes, timenotes, false, this, this, this, null)
         nearby_rv.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = timenoteAdapter
@@ -276,9 +275,9 @@ class NearBy : Fragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdap
                 Utils().placePicker(requireContext(), this@NearBy, nearby_place, this, true, requireActivity())
             }
             nearby_time -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                onDismiss { Utils().hideStatusBar(requireActivity()) }
                 datePicker { dialog, datetime ->
                     nearbyDateTv.text = dateFormat.format(datetime.time.time)
-                    Utils().hideStatusBar(requireActivity())
                 }
             }
             nearby_filter_btn -> findNavController().navigate(NearByDirections.actionNearByToNearbyFilters())
@@ -290,6 +289,10 @@ class NearBy : Fragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdap
         //this.googleMap?.addMarker(MarkerOptions().position(LatLng(address.latitude, address.longitude)))
         this.googleMap?.moveCamera(CameraUpdateFactory.newLatLng(LatLng(address.latitude, address.longitude)))
         this.googleMap?.animateCamera(CameraUpdateFactory.zoomTo(13.0f))
+    }
+
+    override fun onPictureClicked() {
+        findNavController().navigate(NearByDirections.actionNearByToProfile(true))
     }
 
 }

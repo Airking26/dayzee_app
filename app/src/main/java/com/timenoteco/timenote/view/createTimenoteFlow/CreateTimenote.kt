@@ -55,6 +55,7 @@ import kotlin.time.seconds
 
 class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener{
 
+    private var endDate: Long? = null
     private var formCompleted: Boolean = true
     private var startDate: Long? = null
     private val creationTimenoteViewModel: CreationTimenoteViewModel by activityViewModels()
@@ -158,16 +159,19 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener{
             from_label -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 dateTimePicker { _, datetime ->
                     startDate = datetime.time.time
-                    fromTv.text = dateFormat.format(datetime.time.time)
-                    creationTimenoteViewModel.setYear(datetime.time.time)
-                    creationTimenoteViewModel.setStartDate(datetime.time.time)
+                    fromTv.text = dateFormat.format(startDate)
+                    creationTimenoteViewModel.setYear(startDate!!)
+                    creationTimenoteViewModel.setStartDate(startDate!!)
+                    if(endDate != null) creationTimenoteViewModel.setFormatedStartDate(startDate!!, endDate!!)
                 }
                 lifecycleOwner(this@CreateTimenote)
             }
             to_label -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                dateTimePicker { dialog, datetime -> toTv.text = dateFormat.format(datetime.time.time)
-                    creationTimenoteViewModel.setEndDate(datetime.time.time)
-                    creationTimenoteViewModel.setFormatedStartDate(startDate!!, datetime.time.time)
+                dateTimePicker { dialog, datetime ->
+                    endDate = datetime.time.time
+                    toTv.text = dateFormat.format(endDate)
+                    creationTimenoteViewModel.setEndDate(endDate!!)
+                    if(startDate != null) creationTimenoteViewModel.setFormatedStartDate(startDate!!, endDate!!)
                 }
                 lifecycleOwner(this@CreateTimenote)
             }

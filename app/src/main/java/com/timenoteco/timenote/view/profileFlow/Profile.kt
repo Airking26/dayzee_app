@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,13 +21,22 @@ import kotlinx.android.synthetic.main.fragment_profile.*
 
 class Profile : BaseThroughFragment(), View.OnClickListener {
 
+    val args : ProfileArgs by navArgs()
     private lateinit var eventAdapter: ItemProfileEventAdapter
     private var timenotes: MutableList<Timenote> = mutableListOf()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?  =
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_profile)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        if(args.whereFrom){
+            profile_modify_btn.visibility = View.INVISIBLE
+            profile_follow_btn.visibility = View.VISIBLE
+            profile_message_btn.visibility = View.VISIBLE
+            profile_settings_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_baseline_info_24))
+            profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_share_black_24dp))
+        }
 
         Glide
             .with(this)

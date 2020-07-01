@@ -16,6 +16,7 @@ class Settings : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         profile_settings_notification_manager.setOnClickListener(this)
+        profile_settings_edit_personnal_infos.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
