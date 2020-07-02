@@ -47,10 +47,11 @@
                         tools:context=".MapsFragment" />
 
                     <TextView
+                        android:fontFamily="sans-serif-light"
                         android:shadowDy="1"
                         android:shadowDx="1"
                         android:shadowRadius="1.5"
-                        android:shadowColor="@android:color/black"
+                        android:shadowColor="@android:color/darker_gray"
                         android:drawablePadding="8dp"
                         android:drawableStart="@drawable/ic_toolbar_location"
                         android:text="Tel Aviv"
@@ -58,7 +59,7 @@
                         android:textSize="17sp"
                         android:maxLines="1"
                         android:ellipsize="end"
-                        android:textColor="@android:color/white"
+                        android:textColor="@android:color/black"
                         android:layout_marginTop="16dp"
                         android:layout_marginStart="16dp"
                         app:layout_constraintTop_toTopOf="@id/map"
@@ -67,17 +68,18 @@
                         android:layout_height="wrap_content"/>
 
                     <TextView
+                        android:fontFamily="sans-serif-light"
                         android:shadowDy="1"
                         android:shadowDx="1"
                         android:shadowRadius="1.5"
-                        android:shadowColor="@android:color/black"
+                        android:shadowColor="@android:color/darker_gray"
                         android:text="Today"
                         android:id="@+id/nearby_time"
                         android:layout_marginEnd="16dp"
                         android:layout_marginTop="16dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@id/map"
-                        android:textColor="@android:color/white"
+                        android:textColor="@android:color/black"
                         android:textSize="17sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
@@ -86,13 +88,14 @@
                     <mehdi.sakout.fancybuttons.FancyButton
                         android:layout_marginBottom="8dp"
                         fancy:fb_defaultColor="@android:color/transparent"
-                        fancy:fb_borderWidth="2dp"
-                        fancy:fb_borderColor="@android:color/white"
+                        fancy:fb_borderWidth="1dp"
+                        fancy:fb_borderColor="@android:color/black"
                         fancy:fb_radius="5dp"
-                        fancy:fb_text="@string/filters"
+                        fancy:fb_text="FILTERS"
+                        android:fontFamily="sans-serif-light"
                         android:paddingVertical="6dp"
                         android:paddingHorizontal="24dp"
-                        fancy:fb_textColor="@android:color/white"
+                        fancy:fb_textColor="@android:color/black"
                         android:gravity="center"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"

@@ -18,6 +18,7 @@
             tools:text="Preferrence" />
 
         <TextView
+            android:fontFamily="sans-serif-light"
             android:id="@+id/pref_category_btn_next"
             style="@style/AppTheme.Toolbar.TextLeft"
             android:text="@string/next"/>
@@ -31,6 +32,7 @@
     </LinearLayout>
 
     <TextView
+        android:fontFamily="sans-serif-light"
         android:id="@+id/select_what_you_like"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -54,6 +56,7 @@
         app:layout_constraintTop_toBottomOf="@id/select_what_you_like" />
 
     <TextView
+        android:fontFamily="sans-serif-light"
         app:layout_constraintRight_toRightOf="@id/pref_city_btn"
         app:layout_constraintLeft_toLeftOf="@id/pref_city_btn"
         android:textColor="@color/colorText"
@@ -76,6 +79,7 @@
         app:layout_constraintTop_toBottomOf="@id/select_what_you_like" />
 
     <TextView
+        android:fontFamily="sans-serif-light"
         app:layout_constraintLeft_toLeftOf="@id/pref_sport_btn"
         app:layout_constraintRight_toRightOf="@id/pref_sport_btn"
         android:textColor="@color/colorText"
@@ -98,6 +102,7 @@
         app:layout_constraintTop_toBottomOf="@id/select_what_you_like" />
 
     <TextView
+        android:fontFamily="sans-serif-light"
         app:layout_constraintRight_toRightOf="@id/pref_music_btn"
         app:layout_constraintLeft_toLeftOf="@id/pref_music_btn"
         android:textColor="@color/colorText"
@@ -120,6 +125,7 @@
         app:layout_constraintTop_toBottomOf="@id/select_what_you_like" />
 
     <TextView
+        android:fontFamily="sans-serif-light"
         app:layout_constraintLeft_toLeftOf="@id/pref_esport_btn"
         app:layout_constraintRight_toRightOf="@id/pref_esport_btn"
         android:textColor="@color/colorText"
@@ -142,6 +148,7 @@
         app:layout_constraintTop_toBottomOf="@id/select_what_you_like" />
 
     <TextView
+        android:fontFamily="sans-serif-light"
         app:layout_constraintRight_toRightOf="@id/pref_youtube_btn"
         app:layout_constraintLeft_toLeftOf="@id/pref_youtube_btn"
         android:textColor="@color/colorText"
@@ -164,6 +171,7 @@
         app:layout_constraintTop_toBottomOf="@id/select_what_you_like" />
 
     <TextView
+        android:fontFamily="sans-serif-light"
         app:layout_constraintLeft_toLeftOf="@id/pref_religion_btn"
         app:layout_constraintRight_toRightOf="@id/pref_religion_btn"
         android:textColor="@color/colorText"
@@ -186,6 +194,7 @@
         app:layout_constraintTop_toBottomOf="@id/select_what_you_like" />
 
     <TextView
+        android:fontFamily="sans-serif-light"
         app:layout_constraintRight_toRightOf="@id/pref_culture_btn"
         app:layout_constraintLeft_toLeftOf="@id/pref_culture_btn"
         android:textColor="@color/colorText"
@@ -209,6 +218,7 @@
         app:layout_constraintTop_toBottomOf="@id/select_what_you_like" />
 
     <TextView
+        android:fontFamily="sans-serif-light"
         app:layout_constraintLeft_toLeftOf="@id/pref_movie_btn"
         app:layout_constraintRight_toRightOf="@id/pref_movie_btn"
         android:textColor="@color/colorText"
@@ -232,6 +242,7 @@
         app:layout_constraintTop_toBottomOf="@id/select_what_you_like" />
 
     <TextView
+        android:fontFamily="sans-serif-light"
         app:layout_constraintRight_toRightOf="@id/pref_shopping_btn"
         app:layout_constraintLeft_toLeftOf="@id/pref_shopping_btn"
         android:textColor="@color/colorText"
@@ -254,6 +265,7 @@
         app:layout_constraintTop_toBottomOf="@id/select_what_you_like" />
 
     <TextView
+        android:fontFamily="sans-serif-light"
         app:layout_constraintLeft_toLeftOf="@id/pref_holiday_btn"
         app:layout_constraintRight_toRightOf="@id/pref_holiday_btn"
         android:textColor="@color/colorText"
@@ -276,6 +288,7 @@
         app:layout_constraintTop_toBottomOf="@id/select_what_you_like" />
 
     <TextView
+        android:fontFamily="sans-serif-light"
         app:layout_constraintRight_toRightOf="@id/pref_calendar_btn"
         app:layout_constraintLeft_toLeftOf="@id/pref_calendar_btn"
         android:textColor="@color/colorText"

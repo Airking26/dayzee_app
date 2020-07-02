@@ -10,7 +10,6 @@ import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.model.Event
 import com.timenoteco.timenote.model.Timenote
-import kotlinx.android.synthetic.main.item_profile_timenote_grid_style.view.*
 import kotlinx.android.synthetic.main.item_profile_timenote_list_style.view.*
 import kotlinx.android.synthetic.main.item_suggestion.view.*
 import kotlinx.android.synthetic.main.item_timenote.view.*

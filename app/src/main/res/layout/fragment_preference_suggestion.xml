@@ -28,9 +28,10 @@
             android:text="@string/suggestions" />
 
         <TextView
+            android:fontFamily="sans-serif-light"
             android:id="@+id/suggestion_ok_btn"
             style="@style/AppTheme.Toolbar.TextLeft"
-            android:text="@string/ok" />
+            android:text="@string/done" />
 
     </androidx.appcompat.widget.Toolbar>
 
@@ -39,6 +40,7 @@
         </LinearLayout>
 
         <TextView
+            android:fontFamily="sans-serif-light"
             android:layout_gravity="center"
             android:id="@+id/select_what_you_like"
             android:layout_width="wrap_content"

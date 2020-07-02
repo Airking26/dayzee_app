@@ -39,6 +39,7 @@
         style="@style/AppTheme.Divider.Toolbar"/>
 
     <EditText
+        android:fontFamily="sans-serif-light"
         android:textSize="15sp"
         android:padding="12dp"
         android:hint="@string/add_a_comment"
@@ -51,6 +52,7 @@
         android:layout_height="wrap_content"/>
 
     <TextView
+        android:fontFamily="sans-serif-light"
         android:textColor="@color/colorPrimary"
         android:text="@string/publish"
         app:layout_constraintTop_toTopOf="@id/comments_edittext"

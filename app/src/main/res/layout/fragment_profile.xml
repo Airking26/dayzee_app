@@ -79,7 +79,6 @@
                         android:text="654"
                         android:textColor="@color/colorText"
                         android:textSize="17sp"
-                        android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -89,6 +88,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="24dp"
+                        android:fontFamily="sans-serif-light"
                         android:text="@string/followers"
                         android:textSize="15sp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -103,7 +103,6 @@
                         android:text="233"
                         android:textColor="@color/colorText"
                         android:textSize="17sp"
-                        android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/profile_followers_label" />
 
@@ -111,6 +110,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="24dp"
+                        android:fontFamily="sans-serif-light"
                         android:text="@string/following"
                         android:textSize="15sp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -138,6 +138,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
+                        android:fontFamily="sans-serif-light"
                         android:id="@+id/profile_location"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -156,7 +157,7 @@
                         android:id="@+id/profile_modify_btn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
+                        android:layout_marginTop="8dp"
                         android:gravity="center"
                         android:paddingHorizontal="18dp"
                         android:paddingVertical="4dp"
@@ -210,6 +211,7 @@
 
 
                     <TextView
+                        android:fontFamily="sans-serif-light"
                         android:id="@+id/profile_desc"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

@@ -1,5 +1,11 @@
 package com.timenoteco.timenote.adapter
 
+import android.graphics.Typeface
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.TextPaint
+import android.text.style.MetricAffectingSpan
+import android.text.style.TypefaceSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -119,7 +125,14 @@ class ItemTimenoteAdapter(
 
             itemView.timenote_username.text = timenote.username
             itemView.timenote_place.text = timenote.place
-            itemView.timenote_username_desc.text = timenote.desc
+            val p = Typeface.create("sans-serif-light", Typeface.NORMAL)
+            val m = Typeface.create("sans-serif", Typeface.NORMAL)
+            val o = ItemTimenoteToComeAdapter.CustomTypefaceSpan(p)
+            val k = ItemTimenoteToComeAdapter.CustomTypefaceSpan(m)
+            val h = SpannableStringBuilder(timenote.desc)
+            h.setSpan(k, 0, 17, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+            h.setSpan(o, 18, timenote.desc?.length!!, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+            itemView.timenote_username_desc.text = h
             itemView.timenote_title.text = timenote.title
             itemView.timenote_year.text = timenote.year
             itemView.timenote_day_month.text = timenote.month
@@ -185,6 +198,16 @@ class ItemTimenoteToComeAdapter(private val timenotesToCome: List<Timenote>, pri
             itemView.timenote_recent_title.text = timenote.title
             itemView.timenote_recent_date.text = timenote.dateIn
             itemView.setOnClickListener { timenoteClicked?.onTimenoteRecentClicked() }
+        }
+    }
+
+    class CustomTypefaceSpan(private val typeface: Typeface?) : MetricAffectingSpan() {
+        override fun updateDrawState(paint: TextPaint) {
+            paint.typeface = typeface
+        }
+
+        override fun updateMeasureState(paint: TextPaint) {
+            paint.typeface = typeface
         }
     }
 

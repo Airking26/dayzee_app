@@ -51,31 +51,24 @@ class ProfileCalendar: Fragment() {
         calendarView.addEventTag(2020, 8, 5, R.color.colorAccent)
         calendarView.setCalendarListener(object: CollapsibleCalendar.CalendarListener{
             override fun onClickListener() {
-                TODO("Not yet implemented")
             }
 
             override fun onDataUpdate() {
-                TODO("Not yet implemented")
             }
 
             override fun onDayChanged() {
-                TODO("Not yet implemented")
             }
 
             override fun onDaySelect() {
-                TODO("Not yet implemented")
             }
 
             override fun onItemClick(v: View) {
-                TODO("Not yet implemented")
             }
 
             override fun onMonthChange() {
-                TODO("Not yet implemented")
             }
 
             override fun onWeekChange(position: Int) {
-                TODO("Not yet implemented")
             }
 
         })

@@ -17,6 +17,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:fontFamily="sans-serif-light"
         android:id="@+id/notification_annoucement"
         android:gravity="center"
         android:textColor="@color/colorText"
@@ -30,6 +31,7 @@
         app:layout_constraintTop_toTopOf="parent" />
     
     <TextView
+        android:fontFamily="sans-serif-light"
         android:gravity="center"
         android:textSize="12sp"
         android:textColor="@android:color/darker_gray"

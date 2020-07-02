@@ -27,6 +27,7 @@
                         android:text="@string/sorting" />
 
                     <TextView
+                        android:fontFamily="sans-serif-light"
                         android:drawableStart="@drawable/ic_keyboard_arrow_left_purple_24dp"
                         android:id="@+id/profile_sorting_btn_back"
                         style="@style/AppTheme.Toolbar.TextRight"

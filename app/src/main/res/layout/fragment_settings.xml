@@ -41,6 +41,7 @@
             android:layout_height="wrap_content">
 
             <TextView
+                android:fontFamily="sans-serif-light"
                 android:id="@+id/general_label"
                 android:textColor="@android:color/black"
                 android:text="@string/general"
@@ -53,6 +54,7 @@
                 android:layout_height="wrap_content"/>
 
             <TextView
+                android:fontFamily="sans-serif-light"
                 android:background="@color/white"
                 android:id="@+id/profile_settings_edit_personnal_infos"
                 android:padding="16dp"
@@ -71,6 +73,7 @@
                 style="@style/AppTheme.Divider.Toolbar" />
 
             <TextView
+                android:fontFamily="sans-serif-light"
                 android:id="@+id/profile_settings_change_password"
                 android:background="@color/white"
                 android:padding="16dp"
@@ -98,6 +101,7 @@
                 android:layout_height="wrap_content">
 
                 <TextView
+                    android:fontFamily="sans-serif-light"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -124,6 +128,7 @@
                 style="@style/AppTheme.Divider.Toolbar"/>
 
             <TextView
+                android:fontFamily="sans-serif-light"
                 android:id="@+id/profile_settings_asked_sent"
                 android:background="@color/white"
                 android:padding="16dp"
@@ -136,6 +141,7 @@
                 android:layout_height="wrap_content"/>
 
             <TextView
+                android:fontFamily="sans-serif-light"
                 android:id="@+id/push_label"
                 android:textColor="@android:color/black"
                 android:text="@string/push"
@@ -159,6 +165,7 @@
                 android:layout_height="wrap_content">
 
                 <TextView
+                    android:fontFamily="sans-serif-light"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -194,6 +201,7 @@
                 android:layout_height="wrap_content">
 
                 <TextView
+                    android:fontFamily="sans-serif-light"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -219,6 +227,7 @@
                 style="@style/AppTheme.Divider.Toolbar"/>
 
             <TextView
+                android:fontFamily="sans-serif-light"
                 android:id="@+id/profile_settings_notification_manager"
                 android:background="@color/white"
                 android:padding="16dp"
@@ -231,6 +240,7 @@
                 android:layout_height="wrap_content"/>
 
             <TextView
+                android:fontFamily="sans-serif-light"
                 android:id="@+id/default_settings_label"
                 android:textColor="@android:color/black"
                 android:text="@string/default_settings"
@@ -243,6 +253,7 @@
                 android:layout_height="wrap_content"/>
 
             <TextView
+                android:fontFamily="sans-serif-light"
                 android:layout_marginTop="8dp"
                 android:id="@+id/profile_settings_date_format"
                 android:background="@color/white"
@@ -261,6 +272,7 @@
                 style="@style/AppTheme.Divider.Toolbar"/>
 
             <TextView
+                android:fontFamily="sans-serif-light"
                 android:id="@+id/profile_settings_timenote_format"
                 android:background="@color/white"
                 android:padding="16dp"
@@ -278,6 +290,7 @@
                 style="@style/AppTheme.Divider.Toolbar"/>
 
             <TextView
+                android:fontFamily="sans-serif-light"
                 android:id="@+id/profile_settings_timenote_visibility"
                 android:background="@color/white"
                 android:padding="16dp"
@@ -290,6 +303,7 @@
                 android:layout_height="wrap_content"/>
 
             <TextView
+                android:fontFamily="sans-serif-light"
                 android:id="@+id/others_label"
                 android:textColor="@android:color/black"
                 android:text="@string/others"
@@ -302,6 +316,7 @@
                 android:layout_height="wrap_content"/>
 
             <TextView
+                android:fontFamily="sans-serif-light"
                 android:id="@+id/profile_settings_confidentiality_politic"
                 android:background="@color/white"
                 android:padding="16dp"
@@ -320,6 +335,7 @@
                 style="@style/AppTheme.Divider.Toolbar"/>
 
             <TextView
+                android:fontFamily="sans-serif-light"
                 android:id="@+id/profile_settings_send_comments"
                 android:background="@color/white"
                 android:padding="16dp"
@@ -332,6 +348,7 @@
                 android:layout_height="wrap_content"/>
 
             <TextView
+                android:fontFamily="sans-serif-light"
                 android:id="@+id/profile_settings_disconnect"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

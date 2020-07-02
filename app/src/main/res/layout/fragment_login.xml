@@ -14,6 +14,7 @@
         android:layout_height="match_parent"/>
 
     <TextView
+        android:fontFamily="sans-serif-light"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -26,6 +27,7 @@
         android:layout_height="wrap_content"/>
 
     <TextView
+        android:fontFamily="sans-serif-light"
         android:text="Don't miss anything important"
         android:textSize="16sp"
         android:textColor="@color/white"
@@ -38,12 +40,12 @@
     <mehdi.sakout.fancybuttons.FancyButton
         fancy:fb_defaultColor="@android:color/white"
         fancy:fb_radius="90dp"
-        fancy:fb_text="Sign In"
+        fancy:fb_text="Login / Sign Up"
         android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         fancy:fb_textColor="@color/colorText"
-        android:paddingVertical="6dp"
+        android:paddingVertical="8dp"
         android:paddingHorizontal="48dp"
         android:layout_marginBottom="72dp"
         app:layout_constraintBottom_toBottomOf="parent"

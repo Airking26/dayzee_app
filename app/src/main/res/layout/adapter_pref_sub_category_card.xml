@@ -16,7 +16,6 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:textStyle="bold"
             android:id="@+id/pref_sub_category_title_category"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"

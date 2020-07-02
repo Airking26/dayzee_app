@@ -18,6 +18,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:fontFamily="sans-serif-light"
         android:id="@+id/suggestion_name_user"
         android:gravity="center"
         android:textColor="@color/colorText"

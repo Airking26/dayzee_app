@@ -6,6 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <TextView
+        android:fontFamily="sans-serif-light"
         android:id="@+id/pref_sub_category_title_sub_category"
         android:paddingVertical="16dp"
         android:layout_marginStart="17dp"

@@ -18,6 +18,7 @@
                 android:text="@string/preview" />
 
             <TextView
+                android:fontFamily="sans-serif-light"
                 android:id="@+id/preview_created_timenote_done_btn"
                 style="@style/AppTheme.Toolbar.TextLeft"
                 android:text="@string/done" />
@@ -40,10 +41,13 @@
         android:layout_height="250dp"/>
 
     <TextView
-        android:shadowDy="1"
-        android:shadowDx="1"
-        android:shadowRadius="1.5"
-        android:shadowColor="@android:color/black"
+        android:paddingHorizontal="8dp"
+        tools:text="Hello"
+        android:fontFamily="sans-serif-light"
+        android:shadowDy="0"
+        android:shadowDx="0"
+        android:shadowRadius="15"
+        android:shadowColor="@color/black"
         android:id="@+id/preview_created_timenote_title"
         android:textSize="18sp"
         android:textColor="@android:color/white"
@@ -56,9 +60,10 @@
         android:layout_height="wrap_content"/>
 
     <TextView
-        android:shadowDy="1"
-        android:shadowDx="1"
-        android:shadowRadius="1.5"
+        android:fontFamily="sans-serif-light"
+        android:shadowDy="0"
+        android:shadowDx="0"
+        android:shadowRadius="25"
         android:shadowColor="@android:color/black"
         android:layout_marginStart="104dp"
         android:id="@+id/preview_created_timenote_year"
@@ -73,6 +78,7 @@
         android:layout_height="wrap_content"/>
 
     <TextView
+        android:fontFamily="sans-serif-light"
         android:background="@drawable/custom"
         android:shadowDy="1"
         android:shadowDx="1"
@@ -87,10 +93,11 @@
         android:layout_height="48dp"/>
 
     <TextView
+        android:fontFamily="sans-serif-light"
         android:layout_marginHorizontal="8dp"
-        android:shadowDy="1"
-        android:shadowDx="1"
-        android:shadowRadius="1.5"
+        android:shadowDy="0"
+        android:shadowDx="0"
+        android:shadowRadius="5"
         android:shadowColor="@android:color/black"
         android:gravity="center"
         android:id="@+id/preview_created_timenote_day_month"
@@ -104,6 +111,7 @@
         android:layout_height="wrap_content"/>
 
     <TextView
+        android:fontFamily="sans-serif-light"
         android:background="@drawable/custom"
         android:shadowDy="1"
         android:shadowDx="1"
@@ -118,6 +126,7 @@
         android:layout_height="48dp"/>
 
     <TextView
+        android:fontFamily="sans-serif-light"
         android:layout_marginStart="8dp"
         android:shadowDy="1"
         android:shadowDx="1"
@@ -135,6 +144,7 @@
         android:layout_height="wrap_content"/>
 
     <TextView
+        android:fontFamily="sans-serif-light"
         android:id="@+id/preview_created_timenote_place"
         android:drawablePadding="8dp"
         android:drawableStart="@drawable/ic_profile_from"
@@ -165,6 +175,7 @@
             android:layout_height="wrap_content">
 
             <TextView
+                android:fontFamily="sans-serif-light"
                 android:id="@+id/share_label"
                 android:drawablePadding="8dp"
                 android:drawableStart="@drawable/ic_share_primary_color_24dp"

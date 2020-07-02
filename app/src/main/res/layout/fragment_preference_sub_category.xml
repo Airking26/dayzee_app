@@ -28,11 +28,13 @@
                     android:text="@string/preferrence" />
 
                 <TextView
+                    android:fontFamily="sans-serif-light"
                     android:id="@+id/pref_sub_category_btn_done"
                     style="@style/AppTheme.Toolbar.TextLeft"
                     android:text="@string/done"/>
 
                 <TextView
+                    android:fontFamily="sans-serif-light"
                     android:drawableStart="@drawable/ic_keyboard_arrow_left_purple_24dp"
                     android:id="@+id/pref_sub_category_btn_back"
                     style="@style/AppTheme.Toolbar.TextRight"

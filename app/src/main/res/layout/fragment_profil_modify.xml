@@ -21,6 +21,7 @@
                 style="@style/AppTheme.Toolbar.Title"/>
 
             <TextView
+                android:fontFamily="sans-serif-light"
                 android:id="@+id/profile_modify_done_btn"
                 style="@style/AppTheme.Toolbar.TextLeft"
                 android:text="@string/done"/>
@@ -94,6 +95,7 @@
 
 
             <TextView
+                android:fontFamily="sans-serif-light"
                 android:id="@+id/profile_modify_name_appearance"
                 android:drawablePadding="8dp"
                 android:hint="@string/name_you_want_to_appear"
@@ -115,6 +117,7 @@
 
 
             <TextView
+                android:fontFamily="sans-serif-light"
                 android:textColor="@color/colorText"
                 android:id="@+id/profile_modify_name"
                 android:drawablePadding="8dp"
@@ -133,6 +136,7 @@
                 style="@style/AppTheme.Divider.Toolbar"/>
 
             <TextView
+                android:fontFamily="sans-serif-light"
                 android:textColor="@color/colorText"
                 android:id="@+id/profile_modify_from"
                 android:drawablePadding="8dp"
@@ -152,6 +156,7 @@
                 style="@style/AppTheme.Divider.Toolbar"/>
 
             <TextView
+                android:fontFamily="sans-serif-light"
                 android:focusable="false"
                 android:id="@+id/profile_modify_birthday"
                 android:drawablePadding="8dp"
@@ -172,6 +177,7 @@
                 style="@style/AppTheme.Divider.Toolbar"/>
 
             <TextView
+                android:fontFamily="sans-serif-light"
                 android:focusable="false"
                 android:id="@+id/profile_modify_gender"
                 android:drawablePadding="8dp"
@@ -191,6 +197,7 @@
                 style="@style/AppTheme.Divider.Toolbar"/>
 
             <TextView
+                android:fontFamily="sans-serif-light"
                 android:focusable="false"
                 android:id="@+id/profile_modify_account_status"
                 android:drawablePadding="8dp"
@@ -210,6 +217,7 @@
                 style="@style/AppTheme.Divider.Toolbar"/>
 
             <TextView
+                android:fontFamily="sans-serif-light"
                 android:focusable="false"
                 android:id="@+id/profile_modify_format_timenote"
                 android:drawablePadding="8dp"
@@ -229,6 +237,7 @@
                 style="@style/AppTheme.Divider.Toolbar"/>
 
             <TextView
+                android:fontFamily="sans-serif-light"
                 android:id="@+id/profile_modify_youtube_channel"
                 android:drawablePadding="8dp"
                 android:hint="@string/youtube_channel"
@@ -249,6 +258,7 @@
 
 
             <TextView
+                android:fontFamily="sans-serif-light"
                 android:id="@+id/profile_modify_description"
                 android:drawablePadding="8dp"
                 android:hint="@string/describe_yourself"

@@ -16,6 +16,7 @@
         android:layout_height="36dp"/>
 
     <TextView
+        android:fontFamily="sans-serif-light"
         android:id="@+id/comment_username_comment"
         android:layout_marginStart="8dp"
         android:textSize="13sp"
@@ -38,6 +39,7 @@
         android:layout_height="12dp"/>
 
     <TextView
+        android:fontFamily="sans-serif-light"
         android:id="@+id/comment_time"
         android:textSize="12sp"
         tools:text="2h"
@@ -48,7 +50,6 @@
         android:layout_height="wrap_content"/>
 
     <TextView
-        android:textStyle="bold"
         tools:text="Answer"
         android:textSize="12sp"
         android:layout_marginStart="16dp"

@@ -16,6 +16,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:fontFamily="sans-serif-light"
         android:id="@+id/item_notification_manager_user"
         android:gravity="center"
         android:textColor="@color/colorText"
