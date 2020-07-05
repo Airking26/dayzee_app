@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import com.timenoteco.timenote.model.CreateTimenoteModel
 
 private var timenoteModel: CreateTimenoteModel =
-    CreateTimenoteModel(null, null, null, null, null, null, null, null, null, null)
+    CreateTimenoteModel(null, null, null, null, null, null, null, null, null, null, null)
 
 class CreationTimenoteData {
 
@@ -19,6 +19,11 @@ class CreationTimenoteData {
 
     fun setPlace(location: String): CreateTimenoteModel {
         timenoteModel.place = location
+        return timenoteModel
+    }
+
+    fun setTtile(title: String): CreateTimenoteModel{
+        timenoteModel.title = title
         return timenoteModel
     }
 
@@ -58,7 +63,7 @@ class CreationTimenoteData {
     }
 
     fun clear(): CreateTimenoteModel {
-        timenoteModel = CreateTimenoteModel(null, null, null, null, null, null, null, null, null, null)
+        timenoteModel = CreateTimenoteModel(null, null, null, null, null, null, null, null, null, null, null)
         return timenoteModel
     }
 

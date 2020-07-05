@@ -228,7 +228,7 @@ class ProfilModify: Fragment(), View.OnClickListener{
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        Utils().picturePickerResult(requestCode, resultCode, data, profile_modify_pb, profile_modify_pic_imageview, null, requireActivity(), this::cropImage)
+        //Utils().picturePickerResult(requestCode, resultCode, data, profile_modify_pb, profile_modify_pic_imageview, null, requireActivity(), this::cropImage)
     }
 
     private fun cropImage(bitmap: Bitmap) {

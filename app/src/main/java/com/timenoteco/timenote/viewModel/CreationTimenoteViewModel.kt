@@ -26,7 +26,11 @@ class CreationTimenoteViewModel: ViewModel() {
         return timenoteLiveData
     }
 
-    fun setDescription(description : String){
+    fun setTitle(title : String){
+        timenoteLiveData.postValue(createTimenoteData.setTtile(title))
+    }
+
+    fun setDescription(description: String){
         timenoteLiveData.postValue(createTimenoteData.setDescription(description))
     }
 

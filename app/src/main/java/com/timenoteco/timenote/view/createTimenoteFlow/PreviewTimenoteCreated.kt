@@ -11,13 +11,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.listeners.BackToHomeListener
 import com.timenoteco.timenote.viewModel.CreationTimenoteViewModel
-import kotlinx.android.synthetic.main.fragment_preference_sub_category.*
 import kotlinx.android.synthetic.main.fragment_preview_timenote_created.*
-import kotlinx.android.synthetic.main.fragment_profile.*
 
 class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
 
@@ -45,7 +42,7 @@ class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
                 if(!it.color.isNullOrBlank()) preview_created_timenote_pic_imageview.setBackgroundColor(Color.parseColor(it.color))
             }
 
-            preview_created_timenote_title.text = it.desc
+            preview_created_timenote_title.text = it.title
             preview_created_timenote_year.text = it.year
             preview_created_timenote_day_month.text = it.formatedStartDate
             preview_created_timenote_time.text = it.formatedEndDate

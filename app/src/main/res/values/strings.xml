@@ -173,8 +173,8 @@
     <string name="contacts">Contacts</string>
     <string name="name_group">Group\'s name</string>
     <string name="colors">Colors</string>
-    <string name="take_a_photo">Take a photo</string>
-    <string name="choose_from_gallery">Choose from gallery</string>
+    <string name="take_a_photo">Take/Choose one picture</string>
+    <string name="choose_from_gallery">Multiple selections</string>
     <string name="resize">Resize</string>
     <string name="picture_successfully_added">PICTURE SUCCESSFULLY ADDED</string>
     <string name="man">Man</string>
@@ -184,4 +184,7 @@
     <string name="sorting">Sorting</string>
     <string name="error_message_filling">Please fill in all the fields</string>
     <string name="message">MESSAGE</string>
+    <string name="description">Description</string>
+    <string name="add_a_description">Add a description</string>
+    <string name="search_on_web">Search on the web</string>
 </resources>

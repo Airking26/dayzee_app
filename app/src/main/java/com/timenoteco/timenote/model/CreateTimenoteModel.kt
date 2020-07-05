@@ -9,6 +9,8 @@ data class CreateTimenoteModel (
     @Nullable
     var place: String?,
     @Nullable
+    var title: String?,
+    @Nullable
     var desc: String?,
     @Nullable
     var year: String?,

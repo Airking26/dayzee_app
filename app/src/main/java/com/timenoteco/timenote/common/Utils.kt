@@ -30,6 +30,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
@@ -39,6 +40,7 @@ import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
+import com.asksira.bsimagepicker.BSImagePicker
 import com.google.android.gms.maps.model.LatLng
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.AutoSuggestAdapter
@@ -117,7 +119,8 @@ class Utils {
             listItems(
                 items = listOf(
                     resources.getString(R.string.take_a_photo),
-                    resources.getString(R.string.choose_from_gallery)
+                    resources.getString(R.string.choose_from_gallery),
+                    resources.getString(R.string.search_on_web)
                 )
             ) { _, index, text ->
                 if (ContextCompat.checkSelfPermission(
@@ -132,12 +135,9 @@ class Utils {
                     view.visibility = View.GONE
                     view1.visibility = View.VISIBLE
                     when (text) {
-                        resources.getString(R.string.take_a_photo) -> fragment.startActivityForResult(Intent(MediaStore.ACTION_IMAGE_CAPTURE), 0)
-                        resources.getString(R.string.choose_from_gallery) -> fragment.startActivityForResult(Intent(
-                                Intent.ACTION_PICK,
-                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                            ), 1
-                        )
+                        resources.getString(R.string.take_a_photo) -> createPictureSingleBS(fragment.childFragmentManager, "single")
+                        resources.getString(R.string.choose_from_gallery) -> createPictureMultipleBS(fragment.childFragmentManager, "multiple")
+                        resources.getString(R.string.search_on_web) -> createPictureSingleBS(fragment.childFragmentManager, "web")
                     }
                 } else fragment.requestPermissions(PERMISSIONS_STORAGE, 2)
             }
@@ -145,11 +145,11 @@ class Utils {
         }
     }
 
-    fun picturePickerResult(requestCode: Int, resultCode: Int, data: Intent?, view: View, view1: View, view2: View?, activity: Activity, croper: (Bitmap) -> Unit) {
+   /* fun picturePickerResult(requestCode: Int, resultCode: Int, data: Intent?, view: View, view1: View, view2: View?, activity: Activity, croper: (Bitmap) -> Unit) {
         when (requestCode) {
             0 -> {
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    val selectedImage: Bitmap = data.extras?.get("data") as Bitmap
+                if (resultCode == Activity.RESULT_OK) {
+                    val selectedImage: Bitmap = data?.extras?.get("data") as Bitmap
                     croper(selectedImage)
                 } else {
                     view.visibility = View.GONE
@@ -185,6 +185,28 @@ class Utils {
                 }
             }
         }
+    }*/
+
+    fun showPicSelected(bitmap: Bitmap,  croper: (Bitmap) -> Unit){
+        croper(bitmap)
+    }
+
+    private fun createPictureSingleBS(childFragmentManager: FragmentManager, tag: String){
+        BSImagePicker.Builder("com.timenoteco.timenote.fileprovider")
+            .setSpanCount(3)
+            .useFrontCamera()
+            .setTag(tag)
+            .build()
+            .show(childFragmentManager, "")
+    }
+
+    private fun createPictureMultipleBS(childFragmentManager: FragmentManager, tag: String){
+        BSImagePicker.Builder("com.timenoteco.timenote.fileprovider")
+            .isMultiSelect
+            .setSpanCount(3)
+            .setTag(tag)
+            .build()
+            .show(childFragmentManager, "")
     }
 
     fun hideStatusBar(activity: Activity){
