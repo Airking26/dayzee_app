@@ -34,8 +34,8 @@ class CreationTimenoteViewModel: ViewModel() {
         timenoteLiveData.postValue(createTimenoteData.setDescription(description))
     }
 
-    fun setPicUser(picUser: Bitmap){
-        timenoteLiveData.postValue(createTimenoteData.setPic(picUser))
+    fun setPicUser(pic: MutableList<Bitmap>){
+        timenoteLiveData.postValue(createTimenoteData.setPic(pic))
     }
 
     fun setLocation(location: String){

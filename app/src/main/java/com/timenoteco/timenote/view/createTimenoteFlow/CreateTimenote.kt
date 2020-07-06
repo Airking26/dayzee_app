@@ -45,7 +45,9 @@ import com.timenoteco.timenote.adapter.ScreenSlidePagerAdapter
 import com.timenoteco.timenote.common.ScreenSlideTimenoteImageFragment
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.PlacePickerListener
+import com.timenoteco.timenote.listeners.TimenoteCreationPicListeners
 import com.timenoteco.timenote.viewModel.CreationTimenoteViewModel
+import com.timenoteco.timenote.viewModel.WebSearchViewModel
 import kotlinx.android.synthetic.main.cropview.view.*
 import kotlinx.android.synthetic.main.fragment_create_timenote.*
 import kotlinx.android.synthetic.main.timenote_view_image.*
@@ -61,11 +63,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BSImagePicker.OnSingleImageSelectedListener,
-    BSImagePicker.OnMultiImageSelectedListener,
-    BSImagePicker.ImageLoaderDelegate,
-    BSImagePicker.OnSelectImageCancelledListener {
+    BSImagePicker.OnMultiImageSelectedListener, BSImagePicker.ImageLoaderDelegate, BSImagePicker.OnSelectImageCancelledListener, TimenoteCreationPicListeners {
 
     private lateinit var picCl: ConstraintLayout
+    private lateinit var vp: ViewPager2
     private lateinit var screenSlidePagerAdapter: ScreenSlidePagerAdapter
     private var images: MutableList<Bitmap>? = mutableListOf()
     private  var retrievedURLS: List<String>? = listOf()
@@ -74,6 +75,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
     private var formCompleted: Boolean = true
     private var startDate: Long? = null
     private val creationTimenoteViewModel: CreationTimenoteViewModel by activityViewModels()
+    private val webSearchViewModel : WebSearchViewModel by activityViewModels()
     private lateinit var categoryTv: TextView
     private lateinit var fromTv: TextView
     private lateinit var toTv: TextView
@@ -116,8 +118,9 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
         descTv = create_timenote_desc_btn
         descCv = desc_cardview
         picCl = pic_cl
+        vp = vp_pic
         vp_pic.apply {
-            screenSlidePagerAdapter = ScreenSlidePagerAdapter(requireActivity(), images)
+            screenSlidePagerAdapter = ScreenSlidePagerAdapter(this@CreateTimenote, images)
             adapter = screenSlidePagerAdapter
         }
         indicator.setViewPager(vp_pic)
@@ -210,7 +213,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
     ) {
         if (requestCode == 2) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Utils().picturePicker(requireContext(), resources, takeAddPicTv, progressBar, this)
+                Utils().picturePicker(requireContext(), resources, takeAddPicTv, progressBar, this, webSearchViewModel)
             }
         }
     }
@@ -225,11 +228,6 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
                 requireContext(),
                 BottomSheet(LayoutMode.WRAP_CONTENT)
             ).show{
-
-                val p = GlobalScope.async {
-                    extractImagesFromGoogle("pyramids")
-                }
-                runBlocking { p }
                 dateTimePicker { _, datetime ->
                     startDate = datetime.time.time
                     fromTv.text = dateFormat.format(startDate)
@@ -257,14 +255,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
                 }
                 lifecycleOwner(this@CreateTimenote)
             }
-            where_cardview -> Utils().placePicker(
-                requireContext(),
-                this@CreateTimenote,
-                create_timenote_where_btn,
-                this,
-                false,
-                requireActivity()
-            )
+            where_cardview -> Utils().placePicker(requireContext(), this@CreateTimenote, create_timenote_where_btn, this, false, requireActivity())
             share_with_cardview -> shareWith()
             category_cardview -> MaterialDialog(
                 requireContext(),
@@ -396,7 +387,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
                 creationTimenoteViewModel.setColor("#ffaa66cc")
             }
             create_timenote_take_add_pic -> {
-                Utils().picturePicker(requireContext(), resources, takeAddPicTv, progressBar, this)
+                Utils().picturePicker(requireContext(), resources, takeAddPicTv, progressBar, this, webSearchViewModel)
             }
         }
     }
@@ -472,7 +463,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
         }
     }
 
-    private fun cropView(bitmap: Bitmap) {
+    private fun cropView(bitmap: Bitmap, position: Int?) {
         var cropView: CropImageView? = null
         val dialog = MaterialDialog(requireContext()).show {
             customView(R.layout.cropview)
@@ -481,9 +472,11 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
                 progressBar.visibility = View.GONE
                 takeAddPicTv.visibility = View.GONE
                 picCl.visibility = View.VISIBLE
-                screenSlidePagerAdapter.images?.add(cropView?.croppedImage!!)
+                if(position == null)images?.add(cropView?.croppedImage!!)
+                else images?.set(position, cropView?.croppedImage!!)
                 screenSlidePagerAdapter.notifyDataSetChanged()
-                creationTimenoteViewModel.setPicUser(cropView?.croppedImage!!)
+                vp.adapter = screenSlidePagerAdapter
+                creationTimenoteViewModel.setPicUser(images!!)
             }
             lifecycleOwner(this@CreateTimenote)
         }
@@ -492,13 +485,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
         cropView.setImageBitmap(bitmap)
     }
 
-    private fun colorChoosedUI(
-        fancyButton1: FancyButton,
-        fancyButton2: FancyButton,
-        fancyButton3: FancyButton,
-        fancyButton4: FancyButton,
-        fancyButton5: FancyButton
-    ) {
+    private fun colorChoosedUI(fancyButton1: FancyButton, fancyButton2: FancyButton, fancyButton3: FancyButton, fancyButton4: FancyButton, fancyButton5: FancyButton) {
         fancyButton1.setBorderWidth(24)
         fancyButton1.setBorderColor(android.R.color.black)
         fancyButton2.setBorderWidth(24)
@@ -531,13 +518,19 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
     }
 
     override fun onSingleImageSelected(uri: Uri?, tag: String?) {
-        Utils().showPicSelected(MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri), this::cropView)
+        if(tag != "single") {
+            var position = tag?.toInt()
+            Utils().showPicSelected(MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri), position,  this::cropView)
+        } else {
+            Utils().showPicSelected(MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri), null,  this::cropView)
+        }
     }
 
     override fun onMultiImageSelected(uriList: MutableList<Uri>?, tag: String?) {
         for(image in uriList!!){
-            screenSlidePagerAdapter.images?.add(MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, image))
+            images?.add(MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, image))
         }
+        creationTimenoteViewModel.setPicUser(images!!)
         screenSlidePagerAdapter.notifyDataSetChanged()
         pic_cl.visibility = View.VISIBLE
         progressBar.visibility = View.GONE
@@ -549,24 +542,35 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
     }
 
     override fun onCancelled(isMultiSelecting: Boolean, tag: String?) {
+        if(images?.isNullOrEmpty()!!){
         progressBar.visibility = View.GONE
         takeAddPicTv.visibility = View.VISIBLE
-        picCl.visibility = View.GONE
+        picCl.visibility = View.GONE }
+        else {
+            progressBar.visibility = View.GONE
+        }
     }
 
-    @Throws(IOException::class)
-    private fun extractImagesFromGoogle(searchQuery: String): List<String>? {
-        val encodedSearchUrl =
-            "https://www.google.com/search?q=" + URLEncoder.encode(searchQuery, "UTF-8").toString() + "&source=lnms&tbm=isch&sa=X&ved=0ahUKEwiUpP35yNXiAhU1BGMBHdDeBAgQ_AUIECgB"
-        val url =
-            "https://www.google.co.in/search?biw=1366&bih=675&tbm=isch&sa=1&ei=qFSJWsuTNc-wzwKFrZHoCw&q=$searchQuery"
-        val document: Document = Jsoup.connect(url).get()
-        val images = document.select("img")
-        val returnedURLS: MutableList<String> = mutableListOf()
-        for(i in images){
-            returnedURLS.add(i.attr("data-src"))
+    override fun onChangePicClicked(position: Int) {
+        Utils().createPictureSingleBS(childFragmentManager, position.toString())
+    }
+
+    override fun onCropPicClicked(bitmap: Bitmap, position: Int) {
+        cropView(bitmap, position)
+    }
+
+    override fun onAddClicked() {
+        Utils().picturePicker(requireContext(), resources, takeAddPicTv, progressBar, this, webSearchViewModel)
+    }
+
+    override fun onDeleteClicked(position: Int) {
+        images?.removeAt(position)
+        screenSlidePagerAdapter.notifyDataSetChanged()
+        if(images?.size == 0){
+            picCl.visibility = View.GONE
+            takeAddPicTv.visibility = View.VISIBLE
+            progressBar.visibility = View.GONE
         }
-        return returnedURLS
     }
 
 }

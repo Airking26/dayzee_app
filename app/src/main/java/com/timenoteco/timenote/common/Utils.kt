@@ -32,21 +32,29 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.bottomsheets.BasicGridItem
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
+import com.afollestad.materialdialogs.bottomsheets.gridItems
 import com.afollestad.materialdialogs.callbacks.onDismiss
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
+import com.afollestad.materialdialogs.input.input
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
 import com.asksira.bsimagepicker.BSImagePicker
 import com.google.android.gms.maps.model.LatLng
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.AutoSuggestAdapter
+import com.timenoteco.timenote.adapter.WebSearchAdapter
 import com.timenoteco.timenote.listeners.PlacePickerListener
+import com.timenoteco.timenote.viewModel.WebSearchViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.autocomplete_search_address.view.*
+import kotlinx.android.synthetic.main.web_search_rv.view.*
 import java.util.*
 
 class Utils {
@@ -108,7 +116,7 @@ class Utils {
         })
     }
 
-    fun picturePicker(context: Context, resources: Resources, view: View, view1: View, fragment: Fragment) {
+    fun picturePicker(context: Context, resources: Resources, view: View, view1: View, fragment: Fragment, webSearchViewModel: WebSearchViewModel) {
         val PERMISSIONS_STORAGE = arrayOf(
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -137,7 +145,27 @@ class Utils {
                     when (text) {
                         resources.getString(R.string.take_a_photo) -> createPictureSingleBS(fragment.childFragmentManager, "single")
                         resources.getString(R.string.choose_from_gallery) -> createPictureMultipleBS(fragment.childFragmentManager, "multiple")
-                        resources.getString(R.string.search_on_web) -> createPictureSingleBS(fragment.childFragmentManager, "web")
+                        resources.getString(R.string.search_on_web) -> MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                            input { _, charSequence ->
+                                webSearchViewModel.search(charSequence.toString())
+                                webSearchViewModel.getListResults().observe(fragment, androidx.lifecycle.Observer {
+                                    if(!it.isNullOrEmpty()){
+                                        val dialog = MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                                            customView(R.layout.web_search_rv, scrollable = true, horizontalPadding = true)
+                                        }
+                                        val rv = dialog.getCustomView().websearch_rv as RecyclerView
+                                        rv.apply {
+                                            val webSearchAdapter = WebSearchAdapter(it.filter { s -> s != "" })
+                                            layoutManager = LinearLayoutManager(context)
+                                            adapter = webSearchAdapter
+                                            webSearchAdapter.notifyDataSetChanged()
+                                        }
+                                    }
+                                })
+                            }
+                            positiveButton(R.string.search_on_web)
+                            lifecycleOwner(fragment)
+                        }
                     }
                 } else fragment.requestPermissions(PERMISSIONS_STORAGE, 2)
             }
@@ -187,11 +215,11 @@ class Utils {
         }
     }*/
 
-    fun showPicSelected(bitmap: Bitmap,  croper: (Bitmap) -> Unit){
-        croper(bitmap)
+    fun showPicSelected(bitmap: Bitmap, position:Int?,  croper: (Bitmap, Int?) -> Unit){
+        croper(bitmap, position)
     }
 
-    private fun createPictureSingleBS(childFragmentManager: FragmentManager, tag: String){
+    fun createPictureSingleBS(childFragmentManager: FragmentManager, tag: String){
         BSImagePicker.Builder("com.timenoteco.timenote.fileprovider")
             .setSpanCount(3)
             .useFrontCamera()
@@ -200,7 +228,7 @@ class Utils {
             .show(childFragmentManager, "")
     }
 
-    private fun createPictureMultipleBS(childFragmentManager: FragmentManager, tag: String){
+    fun createPictureMultipleBS(childFragmentManager: FragmentManager, tag: String){
         BSImagePicker.Builder("com.timenoteco.timenote.fileprovider")
             .isMultiSelect
             .setSpanCount(3)

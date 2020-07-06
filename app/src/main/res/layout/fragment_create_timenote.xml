@@ -80,15 +80,15 @@
                     android:layout_height="wrap_content"/>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_marginHorizontal="16dp"
                     android:visibility="gone"
                     android:id="@+id/pic_cl"
                     android:layout_marginBottom="12dp"
                     android:layout_gravity="center"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                     <androidx.viewpager2.widget.ViewPager2
-                        android:visibility="visible"
                         android:id="@+id/vp_pic"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"

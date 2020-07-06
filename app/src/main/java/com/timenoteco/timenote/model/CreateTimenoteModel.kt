@@ -5,7 +5,7 @@ import androidx.annotation.Nullable
 
 data class CreateTimenoteModel (
     @Nullable
-    var pic: Bitmap?,
+    var pic: MutableList<Bitmap>?,
     @Nullable
     var place: String?,
     @Nullable

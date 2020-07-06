@@ -214,7 +214,7 @@ class ProfilModify: Fragment(), View.OnClickListener{
                 positiveButton(R.string.done)
                 lifecycleOwner(this@ProfilModify)
             }
-            profile_modify_pic_imageview -> Utils().picturePicker(requireContext(), resources, profile_modify_pic_imageview, profile_modify_pb, this@ProfilModify)
+            //profile_modify_pic_imageview -> Utils().picturePicker(requireContext(), resources, profile_modify_pic_imageview, profile_modify_pb, this@ProfilModify)
             profile_modify_done_btn -> findNavController().popBackStack()
         }
     }
@@ -222,7 +222,7 @@ class ProfilModify: Fragment(), View.OnClickListener{
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if(requestCode == 2){
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                Utils().picturePicker(requireContext(), resources, profile_modify_pic_imageview, profile_modify_pb, this@ProfilModify)
+                //Utils().picturePicker(requireContext(), resources, profile_modify_pic_imageview, profile_modify_pb, this@ProfilModify)
             }
         }
     }

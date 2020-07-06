@@ -12,7 +12,7 @@ class CreationTimenoteData {
         return timenoteModel
     }
 
-    fun setPic(pic: Bitmap): CreateTimenoteModel {
+    fun setPic(pic: MutableList<Bitmap>): CreateTimenoteModel {
         timenoteModel.pic = pic
         return timenoteModel
     }
