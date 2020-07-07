@@ -7,12 +7,12 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.timenoteco.timenote.common.ScreenSlideTimenoteImageFragment
 
 
-class ScreenSlidePagerAdapter(var fa: Fragment, var images: MutableList<Bitmap>?) : FragmentStateAdapter(fa) {
+class ScreenSlidePagerAdapter(var fa: Fragment, var images: MutableList<Bitmap>?, val hideIcons: Boolean) : FragmentStateAdapter(fa) {
 
     override fun getItemCount(): Int = images?.size!!
 
     override fun createFragment(position: Int): Fragment {
-        return ScreenSlideTimenoteImageFragment.newInstance(position, images?.get(position), fa)
+        return ScreenSlideTimenoteImageFragment.newInstance(position, images?.get(position), fa, hideIcons)
     }
 
     override fun getItemViewType(position: Int): Int {

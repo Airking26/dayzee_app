@@ -151,11 +151,13 @@ class Utils {
                                 webSearchViewModel.getListResults().observe(fragment, androidx.lifecycle.Observer {
                                     if(!it.isNullOrEmpty()){
                                         val dialog = MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                                            customView(R.layout.web_search_rv, scrollable = true, horizontalPadding = true)
+                                            customView(R.layout.web_search_rv, scrollable = true)
                                         }
                                         val rv = dialog.getCustomView().websearch_rv as RecyclerView
                                         rv.apply {
-                                            val webSearchAdapter = WebSearchAdapter(it.filter { s -> s != "" })
+                                            val p = it.filter { s -> s != "" }
+                                            val m = p.subList(18, p.size)
+                                            val webSearchAdapter = WebSearchAdapter(m, fragment as WebSearchAdapter.ImageChoosedListener)
                                             layoutManager = LinearLayoutManager(context)
                                             adapter = webSearchAdapter
                                             webSearchAdapter.notifyDataSetChanged()
@@ -215,8 +217,8 @@ class Utils {
         }
     }*/
 
-    fun showPicSelected(bitmap: Bitmap, position:Int?,  croper: (Bitmap, Int?) -> Unit){
-        croper(bitmap, position)
+    fun showPicSelected(bitmap: Bitmap, position:Int?, url:String?, croper: (Bitmap?, Int?, String?) -> Unit){
+        croper(bitmap, position, url)
     }
 
     fun createPictureSingleBS(childFragmentManager: FragmentManager, tag: String){

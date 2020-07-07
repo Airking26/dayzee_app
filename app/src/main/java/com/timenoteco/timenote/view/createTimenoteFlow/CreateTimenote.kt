@@ -1,6 +1,5 @@
 package com.timenoteco.timenote.view.createTimenoteFlow
 
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -8,6 +7,7 @@ import android.graphics.Color
 import android.location.Address
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.text.InputType
 import android.view.LayoutInflater
@@ -20,10 +20,8 @@ import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
@@ -32,6 +30,7 @@ import com.afollestad.materialdialogs.color.ColorPalette
 import com.afollestad.materialdialogs.color.colorChooser
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
+import com.afollestad.materialdialogs.datetime.datePicker
 import com.afollestad.materialdialogs.datetime.dateTimePicker
 import com.afollestad.materialdialogs.input.input
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
@@ -39,10 +38,12 @@ import com.afollestad.materialdialogs.list.listItems
 import com.afollestad.materialdialogs.list.listItemsMultiChoice
 import com.asksira.bsimagepicker.BSImagePicker
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.transition.Transition
 import com.theartofdev.edmodo.cropper.CropImageView
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ScreenSlidePagerAdapter
-import com.timenoteco.timenote.common.ScreenSlideTimenoteImageFragment
+import com.timenoteco.timenote.adapter.WebSearchAdapter
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.PlacePickerListener
 import com.timenoteco.timenote.listeners.TimenoteCreationPicListeners
@@ -50,21 +51,21 @@ import com.timenoteco.timenote.viewModel.CreationTimenoteViewModel
 import com.timenoteco.timenote.viewModel.WebSearchViewModel
 import kotlinx.android.synthetic.main.cropview.view.*
 import kotlinx.android.synthetic.main.fragment_create_timenote.*
-import kotlinx.android.synthetic.main.timenote_view_image.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
 import mehdi.sakout.fancybuttons.FancyButton
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import java.io.IOException
-import java.net.URLEncoder
+import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
 class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BSImagePicker.OnSingleImageSelectedListener,
-    BSImagePicker.OnMultiImageSelectedListener, BSImagePicker.ImageLoaderDelegate, BSImagePicker.OnSelectImageCancelledListener, TimenoteCreationPicListeners {
+    BSImagePicker.OnMultiImageSelectedListener, BSImagePicker.ImageLoaderDelegate, BSImagePicker.OnSelectImageCancelledListener,
+    TimenoteCreationPicListeners, WebSearchAdapter.ImageChoosedListener {
 
+    private lateinit var dateFormatDate: SimpleDateFormat
+    private lateinit var fromLabel: TextView
+    private lateinit var toLabel : TextView
+    private lateinit var fixedDate : TextView
     private lateinit var picCl: ConstraintLayout
     private lateinit var vp: ViewPager2
     private lateinit var screenSlidePagerAdapter: ScreenSlidePagerAdapter
@@ -91,60 +92,18 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
     private lateinit var descTv: TextView
     private lateinit var descCv: CardView
     private var listSharedWith: MutableList<String> = mutableListOf()
-    private val DATE_FORMAT_SAME_DAY_SAME_TIME = "EEE, d MMM yyyy hh:mm aaa"
-    private lateinit var dateFormat: SimpleDateFormat
+    private val DATE_FORMAT_DAY_AND_TIME = "EEE, d MMM yyyy hh:mm aaa"
+    private val DATE_FORMAT_ONLY_DAY = "EEE, d MMM yyyy"
+    private lateinit var dateFormatDateAndTime: SimpleDateFormat
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? =
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_create_timenote, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        dateFormat = SimpleDateFormat(DATE_FORMAT_SAME_DAY_SAME_TIME, Locale.getDefault())
-        fromTv = create_timenote_from
-        toTv = create_timenote_to
-        categoryTv = create_timenote_category
-        titleTv = create_timenote_title_btn
-        shareWithTv = create_timenote_share_with_btn
-        moreColorTv = create_timenote_fifth_color
-        firstColorTv = create_timenote_first_color
-        secondColorTv = create_timenote_second_color
-        thirdColorTv = create_timenote_third_color
-        fourthColorTv = create_timenote_fourth_color
-        takeAddPicTv = create_timenote_take_add_pic
-        progressBar = create_timenote_pb
-        descTv = create_timenote_desc_btn
-        descCv = desc_cardview
-        picCl = pic_cl
-        vp = vp_pic
-        vp_pic.apply {
-            screenSlidePagerAdapter = ScreenSlidePagerAdapter(this@CreateTimenote, images)
-            adapter = screenSlidePagerAdapter
-        }
-        indicator.setViewPager(vp_pic)
-        screenSlidePagerAdapter.registerAdapterDataObserver(indicator.adapterDataObserver)
-
-        create_timenote_next_btn.setOnClickListener(this)
-        from_label.setOnClickListener(this)
-        to_label.setOnClickListener(this)
-        where_cardview.setOnClickListener(this)
-        share_with_cardview.setOnClickListener(this)
-        category_cardview.setOnClickListener(this)
-        title_cardview.setOnClickListener(this)
-        create_timenote_fifth_color.setOnClickListener(this)
-        create_timenote_first_color.setOnClickListener(this)
-        create_timenote_second_color.setOnClickListener(this)
-        create_timenote_third_color.setOnClickListener(this)
-        create_timenote_fourth_color.setOnClickListener(this)
-        create_timenote_take_add_pic.setOnClickListener(this)
-        desc_cardview.setOnClickListener(this)
-
+        setUp()
         creationTimenoteViewModel.getCreateTimeNoteLiveData()
             .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-                if (it.category.isNullOrBlank()) create_timenote_category.text =
-                    getString(R.string.none) else create_timenote_category.text = it.category
+                if (it.category.isNullOrBlank()) create_timenote_category.text = getString(R.string.none) else create_timenote_category.text = it.category
                 if (it.pic == null) {
                     takeAddPicTv.visibility = View.VISIBLE
                     progressBar.visibility = View.GONE
@@ -154,11 +113,24 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
                     progressBar.visibility = View.GONE
                     picCl.visibility = View.VISIBLE
                 }
-                if (it.title.isNullOrBlank()) titleTv.text =
-                    getString(R.string.title) else titleTv.text = it.title
-                if (it.place.isNullOrBlank()) create_timenote_where_btn.text =
-                    getString(R.string.where) else create_timenote_where_btn.text = it.place
-                if (it.startDate.isNullOrBlank()) fromTv.text = "" else fromTv.text = it.startDate
+                if (it.title.isNullOrBlank()) titleTv.text = getString(R.string.title) else titleTv.text = it.title
+                if (it.place.isNullOrBlank()) create_timenote_where_btn.text = getString(R.string.where) else create_timenote_where_btn.text = it.place
+                if (!it.startDate.isNullOrBlank() && !it.endDate.isNullOrBlank()){
+                    fixedDate.visibility = View.GONE
+                    toLabel.visibility = View.VISIBLE
+                    fromLabel.visibility = View.VISIBLE
+                    toTv.visibility = View.VISIBLE
+                    fromTv.visibility = View.VISIBLE
+                    fromTv.text = it.startDate
+                    toTv.text = it.endDate
+                } else {
+                    fixedDate.visibility = View.VISIBLE
+                    toLabel.visibility = View.GONE
+                    fromLabel.visibility = View.GONE
+                    toTv.visibility = View.GONE
+                    fromTv.visibility = View.GONE
+                    fixedDate.text = it.startDate
+                }
                 if (it.endDate.isNullOrBlank()) toTv.text = "" else toTv.text = it.endDate
                 if (!it.color.isNullOrBlank()) {
                     when (it.color) {
@@ -206,11 +178,53 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
             })
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
+    private fun setUp() {
+        dateFormatDateAndTime = SimpleDateFormat(DATE_FORMAT_DAY_AND_TIME, Locale.getDefault())
+        dateFormatDate = SimpleDateFormat(DATE_FORMAT_ONLY_DAY, Locale.getDefault())
+        fromLabel = from_label
+        toLabel = to_label
+        fixedDate = create_timenote_fixed_date
+        fromTv = create_timenote_from
+        toTv = create_timenote_to
+        categoryTv = create_timenote_category
+        titleTv = create_timenote_title_btn
+        shareWithTv = create_timenote_share_with_btn
+        moreColorTv = create_timenote_fifth_color
+        firstColorTv = create_timenote_first_color
+        secondColorTv = create_timenote_second_color
+        thirdColorTv = create_timenote_third_color
+        fourthColorTv = create_timenote_fourth_color
+        takeAddPicTv = create_timenote_take_add_pic
+        progressBar = create_timenote_pb
+        descTv = create_timenote_desc_btn
+        descCv = desc_cardview
+        picCl = pic_cl
+        vp = vp_pic
+        vp_pic.apply {
+            screenSlidePagerAdapter = ScreenSlidePagerAdapter(this@CreateTimenote, images, false)
+            adapter = screenSlidePagerAdapter
+        }
+        indicator.setViewPager(vp_pic)
+        screenSlidePagerAdapter.registerAdapterDataObserver(indicator.adapterDataObserver)
+
+        create_timenote_next_btn.setOnClickListener(this)
+        from_label.setOnClickListener(this)
+        to_label.setOnClickListener(this)
+        where_cardview.setOnClickListener(this)
+        share_with_cardview.setOnClickListener(this)
+        category_cardview.setOnClickListener(this)
+        title_cardview.setOnClickListener(this)
+        create_timenote_fifth_color.setOnClickListener(this)
+        create_timenote_first_color.setOnClickListener(this)
+        create_timenote_second_color.setOnClickListener(this)
+        create_timenote_third_color.setOnClickListener(this)
+        create_timenote_fourth_color.setOnClickListener(this)
+        create_timenote_take_add_pic.setOnClickListener(this)
+        desc_cardview.setOnClickListener(this)
+        when_cardview.setOnClickListener(this)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if (requestCode == 2) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Utils().picturePicker(requireContext(), resources, takeAddPicTv, progressBar, this, webSearchViewModel)
@@ -220,19 +234,74 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
 
     override fun onClick(v: View?) {
         when (v) {
+            when_cardview -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                title(R.string.`when`)
+                lifecycleOwner(this@CreateTimenote)
+                listItems(items = listOf(getString(R.string.select_date), getString(R.string.select_date_and_time), getString(R.string.select_start_and_end_date))){
+                    _, index, text ->
+                        when(index){
+                            0 -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                                datePicker { _, datetime ->
+                                    fixedDate.visibility = View.VISIBLE
+                                    toLabel.visibility = View.GONE
+                                    fromLabel.visibility = View.GONE
+                                    toTv.visibility = View.GONE
+                                    fromTv.visibility = View.GONE
+                                    fixedDate.text = dateFormatDate.format(datetime.time.time)
+                                    creationTimenoteViewModel.setYear(datetime.time.time)
+                                    creationTimenoteViewModel.setStartDate(datetime.time.time, DATE_FORMAT_ONLY_DAY)
+                                    creationTimenoteViewModel.setEndDate(0L)
+                                    creationTimenoteViewModel.setFormatedStartDate(datetime.time.time, datetime.time.time)
+                                }
+                            }
+                            1 -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                                dateTimePicker { _, datetime ->
+                                    fixedDate.visibility = View.VISIBLE
+                                    toLabel.visibility = View.GONE
+                                    fromLabel.visibility = View.GONE
+                                    toTv.visibility = View.GONE
+                                    fromTv.visibility = View.GONE
+                                    fixedDate.text = dateFormatDateAndTime.format(datetime.time.time)
+                                    creationTimenoteViewModel.setYear(datetime.time.time)
+                                    creationTimenoteViewModel.setStartDate(datetime.time.time, DATE_FORMAT_DAY_AND_TIME)
+                                    creationTimenoteViewModel.setEndDate(0L)
+                                    creationTimenoteViewModel.setFormatedStartDate(datetime.time.time, datetime.time.time)
+                                }
+                            }
+                            2 -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                                dateTimePicker { _, datetime ->
+                                    fixedDate.visibility = View.GONE
+                                    toLabel.visibility = View.VISIBLE
+                                    fromLabel.visibility = View.VISIBLE
+                                    toTv.visibility = View.VISIBLE
+                                    fromTv.visibility = View.VISIBLE
+                                    startDate = datetime.time.time
+                                    fromTv.text = dateFormatDateAndTime.format(startDate)
+                                    creationTimenoteViewModel.setYear(startDate!!)
+                                    creationTimenoteViewModel.setStartDate(startDate!!, DATE_FORMAT_DAY_AND_TIME)
+                                    MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                                        dateTimePicker { dialog, datetime ->
+                                            endDate = datetime.time.time
+                                            toTv.text = dateFormatDateAndTime.format(endDate)
+                                            creationTimenoteViewModel.setEndDate(endDate!!)
+                                            creationTimenoteViewModel.setFormatedStartDate(startDate!!, endDate!!)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                }
+            }
             create_timenote_next_btn -> {
                 //if(checkFormCompleted())
                 findNavController().navigate(CreateTimenoteDirections.actionCreateTimenoteToPreviewTimenoteCreated())
             }
-            from_label -> MaterialDialog(
-                requireContext(),
-                BottomSheet(LayoutMode.WRAP_CONTENT)
-            ).show{
+            from_label -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show{
                 dateTimePicker { _, datetime ->
                     startDate = datetime.time.time
-                    fromTv.text = dateFormat.format(startDate)
+                    fromTv.text = dateFormatDateAndTime.format(startDate)
                     creationTimenoteViewModel.setYear(startDate!!)
-                    creationTimenoteViewModel.setStartDate(startDate!!)
+                    creationTimenoteViewModel.setStartDate(startDate!!, DATE_FORMAT_DAY_AND_TIME)
                     if (endDate != null) creationTimenoteViewModel.setFormatedStartDate(
                         startDate!!,
                         endDate!!
@@ -240,13 +309,10 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
                 }
                 lifecycleOwner(this@CreateTimenote)
             }
-            to_label -> MaterialDialog(
-                requireContext(),
-                BottomSheet(LayoutMode.WRAP_CONTENT)
-            ).show {
+            to_label -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 dateTimePicker { dialog, datetime ->
                     endDate = datetime.time.time
-                    toTv.text = dateFormat.format(endDate)
+                    toTv.text = dateFormatDateAndTime.format(endDate)
                     creationTimenoteViewModel.setEndDate(endDate!!)
                     if (startDate != null) creationTimenoteViewModel.setFormatedStartDate(
                         startDate!!,
@@ -257,10 +323,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
             }
             where_cardview -> Utils().placePicker(requireContext(), this@CreateTimenote, create_timenote_where_btn, this, false, requireActivity())
             share_with_cardview -> shareWith()
-            category_cardview -> MaterialDialog(
-                requireContext(),
-                BottomSheet(LayoutMode.WRAP_CONTENT)
-            ).show {
+            category_cardview -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.category)
                 listItems(
                     items = listOf(
@@ -289,10 +352,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
                 }
                 lifecycleOwner(this@CreateTimenote)
             }
-            title_cardview -> MaterialDialog(
-                requireContext(),
-                BottomSheet(LayoutMode.WRAP_CONTENT)
-            ).show {
+            title_cardview -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.title)
                 input(
                     inputType = InputType.TYPE_CLASS_TEXT,
@@ -321,10 +381,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
                     creationTimenoteViewModel.setDescription(charSequence.toString())
                 }
             }
-            create_timenote_fifth_color -> MaterialDialog(
-                requireContext(),
-                BottomSheet(LayoutMode.WRAP_CONTENT)
-            ).show {
+            create_timenote_fifth_color -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.colors)
                 colorChooser(
                     colors = ColorPalette.Primary,
@@ -387,6 +444,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
                 creationTimenoteViewModel.setColor("#ffaa66cc")
             }
             create_timenote_take_add_pic -> {
+                images?.clear()
                 Utils().picturePicker(requireContext(), resources, takeAddPicTv, progressBar, this, webSearchViewModel)
             }
         }
@@ -463,7 +521,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
         }
     }
 
-    private fun cropView(bitmap: Bitmap, position: Int?) {
+    private fun cropView(bitmap: Bitmap?, position: Int?, url: String?) {
         var cropView: CropImageView? = null
         val dialog = MaterialDialog(requireContext()).show {
             customView(R.layout.cropview)
@@ -482,7 +540,53 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
         }
 
         cropView = dialog.getCustomView().crop_view as CropImageView
-        cropView.setImageBitmap(bitmap)
+        Glide.with(this)
+            .asBitmap()
+            .load(Uri.parse(url))
+            .into(object : SimpleTarget<Bitmap?>(500, 500) {
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
+                    cropView.setImageBitmap(resource)
+                }
+            })
+        //cropView.setImageUriAsync(Uri.parse(url))
+        //cropView.setImageBitmap(bitmap)
+    }
+
+    private fun saveImage(image: Bitmap): String? {
+        var savedImagePath: String? = null
+        val imageFileName = "JPEG_" + "FILE_NAME" + ".jpg"
+        val storageDir = File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                .toString() + "/YOUR_FOLDER_NAME"
+        )
+        var success = true
+        if (!storageDir.exists()) {
+            success = storageDir.mkdirs()
+        }
+        if (success) {
+            val imageFile = File(storageDir, imageFileName)
+            savedImagePath = imageFile.getAbsolutePath()
+            try {
+                val fOut: OutputStream = FileOutputStream(imageFile)
+                image.compress(Bitmap.CompressFormat.JPEG, 100, fOut)
+                fOut.close()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            // Add the image to the system gallery
+            galleryAddPic(savedImagePath)
+            Toast.makeText(requireContext(), savedImagePath, Toast.LENGTH_LONG).show()
+        }
+        return savedImagePath
+    }
+
+    private fun galleryAddPic(imagePath: String?) {
+        val mediaScanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
+        val f = File(imagePath!!)
+        val contentUri = Uri.fromFile(f)
+        mediaScanIntent.data = contentUri
+        requireActivity().sendBroadcast(mediaScanIntent)
     }
 
     private fun colorChoosedUI(fancyButton1: FancyButton, fancyButton2: FancyButton, fancyButton3: FancyButton, fancyButton4: FancyButton, fancyButton5: FancyButton) {
@@ -520,9 +624,9 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
     override fun onSingleImageSelected(uri: Uri?, tag: String?) {
         if(tag != "single") {
             var position = tag?.toInt()
-            Utils().showPicSelected(MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri), position,  this::cropView)
+            Utils().showPicSelected(MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri), position, null,  this::cropView)
         } else {
-            Utils().showPicSelected(MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri), null,  this::cropView)
+            Utils().showPicSelected(MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri), null, null,  this::cropView)
         }
     }
 
@@ -556,7 +660,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
     }
 
     override fun onCropPicClicked(bitmap: Bitmap, position: Int) {
-        cropView(bitmap, position)
+        cropView(bitmap, position, null)
     }
 
     override fun onAddClicked() {
@@ -571,6 +675,10 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
             takeAddPicTv.visibility = View.VISIBLE
             progressBar.visibility = View.GONE
         }
+    }
+
+    override fun onImageSelectedFromWeb(url: String) {
+        cropView(null, null, url)
     }
 
 }

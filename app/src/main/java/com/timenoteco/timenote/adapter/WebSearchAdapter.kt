@@ -8,7 +8,11 @@ import com.bumptech.glide.Glide
 import com.timenoteco.timenote.R
 import kotlinx.android.synthetic.main.timenote_view_image.view.*
 
-class WebSearchAdapter(val images: List<String>): RecyclerView.Adapter<WebSearchAdapter.WebSearchHolder>() {
+class WebSearchAdapter(val images: List<String>, val imageChoosedListener: ImageChoosedListener): RecyclerView.Adapter<WebSearchAdapter.WebSearchHolder>() {
+
+    interface ImageChoosedListener{
+        fun onImageSelectedFromWeb(url: String)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WebSearchHolder =
         WebSearchHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_image_web_search, parent, false))
@@ -16,17 +20,18 @@ class WebSearchAdapter(val images: List<String>): RecyclerView.Adapter<WebSearch
     override fun getItemCount(): Int = images.size
 
     override fun onBindViewHolder(holder: WebSearchHolder, position: Int) {
-        holder.bindImages(images[position])
+        holder.bindImages(images[position], imageChoosedListener)
     }
 
     class WebSearchHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
-        fun bindImages(s: String) {
-            if(s.isNotEmpty() && s.isNotBlank()) {
+        fun bindImages(url: String, imageChoosedListener: ImageChoosedListener) {
+            if(url.isNotEmpty() && url.isNotBlank()) {
                 Glide.with(itemView)
-                    .load(s)
+                    .load(url)
                     .centerInside()
                     .into(itemView.create_timenote_pic)
+                itemView.create_timenote_pic.setOnClickListener{imageChoosedListener.onImageSelectedFromWeb(url)}
             }
         }
 

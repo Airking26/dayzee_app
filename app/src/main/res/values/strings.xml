@@ -187,4 +187,7 @@
     <string name="description">Description</string>
     <string name="add_a_description">Add a description</string>
     <string name="search_on_web">Search on the web</string>
+    <string name="select_date">Select date</string>
+    <string name="select_date_and_time">Select date and time</string>
+    <string name="select_start_and_end_date">Select stard and end date</string>
 </resources>

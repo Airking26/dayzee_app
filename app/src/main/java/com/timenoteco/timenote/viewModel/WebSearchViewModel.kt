@@ -3,11 +3,16 @@ package com.timenoteco.timenote.viewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import org.json.JSONObject
+import org.json.simple.parser.JSONParser
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.jsoup.select.Elements
 import java.io.IOException
 import java.net.URLEncoder
+import java.text.ParseException
 import java.util.concurrent.Executors
+
 
 class WebSearchViewModel: ViewModel() {
 
@@ -29,12 +34,13 @@ class WebSearchViewModel: ViewModel() {
 
     @Throws(IOException::class)
     private fun extractImagesFromGoogle(searchQuery: String): List<String>? {
-        val encodedSearchUrl =
-            "https://www.google.com/search?q=" + URLEncoder.encode(searchQuery, "UTF-8").toString() + "&source=lnms&tbm=isch&sa=X&ved=0ahUKEwiUpP35yNXiAhU1BGMBHdDeBAgQ_AUIECgB"
-        val url =
-            "https://www.google.co.in/search?biw=1366&bih=675&tbm=isch&sa=1&ei=qFSJWsuTNc-wzwKFrZHoCw&q=$searchQuery"
+        //val doc = Jsoup.connect("https://www.google.com/search?tbm=isch&q=$searchQuery").userAgent("Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36").get()
+
+        val encodedSearchUrl = "https://www.google.com/search?q=" + URLEncoder.encode(searchQuery, "UTF-8").toString() + "&source=lnms&tbm=isch&sa=X&ved=0ahUKEwiUpP35yNXiAhU1BGMBHdDeBAgQ_AUIECgB"
+        //val url = "https://www.google.co.in/search?biw=1366&bih=675&tbm=isch&sa=1&ei=qFSJWsuTNc-wzwKFrZHoCw&q=$searchQuery"
         val document: Document = Jsoup.connect(encodedSearchUrl).get()
-        val images = document.select("img")
+        val images = document.getElementsByTag("img")
+        //val images = document.select("#rg div.rg_di img")
         val returnedURLS: MutableList<String> = mutableListOf()
         for(i in images){
             returnedURLS.add(i.attr("data-src"))

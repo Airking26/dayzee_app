@@ -50,8 +50,8 @@ class CreationTimenoteViewModel: ViewModel() {
         timenoteLiveData.postValue(createTimenoteData.setCategory(category))
     }
 
-    fun setStartDate(startDate: Long){
-        timenoteLiveData.postValue(createTimenoteData.setStartDate(formatDate(DATE_FORMAT_SAME_DAY_SAME_TIME, startDate)))
+    fun setStartDate(startDate: Long, format: String){
+        timenoteLiveData.postValue(createTimenoteData.setStartDate(formatDate(format, startDate)))
     }
 
     fun setEndDate(endDate: Long){
@@ -83,7 +83,8 @@ class CreationTimenoteViewModel: ViewModel() {
 
     private fun formatDate(format: String, timestamp: Long): String {
         val dateFormat = SimpleDateFormat(format, Locale.getDefault())
-        return dateFormat.format(timestamp)
+        return if(timestamp == 0L) ""
+        else dateFormat.format(timestamp)
     }
 
 
