@@ -1,12 +1,13 @@
 package com.timenoteco.timenote.model
 
+import android.graphics.Bitmap
 import androidx.annotation.Nullable
 
 data class Timenote(
     @Nullable
     var pic_user: String?,
     @Nullable
-    var pic: String?,
+    var pic: MutableList<String>?,
     @Nullable
     var username: String?,
     @Nullable

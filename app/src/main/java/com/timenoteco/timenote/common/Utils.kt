@@ -2,32 +2,22 @@ package com.timenoteco.timenote.common
 
 import android.Manifest
 import android.app.Activity
-import android.content.ContentValues.TAG
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
-import android.database.Cursor
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.location.Address
 import android.location.Geocoder
-import android.net.Uri
 import android.os.Build
 import android.os.Handler
-import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.AutoCompleteTextView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -36,9 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
-import com.afollestad.materialdialogs.bottomsheets.BasicGridItem
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
-import com.afollestad.materialdialogs.bottomsheets.gridItems
 import com.afollestad.materialdialogs.callbacks.onDismiss
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
@@ -52,10 +40,8 @@ import com.timenoteco.timenote.adapter.AutoSuggestAdapter
 import com.timenoteco.timenote.adapter.WebSearchAdapter
 import com.timenoteco.timenote.listeners.PlacePickerListener
 import com.timenoteco.timenote.viewModel.WebSearchViewModel
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.autocomplete_search_address.view.*
 import kotlinx.android.synthetic.main.web_search_rv.view.*
-import java.util.*
 
 class Utils {
 
@@ -147,7 +133,7 @@ class Utils {
                         resources.getString(R.string.choose_from_gallery) -> createPictureMultipleBS(fragment.childFragmentManager, "multiple")
                         resources.getString(R.string.search_on_web) -> MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                             input { _, charSequence ->
-                                webSearchViewModel.search(charSequence.toString())
+                                webSearchViewModel.search(charSequence.toString(), context)
                                 webSearchViewModel.getListResults().observe(fragment, androidx.lifecycle.Observer {
                                     if(!it.isNullOrEmpty()){
                                         val dialog = MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
@@ -155,9 +141,7 @@ class Utils {
                                         }
                                         val rv = dialog.getCustomView().websearch_rv as RecyclerView
                                         rv.apply {
-                                            val p = it.filter { s -> s != "" }
-                                            val m = p.subList(18, p.size)
-                                            val webSearchAdapter = WebSearchAdapter(m, fragment as WebSearchAdapter.ImageChoosedListener)
+                                            val webSearchAdapter = WebSearchAdapter(it, fragment as WebSearchAdapter.ImageChoosedListener)
                                             layoutManager = LinearLayoutManager(context)
                                             adapter = webSearchAdapter
                                             webSearchAdapter.notifyDataSetChanged()
@@ -217,8 +201,8 @@ class Utils {
         }
     }*/
 
-    fun showPicSelected(bitmap: Bitmap, position:Int?, url:String?, croper: (Bitmap?, Int?, String?) -> Unit){
-        croper(bitmap, position, url)
+    fun showPicSelected(bitmap: Bitmap, position:Int?, croper: (Bitmap?, Int?) -> Unit){
+        croper(bitmap, position)
     }
 
     fun createPictureSingleBS(childFragmentManager: FragmentManager, tag: String){

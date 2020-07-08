@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.adapter
 
+import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,10 +9,10 @@ import com.bumptech.glide.Glide
 import com.timenoteco.timenote.R
 import kotlinx.android.synthetic.main.timenote_view_image.view.*
 
-class WebSearchAdapter(val images: List<String>, val imageChoosedListener: ImageChoosedListener): RecyclerView.Adapter<WebSearchAdapter.WebSearchHolder>() {
+class WebSearchAdapter(val images: List<Bitmap>, val imageChoosedListener: ImageChoosedListener): RecyclerView.Adapter<WebSearchAdapter.WebSearchHolder>() {
 
     interface ImageChoosedListener{
-        fun onImageSelectedFromWeb(url: String)
+        fun onImageSelectedFromWeb(bitmap: Bitmap)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WebSearchHolder =
@@ -25,14 +26,12 @@ class WebSearchAdapter(val images: List<String>, val imageChoosedListener: Image
 
     class WebSearchHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
-        fun bindImages(url: String, imageChoosedListener: ImageChoosedListener) {
-            if(url.isNotEmpty() && url.isNotBlank()) {
+        fun bindImages(bitmap: Bitmap, imageChoosedListener: ImageChoosedListener) {
                 Glide.with(itemView)
-                    .load(url)
+                    .load(bitmap)
                     .centerInside()
                     .into(itemView.create_timenote_pic)
-                itemView.create_timenote_pic.setOnClickListener{imageChoosedListener.onImageSelectedFromWeb(url)}
-            }
+                itemView.create_timenote_pic.setOnClickListener{imageChoosedListener.onImageSelectedFromWeb(bitmap)}
         }
 
     }

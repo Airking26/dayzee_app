@@ -1,4 +1,4 @@
-package com.timenoteco.timenote.common
+package com.timenoteco.timenote.view.createTimenoteFlow
 
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -8,14 +8,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.listeners.TimenoteCreationPicListeners
-import com.timenoteco.timenote.view.createTimenoteFlow.CreateTimenote
 import kotlinx.android.synthetic.main.timenote_view_image.*
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 private const val ARG_PARAM3 = "param3"
 
-class ScreenSlideTimenoteImageFragment: Fragment() {
+class ScreenSlideCreationTimenoteImageFragment: Fragment() {
     private var param1: Int? = null
     private var param2: Bitmap? = null
     private var param3: Boolean? = null
@@ -64,7 +63,8 @@ class ScreenSlideTimenoteImageFragment: Fragment() {
             context: Fragment,
             hideIcons: Boolean
         ) =
-            ScreenSlideTimenoteImageFragment().apply {
+            ScreenSlideCreationTimenoteImageFragment()
+                .apply {
                 arguments = Bundle().apply {
                     putInt(ARG_PARAM1, param1)
                     putParcelable(ARG_PARAM2, bitmap)

@@ -5,10 +5,10 @@ import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.TextPaint
 import android.text.style.MetricAffectingSpan
-import android.text.style.TypefaceSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -20,10 +20,15 @@ import kotlinx.android.synthetic.main.item_timenote.view.*
 import kotlinx.android.synthetic.main.item_timenote_recent.view.*
 
 class ItemTimenoteAdapter(
-    private val timenotes: List<Timenote>, private val timenotesToCome: List<Timenote>,
-    private val isHeterogeneous: Boolean, private val commentListener: CommentListener,
-    private val plusListener: PlusListener, private val pictureProfileListener: PictureProfileListener,
-    private val timenoteRecentClicked: TimenoteRecentClicked?)
+    private val timenotes: List<Timenote>,
+    private val timenotesToCome: List<Timenote>,
+    private val isHeterogeneous: Boolean,
+    private val commentListener: CommentListener,
+    private val plusListener: PlusListener,
+    private val pictureProfileListener: PictureProfileListener,
+    private val timenoteRecentClicked: TimenoteRecentClicked?,
+    private val home: Fragment
+)
     : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     interface CommentListener{
@@ -78,14 +83,14 @@ class ItemTimenoteAdapter(
         if(isHeterogeneous){
             when(itemViewType){
                 0 -> (holder as TimenoteToComeViewHolder).bindTimenoteTocome(timenotesToCome, timenoteRecentClicked)
-                else -> (holder as TimenoteViewHolder).bindTimenote(timenotes[position], commentListener, plusListener, pictureProfileListener)
+                else -> (holder as TimenoteViewHolder).bindTimenote(timenotes[position], commentListener, plusListener, pictureProfileListener, home)
             }
         } else {
             (holder as TimenoteViewHolder).bindTimenote(
                 timenotes[position],
                 commentListener,
                 plusListener,
-                pictureProfileListener
+                pictureProfileListener, home
             )
         }
 
@@ -108,7 +113,8 @@ class ItemTimenoteAdapter(
             timenote: Timenote,
             commentListener: CommentListener,
             plusListener: PlusListener,
-            pictureProfileListener: PictureProfileListener
+            pictureProfileListener: PictureProfileListener,
+            home: Fragment
         ) {
 
             Glide
@@ -117,12 +123,12 @@ class ItemTimenoteAdapter(
                 .apply(RequestOptions.circleCropTransform())
                 .into(itemView.timenote_pic_user_imageview)
 
-            Glide
-                .with(itemView)
-                .load(timenote.pic)
-                .centerCrop()
-                .into(itemView.timenote_pic_imageview)
 
+            val screenSlideCreationTimenotePagerAdapter = ScreenSlideTimenotePagerAdapter(home, timenote.pic, true)
+            itemView.timenote_vp.adapter = screenSlideCreationTimenotePagerAdapter
+            itemView.timenote_indicator.setViewPager(itemView.timenote_vp)
+            if(timenote.pic?.size == 1) itemView.timenote_indicator.visibility = View.GONE
+            screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(itemView.timenote_indicator.adapterDataObserver)
             itemView.timenote_username.text = timenote.username
             itemView.timenote_place.text = timenote.place
             val p = Typeface.create("sans-serif-light", Typeface.NORMAL)
@@ -184,7 +190,7 @@ class ItemTimenoteToComeAdapter(private val timenotesToCome: List<Timenote>, pri
         fun bindItem(timenote: Timenote, timenoteClicked: ItemTimenoteAdapter.TimenoteRecentClicked?){
             Glide
                 .with(itemView)
-                .load(timenote.pic)
+                .load(timenote.pic!![0])
                 .centerCrop()
                 .into(itemView.timenote_recent_pic_imageview)
 

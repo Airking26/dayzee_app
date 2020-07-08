@@ -3,18 +3,16 @@ package com.timenoteco.timenote.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
-import com.timenoteco.timenote.model.Event
 import com.timenoteco.timenote.model.Timenote
 import kotlinx.android.synthetic.main.item_profile_timenote_list_style.view.*
-import kotlinx.android.synthetic.main.item_suggestion.view.*
 import kotlinx.android.synthetic.main.item_timenote.view.*
 
-class ItemProfileEventAdapter(private var events: List<Timenote>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ItemProfileEventAdapter(private var events: List<Timenote>, private val fragment: Fragment): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var style: Int = 0
 
@@ -30,7 +28,7 @@ class ItemProfileEventAdapter(private var events: List<Timenote>): RecyclerView.
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(this.style){
             0 -> (holder as TimenoteListHolder).bindListStyleItem(events[position])
-            else -> (holder as TimenoteGridHolder).bindGridStyleItem(events[position])
+            else -> (holder as TimenoteGridHolder).bindGridStyleItem(events[position], fragment)
         }
     }
 
@@ -53,7 +51,7 @@ class ItemProfileEventAdapter(private var events: List<Timenote>): RecyclerView.
             itemView.profile_item_date_event.text = event.dateIn
             Glide
                 .with(itemView)
-                .load(event.pic)
+                .load(event.pic!![0])
                 .into(itemView.profile_item_pic_event_imageview)
 
             Glide
@@ -64,18 +62,21 @@ class ItemProfileEventAdapter(private var events: List<Timenote>): RecyclerView.
         }
     }
     class TimenoteGridHolder(itemView: View): RecyclerView.ViewHolder(itemView){
-        fun bindGridStyleItem(timenote: Timenote){
+        fun bindGridStyleItem(
+            timenote: Timenote,
+            fragment: Fragment
+        ){
             Glide
                 .with(itemView)
                 .load(timenote.pic_user)
                 .apply(RequestOptions.circleCropTransform())
                 .into(itemView.timenote_pic_user_imageview)
 
-            Glide
-                .with(itemView)
-                .load(timenote.pic)
-                .centerCrop()
-                .into(itemView.timenote_pic_imageview)
+            val screenSlideCreationTimenotePagerAdapter = ScreenSlideTimenotePagerAdapter(fragment, timenote.pic, true)
+            itemView.timenote_vp.adapter = screenSlideCreationTimenotePagerAdapter
+            itemView.timenote_indicator.setViewPager(itemView.timenote_vp)
+            if(timenote.pic?.size == 1) itemView.timenote_indicator.visibility = View.GONE
+            screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(itemView.timenote_indicator.adapterDataObserver)
 
             itemView.timenote_username.text = timenote.username
             itemView.timenote_place.text = timenote.place

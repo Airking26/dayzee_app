@@ -42,7 +42,7 @@ import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.theartofdev.edmodo.cropper.CropImageView
 import com.timenoteco.timenote.R
-import com.timenoteco.timenote.adapter.ScreenSlidePagerAdapter
+import com.timenoteco.timenote.adapter.ScreenSlideCreationTimenotePagerAdapter
 import com.timenoteco.timenote.adapter.WebSearchAdapter
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.PlacePickerListener
@@ -68,7 +68,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
     private lateinit var fixedDate : TextView
     private lateinit var picCl: ConstraintLayout
     private lateinit var vp: ViewPager2
-    private lateinit var screenSlidePagerAdapter: ScreenSlidePagerAdapter
+    private lateinit var screenSlideCreationTimenotePagerAdapter: ScreenSlideCreationTimenotePagerAdapter
     private var images: MutableList<Bitmap>? = mutableListOf()
     private  var retrievedURLS: List<String>? = listOf()
     private lateinit var titleInput: String
@@ -201,11 +201,11 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
         picCl = pic_cl
         vp = vp_pic
         vp_pic.apply {
-            screenSlidePagerAdapter = ScreenSlidePagerAdapter(this@CreateTimenote, images, false)
-            adapter = screenSlidePagerAdapter
+            screenSlideCreationTimenotePagerAdapter = ScreenSlideCreationTimenotePagerAdapter(this@CreateTimenote, images, false)
+            adapter = screenSlideCreationTimenotePagerAdapter
         }
         indicator.setViewPager(vp_pic)
-        screenSlidePagerAdapter.registerAdapterDataObserver(indicator.adapterDataObserver)
+        screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(indicator.adapterDataObserver)
 
         create_timenote_next_btn.setOnClickListener(this)
         from_label.setOnClickListener(this)
@@ -294,7 +294,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
             }
             create_timenote_next_btn -> {
                 //if(checkFormCompleted())
-                findNavController().navigate(CreateTimenoteDirections.actionCreateTimenoteToPreviewTimenoteCreated())
+                findNavController().navigate(CreateTimenoteDirections.actionCreateTimenoteToBlankFragment())
             }
             from_label -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show{
                 dateTimePicker { _, datetime ->
@@ -521,7 +521,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
         }
     }
 
-    private fun cropView(bitmap: Bitmap?, position: Int?, url: String?) {
+    private fun cropView(bitmap: Bitmap?, position: Int?) {
         var cropView: CropImageView? = null
         val dialog = MaterialDialog(requireContext()).show {
             customView(R.layout.cropview)
@@ -532,24 +532,15 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
                 picCl.visibility = View.VISIBLE
                 if(position == null)images?.add(cropView?.croppedImage!!)
                 else images?.set(position, cropView?.croppedImage!!)
-                screenSlidePagerAdapter.notifyDataSetChanged()
-                vp.adapter = screenSlidePagerAdapter
+                screenSlideCreationTimenotePagerAdapter.notifyDataSetChanged()
+                vp.adapter = screenSlideCreationTimenotePagerAdapter
                 creationTimenoteViewModel.setPicUser(images!!)
             }
             lifecycleOwner(this@CreateTimenote)
         }
 
         cropView = dialog.getCustomView().crop_view as CropImageView
-        Glide.with(this)
-            .asBitmap()
-            .load(Uri.parse(url))
-            .into(object : SimpleTarget<Bitmap?>(500, 500) {
-                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
-                    cropView.setImageBitmap(resource)
-                }
-            })
-        //cropView.setImageUriAsync(Uri.parse(url))
-        //cropView.setImageBitmap(bitmap)
+        cropView.setImageBitmap(bitmap)
     }
 
     private fun saveImage(image: Bitmap): String? {
@@ -624,9 +615,9 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
     override fun onSingleImageSelected(uri: Uri?, tag: String?) {
         if(tag != "single") {
             var position = tag?.toInt()
-            Utils().showPicSelected(MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri), position, null,  this::cropView)
+            Utils().showPicSelected(MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri), position,   this::cropView)
         } else {
-            Utils().showPicSelected(MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri), null, null,  this::cropView)
+            Utils().showPicSelected(MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri), null,   this::cropView)
         }
     }
 
@@ -635,7 +626,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
             images?.add(MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, image))
         }
         creationTimenoteViewModel.setPicUser(images!!)
-        screenSlidePagerAdapter.notifyDataSetChanged()
+        screenSlideCreationTimenotePagerAdapter.notifyDataSetChanged()
         pic_cl.visibility = View.VISIBLE
         progressBar.visibility = View.GONE
         takeAddPicTv.visibility = View.GONE
@@ -660,7 +651,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
     }
 
     override fun onCropPicClicked(bitmap: Bitmap, position: Int) {
-        cropView(bitmap, position, null)
+        cropView(bitmap, position)
     }
 
     override fun onAddClicked() {
@@ -669,7 +660,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
 
     override fun onDeleteClicked(position: Int) {
         images?.removeAt(position)
-        screenSlidePagerAdapter.notifyDataSetChanged()
+        screenSlideCreationTimenotePagerAdapter.notifyDataSetChanged()
         if(images?.size == 0){
             picCl.visibility = View.GONE
             takeAddPicTv.visibility = View.VISIBLE
@@ -677,8 +668,8 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
         }
     }
 
-    override fun onImageSelectedFromWeb(url: String) {
-        cropView(null, null, url)
+    override fun onImageSelectedFromWeb(bitmap: Bitmap) {
+        cropView(bitmap, null)
     }
 
 }
