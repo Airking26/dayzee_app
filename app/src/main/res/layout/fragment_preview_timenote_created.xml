@@ -55,7 +55,7 @@
         android:shadowDy="0"
         android:shadowDx="0"
         android:shadowRadius="15"
-        android:shadowColor="@color/black"
+        android:shadowColor="@android:color/black"
         android:id="@+id/preview_created_timenote_title"
         android:textSize="18sp"
         android:textColor="@android:color/white"

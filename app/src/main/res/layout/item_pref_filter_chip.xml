@@ -6,7 +6,7 @@
     tools:text="Avec Alarme"
     android:layout_margin="4dp"
     app:mcv_backgroundColor="@color/white"
-    app:mcv_textColor="@color/black"
+    app:mcv_textColor="@android:color/black"
     app:mcv_selectedTextColor="@color/colorPrimary"
     app:mcv_selectedBackgroundColor="@android:color/white"
     app:mcv_strokeColor="@android:color/darker_gray"

@@ -33,7 +33,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class NearBy : Fragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdapter.PlusListener, View.OnClickListener, PlacePickerListener,
-    ItemTimenoteAdapter.PictureProfileListener {
+    ItemTimenoteAdapter.PictureProfileListener, ItemTimenoteAdapter.SeeMoreListener {
 
     private lateinit var locationManager: LocationManager
     private lateinit var nearbyDateTv: TextView
@@ -254,6 +254,7 @@ class NearBy : Fragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdap
             this,
             this,
             null,
+            this,
             this as Fragment
         )
         nearby_rv.apply {
@@ -315,7 +316,6 @@ class NearBy : Fragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdap
     }
 
     override fun onPlusClicked() {
-        findNavController().navigate(NearByDirections.actionNearByToDetailedTimenote())
     }
 
     override fun onClick(v: View?) {
@@ -342,6 +342,10 @@ class NearBy : Fragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdap
 
     override fun onPictureClicked() {
         findNavController().navigate(NearByDirections.actionNearByToProfile(true))
+    }
+
+    override fun onSeeMoreClicked() {
+        findNavController().navigate(NearByDirections.actionNearByToDetailedTimenote())
     }
 
 }

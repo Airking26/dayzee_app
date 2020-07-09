@@ -12,18 +12,10 @@
         <action
             android:id="@+id/action_createTimenote_to_previewTimenoteCreated"
             app:destination="@id/previewTimenoteCreated" />
-        <action
-            android:id="@+id/action_createTimenote_to_blankFragment"
-            app:destination="@id/blankFragment" />
     </fragment>
     <fragment
         android:id="@+id/previewTimenoteCreated"
         android:name="com.timenoteco.timenote.view.createTimenoteFlow.PreviewTimenoteCreated"
         android:label="fragment_preview_timenote_created"
         tools:layout="@layout/fragment_preview_timenote_created" />
-    <fragment
-        android:id="@+id/blankFragment"
-        android:name="com.timenoteco.timenote.BlankFragment"
-        android:label="fragment_blank"
-        tools:layout="@layout/fragment_blank" />
 </navigation>

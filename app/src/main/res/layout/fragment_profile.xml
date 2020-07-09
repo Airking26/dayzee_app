@@ -117,15 +117,51 @@
                         app:layout_constraintTop_toBottomOf="@id/profile_nbr_following"
                         tools:text="Following" />
 
-                    <ImageView
-                        android:id="@+id/profile_calendar_btn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="24dp"
-                        android:src="@drawable/ic_event_note_black_24dp"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            android:id="@+id/profile_calendar_btn"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:src="@drawable/profile_calendar"/>
+
+                        <TextView
+                            android:text="mon."
+                            tools:text="merc."
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:textColor="@android:color/white"
+                            android:fontFamily="sans-serif-light"
+                            android:textSize="10sp"
+                            android:id="@+id/profile_day_name_calendar"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:fontFamily="sans-serif-light"
+                            android:textColor="@color/colorText"
+                            android:text="12"
+                            android:textSize="12sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/profile_day_name_calendar"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
                     <ImageView
                         android:id="@+id/profile_pic_imageview"
@@ -223,7 +259,8 @@
                         app:layout_constraintTop_toBottomOf="@id/profile_modify_btn" />
 
                     <ImageView
-                        android:tint="@color/black"
+                        android:layout_marginEnd="36dp"
+                        android:tint="@android:color/black"
                         android:id="@+id/profile_arrow_back_btn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -234,7 +271,8 @@
                         app:layout_constraintTop_toBottomOf="@id/profile_desc" />
 
                     <ImageView
-                        android:tint="@color/black"
+                        android:layout_marginStart="36dp"
+                        android:tint="@android:color/black"
                         android:id="@+id/profile_arrow_forward_btn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -263,7 +301,7 @@
                         android:layout_height="22dp"
                         android:layout_marginTop="16dp"
                         android:src="@drawable/logo"
-                        android:tint="@color/black"
+                        android:tint="@android:color/black"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@id/profile_view_type_btn"
                         app:layout_constraintTop_toBottomOf="@id/profile_desc" />

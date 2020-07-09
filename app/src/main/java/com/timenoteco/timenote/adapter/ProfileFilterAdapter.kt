@@ -58,8 +58,6 @@ class ProfileFilterAdapter(
                 itemView.timenote_day_month.visibility = View.GONE
                 itemView.timenote_time.visibility = View.GONE
                 itemView.timenote_year.visibility = View.GONE
-                itemView.timerProgramCountdown.visibility = View.VISIBLE
-                itemView.timerProgramCountdown.startCountDown(99999999)
             }
         }
 

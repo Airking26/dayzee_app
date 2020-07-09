@@ -45,6 +45,8 @@ import kotlinx.android.synthetic.main.web_search_rv.view.*
 
 class Utils {
 
+    private lateinit var webSearchAdapter: WebSearchAdapter
+
     fun placePicker(context: Context, lifecycleOwner: LifecycleOwner, textView: TextView, placePickerListener: PlacePickerListener, fromNearby: Boolean, activity: Activity){
         val places : MutableList<Address> = mutableListOf()
         val TRIGGER_AUTO_COMPLETE = 500
@@ -131,17 +133,18 @@ class Utils {
                     when (text) {
                         resources.getString(R.string.take_a_photo) -> createPictureSingleBS(fragment.childFragmentManager, "single")
                         resources.getString(R.string.choose_from_gallery) -> createPictureMultipleBS(fragment.childFragmentManager, "multiple")
-                        resources.getString(R.string.search_on_web) -> MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                            input { _, charSequence ->
-                                webSearchViewModel.search(charSequence.toString(), context)
-                                webSearchViewModel.getListResults().observe(fragment, androidx.lifecycle.Observer {
+                        resources.getString(R.string.search_on_web) -> {
+                            MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                                input { _, charSequence ->
+                                    webSearchViewModel.search(charSequence.toString(), context, 0)
+                                    webSearchViewModel.getListResults().observe(fragment, androidx.lifecycle.Observer {
                                     if(!it.isNullOrEmpty()){
                                         val dialog = MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                                             customView(R.layout.web_search_rv, scrollable = true)
                                         }
                                         val rv = dialog.getCustomView().websearch_rv as RecyclerView
                                         rv.apply {
-                                            val webSearchAdapter = WebSearchAdapter(it, fragment as WebSearchAdapter.ImageChoosedListener)
+                                            webSearchAdapter = WebSearchAdapter(it, fragment as WebSearchAdapter.ImageChoosedListener, fragment as WebSearchAdapter.MoreImagesClicked, charSequence.toString())
                                             layoutManager = LinearLayoutManager(context)
                                             adapter = webSearchAdapter
                                             webSearchAdapter.notifyDataSetChanged()
@@ -151,7 +154,7 @@ class Utils {
                             }
                             positiveButton(R.string.search_on_web)
                             lifecycleOwner(fragment)
-                        }
+                        }}
                     }
                 } else fragment.requestPermissions(PERMISSIONS_STORAGE, 2)
             }

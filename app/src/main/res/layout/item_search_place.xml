@@ -2,7 +2,7 @@
 <TextView android:id="@+id/item_search_place_tv"
     xmlns:android="http://schemas.android.com/apk/res/android"
     tools:text="Marseille, France"
-    android:textColor="@color/black"
+    android:textColor="@android:color/black"
     android:textSize="16sp"
     android:padding="16dp"
     android:fontFamily="sans-serif-light"

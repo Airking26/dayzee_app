@@ -38,8 +38,6 @@ import com.afollestad.materialdialogs.list.listItems
 import com.afollestad.materialdialogs.list.listItemsMultiChoice
 import com.asksira.bsimagepicker.BSImagePicker
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.SimpleTarget
-import com.bumptech.glide.request.transition.Transition
 import com.theartofdev.edmodo.cropper.CropImageView
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ScreenSlideCreationTimenotePagerAdapter
@@ -60,7 +58,7 @@ import java.util.*
 
 class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BSImagePicker.OnSingleImageSelectedListener,
     BSImagePicker.OnMultiImageSelectedListener, BSImagePicker.ImageLoaderDelegate, BSImagePicker.OnSelectImageCancelledListener,
-    TimenoteCreationPicListeners, WebSearchAdapter.ImageChoosedListener {
+    TimenoteCreationPicListeners, WebSearchAdapter.ImageChoosedListener, WebSearchAdapter.MoreImagesClicked {
 
     private lateinit var dateFormatDate: SimpleDateFormat
     private lateinit var fromLabel: TextView
@@ -294,7 +292,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
             }
             create_timenote_next_btn -> {
                 //if(checkFormCompleted())
-                findNavController().navigate(CreateTimenoteDirections.actionCreateTimenoteToBlankFragment())
+                findNavController().navigate(CreateTimenoteDirections.actionCreateTimenoteToPreviewTimenoteCreated())
             }
             from_label -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show{
                 dateTimePicker { _, datetime ->
@@ -668,8 +666,12 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
         }
     }
 
-    override fun onImageSelectedFromWeb(bitmap: Bitmap) {
-        cropView(bitmap, null)
+    override fun onImageSelectedFromWeb(bitmap: String) {
+        //cropView(bitmap, null)
+    }
+
+    override fun onMoreImagesClicked(position: Int, query: String) {
+        webSearchViewModel.search(query, requireContext(), (position + 10).toLong())
     }
 
 }

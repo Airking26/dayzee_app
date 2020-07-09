@@ -16,6 +16,7 @@
         <item name="colorTextThirdly">@color/colorTextThirdly</item>
         <item name="colorBackgroundForward">@color/colorBackgroundForward</item>
         <item name="colorBackgroundBackward">@color/colorBackgroundBackward</item>
+        <item name="colorAccentCustom">@color/colorAccentCustom</item>
     </style>
 
 

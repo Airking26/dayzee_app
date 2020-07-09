@@ -15,7 +15,8 @@ import com.timenoteco.timenote.model.Timenote
 import kotlinx.android.synthetic.main.fragment_home.*
 
 class Home : BaseThroughFragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdapter.PlusListener,
-    ItemTimenoteAdapter.PictureProfileListener, ItemTimenoteAdapter.TimenoteRecentClicked {
+    ItemTimenoteAdapter.PictureProfileListener, ItemTimenoteAdapter.TimenoteRecentClicked,
+    ItemTimenoteAdapter.SeeMoreListener {
 
     private var timenotes: List<Timenote> = listOf()
     private lateinit var timenoteAdapter: ItemTimenoteAdapter
@@ -208,7 +209,7 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.CommentListener, ItemTim
         screenSlideTimenotePagerAdapter = ScreenSlideTimenotePagerAdapter(this, mutableListOf(), true)
         timenoteAdapter = ItemTimenoteAdapter(timenotes, timenotes,
             true, this, this,
-            this, this, this as Fragment)
+            this, this, this, this as Fragment)
 
         home_rv.apply {
             layoutManager = LinearLayoutManager(context)
@@ -222,7 +223,6 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.CommentListener, ItemTim
 
 
     override fun onPlusClicked() {
-        findNavController().navigate(HomeDirections.actionHomeToDetailedTimenote())
     }
 
     override fun onPictureClicked() {
@@ -230,6 +230,10 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.CommentListener, ItemTim
     }
 
     override fun onTimenoteRecentClicked() {
+        findNavController().navigate(HomeDirections.actionHomeToDetailedTimenote())
+    }
+
+    override fun onSeeMoreClicked() {
         findNavController().navigate(HomeDirections.actionHomeToDetailedTimenote())
     }
 }

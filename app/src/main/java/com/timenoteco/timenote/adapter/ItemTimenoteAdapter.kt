@@ -27,9 +27,14 @@ class ItemTimenoteAdapter(
     private val plusListener: PlusListener,
     private val pictureProfileListener: PictureProfileListener,
     private val timenoteRecentClicked: TimenoteRecentClicked?,
-    private val home: Fragment
+    private val seeMoreListener: SeeMoreListener,
+    private val fragment: Fragment
 )
     : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+
+    interface SeeMoreListener{
+        fun onSeeMoreClicked()
+    }
 
     interface CommentListener{
         fun onCommentClicked()
@@ -83,14 +88,16 @@ class ItemTimenoteAdapter(
         if(isHeterogeneous){
             when(itemViewType){
                 0 -> (holder as TimenoteToComeViewHolder).bindTimenoteTocome(timenotesToCome, timenoteRecentClicked)
-                else -> (holder as TimenoteViewHolder).bindTimenote(timenotes[position], commentListener, plusListener, pictureProfileListener, home)
+                else -> (holder as TimenoteViewHolder).bindTimenote(timenotes[position], commentListener, plusListener, pictureProfileListener, seeMoreListener, fragment)
             }
         } else {
             (holder as TimenoteViewHolder).bindTimenote(
                 timenotes[position],
                 commentListener,
                 plusListener,
-                pictureProfileListener, home
+                pictureProfileListener,
+                seeMoreListener,
+                fragment
             )
         }
 
@@ -114,7 +121,8 @@ class ItemTimenoteAdapter(
             commentListener: CommentListener,
             plusListener: PlusListener,
             pictureProfileListener: PictureProfileListener,
-            home: Fragment
+            seeMoreListener: SeeMoreListener,
+            fragment: Fragment
         ) {
 
             Glide
@@ -124,7 +132,7 @@ class ItemTimenoteAdapter(
                 .into(itemView.timenote_pic_user_imageview)
 
 
-            val screenSlideCreationTimenotePagerAdapter = ScreenSlideTimenotePagerAdapter(home, timenote.pic, true)
+            val screenSlideCreationTimenotePagerAdapter = ScreenSlideTimenotePagerAdapter(fragment, timenote.pic, true)
             itemView.timenote_vp.adapter = screenSlideCreationTimenotePagerAdapter
             itemView.timenote_indicator.setViewPager(itemView.timenote_vp)
             if(timenote.pic?.size == 1) itemView.timenote_indicator.visibility = View.GONE
@@ -149,12 +157,11 @@ class ItemTimenoteAdapter(
                 itemView.timenote_day_month.visibility = View.GONE
                 itemView.timenote_time.visibility = View.GONE
                 itemView.timenote_year.visibility = View.GONE
-                itemView.timerProgramCountdown.visibility = View.VISIBLE
-                itemView.timerProgramCountdown.startCountDown(99999999)
             }
             itemView.timenote_pic_user_imageview.setOnClickListener { pictureProfileListener.onPictureClicked() }
             itemView.timenote_comment.setOnClickListener { commentListener.onCommentClicked() }
             itemView.timenote_plus.setOnClickListener { plusListener.onPlusClicked() }
+            itemView.timenote_see_more.setOnClickListener { seeMoreListener.onSeeMoreClicked() }
 
         }
 

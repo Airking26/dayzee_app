@@ -59,15 +59,6 @@
         android:layout_width="match_parent"
         android:layout_height="250dp"/>
 
-    <me.relex.circleindicator.CircleIndicator3
-        android:layout_marginBottom="8dp"
-        app:layout_constraintEnd_toEndOf="@id/separator_2"
-        app:layout_constraintStart_toStartOf="@id/separator_1"
-        app:layout_constraintBottom_toBottomOf="@id/timenote_vp"
-        android:id="@+id/timenote_indicator"
-        android:layout_width="0dp"
-        android:layout_height="12dp"/>
-
     <TextView
         android:shadowDy="1"
         android:shadowDx="1"
@@ -105,13 +96,13 @@
         android:layout_height="wrap_content"/>
 
     <TextView
-        android:layout_marginBottom="4dp"
+        android:layout_marginBottom="8dp"
         android:background="@drawable/custom"
         android:id="@+id/separator_1"
         android:fontFamily="sans-serif-light"
         app:layout_constraintEnd_toStartOf="@id/timenote_day_month"
         app:layout_constraintStart_toEndOf="@id/timenote_year"
-        app:layout_constraintBottom_toTopOf="@id/timenote_indicator"
+        app:layout_constraintBottom_toBottomOf="@id/timenote_vp"
         android:layout_width="2dp"
         android:layout_height="48dp"/>
 
@@ -134,13 +125,13 @@
         android:layout_height="wrap_content"/>
 
     <TextView
-        android:layout_marginBottom="4dp"
+        android:layout_marginBottom="8dp"
         android:background="@drawable/custom"
         android:fontFamily="sans-serif-light"
         android:id="@+id/separator_2"
         app:layout_constraintEnd_toStartOf="@id/timenote_time"
         app:layout_constraintStart_toEndOf="@id/timenote_day_month"
-        app:layout_constraintBottom_toTopOf="@id/timenote_indicator"
+        app:layout_constraintBottom_toBottomOf="@id/timenote_vp"
         android:layout_width="2dp"
         android:layout_height="48dp"/>
 
@@ -162,32 +153,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
-    <com.asp.fliptimerviewlibrary.CountDownClock
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="@id/timenote_vp"
-        android:id="@+id/timerProgramCountdown"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:clipChildren="false"
-        android:clipToPadding="false"
-        flipTimer:almostFinishedCallbackTimeInSeconds="5"
-        flipTimer:digitTopDrawable="@drawable/background_top_countdown"
-        flipTimer:digitBottomDrawable="@drawable/background_bottom_countdown"
-        flipTimer:animationDuration="850"
-        flipTimer:countdownTickInterval="1000"
-        flipTimer:digitDividerColor="@color/transparent"
-        flipTimer:digitPadding="2dp"
-        flipTimer:digitTextColor="@color/black"
-        flipTimer:digitTextSize="18sp"
-        flipTimer:digitWidth="21dp"
-        flipTimer:halfDigitHeight="16dp"
-        flipTimer:resetSymbol="8"
-        flipTimer:splitterPadding="0dp"
-        />
 
     <ImageView
         app:layout_constraintStart_toStartOf="parent"
@@ -208,6 +173,18 @@
         app:layout_constraintTop_toBottomOf="@id/timenote_vp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
+
+
+    <me.relex.circleindicator.CircleIndicator3
+        app:ci_drawable="@drawable/dot_selected"
+        app:ci_drawable_unselected="@drawable/dot_unselected"
+        app:layout_constraintBottom_toBottomOf="@id/timenote_comment"
+        app:layout_constraintTop_toTopOf="@id/timenote_comment"
+        app:layout_constraintEnd_toStartOf="@id/separator_2"
+        app:layout_constraintStart_toEndOf="@id/separator_1"
+        android:id="@+id/timenote_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="12dp"/>
 
     <ImageView
         android:id="@+id/timenote_plus"

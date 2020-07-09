@@ -5,5 +5,6 @@
     <attr name="colorTextThirdly" format="reference|color" />
     <attr name="colorBackgroundForward" format="reference|color" />
     <attr name="colorBackgroundBackward" format="reference|color" />
+    <attr name="colorAccentCustom" format="reference|color" />
 
 </resources>
