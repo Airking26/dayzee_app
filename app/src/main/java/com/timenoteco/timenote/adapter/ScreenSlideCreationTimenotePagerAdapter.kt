@@ -7,7 +7,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.timenoteco.timenote.view.createTimenoteFlow.ScreenSlideCreationTimenoteImageFragment
 
 
-class ScreenSlideCreationTimenotePagerAdapter(var fa: Fragment, var images: MutableList<Bitmap>?, val hideIcons: Boolean) : FragmentStateAdapter(fa) {
+class ScreenSlideCreationTimenotePagerAdapter(var fa: Fragment, var images: MutableList<String>?, val hideIcons: Boolean) : FragmentStateAdapter(fa) {
 
     override fun getItemCount(): Int = images?.size!!
 

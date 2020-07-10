@@ -1,6 +1,7 @@
 package com.timenoteco.timenote.repository
 
 import android.graphics.Bitmap
+import android.net.Uri
 import com.timenoteco.timenote.model.CreateTimenoteModel
 
 private var timenoteModel: CreateTimenoteModel =
@@ -12,7 +13,7 @@ class CreationTimenoteData {
         return timenoteModel
     }
 
-    fun setPic(pic: MutableList<Bitmap>): CreateTimenoteModel {
+    fun setPic(pic: MutableList<String>): CreateTimenoteModel {
         timenoteModel.pic = pic
         return timenoteModel
     }

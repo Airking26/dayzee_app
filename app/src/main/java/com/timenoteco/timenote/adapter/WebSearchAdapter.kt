@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.adapter
 
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +11,7 @@ import kotlinx.android.synthetic.main.item_more_web_search.view.*
 import kotlinx.android.synthetic.main.timenote_view_image.view.*
 
 class WebSearchAdapter(
-    val images: List<String>,
+    val images: MutableList<String>,
     val imageChoosedListener: ImageChoosedListener,
     val moreImagesClicked: MoreImagesClicked,
     val query : String
@@ -22,6 +23,10 @@ class WebSearchAdapter(
 
     interface MoreImagesClicked{
         fun onMoreImagesClicked(position: Int, query: String)
+    }
+
+    fun clear(){
+        this.images.clear()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WebSearchHolder {
@@ -48,9 +53,10 @@ class WebSearchAdapter(
 
         fun bindImages(bitmap: String, imageChoosedListener: ImageChoosedListener) {
                 Glide.with(itemView)
-                    .load(bitmap)
+                    .load(Uri.parse(bitmap))
                     .centerInside()
                     .into(itemView.create_timenote_pic)
+
                 itemView.create_timenote_pic.setOnClickListener{imageChoosedListener.onImageSelectedFromWeb(bitmap)}
         }
 

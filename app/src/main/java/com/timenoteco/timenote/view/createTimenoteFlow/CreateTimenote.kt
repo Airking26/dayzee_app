@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.Rect
 import android.location.Address
 import android.net.Uri
 import android.os.Bundle
@@ -53,6 +54,7 @@ import mehdi.sakout.fancybuttons.FancyButton
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
+import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -60,6 +62,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
     BSImagePicker.OnMultiImageSelectedListener, BSImagePicker.ImageLoaderDelegate, BSImagePicker.OnSelectImageCancelledListener,
     TimenoteCreationPicListeners, WebSearchAdapter.ImageChoosedListener, WebSearchAdapter.MoreImagesClicked {
 
+    private var pathImageFromWeb: String? = null
     private lateinit var dateFormatDate: SimpleDateFormat
     private lateinit var fromLabel: TextView
     private lateinit var toLabel : TextView
@@ -67,7 +70,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
     private lateinit var picCl: ConstraintLayout
     private lateinit var vp: ViewPager2
     private lateinit var screenSlideCreationTimenotePagerAdapter: ScreenSlideCreationTimenotePagerAdapter
-    private var images: MutableList<Bitmap>? = mutableListOf()
+    private var images: MutableList<String>? = mutableListOf()
     private  var retrievedURLS: List<String>? = listOf()
     private lateinit var titleInput: String
     private var endDate: Long? = null
@@ -519,7 +522,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
         }
     }
 
-    private fun cropView(bitmap: Bitmap?, position: Int?) {
+    private fun cropView(bitmap: Uri?, position: Int?, fromWeb: Boolean) {
         var cropView: CropImageView? = null
         val dialog = MaterialDialog(requireContext()).show {
             customView(R.layout.cropview)
@@ -528,8 +531,9 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
                 progressBar.visibility = View.GONE
                 takeAddPicTv.visibility = View.GONE
                 picCl.visibility = View.VISIBLE
-                if(position == null)images?.add(cropView?.croppedImage!!)
-                else images?.set(position, cropView?.croppedImage!!)
+                if(position == null && !fromWeb)images?.add(cropView?.imageUri!!.toString())
+                else if(position != null && !fromWeb) images?.set(position, cropView?.imageUri!!.toString())
+                else if(fromWeb) images?.add(pathImageFromWeb!!)
                 screenSlideCreationTimenotePagerAdapter.notifyDataSetChanged()
                 vp.adapter = screenSlideCreationTimenotePagerAdapter
                 creationTimenoteViewModel.setPicUser(images!!)
@@ -538,15 +542,23 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
         }
 
         cropView = dialog.getCustomView().crop_view as CropImageView
-        cropView.setImageBitmap(bitmap)
+        if(fromWeb) {
+            webSearchViewModel.getBitmap().observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                if(it != null){
+                    cropView.setImageBitmap(it)
+                    pathImageFromWeb = saveImage(it," bitma")
+                }
+            })
+        }
+        else cropView.setImageUriAsync(bitmap)
     }
 
-    private fun saveImage(image: Bitmap): String? {
+    private fun saveImage(image: Bitmap, name: String): String? {
         var savedImagePath: String? = null
-        val imageFileName = "JPEG_" + "FILE_NAME" + ".jpg"
+        val imageFileName = "JPEG_$name.jpg"
         val storageDir = File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-                .toString() + "/YOUR_FOLDER_NAME"
+                .toString() + "/TIMENOTE_PICTURES"
         )
         var success = true
         if (!storageDir.exists()) {
@@ -613,15 +625,15 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
     override fun onSingleImageSelected(uri: Uri?, tag: String?) {
         if(tag != "single") {
             var position = tag?.toInt()
-            Utils().showPicSelected(MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri), position,   this::cropView)
+            Utils().showPicSelected(uri!!, position, false,  this::cropView)
         } else {
-            Utils().showPicSelected(MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri), null,   this::cropView)
+            Utils().showPicSelected(uri!!, null, false,  this::cropView)
         }
     }
 
     override fun onMultiImageSelected(uriList: MutableList<Uri>?, tag: String?) {
         for(image in uriList!!){
-            images?.add(MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, image))
+            images?.add(image.toString())
         }
         creationTimenoteViewModel.setPicUser(images!!)
         screenSlideCreationTimenotePagerAdapter.notifyDataSetChanged()
@@ -648,8 +660,8 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
         Utils().createPictureSingleBS(childFragmentManager, position.toString())
     }
 
-    override fun onCropPicClicked(bitmap: Bitmap, position: Int) {
-        cropView(bitmap, position)
+    override fun onCropPicClicked(bitmap: Uri, position: Int) {
+        cropView(bitmap, position, false)
     }
 
     override fun onAddClicked() {
@@ -667,11 +679,12 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
     }
 
     override fun onImageSelectedFromWeb(bitmap: String) {
-        //cropView(bitmap, null)
+        webSearchViewModel.decodeSampledBitmapFromResource(URL(bitmap), Rect(), 100, 100)
+        cropView(Uri.parse(bitmap), null, true)
     }
 
     override fun onMoreImagesClicked(position: Int, query: String) {
-        webSearchViewModel.search(query, requireContext(), (position + 10).toLong())
+        webSearchViewModel.search(query, requireContext(), (position).toLong())
     }
 
 }

@@ -1,11 +1,12 @@
 package com.timenoteco.timenote.model
 
 import android.graphics.Bitmap
+import android.net.Uri
 import androidx.annotation.Nullable
 
 data class CreateTimenoteModel (
     @Nullable
-    var pic: MutableList<Bitmap>?,
+    var pic: MutableList<String>?,
     @Nullable
     var place: String?,
     @Nullable

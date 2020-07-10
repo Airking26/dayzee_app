@@ -1,6 +1,7 @@
 package com.timenoteco.timenote.viewModel
 
 import android.graphics.Bitmap
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -34,7 +35,7 @@ class CreationTimenoteViewModel: ViewModel() {
         timenoteLiveData.postValue(createTimenoteData.setDescription(description))
     }
 
-    fun setPicUser(pic: MutableList<Bitmap>){
+    fun setPicUser(pic: MutableList<String>){
         timenoteLiveData.postValue(createTimenoteData.setPic(pic))
     }
 

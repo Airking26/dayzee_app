@@ -6,8 +6,11 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Rect
 import android.location.Address
 import android.location.Geocoder
+import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.text.Editable
@@ -42,10 +45,14 @@ import com.timenoteco.timenote.listeners.PlacePickerListener
 import com.timenoteco.timenote.viewModel.WebSearchViewModel
 import kotlinx.android.synthetic.main.autocomplete_search_address.view.*
 import kotlinx.android.synthetic.main.web_search_rv.view.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
+import java.io.IOException
+import java.net.URL
 
 class Utils {
 
-    private lateinit var webSearchAdapter: WebSearchAdapter
 
     fun placePicker(context: Context, lifecycleOwner: LifecycleOwner, textView: TextView, placePickerListener: PlacePickerListener, fromNearby: Boolean, activity: Activity){
         val places : MutableList<Address> = mutableListOf()
@@ -105,6 +112,9 @@ class Utils {
     }
 
     fun picturePicker(context: Context, resources: Resources, view: View, view1: View, fragment: Fragment, webSearchViewModel: WebSearchViewModel) {
+
+        var webSearchAdapter: WebSearchAdapter? = null
+        lateinit var recyclerView: RecyclerView
         val PERMISSIONS_STORAGE = arrayOf(
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -138,21 +148,45 @@ class Utils {
                                 input { _, charSequence ->
                                     webSearchViewModel.search(charSequence.toString(), context, 0)
                                     webSearchViewModel.getListResults().observe(fragment, androidx.lifecycle.Observer {
-                                    if(!it.isNullOrEmpty()){
-                                        val dialog = MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                                            customView(R.layout.web_search_rv, scrollable = true)
-                                        }
-                                        val rv = dialog.getCustomView().websearch_rv as RecyclerView
-                                        rv.apply {
-                                            webSearchAdapter = WebSearchAdapter(it, fragment as WebSearchAdapter.ImageChoosedListener, fragment as WebSearchAdapter.MoreImagesClicked, charSequence.toString())
-                                            layoutManager = LinearLayoutManager(context)
-                                            adapter = webSearchAdapter
-                                            webSearchAdapter.notifyDataSetChanged()
+                                    if(!it.isNullOrEmpty()) {
+                                        if (it.size <= 10) {
+                                            val dialog = MaterialDialog(
+                                                context,
+                                                BottomSheet(LayoutMode.WRAP_CONTENT)
+                                            ).show {
+                                                customView(
+                                                    R.layout.web_search_rv,
+                                                    scrollable = true
+                                                )
+                                            }
+                                            recyclerView =
+                                                dialog.getCustomView().websearch_rv as RecyclerView
+                                            recyclerView.apply {
+                                                webSearchAdapter = WebSearchAdapter(
+                                                    it,
+                                                    fragment as WebSearchAdapter.ImageChoosedListener,
+                                                    fragment as WebSearchAdapter.MoreImagesClicked,
+                                                    charSequence.toString()
+                                                )
+                                                layoutManager = LinearLayoutManager(context)
+                                                adapter = webSearchAdapter
+                                                webSearchAdapter?.notifyDataSetChanged()
+                                            }
+                                        } else {
+                                            webSearchAdapter?.notifyDataSetChanged()
                                         }
                                     }
                                 })
                             }
-                            positiveButton(R.string.search_on_web)
+                                onDismiss {
+                                    if(webSearchAdapter?.images.isNullOrEmpty()){
+                                        view.visibility = View.VISIBLE
+                                        view1.visibility = View.GONE
+                                    } else {
+                                        webSearchAdapter?.clear()
+                                    }
+                                }
+                                positiveButton(R.string.search_on_web)
                             lifecycleOwner(fragment)
                         }}
                     }
@@ -204,8 +238,8 @@ class Utils {
         }
     }*/
 
-    fun showPicSelected(bitmap: Bitmap, position:Int?, croper: (Bitmap?, Int?) -> Unit){
-        croper(bitmap, position)
+    fun showPicSelected(bitmap: Uri, position:Int?, fromWeb: Boolean, croper: (Uri?, Int?, Boolean) -> Unit){
+        croper(bitmap, position, fromWeb)
     }
 
     fun createPictureSingleBS(childFragmentManager: FragmentManager, tag: String){
@@ -235,4 +269,6 @@ class Utils {
         activity.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         activity.window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
     }
+
+
 }
