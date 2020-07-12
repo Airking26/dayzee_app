@@ -5,9 +5,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Rect
 import android.location.Address
 import android.location.Geocoder
 import android.net.Uri
@@ -25,8 +22,10 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
@@ -45,11 +44,6 @@ import com.timenoteco.timenote.listeners.PlacePickerListener
 import com.timenoteco.timenote.viewModel.WebSearchViewModel
 import kotlinx.android.synthetic.main.autocomplete_search_address.view.*
 import kotlinx.android.synthetic.main.web_search_rv.view.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.withContext
-import java.io.IOException
-import java.net.URL
 
 class Utils {
 
@@ -112,9 +106,6 @@ class Utils {
     }
 
     fun picturePicker(context: Context, resources: Resources, view: View, view1: View, fragment: Fragment, webSearchViewModel: WebSearchViewModel) {
-
-        var webSearchAdapter: WebSearchAdapter? = null
-        lateinit var recyclerView: RecyclerView
         val PERMISSIONS_STORAGE = arrayOf(
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -122,73 +113,15 @@ class Utils {
 
         MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             title(R.string.take_add_a_picture)
-            listItems(
-                items = listOf(
-                    resources.getString(R.string.take_a_photo),
-                    resources.getString(R.string.choose_from_gallery),
-                    resources.getString(R.string.search_on_web)
-                )
-            ) { _, index, text ->
-                if (ContextCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.READ_EXTERNAL_STORAGE
-                    ) == PackageManager.PERMISSION_GRANTED
-                    && ContextCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    ) == PackageManager.PERMISSION_GRANTED
-                ) {
+            listItems(items = listOf(resources.getString(R.string.take_a_photo), resources.getString(R.string.choose_from_gallery), resources.getString(R.string.search_on_web))) { _, index, text ->
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                    && ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                     view.visibility = View.GONE
                     view1.visibility = View.VISIBLE
                     when (text) {
                         resources.getString(R.string.take_a_photo) -> createPictureSingleBS(fragment.childFragmentManager, "single")
                         resources.getString(R.string.choose_from_gallery) -> createPictureMultipleBS(fragment.childFragmentManager, "multiple")
-                        resources.getString(R.string.search_on_web) -> {
-                            MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                                input { _, charSequence ->
-                                    webSearchViewModel.search(charSequence.toString(), context, 0)
-                                    webSearchViewModel.getListResults().observe(fragment, androidx.lifecycle.Observer {
-                                    if(!it.isNullOrEmpty()) {
-                                        if (it.size <= 10) {
-                                            val dialog = MaterialDialog(
-                                                context,
-                                                BottomSheet(LayoutMode.WRAP_CONTENT)
-                                            ).show {
-                                                customView(
-                                                    R.layout.web_search_rv,
-                                                    scrollable = true
-                                                )
-                                            }
-                                            recyclerView =
-                                                dialog.getCustomView().websearch_rv as RecyclerView
-                                            recyclerView.apply {
-                                                webSearchAdapter = WebSearchAdapter(
-                                                    it,
-                                                    fragment as WebSearchAdapter.ImageChoosedListener,
-                                                    fragment as WebSearchAdapter.MoreImagesClicked,
-                                                    charSequence.toString()
-                                                )
-                                                layoutManager = LinearLayoutManager(context)
-                                                adapter = webSearchAdapter
-                                                webSearchAdapter?.notifyDataSetChanged()
-                                            }
-                                        } else {
-                                            webSearchAdapter?.notifyDataSetChanged()
-                                        }
-                                    }
-                                })
-                            }
-                                onDismiss {
-                                    if(webSearchAdapter?.images.isNullOrEmpty()){
-                                        view.visibility = View.VISIBLE
-                                        view1.visibility = View.GONE
-                                    } else {
-                                        webSearchAdapter?.clear()
-                                    }
-                                }
-                                positiveButton(R.string.search_on_web)
-                            lifecycleOwner(fragment)
-                        }}
+                        resources.getString(R.string.search_on_web) -> createWebSearchDialog(context, webSearchViewModel, fragment, view, view1)
                     }
                 } else fragment.requestPermissions(PERMISSIONS_STORAGE, 2)
             }
@@ -196,50 +129,67 @@ class Utils {
         }
     }
 
-   /* fun picturePickerResult(requestCode: Int, resultCode: Int, data: Intent?, view: View, view1: View, view2: View?, activity: Activity, croper: (Bitmap) -> Unit) {
-        when (requestCode) {
-            0 -> {
-                if (resultCode == Activity.RESULT_OK) {
-                    val selectedImage: Bitmap = data?.extras?.get("data") as Bitmap
-                    croper(selectedImage)
-                } else {
-                    view.visibility = View.GONE
-                    view1.visibility = View.VISIBLE
-                    view2?.visibility = View.GONE
-                }
-            }
-            1 -> {
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    val selectedImage: Uri? = data.data
-                    val filePathColumn: Array<String> = arrayOf(MediaStore.Images.Media.DATA)
-                    if (selectedImage != null) {
-                        val cursor: Cursor? = activity.contentResolver.query(
-                            selectedImage,
-                            filePathColumn,
-                            null,
-                            null,
-                            null
-                        )
-                        if (cursor != null) {
-                            cursor.moveToFirst()
-                            val columnIndex: Int = cursor.getColumnIndex(filePathColumn[0])
-                            val picturePath: String = cursor.getString(columnIndex)
-                            val bitmap = BitmapFactory.decodeFile(picturePath)
-                            cursor.close()
-                            croper(bitmap)
-                        }
-                    }
-                } else {
-                    view2?.visibility = View.GONE
-                    view.visibility = View.GONE
-                    view1.visibility = View.VISIBLE
-                }
-            }
-        }
-    }*/
+    private fun createWebSearchDialog(context: Context, webSearchViewModel: WebSearchViewModel, fragment: Fragment, view: View, view1: View) {
+        var recyclerView : RecyclerView?
+        var webSearchAdapter : WebSearchAdapter? = null
+        MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            input { _, charSequence ->
+                webSearchViewModel.search(charSequence.toString(), context, 0)
+                webSearchViewModel.getListResults().removeObservers(fragment.viewLifecycleOwner)
+                webSearchViewModel.getListResults().observe(fragment.viewLifecycleOwner, Observer {
+                    if (!it.isNullOrEmpty()) {
+                        view.visibility = View.GONE
+                        view1.visibility = View.VISIBLE
+                        if (it.size <= 10) {
+                            val dialog =
+                                MaterialDialog(context, BottomSheet(LayoutMode.MATCH_PARENT)).show {
+                                    customView(R.layout.web_search_rv, scrollable = true)
+                                    lifecycleOwner(fragment.viewLifecycleOwner)
+                                }
 
-    fun showPicSelected(bitmap: Uri, position:Int?, fromWeb: Boolean, croper: (Uri?, Int?, Boolean) -> Unit){
-        croper(bitmap, position, fromWeb)
+                            recyclerView = dialog.getCustomView().websearch_rv as RecyclerView
+                            recyclerView?.apply {
+                                webSearchAdapter = WebSearchAdapter(
+                                    it,
+                                    fragment as WebSearchAdapter.ImageChoosedListener,
+                                    fragment as WebSearchAdapter.MoreImagesClicked,
+                                    charSequence.toString(),
+                                    dialog
+                                )
+                                layoutManager = LinearLayoutManager(context)
+                                adapter = webSearchAdapter
+                                webSearchAdapter?.notifyDataSetChanged()
+                            }
+
+                            dialog.onDismiss {
+                                webSearchAdapter?.clear()
+                                webSearchAdapter = null
+                                webSearchViewModel.getListResults().removeObservers(fragment.viewLifecycleOwner)
+                            }
+
+                        } else {
+                            webSearchAdapter?.notifyDataSetChanged()
+                        }
+
+
+                    }
+                })
+            }
+            onDismiss {
+                if (webSearchAdapter != null && webSearchAdapter?.images.isNullOrEmpty()) {
+                    view.visibility = View.VISIBLE
+                    view1.visibility = View.GONE
+                } else {
+                    //webSearchAdapter?.clear()
+                }
+            }
+            positiveButton(R.string.search_on_web)
+            lifecycleOwner(fragment.viewLifecycleOwner)
+        }
+    }
+
+    fun showPicSelected(bitmap: Uri, position:Int?, croper: (Uri?, Int?) -> Unit){
+        croper(bitmap, position)
     }
 
     fun createPictureSingleBS(childFragmentManager: FragmentManager, tag: String){
@@ -270,5 +220,12 @@ class Utils {
         activity.window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
     }
 
+    fun createPb(context: Context): CircularProgressDrawable {
+        val circularProgressDrawable = CircularProgressDrawable(context)
+        circularProgressDrawable.strokeWidth = 5f
+        circularProgressDrawable.centerRadius = 30f
+        circularProgressDrawable.start()
+        return circularProgressDrawable
+    }
 
 }

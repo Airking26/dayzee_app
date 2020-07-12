@@ -30,14 +30,18 @@ class WebSearchViewModel: ViewModel(){
         return searchWebLiveData
     }
 
+    fun search(keyword: String, context: Context, id: Long){
+        extractImages(keyword, context, id)
+        this.context = context
+    }
+
     fun getBitmap(): LiveData<Bitmap>{
         transformImageLiveData.postValue(bitmap)
         return transformImageLiveData
     }
 
-    fun search(keyword: String, context: Context, id: Long){
-        extractImages(keyword, context, id)
-        this.context = context
+    fun clearBitmap(){
+        transformImageLiveData.postValue(null)
     }
 
     private fun extractImages(searchQuery: String, context: Context, id: Long){
@@ -46,25 +50,29 @@ class WebSearchViewModel: ViewModel(){
         searchTask.setContext(context)
         viewModelScope.launch(Dispatchers.IO) {
             when(searchTask.getImagesFromNet(searchQuery)){
-                    SearchTask.Result.SUCCESS -> searchWebLiveData.postValue(searchTask.getImages())
+                    SearchTask.Result.SUCCESS -> {
+                        results = searchTask.getImages()
+                        searchWebLiveData.postValue(results)
+                    }
             }
         }
     }
 
-    fun decodeSampledBitmapFromResource (url: URL, resId: Rect?, reqWidth: Int, reqHeight: Int) {
+    fun decodeSampledBitmapFromResource (url: URL, resId: Rect?, reqWidth: Int, reqHeight: Int){
         viewModelScope.launch(Dispatchers.IO) {
             val options = BitmapFactory.Options()
             options.inJustDecodeBounds = true
             try {
                 BitmapFactory.decodeStream(url.openConnection().getInputStream(), resId, options)
-                //options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
                 options.inJustDecodeBounds = false
-                transformImageLiveData.postValue(BitmapFactory.decodeStream(url.openConnection().getInputStream(), resId, options)!!)
+                bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream(), resId, options)
+                transformImageLiveData.postValue(bitmap)
+                bitmap = null
+                //transformImageLiveData.postValue(BitmapFactory.decodeStream(url.openConnection().getInputStream(), resId, options)!!)
             } catch (e: IOException) {
                 e.printStackTrace()
             }
         }
-
     }
 
 

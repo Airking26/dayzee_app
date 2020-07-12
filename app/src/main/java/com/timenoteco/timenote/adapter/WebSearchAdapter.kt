@@ -5,8 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.afollestad.materialdialogs.MaterialDialog
 import com.bumptech.glide.Glide
 import com.timenoteco.timenote.R
+import com.timenoteco.timenote.common.Utils
 import kotlinx.android.synthetic.main.item_more_web_search.view.*
 import kotlinx.android.synthetic.main.timenote_view_image.view.*
 
@@ -14,11 +16,12 @@ class WebSearchAdapter(
     val images: MutableList<String>,
     val imageChoosedListener: ImageChoosedListener,
     val moreImagesClicked: MoreImagesClicked,
-    val query : String
+    val query: String,
+    val dialog: MaterialDialog
 ): RecyclerView.Adapter<WebSearchAdapter.WebSearchHolder>() {
 
     interface ImageChoosedListener{
-        fun onImageSelectedFromWeb(bitmap: String)
+        fun onImageSelectedFromWeb(bitmap: String, dialog: MaterialDialog)
     }
 
     interface MoreImagesClicked{
@@ -42,7 +45,7 @@ class WebSearchAdapter(
 
     override fun onBindViewHolder(holder: WebSearchHolder, position: Int) {
         if(position == images.size - 1) holder.bindMore(moreImagesClicked, query, position)
-        else holder.bindImages(images[position], imageChoosedListener)
+        else holder.bindImages(images[position], imageChoosedListener, dialog)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -51,13 +54,19 @@ class WebSearchAdapter(
 
     class WebSearchHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
-        fun bindImages(bitmap: String, imageChoosedListener: ImageChoosedListener) {
-                Glide.with(itemView)
+        fun bindImages(bitmap: String, imageChoosedListener: ImageChoosedListener, dialog: MaterialDialog) {
+
+            val circularProgressDrawable = Utils().createPb(itemView.context)
+
+            Glide.with(itemView)
                     .load(Uri.parse(bitmap))
+                    .placeholder(circularProgressDrawable)
                     .centerInside()
                     .into(itemView.create_timenote_pic)
 
-                itemView.create_timenote_pic.setOnClickListener{imageChoosedListener.onImageSelectedFromWeb(bitmap)}
+                itemView.create_timenote_pic.setOnClickListener{
+                    imageChoosedListener.onImageSelectedFromWeb(bitmap, dialog)
+                }
         }
 
         fun bindMore(
