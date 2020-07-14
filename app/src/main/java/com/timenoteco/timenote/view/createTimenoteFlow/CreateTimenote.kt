@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.view.createTimenoteFlow
 
+import android.app.Dialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -9,6 +10,8 @@ import android.location.Address
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.provider.MediaStore
+import android.system.Os.link
 import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
@@ -26,6 +29,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
+import com.afollestad.materialdialogs.bottomsheets.setPeekHeight
 import com.afollestad.materialdialogs.callbacks.onDismiss
 import com.afollestad.materialdialogs.color.ColorPalette
 import com.afollestad.materialdialogs.color.colorChooser
@@ -46,10 +50,12 @@ import com.timenoteco.timenote.adapter.WebSearchAdapter
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.PlacePickerListener
 import com.timenoteco.timenote.listeners.TimenoteCreationPicListeners
+import com.timenoteco.timenote.model.statusTimenote
 import com.timenoteco.timenote.viewModel.CreationTimenoteViewModel
 import com.timenoteco.timenote.viewModel.WebSearchViewModel
 import kotlinx.android.synthetic.main.cropview.view.*
 import kotlinx.android.synthetic.main.fragment_create_timenote.*
+import kotlinx.android.synthetic.main.friends_search.view.*
 import mehdi.sakout.fancybuttons.FancyButton
 import java.io.File
 import java.io.FileOutputStream
@@ -63,15 +69,21 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
     BSImagePicker.OnMultiImageSelectedListener, BSImagePicker.ImageLoaderDelegate, BSImagePicker.OnSelectImageCancelledListener,
     TimenoteCreationPicListeners, WebSearchAdapter.ImageChoosedListener, WebSearchAdapter.MoreImagesClicked {
 
+    private lateinit var progressDialog: Dialog
     private lateinit var utils: Utils
     private lateinit var dateFormatDate: SimpleDateFormat
     private lateinit var fromLabel: TextView
     private lateinit var toLabel : TextView
+    private lateinit var addEndDateTv: TextView
     private lateinit var fixedDate : TextView
+    private lateinit var price: TextView
+    private lateinit var url: TextView
+    private lateinit var paidTimenote : CardView
     private lateinit var picCl: ConstraintLayout
+    private lateinit var noAnswer: TextView
     private lateinit var vp: ViewPager2
     private lateinit var screenSlideCreationTimenotePagerAdapter: ScreenSlideCreationTimenotePagerAdapter
-    private var images: MutableList<String>? = mutableListOf()
+    private var images: MutableList<Bitmap>? = mutableListOf()
     private lateinit var titleInput: String
     private var endDate: Long? = null
     private var formCompleted: Boolean = true
@@ -104,6 +116,21 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
         setUp()
         creationTimenoteViewModel.getCreateTimeNoteLiveData()
             .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                if(it.status == statusTimenote.FREE){
+                    noAnswer.text = getString(R.string.free)
+                    url.visibility = View.GONE
+                    price.visibility = View.GONE
+                } else if(it.status == statusTimenote.PAID){
+                    noAnswer.text = getString(R.string.paid)
+                    price.visibility = View.VISIBLE
+                    price.text = it.price.toString() + "$"
+                    url.visibility = View.VISIBLE
+                    url.text = it.url
+                } else {
+                    noAnswer.text = getString(R.string.no_answer)
+                    url.visibility = View.GONE
+                    price.visibility = View.GONE
+                }
                 if (it.category.isNullOrBlank()) create_timenote_category.text = getString(R.string.none) else create_timenote_category.text = it.category
                 if (it.pic == null) {
                     takeAddPicTv.visibility = View.VISIBLE
@@ -182,16 +209,21 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
     private fun setUp() {
 
         utils = Utils()
-
+        progressDialog = utils.progressDialog(requireContext())
         dateFormatDateAndTime = SimpleDateFormat(DATE_FORMAT_DAY_AND_TIME, Locale.getDefault())
         dateFormatDate = SimpleDateFormat(DATE_FORMAT_ONLY_DAY, Locale.getDefault())
+        addEndDateTv = profile_add_end_date
         fromLabel = from_label
         toLabel = to_label
+        paidTimenote = paid_timenote_cardview
         fixedDate = create_timenote_fixed_date
         fromTv = create_timenote_from
+        price = create_timenote_paid_timenote_status_price
+        url = create_timenote_paid_timenote_status_url
         toTv = create_timenote_to
         categoryTv = create_timenote_category
         titleTv = create_timenote_title_btn
+        noAnswer = create_timenote_paid_timenote_status_no_answer
         shareWithTv = create_timenote_share_with_btn
         moreColorTv = create_timenote_fifth_color
         firstColorTv = create_timenote_first_color
@@ -226,6 +258,9 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
         create_timenote_take_add_pic.setOnClickListener(this)
         desc_cardview.setOnClickListener(this)
         when_cardview.setOnClickListener(this)
+        addEndDateTv.setOnClickListener(this)
+        paidTimenote.setOnClickListener(this)
+        noAnswer.setOnClickListener(this)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -239,61 +274,41 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
     override fun onClick(v: View?) {
         when (v) {
             when_cardview -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                title(R.string.`when`)
-                lifecycleOwner(this@CreateTimenote)
-                listItems(items = listOf(getString(R.string.select_date), getString(R.string.select_date_and_time), getString(R.string.select_start_and_end_date))){
-                    _, index, text ->
-                        when(index){
-                            0 -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                                datePicker { _, datetime ->
-                                    fixedDate.visibility = View.VISIBLE
-                                    toLabel.visibility = View.GONE
-                                    fromLabel.visibility = View.GONE
-                                    toTv.visibility = View.GONE
-                                    fromTv.visibility = View.GONE
-                                    fixedDate.text = dateFormatDate.format(datetime.time.time)
-                                    creationTimenoteViewModel.setYear(datetime.time.time)
-                                    creationTimenoteViewModel.setStartDate(datetime.time.time, DATE_FORMAT_ONLY_DAY)
-                                    creationTimenoteViewModel.setEndDate(0L)
-                                    creationTimenoteViewModel.setFormatedStartDate(datetime.time.time, datetime.time.time)
-                                }
-                            }
-                            1 -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                                dateTimePicker { _, datetime ->
-                                    fixedDate.visibility = View.VISIBLE
-                                    toLabel.visibility = View.GONE
-                                    fromLabel.visibility = View.GONE
-                                    toTv.visibility = View.GONE
-                                    fromTv.visibility = View.GONE
-                                    fixedDate.text = dateFormatDateAndTime.format(datetime.time.time)
-                                    creationTimenoteViewModel.setYear(datetime.time.time)
-                                    creationTimenoteViewModel.setStartDate(datetime.time.time, DATE_FORMAT_DAY_AND_TIME)
-                                    creationTimenoteViewModel.setEndDate(0L)
-                                    creationTimenoteViewModel.setFormatedStartDate(datetime.time.time, datetime.time.time)
-                                }
-                            }
-                            2 -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                                dateTimePicker { _, datetime ->
-                                    fixedDate.visibility = View.GONE
-                                    toLabel.visibility = View.VISIBLE
-                                    fromLabel.visibility = View.VISIBLE
-                                    toTv.visibility = View.VISIBLE
-                                    fromTv.visibility = View.VISIBLE
-                                    startDate = datetime.time.time
-                                    fromTv.text = dateFormatDateAndTime.format(startDate)
-                                    creationTimenoteViewModel.setYear(startDate!!)
-                                    creationTimenoteViewModel.setStartDate(startDate!!, DATE_FORMAT_DAY_AND_TIME)
-                                    MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                                        dateTimePicker { dialog, datetime ->
-                                            endDate = datetime.time.time
-                                            toTv.text = dateFormatDateAndTime.format(endDate)
-                                            creationTimenoteViewModel.setEndDate(endDate!!)
-                                            creationTimenoteViewModel.setFormatedStartDate(startDate!!, endDate!!)
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                dateTimePicker { _, datetime ->
+                    fixedDate.visibility = View.VISIBLE
+                    toLabel.visibility = View.GONE
+                    fromLabel.visibility = View.GONE
+                    toTv.visibility = View.GONE
+                    fromTv.visibility = View.GONE
+                    fixedDate.text = dateFormatDateAndTime.format(datetime.time.time)
+                    creationTimenoteViewModel.setYear(datetime.time.time)
+                    creationTimenoteViewModel.setStartDate(
+                        datetime.time.time,
+                        DATE_FORMAT_DAY_AND_TIME
+                    )
+                    startDate = datetime.time.time
+                    creationTimenoteViewModel.setEndDate(0L)
+                    creationTimenoteViewModel.setFormatedStartDate(
+                        datetime.time.time,
+                        datetime.time.time
+                    )
+                    addEndDateTv.visibility = View.VISIBLE
+                }
+            }
+            addEndDateTv -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                dateTimePicker { _, datetime ->
+                    fixedDate.visibility = View.GONE
+                    addEndDateTv.visibility = View.GONE
+                    toLabel.visibility = View.VISIBLE
+                    fromLabel.visibility = View.VISIBLE
+                    toTv.visibility = View.VISIBLE
+                    fromTv.visibility = View.VISIBLE
+                    fixedDate.text = dateFormatDateAndTime.format(datetime.time.time)
+                    creationTimenoteViewModel.setYear(datetime.time.time)
+                    creationTimenoteViewModel.setEndDate(datetime.time.time)
+                    creationTimenoteViewModel.setFormatedStartDate(startDate!!, datetime.time.time)
+                    fromTv.text = dateFormatDateAndTime.format(startDate)
+                    toTv.text = dateFormatDateAndTime.format(datetime.time.time)
                 }
             }
             create_timenote_next_btn -> {
@@ -451,6 +466,38 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
                 images?.clear()
                 utils.picturePicker(requireContext(), resources, takeAddPicTv, progressBar, this, webSearchViewModel)
             }
+            paid_timenote_cardview -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                title(R.string.paid_timenote)
+                listItems(items = listOf(getString(R.string.free), getString(R.string.paid),getString(R.string.no_answer))){
+                    _, index, text ->
+                    when(index){
+                        0 -> {
+                            noAnswer.text = text.toString()
+                            creationTimenoteViewModel.setStatus(statusTimenote.FREE)
+                        }
+                        1 -> {
+                            noAnswer.text = text.toString()
+                            MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                                title(R.string.price)
+                                input(inputType = InputType.TYPE_CLASS_NUMBER) { _, charSequence ->
+                                    creationTimenoteViewModel.setPrice(charSequence.toString().toLong())
+                                    MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                                        title(R.string.link)
+                                        input(inputType = InputType.TYPE_TEXT_VARIATION_URI) { _, charSequence ->
+                                            creationTimenoteViewModel.setUrl(charSequence.toString())
+                                            creationTimenoteViewModel.setStatus(statusTimenote.PAID)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        2 -> {
+                            noAnswer.text = text.toString()
+                            creationTimenoteViewModel.setStatus(statusTimenote.NOANSWER)
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -458,13 +505,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
         MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             title(R.string.share_with)
             listItems(
-                items = listOf(
-                    "All",
-                    "Groups",
-                    "Friends",
-                    "Create a new group"
-                )
-            ) { dialog, index, text ->
+                items = listOf("All", "Only me", "Groups", "Friends", "Create a new group" )) { _, _, text ->
                 when (text) {
                     "Groups" -> MaterialDialog(
                         requireContext(),
@@ -483,49 +524,41 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
                         positiveButton(R.string.done)
                         lifecycleOwner(this@CreateTimenote)
                     }
-                    "Friends" -> MaterialDialog(
-                        requireContext(),
-                        BottomSheet(LayoutMode.WRAP_CONTENT)
-                    ).show {
-                        title(R.string.contacts)
-                        listItemsMultiChoice(items = listOf("Pierre", "Paul")) { _, index, text ->
-                            listSharedWith.add(text.joinToString())
-                            shareWithTv.text = listSharedWith.joinToString()
+                    "Friends" -> {
+                        val dial = MaterialDialog(
+                            requireContext(),
+                            BottomSheet(LayoutMode.WRAP_CONTENT)
+                        ).show {
+                            customView(R.layout.friends_search)
+                            lifecycleOwner(this@CreateTimenote)
                         }
+                        val searchbar = dial.getCustomView().searchBar_friends
+                        searchbar.setCardViewElevation(0)
                         positiveButton(R.string.done)
                         lifecycleOwner(this@CreateTimenote)
                     }
-                    "Create a new group" -> MaterialDialog(
-                        requireContext(),
-                        BottomSheet(LayoutMode.WRAP_CONTENT)
-                    ).show {
-                        title(R.string.contacts)
-                        listItemsMultiChoice(items = listOf("Pierre", "Paul")) { _, index, text ->
-                            listSharedWith.add(text.toString())
-                            shareWithTv.text = listSharedWith.toString()
-                            MaterialDialog(
-                                requireContext(),
-                                BottomSheet(LayoutMode.WRAP_CONTENT)
-                            ).show {
-                                title(R.string.name_group)
-                                input(
-                                    inputType = InputType.TYPE_CLASS_TEXT,
-                                    maxLength = 20
-                                ) { materialDialog, charSequence ->
+                    "Create a new group" ->
+                        MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                            title(R.string.name_group)
+                            input(inputType = InputType.TYPE_CLASS_TEXT, maxLength = 20) { materialDialog, charSequence ->
+                                val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                                    customView(R.layout.friends_search)
+                                    lifecycleOwner(this@CreateTimenote)
                                 }
+                                val searchbar = dial.getCustomView().searchBar_friends
+                                searchbar.setCardViewElevation(0)
                                 positiveButton(R.string.done)
-                                lifecycleOwner(this@CreateTimenote)
                             }
+                            positiveButton(R.string.done)
+                            lifecycleOwner(this@CreateTimenote)
                         }
-                        positiveButton(R.string.name_group)
-                        lifecycleOwner(this@CreateTimenote)
-                    }
+
                 }
             }
         }
     }
 
-    private fun cropView(bitmap: Uri?, position: Int?) {
+    private fun cropView(bitmap: Bitmap?, position: Int?) {
         var cropView: CropImageView? = null
         val dialog = MaterialDialog(requireContext()).show {
             customView(R.layout.cropview)
@@ -534,8 +567,8 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
                 progressBar.visibility = View.GONE
                 takeAddPicTv.visibility = View.GONE
                 picCl.visibility = View.VISIBLE
-                if(position == null)images?.add(cropView?.imageUri!!.toString())
-                else images?.set(position, cropView?.imageUri!!.toString())
+                if(position == null)images?.add(cropView?.croppedImage!!)
+                else images?.set(position, cropView?.croppedImage!!)
                 screenSlideCreationTimenotePagerAdapter.notifyDataSetChanged()
                 vp.adapter = screenSlideCreationTimenotePagerAdapter
                 creationTimenoteViewModel.setPicUser(images!!)
@@ -544,15 +577,24 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
         }
 
         cropView = dialog.getCustomView().crop_view as CropImageView
-        cropView.setImageUriAsync(bitmap)
+        cropView.setImageBitmap(bitmap)
+        if(bitmap != null){
+            hideChooseBackground()
+        }
     }
 
-    private fun saveImage(
-        image: Bitmap,
-        dialog: MaterialDialog
-    ): String? {
+    private fun hideChooseBackground() {
+        card_line_0.visibility = View.GONE
+        choose_color_label.visibility = View.GONE
+        create_timenote_first_color.visibility = View.GONE
+        create_timenote_second_color.visibility = View.GONE
+        create_timenote_third_color.visibility = View.GONE
+        create_timenote_fourth_color.visibility = View.GONE
+        create_timenote_fifth_color.visibility = View.GONE
+    }
+
+    private fun saveImage(image: Bitmap, dialog: MaterialDialog): String? {
         var savedImagePath: String? = null
-        val b = image
         val imageFileName = "JPEG_${Timestamp(System.currentTimeMillis())}.jpg"
         val storageDir = File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
@@ -573,22 +615,19 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
                 e.printStackTrace()
             }
 
-            // Add the image to the system gallery
             galleryAddPic(savedImagePath, dialog)
         }
         return savedImagePath
     }
 
-    private fun galleryAddPic(
-        imagePath: String?,
-        dialog: MaterialDialog
-    ) {
+    private fun galleryAddPic(imagePath: String?, dialog: MaterialDialog) {
         val mediaScanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
         val f = File(imagePath!!)
         val contentUri = Uri.fromFile(f)
         mediaScanIntent.data = contentUri
         requireActivity().sendBroadcast(mediaScanIntent)
         dialog.dismiss()
+        progressDialog.hide()
         utils.createPictureMultipleBS(childFragmentManager, "multiple")
     }
 
@@ -626,21 +665,22 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
 
     override fun onSingleImageSelected(uri: Uri?, tag: String?) {
         if(tag != "single") {
-            utils.showPicSelected(uri!!, tag?.toInt(),  this::cropView)
+            utils.showPicSelected(MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri), tag?.toInt(),  this::cropView)
         } else {
-            utils.showPicSelected(uri!!, null, this::cropView)
+            utils.showPicSelected(MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri), null, this::cropView)
         }
     }
 
     override fun onMultiImageSelected(uriList: MutableList<Uri>?, tag: String?) {
         for(image in uriList!!){
-            images?.add(image.toString())
+            images?.add(MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, image))
         }
         creationTimenoteViewModel.setPicUser(images!!)
         screenSlideCreationTimenotePagerAdapter.notifyDataSetChanged()
         pic_cl.visibility = View.VISIBLE
         progressBar.visibility = View.GONE
         takeAddPicTv.visibility = View.GONE
+        hideChooseBackground()
     }
 
     override fun loadImage(imageUri: Uri?, ivImage: ImageView?) {
@@ -661,7 +701,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
         utils.createPictureSingleBS(childFragmentManager, position.toString())
     }
 
-    override fun onCropPicClicked(bitmap: Uri, position: Int) {
+    override fun onCropPicClicked(bitmap: Bitmap, position: Int) {
         cropView(bitmap, position)
     }
 
@@ -676,10 +716,18 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
             picCl.visibility = View.GONE
             takeAddPicTv.visibility = View.VISIBLE
             progressBar.visibility = View.GONE
+            card_line_0.visibility = View.VISIBLE
+            choose_color_label.visibility = View.VISIBLE
+            create_timenote_first_color.visibility = View.VISIBLE
+            create_timenote_second_color.visibility = View.VISIBLE
+            create_timenote_third_color.visibility = View.VISIBLE
+            create_timenote_fourth_color.visibility = View.VISIBLE
+            create_timenote_fifth_color.visibility = View.VISIBLE
         }
     }
 
     override fun onImageSelectedFromWeb(bitmap: String, dialog: MaterialDialog) {
+        progressDialog.show()
         webSearchViewModel.getBitmap().removeObservers(viewLifecycleOwner)
         webSearchViewModel.decodeSampledBitmapFromResource(URL(bitmap), Rect(), 100, 100)
         webSearchViewModel.getBitmap().observe(viewLifecycleOwner, androidx.lifecycle.Observer {

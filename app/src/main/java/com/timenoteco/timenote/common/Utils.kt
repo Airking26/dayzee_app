@@ -2,9 +2,13 @@ package com.timenoteco.timenote.common
 
 import android.Manifest
 import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.location.Address
 import android.location.Geocoder
 import android.net.Uri
@@ -13,6 +17,7 @@ import android.os.Handler
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.widget.AutoCompleteTextView
@@ -132,8 +137,10 @@ class Utils {
     private fun createWebSearchDialog(context: Context, webSearchViewModel: WebSearchViewModel, fragment: Fragment, view: View, view1: View) {
         var recyclerView : RecyclerView?
         var webSearchAdapter : WebSearchAdapter? = null
+        var progressDialog: Dialog = progressDialog(context)
         MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             input { _, charSequence ->
+                progressDialog.show()
                 webSearchViewModel.search(charSequence.toString(), context, 0)
                 webSearchViewModel.getListResults().removeObservers(fragment.viewLifecycleOwner)
                 webSearchViewModel.getListResults().observe(fragment.viewLifecycleOwner, Observer {
@@ -159,6 +166,7 @@ class Utils {
                                 layoutManager = LinearLayoutManager(context)
                                 adapter = webSearchAdapter
                                 webSearchAdapter?.notifyDataSetChanged()
+                                progressDialog.hide()
                             }
 
                             dialog.onDismiss {
@@ -180,7 +188,7 @@ class Utils {
                     view.visibility = View.VISIBLE
                     view1.visibility = View.GONE
                 } else {
-                    //webSearchAdapter?.clear()
+                    webSearchAdapter?.clear()
                 }
             }
             positiveButton(R.string.search_on_web)
@@ -188,7 +196,7 @@ class Utils {
         }
     }
 
-    fun showPicSelected(bitmap: Uri, position:Int?, croper: (Uri?, Int?) -> Unit){
+    fun showPicSelected(bitmap: Bitmap, position:Int?, croper: (Bitmap?, Int?) -> Unit){
         croper(bitmap, position)
     }
 
@@ -227,5 +235,15 @@ class Utils {
         circularProgressDrawable.start()
         return circularProgressDrawable
     }
+
+    fun progressDialog(context: Context): Dialog {
+        val dialog = Dialog(context)
+        val inflate = LayoutInflater.from(context).inflate(R.layout.progress_dialog, null)
+        dialog.setContentView(inflate)
+        dialog.setCancelable(false)
+        dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        return dialog
+    }
+
 
 }

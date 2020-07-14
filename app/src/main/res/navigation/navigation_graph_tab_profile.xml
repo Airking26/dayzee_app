@@ -28,6 +28,9 @@
             android:name="whereFrom"
             app:argType="boolean"
             android:defaultValue="false" />
+        <action
+            android:id="@+id/action_profile_to_followPage"
+            app:destination="@id/followPage" />
     </fragment>
     <fragment
         android:id="@+id/profilModify"
@@ -64,4 +67,9 @@
         android:name="com.timenoteco.timenote.view.profileFlow.ProfileSorting"
         android:label="fragment_filter_profile"
         tools:layout="@layout/fragment_filter_profile" />
+    <fragment
+        android:id="@+id/followPage"
+        android:name="com.timenoteco.timenote.view.profileFlow.FollowPage"
+        android:label="fragment_follow_page"
+        tools:layout="@layout/fragment_follow_page" />
 </navigation>

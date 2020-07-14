@@ -10,19 +10,19 @@
         android:id="@+id/calendarView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:buttonLeft_drawableTintColor="@android:color/white"
-        app:buttonRight_drawableTintColor="@android:color/white"
-        app:expandIconColor="@android:color/white"
+        app:buttonLeft_drawableTintColor="@android:color/black"
+        app:buttonRight_drawableTintColor="@android:color/black"
+        app:expandIconColor="@android:color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:primaryColor="@color/colorPrimary"
+        app:primaryColor="@color/white"
         app:selectedItem_background="@drawable/circle_white_solid_background"
         app:selectedItem_textColor="@color/colorAccent"
-        app:textColor="@android:color/white"
+        app:textColor="@android:color/black"
         app:todayItem_background="@drawable/circle_white_stroke_background"
-        app:todayItem_textColor="@android:color/white"/>
+        app:todayItem_textColor="@android:color/black"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/profile_calendar_rv"

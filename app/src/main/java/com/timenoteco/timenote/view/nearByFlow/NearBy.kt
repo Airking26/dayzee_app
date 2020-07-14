@@ -27,13 +27,13 @@ import com.timenoteco.timenote.adapter.ItemTimenoteAdapter
 import com.timenoteco.timenote.adapter.ScreenSlideTimenotePagerAdapter
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.PlacePickerListener
+import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.Timenote
 import kotlinx.android.synthetic.main.fragment_near_by.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-class NearBy : Fragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdapter.PlusListener, View.OnClickListener, PlacePickerListener,
-    ItemTimenoteAdapter.PictureProfileListener, ItemTimenoteAdapter.SeeMoreListener {
+class NearBy : Fragment(), View.OnClickListener, PlacePickerListener, TimenoteOptionsListener {
 
     private lateinit var locationManager: LocationManager
     private lateinit var nearbyDateTv: TextView
@@ -246,17 +246,8 @@ class NearBy : Fragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdap
                 "In 23 days"
             )
         )
-        timenoteAdapter = ItemTimenoteAdapter(
-            timenotes,
-            timenotes,
-            false,
-            this,
-            this,
-            this,
-            null,
-            this,
-            this as Fragment
-        )
+        timenoteAdapter = ItemTimenoteAdapter(timenotes, timenotes, true, null, this, this as Fragment)
+
         nearby_rv.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = timenoteAdapter
@@ -344,8 +335,30 @@ class NearBy : Fragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdap
         findNavController().navigate(NearByDirections.actionNearByToProfile(true))
     }
 
+    override fun onHideToOthersClicked() {
+
+    }
+
     override fun onSeeMoreClicked() {
         findNavController().navigate(NearByDirections.actionNearByToDetailedTimenote())
+    }
+
+    override fun onReportClicked() {
+    }
+
+    override fun onEditClicked() {
+    }
+
+    override fun onAlarmClicked() {
+    }
+
+    override fun onDeleteClicked() {
+    }
+
+    override fun onDuplicateClicked() {
+    }
+
+    override fun onAddressClicked() {
     }
 
 }

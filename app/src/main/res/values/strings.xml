@@ -190,4 +190,27 @@
     <string name="select_date">Select date</string>
     <string name="select_date_and_time">Select date and time</string>
     <string name="select_start_and_end_date">Select stard and end date</string>
+    <string name="loading">Loading...</string>
+    <string name="location">Location</string>
+    <string name="no_location">No location</string>
+    <string name="city">City</string>
+    <string name="address">Address</string>
+    <string name="posted_false">Posted : 14/07/2020</string>
+    <string name="facebook">Facebook</string>
+    <string name="instagram">Instagram</string>
+    <string name="whatsapp">Whatsapp</string>
+    <string name="linkedin">Linkedin</string>
+    <string name="duplicate">Duplicate</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="alarm">Alarm</string>
+    <string name="report">Report</string>
+    <string name="hide_to_others">Hide to others</string>
+    <string name="add_end_date">Add End Date</string>
+    <string name="paid_timenote">Paid Timenote</string>
+    <string name="no_answer">No Answer</string>
+    <string name="free">Free</string>
+    <string name="paid">Paid</string>
+    <string name="price">Price</string>
+    <string name="link">Link</string>
 </resources>

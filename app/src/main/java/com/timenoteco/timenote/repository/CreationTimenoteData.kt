@@ -3,9 +3,11 @@ package com.timenoteco.timenote.repository
 import android.graphics.Bitmap
 import android.net.Uri
 import com.timenoteco.timenote.model.CreateTimenoteModel
+import com.timenoteco.timenote.model.statusTimenote
 
 private var timenoteModel: CreateTimenoteModel =
-    CreateTimenoteModel(null, null, null, null, null, null, null, null, null, null, null)
+    CreateTimenoteModel(null, null, null, null, null, null,
+        null, null, null, null, null, null, null, statusTimenote.NOANSWER)
 
 class CreationTimenoteData {
 
@@ -13,8 +15,18 @@ class CreationTimenoteData {
         return timenoteModel
     }
 
-    fun setPic(pic: MutableList<String>): CreateTimenoteModel {
+    fun setPic(pic: MutableList<Bitmap>): CreateTimenoteModel {
         timenoteModel.pic = pic
+        return timenoteModel
+    }
+
+    fun setPrice(price: Long): CreateTimenoteModel{
+        timenoteModel.price = price
+        return timenoteModel
+    }
+
+    fun setUrl(url: String): CreateTimenoteModel{
+        timenoteModel.url = url
         return timenoteModel
     }
 
@@ -25,6 +37,11 @@ class CreationTimenoteData {
 
     fun setTtile(title: String): CreateTimenoteModel{
         timenoteModel.title = title
+        return timenoteModel
+    }
+
+    fun setStatus(statusTimenote: statusTimenote): CreateTimenoteModel{
+        timenoteModel.status = statusTimenote
         return timenoteModel
     }
 
@@ -64,7 +81,8 @@ class CreationTimenoteData {
     }
 
     fun clear(): CreateTimenoteModel {
-        timenoteModel = CreateTimenoteModel(null, null, null, null, null, null, null, null, null, null, null)
+        timenoteModel = CreateTimenoteModel(null, null, null, null, null,
+            null, null, null, null, null, null, null, null, statusTimenote.NOANSWER)
         return timenoteModel
     }
 

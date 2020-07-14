@@ -11,12 +11,11 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ItemTimenoteAdapter
 import com.timenoteco.timenote.adapter.ScreenSlideTimenotePagerAdapter
 import com.timenoteco.timenote.common.BaseThroughFragment
+import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.Timenote
 import kotlinx.android.synthetic.main.fragment_home.*
 
-class Home : BaseThroughFragment(), ItemTimenoteAdapter.CommentListener, ItemTimenoteAdapter.PlusListener,
-    ItemTimenoteAdapter.PictureProfileListener, ItemTimenoteAdapter.TimenoteRecentClicked,
-    ItemTimenoteAdapter.SeeMoreListener {
+class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, TimenoteOptionsListener {
 
     private var timenotes: List<Timenote> = listOf()
     private lateinit var timenoteAdapter: ItemTimenoteAdapter
@@ -207,9 +206,7 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.CommentListener, ItemTim
             )
         )
         screenSlideTimenotePagerAdapter = ScreenSlideTimenotePagerAdapter(this, mutableListOf(), true)
-        timenoteAdapter = ItemTimenoteAdapter(timenotes, timenotes,
-            true, this, this,
-            this, this, this, this as Fragment)
+        timenoteAdapter = ItemTimenoteAdapter(timenotes, timenotes, true, this, this, this as Fragment)
 
         home_rv.apply {
             layoutManager = LinearLayoutManager(context)
@@ -229,11 +226,34 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.CommentListener, ItemTim
         findNavController().navigate(HomeDirections.actionHomeToProfile(true))
     }
 
+    override fun onHideToOthersClicked() {
+
+    }
+
     override fun onTimenoteRecentClicked() {
         findNavController().navigate(HomeDirections.actionHomeToDetailedTimenote())
     }
 
     override fun onSeeMoreClicked() {
         findNavController().navigate(HomeDirections.actionHomeToDetailedTimenote())
+    }
+
+    override fun onReportClicked() {
+    }
+
+    override fun onEditClicked() {
+    }
+
+    override fun onAlarmClicked() {
+    }
+
+    override fun onDeleteClicked() {
+    }
+
+    override fun onDuplicateClicked() {
+    }
+
+    override fun onAddressClicked() {
+        findNavController().navigate(HomeDirections.actionHomeToTimenoteAddress())
     }
 }

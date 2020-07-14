@@ -12,15 +12,20 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.afollestad.materialdialogs.LayoutMode
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.bottomsheets.BottomSheet
+import com.afollestad.materialdialogs.list.listItems
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ItemProfileEventAdapter
 import com.timenoteco.timenote.common.BaseThroughFragment
+import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.Timenote
 import kotlinx.android.synthetic.main.fragment_profile.*
 
-class Profile : BaseThroughFragment(), View.OnClickListener {
+class Profile : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListener {
 
     private lateinit var itemTouchHelper: ItemTouchHelper
     private val args : ProfileArgs by navArgs()
@@ -55,6 +60,11 @@ class Profile : BaseThroughFragment(), View.OnClickListener {
         profile_arrow_forward_btn.setOnClickListener(this)
         profile_arrow_back_btn.setOnClickListener(this)
         profile_filter_btn.setOnClickListener(this)
+        profile_location.setOnClickListener(this)
+        profile_followers_label.setOnClickListener(this)
+        profile_nbr_followers.setOnClickListener(this)
+        profile_nbr_following.setOnClickListener(this)
+        profile_following_label.setOnClickListener(this)
 
         timenotes = mutableListOf(
             Timenote(
@@ -236,8 +246,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener {
             )
         )
 
-
-        eventAdapter = ItemProfileEventAdapter(timenotes, this as Fragment)
+        eventAdapter = ItemProfileEventAdapter(timenotes, this as Fragment, this)
 
         profile_rv.apply {
             layoutManager = LinearLayoutManager(view.context)
@@ -269,6 +278,10 @@ class Profile : BaseThroughFragment(), View.OnClickListener {
             profile_settings_btn -> findNavController().navigate(ProfileDirections.actionProfileToSettings())
             profile_notif_btn -> findNavController().navigate(ProfileDirections.actionProfileToNotifications())
             profile_filter_btn -> findNavController().navigate(ProfileDirections.actionProfileToFilterProfile())
+            profile_followers_label -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage())
+            profile_following_label -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage())
+            profile_nbr_followers -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage())
+            profile_nbr_following -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage())
             profile_view_type_btn -> {
                 var viewType = eventAdapter.switchViewType()
                 if(viewType == 1) {
@@ -284,7 +297,46 @@ class Profile : BaseThroughFragment(), View.OnClickListener {
             profile_arrow_forward_btn -> profile_rv.setBackgroundColor(resources.getColor(R.color.colorBackgroundForward))
             profile_arrow_back_btn -> profile_rv.setBackgroundColor(resources.getColor(R.color.colorBackgroundBackward))
             profile_arrow_forward_btn -> profile_arrow_forward_btn.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
+            profile_location -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                title(R.string.location)
+                listItems(items = listOf(getString(R.string.no_location), getString(R.string.city), getString(
+                                    R.string.address))) { dialog, index, text ->  }
+            }
         }
+    }
+
+    override fun onReportClicked() {
+    }
+
+    override fun onEditClicked() {
+    }
+
+    override fun onAlarmClicked() {
+    }
+
+    override fun onDeleteClicked() {
+    }
+
+    override fun onDuplicateClicked() {
+    }
+
+    override fun onAddressClicked() {
+    }
+
+    override fun onSeeMoreClicked() {
+    }
+
+    override fun onCommentClicked() {
+    }
+
+    override fun onPlusClicked() {
+    }
+
+    override fun onPictureClicked() {
+    }
+
+    override fun onHideToOthersClicked() {
+
     }
 
 }

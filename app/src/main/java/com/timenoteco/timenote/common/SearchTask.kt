@@ -11,8 +11,6 @@ import com.google.api.services.customsearch.Customsearch
 import java.io.IOException
 import java.net.URL
 
-
-
 class SearchTask{
 
     enum class Result {

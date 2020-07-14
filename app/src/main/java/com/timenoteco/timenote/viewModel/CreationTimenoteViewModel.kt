@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.timenoteco.timenote.model.CreateTimenoteModel
+import com.timenoteco.timenote.model.statusTimenote
 import com.timenoteco.timenote.repository.CreationTimenoteData
 import java.text.SimpleDateFormat
 import java.util.*
@@ -27,41 +28,18 @@ class CreationTimenoteViewModel: ViewModel() {
         return timenoteLiveData
     }
 
-    fun setTitle(title : String){
-        timenoteLiveData.postValue(createTimenoteData.setTtile(title))
-    }
-
-    fun setDescription(description: String){
-        timenoteLiveData.postValue(createTimenoteData.setDescription(description))
-    }
-
-    fun setPicUser(pic: MutableList<String>){
-        timenoteLiveData.postValue(createTimenoteData.setPic(pic))
-    }
-
-    fun setLocation(location: String){
-        timenoteLiveData.postValue(createTimenoteData.setPlace(location))
-    }
-
-    fun setYear(year: Long){
-        timenoteLiveData.postValue(createTimenoteData.setYear(formatDate(YEAR, year)))
-    }
-
-    fun setCategory(category: String){
-        timenoteLiveData.postValue(createTimenoteData.setCategory(category))
-    }
-
-    fun setStartDate(startDate: Long, format: String){
-        timenoteLiveData.postValue(createTimenoteData.setStartDate(formatDate(format, startDate)))
-    }
-
-    fun setEndDate(endDate: Long){
-        timenoteLiveData.postValue(createTimenoteData.setEndDate(formatDate(DATE_FORMAT_SAME_DAY_SAME_TIME, endDate)))
-    }
-
-    fun setColor(color: String){
-        timenoteLiveData.postValue(createTimenoteData.setColor(color))
-    }
+    fun setTitle(title : String) = timenoteLiveData.postValue(createTimenoteData.setTtile(title))
+    fun setPrice(price: Long) = timenoteLiveData.postValue(createTimenoteData.setPrice(price))
+    fun setUrl(url: String) = timenoteLiveData.postValue(createTimenoteData.setUrl(url))
+    fun setDescription(description: String) = timenoteLiveData.postValue(createTimenoteData.setDescription(description))
+    fun setPicUser(pic: MutableList<Bitmap>) = timenoteLiveData.postValue(createTimenoteData.setPic(pic))
+    fun setLocation(location: String) = timenoteLiveData.postValue(createTimenoteData.setPlace(location))
+    fun setYear(year: Long) = timenoteLiveData.postValue(createTimenoteData.setYear(formatDate(YEAR, year)))
+    fun setCategory(category: String) = timenoteLiveData.postValue(createTimenoteData.setCategory(category))
+    fun setStartDate(startDate: Long, format: String) = timenoteLiveData.postValue(createTimenoteData.setStartDate(formatDate(format, startDate)))
+    fun setEndDate(endDate: Long) = timenoteLiveData.postValue(createTimenoteData.setEndDate(formatDate(DATE_FORMAT_SAME_DAY_SAME_TIME, endDate)))
+    fun setColor(color: String) = timenoteLiveData.postValue(createTimenoteData.setColor(color))
+    fun setStatus(statusTimenote: statusTimenote) = timenoteLiveData.postValue(createTimenoteData.setStatus(statusTimenote))
 
     fun setFormatedStartDate(startDate: Long, endDate: Long){
         if(formatDate(DATE_FORMAT_DAY, startDate) == formatDate(DATE_FORMAT_DAY, endDate)){
@@ -78,9 +56,8 @@ class CreationTimenoteViewModel: ViewModel() {
         }
     }
 
-    fun clear(){
-        timenoteLiveData.postValue(createTimenoteData.clear())
-    }
+    fun clear() = timenoteLiveData.postValue(createTimenoteData.clear())
+
 
     private fun formatDate(format: String, timestamp: Long): String {
         val dateFormat = SimpleDateFormat(format, Locale.getDefault())

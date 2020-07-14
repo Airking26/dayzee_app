@@ -13,8 +13,10 @@ class ProfileModifyData(context: Context) {
     private val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
     private val type: Type = object : TypeToken<ProfilModifyModel?>() {}.type
 
-    private var profilModifyModel: ProfilModifyModel? = Gson().fromJson<ProfilModifyModel>(prefs.getString("profile",
-        Gson().toJson(ProfilModifyModel(null, null, null, null, null, null, null, null, null))), type)
+    private var profilModifyModel: ProfilModifyModel? = Gson().fromJson<ProfilModifyModel>(
+        prefs.getString("profile",
+        Gson().toJson(ProfilModifyModel(null, null, null,
+            null, null, null, null, null, null))), type)
 
     fun loadProfileModifyModel(): ProfilModifyModel? {
         return profilModifyModel

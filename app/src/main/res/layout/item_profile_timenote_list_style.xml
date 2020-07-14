@@ -61,6 +61,7 @@
             android:layout_height="wrap_content"/>
 
         <ImageView
+            android:id="@+id/profile_item_options"
             android:src="@drawable/ic_more_vert_black_24dp"
             app:layout_constraintTop_toTopOf="@id/profile_item_name_event"
             app:layout_constraintEnd_toEndOf="parent"

@@ -5,7 +5,7 @@ import android.net.Uri
 
 interface TimenoteCreationPicListeners {
     fun onChangePicClicked(position: Int)
-    fun onCropPicClicked(bitmap: Uri, position: Int)
+    fun onCropPicClicked(bitmap: Bitmap, position: Int)
     fun onAddClicked()
     fun onDeleteClicked(position: Int)
 }

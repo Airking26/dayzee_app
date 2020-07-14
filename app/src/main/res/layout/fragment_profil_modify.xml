@@ -236,25 +236,190 @@
                 app:layout_constraintTop_toBottomOf="@id/profile_modify_format_timenote"
                 style="@style/AppTheme.Divider.Toolbar"/>
 
-            <TextView
-                android:fontFamily="sans-serif-light"
-                android:id="@+id/profile_modify_youtube_channel"
-                android:drawablePadding="8dp"
-                android:hint="@string/youtube_channel"
-                android:textColor="@color/colorText"
-                android:textSize="15sp"
-                android:padding="16dp"
-                android:backgroundTint="#60000000"
-                android:drawableStart="@drawable/ic_profile_youtube"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/youtube_cl"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/profile_modify_format_timenote"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content">
 
-            <TextView
-                app:layout_constraintTop_toBottomOf="@id/profile_modify_youtube_channel"
-                style="@style/AppTheme.Divider.Toolbar"/>
+                <TextView
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:fontFamily="sans-serif-light"
+                    android:id="@+id/profile_modify_youtube_channel"
+                    android:drawablePadding="8dp"
+                    android:hint="@string/youtube_channel"
+                    android:textColor="@color/colorText"
+                    android:textSize="15sp"
+                    android:padding="16dp"
+                    android:backgroundTint="#60000000"
+                    android:drawableStart="@drawable/ic_profile_youtube"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <Switch
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    app:layout_constraintTop_toBottomOf="@id/profile_modify_youtube_channel"
+                    style="@style/AppTheme.Divider.Toolbar"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/facebook_cl"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/youtube_cl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:fontFamily="sans-serif-light"
+                    android:id="@+id/profile_modify_facebook"
+                    android:drawablePadding="8dp"
+                    android:hint="@string/facebook"
+                    android:textColor="@color/colorText"
+                    android:textSize="15sp"
+                    android:padding="16dp"
+                    android:backgroundTint="#60000000"
+                    android:drawableStart="@drawable/ic_profile_youtube"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <Switch
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    app:layout_constraintTop_toBottomOf="@id/profile_modify_facebook"
+                    style="@style/AppTheme.Divider.Toolbar"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/instagram_cl"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/facebook_cl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:fontFamily="sans-serif-light"
+                    android:id="@+id/profile_modify_instagram"
+                    android:drawablePadding="8dp"
+                    android:hint="@string/instagram"
+                    android:textColor="@color/colorText"
+                    android:textSize="15sp"
+                    android:padding="16dp"
+                    android:backgroundTint="#60000000"
+                    android:drawableStart="@drawable/ic_profile_youtube"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <Switch
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    app:layout_constraintTop_toBottomOf="@id/profile_modify_instagram"
+                    style="@style/AppTheme.Divider.Toolbar"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/whatsapp_cl"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/instagram_cl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:fontFamily="sans-serif-light"
+                    android:id="@+id/profile_modify_whatsapp"
+                    android:drawablePadding="8dp"
+                    android:hint="@string/whatsapp"
+                    android:textColor="@color/colorText"
+                    android:textSize="15sp"
+                    android:padding="16dp"
+                    android:backgroundTint="#60000000"
+                    android:drawableStart="@drawable/ic_profile_youtube"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <Switch
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    app:layout_constraintTop_toBottomOf="@id/profile_modify_whatsapp"
+                    style="@style/AppTheme.Divider.Toolbar"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/linkedin_cl"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/whatsapp_cl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:fontFamily="sans-serif-light"
+                    android:id="@+id/profile_modify_linkedin"
+                    android:drawablePadding="8dp"
+                    android:hint="@string/linkedin"
+                    android:textColor="@color/colorText"
+                    android:textSize="15sp"
+                    android:padding="16dp"
+                    android:backgroundTint="#60000000"
+                    android:drawableStart="@drawable/ic_profile_youtube"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <Switch
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    app:layout_constraintTop_toBottomOf="@id/profile_modify_linkedin"
+                    style="@style/AppTheme.Divider.Toolbar"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
             <TextView
@@ -269,7 +434,7 @@
                 android:drawableStart="@drawable/ic_profile_description"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/profile_modify_youtube_channel"
+                app:layout_constraintTop_toBottomOf="@id/linkedin_cl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 

@@ -12,11 +12,6 @@ import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.timenoteco.timenote.R
 
-/**
- * Manages the various graphs needed for a [BottomNavigationView].
- *
- * This sample is a workaround until the Navigation Component supports multiple back stacks.
- */
 fun BottomNavigationView.setupWithNavController(navGraphIds: List<Int>, fragmentManager: FragmentManager, containerId: Int, intent: Intent): LiveData<NavController> {
 
     // Map of tags

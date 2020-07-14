@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 
 open class BaseThroughFragment : Fragment(){
 
-    //var hasInitializedRootView = false
     private var rootView: View? = null
 
     fun getPersistentView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?, layout: Int): View? {

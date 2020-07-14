@@ -4,25 +4,23 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.annotation.Nullable
 
+enum class statusTimenote{
+    FREE, PAID, NOANSWER
+}
+
 data class CreateTimenoteModel (
-    @Nullable
-    var pic: MutableList<String>?,
-    @Nullable
+    var pic: MutableList<Bitmap>?,
     var place: String?,
-    @Nullable
     var title: String?,
-    @Nullable
     var desc: String?,
-    @Nullable
     var year: String?,
-    @Nullable
     var startDate: String?,
-    @Nullable
     var endDate: String?,
-    @Nullable
     var category: String?,
-    @Nullable
     var color: String?,
     var formatedStartDate: String?,
-    var formatedEndDate: String?
+    var formatedEndDate: String?,
+    var price: Long?,
+    var url: String?,
+    var status: statusTimenote
 )

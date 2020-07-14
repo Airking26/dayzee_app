@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.adapter
 
+import android.content.Context
 import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableStringBuilder
@@ -11,9 +12,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.afollestad.materialdialogs.LayoutMode
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.bottomsheets.BottomSheet
+import com.afollestad.materialdialogs.list.listItems
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
+import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.Timenote
 import kotlinx.android.synthetic.main.adapter_timenote_recent.view.*
 import kotlinx.android.synthetic.main.item_timenote.view.*
@@ -23,30 +29,11 @@ class ItemTimenoteAdapter(
     private val timenotes: List<Timenote>,
     private val timenotesToCome: List<Timenote>,
     private val isHeterogeneous: Boolean,
-    private val commentListener: CommentListener,
-    private val plusListener: PlusListener,
-    private val pictureProfileListener: PictureProfileListener,
     private val timenoteRecentClicked: TimenoteRecentClicked?,
-    private val seeMoreListener: SeeMoreListener,
+    private val timenoteListenerListener: TimenoteOptionsListener,
     private val fragment: Fragment
 )
     : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
-
-    interface SeeMoreListener{
-        fun onSeeMoreClicked()
-    }
-
-    interface CommentListener{
-        fun onCommentClicked()
-    }
-
-    interface PlusListener{
-        fun onPlusClicked()
-    }
-
-    interface PictureProfileListener{
-        fun onPictureClicked()
-    }
 
 
     interface TimenoteRecentClicked{
@@ -88,15 +75,12 @@ class ItemTimenoteAdapter(
         if(isHeterogeneous){
             when(itemViewType){
                 0 -> (holder as TimenoteToComeViewHolder).bindTimenoteTocome(timenotesToCome, timenoteRecentClicked)
-                else -> (holder as TimenoteViewHolder).bindTimenote(timenotes[position], commentListener, plusListener, pictureProfileListener, seeMoreListener, fragment)
+                else -> (holder as TimenoteViewHolder).bindTimenote(timenotes[position],timenoteListenerListener, fragment)
             }
         } else {
             (holder as TimenoteViewHolder).bindTimenote(
                 timenotes[position],
-                commentListener,
-                plusListener,
-                pictureProfileListener,
-                seeMoreListener,
+                timenoteListenerListener,
                 fragment
             )
         }
@@ -118,10 +102,7 @@ class ItemTimenoteAdapter(
 
         fun bindTimenote(
             timenote: Timenote,
-            commentListener: CommentListener,
-            plusListener: PlusListener,
-            pictureProfileListener: PictureProfileListener,
-            seeMoreListener: SeeMoreListener,
+            timenoteListenerListener: TimenoteOptionsListener,
             fragment: Fragment
         ) {
 
@@ -158,14 +139,43 @@ class ItemTimenoteAdapter(
                 itemView.timenote_time.visibility = View.GONE
                 itemView.timenote_year.visibility = View.GONE
             }
-            itemView.timenote_pic_user_imageview.setOnClickListener { pictureProfileListener.onPictureClicked() }
-            itemView.timenote_comment.setOnClickListener { commentListener.onCommentClicked() }
-            itemView.timenote_plus.setOnClickListener { plusListener.onPlusClicked() }
-            itemView.timenote_see_more.setOnClickListener { seeMoreListener.onSeeMoreClicked() }
+
+            itemView.timenote_options.setOnClickListener { createOptionsOnTimenote(itemView.context, false, timenoteListenerListener) }
+            itemView.timenote_pic_user_imageview.setOnClickListener { timenoteListenerListener.onPictureClicked() }
+            itemView.timenote_comment.setOnClickListener { timenoteListenerListener.onCommentClicked() }
+            itemView.timenote_plus.setOnClickListener { timenoteListenerListener.onPlusClicked() }
+            itemView.timenote_see_more.setOnClickListener { timenoteListenerListener.onSeeMoreClicked() }
+            itemView.timenote_place.setOnClickListener{timenoteListenerListener.onAddressClicked()}
 
         }
 
+        private fun createOptionsOnTimenote(
+            context: Context,
+            isMine: Boolean,
+            timenoteListenerListener: TimenoteOptionsListener
+        ){
+            var listItems = mutableListOf<String>()
+            if(isMine) listItems = mutableListOf(context.getString(R.string.duplicate), context.getString(
+                            R.string.edit), context.getString(R.string.delete), context.getString(R.string.alarm))
+            else listItems = mutableListOf(context.getString(R.string.duplicate), context.getString(R.string.delete), context.getString(R.string.alarm), context.getString(R.string.report))
+            MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                title(R.string.posted_false)
+                listItems (items = listItems){ dialog, index, text ->
+                    when(text.toString()){
+                        context.getString(R.string.duplicate) -> timenoteListenerListener.onDuplicateClicked()
+                        context.getString(R.string.edit) -> timenoteListenerListener.onEditClicked()
+                        context.getString(R.string.report) -> timenoteListenerListener.onReportClicked()
+                        context.getString(R.string.alarm) -> timenoteListenerListener.onAlarmClicked()
+                        context.getString(R.string.delete) -> timenoteListenerListener.onDeleteClicked()
+                        context.getString(R.string.hide_to_others) -> timenoteListenerListener.onHideToOthersClicked()
+                    }
+                }
+            }
+        }
+
+
     }
+
 
     class TimenoteToComeViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
 

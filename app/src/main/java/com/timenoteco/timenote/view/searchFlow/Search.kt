@@ -50,6 +50,7 @@ class Search : Fragment() {
 
         })
 
+        searchBar.setCardViewElevation(0)
         searchBar.setOnSearchActionListener(object: MaterialSearchBar.OnSearchActionListener{
             override fun onButtonClicked(buttonCode: Int) {
                 Toast.makeText(context, "onButtonClicked", Toast.LENGTH_SHORT).show()

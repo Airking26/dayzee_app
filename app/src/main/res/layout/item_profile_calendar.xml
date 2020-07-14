@@ -48,7 +48,7 @@
             android:id="@+id/profile_calendar_item_address_event"
             android:layout_marginStart="8dp"
             tools:text="18 avenue de la Goulardi, Paris"
-            android:textColor="@color/colorTextThirdly"
+            android:textColor="@color/colorText"
             android:textSize="12sp"
             app:layout_constraintTop_toBottomOf="@id/profile_calendar_item_name_event"
             app:layout_constraintStart_toEndOf="@id/profile_calendar_item_pic_event_imageview"

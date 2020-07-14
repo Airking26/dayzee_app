@@ -18,7 +18,7 @@ private const val ARG_PARAM3 = "param3"
 
 class ScreenSlideCreationTimenoteImageFragment: Fragment() {
     private var param1: Int? = null
-    private var param2: String? = null
+    private var param2: Bitmap? = null
     private var param3: Boolean? = null
     private lateinit var timenoteCreationPicListeners: TimenoteCreationPicListeners
 
@@ -26,7 +26,7 @@ class ScreenSlideCreationTimenoteImageFragment: Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
             param1 = it.getInt(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+            param2 = it.getParcelable(ARG_PARAM2)
             param3 = it.getBoolean(ARG_PARAM3)
         }
     }
@@ -40,7 +40,7 @@ class ScreenSlideCreationTimenoteImageFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         Glide.with(view)
-            .load(Uri.parse(param2))
+            .load(param2)
             .into(create_timenote_pic)
         if(param3!!){
             timenote_change_pic.visibility = View.GONE
@@ -54,7 +54,7 @@ class ScreenSlideCreationTimenoteImageFragment: Fragment() {
             timenote_delete_pic.visibility = View.VISIBLE
         }
         timenote_change_pic.setOnClickListener { timenoteCreationPicListeners.onChangePicClicked(param1!!) }
-        timenote_crop_pic.setOnClickListener { timenoteCreationPicListeners.onCropPicClicked(Uri.parse(param2!!), param1!!) }
+        timenote_crop_pic.setOnClickListener { timenoteCreationPicListeners.onCropPicClicked(param2!!, param1!!) }
         timenote_add_pic.setOnClickListener { timenoteCreationPicListeners.onAddClicked() }
         timenote_delete_pic.setOnClickListener { timenoteCreationPicListeners.onDeleteClicked(param1!!) }
     }
@@ -63,7 +63,7 @@ class ScreenSlideCreationTimenoteImageFragment: Fragment() {
         @JvmStatic
         fun newInstance(
             param1: Int,
-            url: String?,
+            bitmap: Bitmap?,
             context: Fragment,
             hideIcons: Boolean
         ) =
@@ -71,7 +71,7 @@ class ScreenSlideCreationTimenoteImageFragment: Fragment() {
                 .apply {
                 arguments = Bundle().apply {
                     putInt(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, url)
+                    putParcelable(ARG_PARAM2, bitmap)
                     putBoolean(ARG_PARAM3, hideIcons)
                     if(context is CreateTimenote) setListener(context as TimenoteCreationPicListeners)
                 }
