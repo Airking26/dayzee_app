@@ -142,6 +142,21 @@
         app:layout_constraintStart_toEndOf="@id/separator_2"
         app:layout_constraintTop_toTopOf="@+id/separator_2" />
 
+    <TextView
+        app:layout_constraintTop_toBottomOf="@id/preview_created_timenote_vp"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@color/colorAccentCustom"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:paddingVertical="4dp"
+        android:paddingHorizontal="8dp"
+        android:gravity="end"
+        android:fontFamily="sans-serif-light"
+        android:text="Buy 15$"
+        android:id="@+id/preview_created_timenote_buy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
     <me.relex.circleindicator.CircleIndicator3
         android:id="@+id/preview_created_timenote_indicator"
         android:layout_width="0dp"
@@ -151,13 +166,13 @@
         app:ci_drawable_unselected="@drawable/dot_unselected"
         app:layout_constraintEnd_toStartOf="@id/separator_2"
         app:layout_constraintStart_toEndOf="@id/separator_1"
-        app:layout_constraintTop_toBottomOf="@id/preview_created_timenote_vp" />
+        app:layout_constraintTop_toBottomOf="@id/preview_created_timenote_buy" />
 
     <TextView
         android:id="@+id/preview_created_timenote_place"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="8dp"
         android:drawableStart="@drawable/ic_profile_from"
         android:drawablePadding="8dp"
         android:fontFamily="sans-serif-light"
@@ -165,7 +180,7 @@
         android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/preview_created_timenote_vp" />
+        app:layout_constraintTop_toBottomOf="@id/preview_created_timenote_indicator" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/where_cardview"

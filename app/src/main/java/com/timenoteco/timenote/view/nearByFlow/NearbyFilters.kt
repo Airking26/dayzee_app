@@ -16,6 +16,7 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
+import com.afollestad.materialdialogs.list.listItemsMultiChoice
 import com.timenoteco.timenote.R
 import kotlinx.android.synthetic.main.fragment_nearby_filters.*
 
@@ -41,10 +42,11 @@ class NearbyFilters : Fragment(), View.OnClickListener {
         when(v){
             nearby_filter_category -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.category)
-                listItems(items = listOf("Judaisme", "Bouddhisme", "Techno", "Pop", "Football", "Tennis",
+                positiveButton(R.string.done)
+                listItemsMultiChoice(items = listOf("Judaisme", "Bouddhisme", "Techno", "Pop", "Football", "Tennis",
                     "Judaisme", "Bouddhisme", "Techno", "Pop", "Football", "Tennis", "Judaisme", "Bouddhisme",
                     "Techno", "Pop", "Football", "Tennis")){_, index, text ->
-                    nearbyFilterCategoryTv.text = text.toString()
+                    //nearbyFilterCategoryTv.text = text.toString()
                 }
                 lifecycleOwner(this@NearbyFilters)
             }

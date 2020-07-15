@@ -19,6 +19,7 @@ import com.afollestad.materialdialogs.list.listItems
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
+import com.timenoteco.timenote.common.RoundedCornersTransformation
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.Timenote
 import kotlinx.android.synthetic.main.adapter_timenote_recent.view.*
@@ -112,6 +113,22 @@ class ItemTimenoteAdapter(
                 .apply(RequestOptions.circleCropTransform())
                 .into(itemView.timenote_pic_user_imageview)
 
+            Glide
+                .with(itemView)
+                .load(timenote.pic_user)
+                .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(itemView.context, 90, 0, "#FFFFFF", 4)))
+                .into(itemView.timenote_pic_participant_one)
+            Glide
+                .with(itemView)
+                .load("https://wl-sympa.cf.tsp.li/resize/728x/jpg/f6e/ef6/b5b68253409b796f61f6ecd1f1.jpg")
+                .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(itemView.context, 90, 0, "#FFFFFF", 4)))
+                .into(itemView.timenote_pic_participant_two)
+            Glide
+                .with(itemView)
+                .load("https://www.fc-photos.com/wp-content/uploads/2016/09/fc-photos-Weynacht-0001.jpg")
+                .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(itemView.context, 90, 0, "#FFFFFF", 4)))
+                .into(itemView.timenote_pic_participant_three)
+
 
             val screenSlideCreationTimenotePagerAdapter = ScreenSlideTimenotePagerAdapter(fragment, timenote.pic, true)
             itemView.timenote_vp.adapter = screenSlideCreationTimenotePagerAdapter
@@ -120,10 +137,20 @@ class ItemTimenoteAdapter(
             screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(itemView.timenote_indicator.adapterDataObserver)
             itemView.timenote_username.text = timenote.username
             itemView.timenote_place.text = timenote.place
+            val test = "Ronny Dahan et 1228 autres personnes ont enregistré ce Dayzee"
+
             val p = Typeface.create("sans-serif-light", Typeface.NORMAL)
             val m = Typeface.create("sans-serif", Typeface.NORMAL)
             val o = ItemTimenoteToComeAdapter.CustomTypefaceSpan(p)
             val k = ItemTimenoteToComeAdapter.CustomTypefaceSpan(m)
+
+            val t = SpannableStringBuilder(test)
+            t.setSpan(k, 0, 10, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+            t.setSpan(k, 15, 36, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+            t.setSpan(o, 36, test.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+
+            itemView.timenote_added_by.text = t
+
             val h = SpannableStringBuilder(timenote.desc)
             h.setSpan(k, 0, 17, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
             h.setSpan(o, 18, timenote.desc?.length!!, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)

@@ -32,14 +32,12 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <mehdi.sakout.fancybuttons.FancyButton
-        fancy:fb_defaultColor="@color/white"
-        fancy:fb_borderWidth="1dp"
-        fancy:fb_borderColor="@color/colorAccentCustom"
+        fancy:fb_defaultColor="@color/colorAccentCustom"
         fancy:fb_radius="5dp"
         fancy:fb_text="@string/follow"
         android:paddingVertical="6dp"
         android:paddingHorizontal="24dp"
-        fancy:fb_textColor="@color/colorAccentCustom"
+        fancy:fb_textColor="@color/white"
         android:gravity="center"
         android:layout_marginEnd="15dp"
         app:layout_constraintEnd_toEndOf="parent"

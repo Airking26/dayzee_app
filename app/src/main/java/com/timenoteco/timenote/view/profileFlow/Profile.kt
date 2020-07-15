@@ -294,7 +294,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsList
                     itemTouchHelper.attachToRecyclerView(profile_rv)
                 }
             }
-            profile_arrow_forward_btn -> profile_rv.setBackgroundColor(resources.getColor(R.color.colorBackgroundForward))
+            profile_arrow_forward_btn -> profile_rv.setBackgroundColor(resources.getColor(R.color.white))
             profile_arrow_back_btn -> profile_rv.setBackgroundColor(resources.getColor(R.color.colorBackgroundBackward))
             profile_arrow_forward_btn -> profile_arrow_forward_btn.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.colorPrimary))
             profile_location -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
