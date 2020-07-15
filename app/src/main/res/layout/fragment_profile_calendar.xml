@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <com.shrikanthravi.collapsiblecalendarview.widget.CollapsibleCalendar
+    <com.timenoteco.timenote.androidView.calendar.widget.CollapsibleCalendar
         android:id="@+id/calendarView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:primaryColor="@color/white"
         app:selectedItem_background="@drawable/circle_white_solid_background"
-        app:selectedItem_textColor="@color/colorAccent"
+        app:selectedItem_textColor="@color/white"
         app:textColor="@android:color/black"
         app:todayItem_background="@drawable/circle_white_stroke_background"
         app:todayItem_textColor="@android:color/black"/>

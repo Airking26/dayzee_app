@@ -6,9 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.shrikanthravi.collapsiblecalendarview.widget.CollapsibleCalendar
+import com.asksira.bsimagepicker.Utils
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ItemCalendarAdapter
+import com.timenoteco.timenote.androidView.calendar.widget.CollapsibleCalendar
 import com.timenoteco.timenote.model.EventCalendar
 import kotlinx.android.synthetic.main.fragment_profile_calendar.*
 import java.util.*
@@ -57,6 +58,10 @@ class ProfileCalendar: Fragment() {
             }
 
             override fun onDayChanged() {
+            }
+
+            override fun onDialogDissmissed() {
+                com.timenoteco.timenote.common.Utils().hideStatusBar(requireActivity())
             }
 
             override fun onDaySelect() {
