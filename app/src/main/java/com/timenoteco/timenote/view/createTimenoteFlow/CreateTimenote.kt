@@ -11,7 +11,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.system.Os.link
 import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
@@ -29,13 +28,10 @@ import androidx.viewpager2.widget.ViewPager2
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
-import com.afollestad.materialdialogs.bottomsheets.setPeekHeight
-import com.afollestad.materialdialogs.callbacks.onDismiss
 import com.afollestad.materialdialogs.color.ColorPalette
 import com.afollestad.materialdialogs.color.colorChooser
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
-import com.afollestad.materialdialogs.datetime.datePicker
 import com.afollestad.materialdialogs.datetime.dateTimePicker
 import com.afollestad.materialdialogs.input.input
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
@@ -76,7 +72,6 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
     private lateinit var toLabel : TextView
     private lateinit var addEndDateTv: TextView
     private lateinit var fixedDate : TextView
-    private lateinit var price: TextView
     private lateinit var url: TextView
     private lateinit var paidTimenote : CardView
     private lateinit var picCl: ConstraintLayout
@@ -116,20 +111,27 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
         setUp()
         creationTimenoteViewModel.getCreateTimeNoteLiveData()
             .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-                if(it.status == statusTimenote.FREE){
-                    noAnswer.text = getString(R.string.free)
-                    url.visibility = View.GONE
-                    price.visibility = View.GONE
-                } else if(it.status == statusTimenote.PAID){
-                    noAnswer.text = getString(R.string.paid)
-                    price.visibility = View.VISIBLE
-                    price.text = it.price.toString() + "$"
-                    url.visibility = View.VISIBLE
-                    url.text = it.url
-                } else {
-                    noAnswer.text = getString(R.string.no_answer)
-                    url.visibility = View.GONE
-                    price.visibility = View.GONE
+                when (it.status) {
+                    statusTimenote.FREE -> {
+                        if(it.url.isNullOrBlank()){
+                        noAnswer.text = getString(R.string.free)
+                        noAnswer.setTextColor(resources.getColor(android.R.color.black))
+                        url.visibility = View.GONE } else {
+                            url.visibility = View.VISIBLE
+                            url.text = it.url
+                        }
+                    }
+                    statusTimenote.PAID -> {
+                        noAnswer.text = it.price.toString() + "$"
+                        noAnswer.setTextColor(resources.getColor(R.color.colorText))
+                        url.visibility = View.VISIBLE
+                        url.text = it.url
+                    }
+                    else -> {
+                        noAnswer.setTextColor(resources.getColor(android.R.color.black))
+                        noAnswer.text = getString(R.string.no_answer)
+                        url.visibility = View.GONE
+                    }
                 }
                 if (it.category.isNullOrBlank()) create_timenote_category.text = getString(R.string.none) else create_timenote_category.text = it.category
                 if (it.pic == null) {
@@ -137,6 +139,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
                     progressBar.visibility = View.GONE
                     picCl.visibility = View.GONE
                 } else {
+                    hideChooseBackground()
                     takeAddPicTv.visibility = View.GONE
                     progressBar.visibility = View.GONE
                     picCl.visibility = View.VISIBLE
@@ -218,8 +221,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
         paidTimenote = paid_timenote_cardview
         fixedDate = create_timenote_fixed_date
         fromTv = create_timenote_from
-        price = create_timenote_paid_timenote_status_price
-        url = create_timenote_paid_timenote_status_url
+        url = create_timenote_paid_timenote_status_price
         toTv = create_timenote_to
         categoryTv = create_timenote_category
         titleTv = create_timenote_title_btn
@@ -261,6 +263,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
         addEndDateTv.setOnClickListener(this)
         paidTimenote.setOnClickListener(this)
         noAnswer.setOnClickListener(this)
+        url.setOnClickListener(this)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -473,7 +476,15 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
                     when(index){
                         0 -> {
                             noAnswer.text = text.toString()
-                            creationTimenoteViewModel.setStatus(statusTimenote.FREE)
+                            MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                                title(R.string.link)
+                                input(inputType = InputType.TYPE_TEXT_VARIATION_URI) { _, charSequence ->
+                                    creationTimenoteViewModel.setUrl(charSequence.toString())
+                                    creationTimenoteViewModel.setStatus(statusTimenote.FREE)
+                                }
+                                negativeButton()
+                                lifecycleOwner(this@CreateTimenote)
+                            }
                         }
                         1 -> {
                             noAnswer.text = text.toString()
@@ -487,7 +498,9 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
                                             creationTimenoteViewModel.setUrl(charSequence.toString())
                                             creationTimenoteViewModel.setStatus(statusTimenote.PAID)
                                         }
+                                        lifecycleOwner(this@CreateTimenote)
                                     }
+                                    lifecycleOwner(this@CreateTimenote)
                                 }
                             }
                         }
@@ -498,6 +511,14 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
                     }
                 }
             }
+            url -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                title(R.string.link)
+                input(inputType = InputType.TYPE_TEXT_VARIATION_URI, prefill = creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.url) { _, charSequence ->
+                    creationTimenoteViewModel.setUrl(charSequence.toString())
+                }
+                lifecycleOwner(this@CreateTimenote)
+            }
+
         }
     }
 

@@ -220,4 +220,5 @@
     <string name="friday">FRI</string>
     <string name="saturday">SAT</string>
     <string name="sunday">SUN</string>
+    <string name="free_and_paid">Free and Paid</string>
 </resources>

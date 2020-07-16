@@ -3,6 +3,7 @@ package com.timenoteco.timenote.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.timenoteco.timenote.R
@@ -76,7 +77,7 @@ class SearchExploreSubCategoryAdapter(
     override fun getItemCount(): Int = subCategory.size
 
     override fun onBindViewHolder(holder: ItemSearchExploreHolder, position: Int) {
-        holder.bindSubCategory(subCategory[position], subCategoryListener)
+        holder.bindSubCategory(subCategory[position], subCategoryListener, position)
     }
 
 
@@ -84,11 +85,14 @@ class SearchExploreSubCategoryAdapter(
 
         fun bindSubCategory(
             subCategory: String,
-            subCategoryListener: SearchExploreCategoryAdapter.SearchSubCategoryListener
+            subCategoryListener: SearchExploreCategoryAdapter.SearchSubCategoryListener,
+            position: Int
         ) {
             itemView.search_explore_subcategory.text = subCategory
-            itemView.search_explore_subcategory.setOnClickListener { subCategoryListener.onSubCategorySelected() }
+            itemView.search_explore_subcategory.setOnClickListener { subCategoryListener.onSubCategorySelected()
+            }
         }
+
 
     }
 }

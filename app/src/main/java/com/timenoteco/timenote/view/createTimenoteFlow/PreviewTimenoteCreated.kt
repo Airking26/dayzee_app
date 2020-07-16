@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ScreenSlideCreationTimenotePagerAdapter
 import com.timenoteco.timenote.listeners.BackToHomeListener
+import com.timenoteco.timenote.model.statusTimenote
 import com.timenoteco.timenote.viewModel.CreationTimenoteViewModel
 import kotlinx.android.synthetic.main.fragment_preview_timenote_created.*
 
@@ -33,6 +34,18 @@ class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         preview_created_timenote_done_btn.setOnClickListener(this)
         creationTimenoteViewModel.getCreateTimeNoteLiveData().observe(viewLifecycleOwner, Observer {
+            if(it.status == statusTimenote.FREE){
+                if(it.url.isNullOrBlank()) preview_created_timenote_buy.visibility = View.GONE
+                else {
+                    preview_created_timenote_buy.visibility =View.VISIBLE
+                    preview_created_timenote_buy.text = it.url
+                }
+            } else if(it.status == statusTimenote.PAID){
+                preview_created_timenote_buy.visibility = View.VISIBLE
+                preview_created_timenote_buy.text = """Buy${it.price.toString()}$"""
+            } else {
+                preview_created_timenote_buy.visibility =View.GONE
+            }
             if(it.pic?.size == 1) preview_created_timenote_indicator.visibility = View.GONE
             if(it.pic != null) {
                 screenSlideCreationTimenotePagerAdapter = ScreenSlideCreationTimenotePagerAdapter(this, it.pic, true)

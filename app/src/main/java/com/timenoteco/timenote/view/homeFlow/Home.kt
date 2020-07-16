@@ -9,17 +9,16 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ItemTimenoteAdapter
-import com.timenoteco.timenote.adapter.ScreenSlideTimenotePagerAdapter
 import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.Timenote
+import com.timenoteco.timenote.model.statusTimenote
 import kotlinx.android.synthetic.main.fragment_home.*
 
 class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, TimenoteOptionsListener {
 
     private var timenotes: List<Timenote> = listOf()
     private lateinit var timenoteAdapter: ItemTimenoteAdapter
-    private lateinit var screenSlideTimenotePagerAdapter: ScreenSlideTimenotePagerAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_home)
@@ -42,8 +41,11 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
                 "10\nAug",
                 "15:30",
                 "Beach Party",
-                "In 23 days"
-            ),            Timenote(
+                "In 23 days",
+                12L,
+                "www.google.com",
+                statusTimenote.FREE
+            ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
                     "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -58,8 +60,11 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
                 "10\nAug",
                 "15:30",
                 "Beach Party",
-                "In 23 days"
-            ),            Timenote(
+                "In 23 days",
+                12L,
+                "www.google.com",
+                statusTimenote.PAID
+            ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
                     "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -74,8 +79,11 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
                 "10\nAug",
                 "15:30",
                 "Beach Party",
-                "In 23 days"
-            ),            Timenote(
+                "In 23 days",
+                12L,
+                "www.google.com",
+                statusTimenote.NOANSWER
+            ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
                     "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -90,8 +98,11 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
                 "10\nAug",
                 "15:30",
                 "Beach Party",
-                "In 23 days"
-            ),            Timenote(
+                "In 23 days",
+                12L,
+                "www.google.com",
+                statusTimenote.PAID
+            ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
                     "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -106,8 +117,11 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
                 "10\nAug",
                 "15:30",
                 "Beach Party",
-                "In 23 days"
-            ),            Timenote(
+                "In 23 days",
+                12L,
+                "www.google.com",
+                statusTimenote.FREE
+            ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
                     "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -122,8 +136,11 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
                 "10\nAug",
                 "15:30",
                 "Beach Party",
-                "In 23 days"
-            ),            Timenote(
+                "In 23 days",
+                12L,
+                "www.google.com",
+                statusTimenote.NOANSWER
+            ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
                     "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -138,8 +155,11 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
                 "10\nAug",
                 "15:30",
                 "Beach Party",
-                "In 23 days"
-            ),            Timenote(
+                "In 23 days",
+                12L,
+                "www.google.com",
+                statusTimenote.FREE
+            ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
                     "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -154,8 +174,11 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
                 "10\nAug",
                 "15:30",
                 "Beach Party",
-                "In 23 days"
-            ),            Timenote(
+                "In 23 days",
+                12L,
+                "www.google.com",
+                statusTimenote.NOANSWER
+            ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
                     "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -170,8 +193,11 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
                 "10\nAug",
                 "15:30",
                 "Beach Party",
-                "In 23 days"
-            ),            Timenote(
+                "In 23 days",
+                12L,
+                "www.google.com",
+                statusTimenote.NOANSWER
+            ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
                     "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -186,8 +212,11 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
                 "10\nAug",
                 "15:30",
                 "Beach Party",
-                "In 23 days"
-            ),            Timenote(
+                "In 23 days",
+                12L,
+                "www.google.com",
+                statusTimenote.NOANSWER
+            ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
                     "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -202,10 +231,13 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
                 "10\nAug",
                 "15:30",
                 "Beach Party",
-                "In 23 days"
+                "In 23 days",
+                12L,
+                "www.google.com",
+                statusTimenote.NOANSWER
+
             )
         )
-        screenSlideTimenotePagerAdapter = ScreenSlideTimenotePagerAdapter(this, mutableListOf(), true)
         timenoteAdapter = ItemTimenoteAdapter(timenotes, timenotes, true, this, this, this as Fragment)
 
         home_rv.apply {

@@ -148,11 +148,11 @@
         android:background="@color/colorAccentCustom"
         android:textColor="@color/white"
         android:textSize="16sp"
+        android:visibility="gone"
         android:paddingVertical="4dp"
         android:paddingHorizontal="8dp"
         android:gravity="end"
         android:fontFamily="sans-serif-light"
-        android:text="Buy 15$"
         android:id="@+id/preview_created_timenote_buy"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

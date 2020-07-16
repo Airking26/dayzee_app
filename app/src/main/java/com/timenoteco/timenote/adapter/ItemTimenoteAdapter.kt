@@ -6,9 +6,8 @@ import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.TextPaint
 import android.text.style.MetricAffectingSpan
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,9 +21,11 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.RoundedCornersTransformation
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.Timenote
+import com.timenoteco.timenote.model.statusTimenote
 import kotlinx.android.synthetic.main.adapter_timenote_recent.view.*
 import kotlinx.android.synthetic.main.item_timenote.view.*
 import kotlinx.android.synthetic.main.item_timenote_recent.view.*
+
 
 class ItemTimenoteAdapter(
     private val timenotes: List<Timenote>,
@@ -35,7 +36,6 @@ class ItemTimenoteAdapter(
     private val fragment: Fragment
 )
     : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
-
 
     interface TimenoteRecentClicked{
         fun onTimenoteRecentClicked()
@@ -88,7 +88,6 @@ class ItemTimenoteAdapter(
 
     }
 
-
     override fun getItemViewType(position: Int): Int {
         return if(isHeterogeneous) {
             itemViewType = position % 4 * 5
@@ -98,14 +97,13 @@ class ItemTimenoteAdapter(
         }
     }
 
-    class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
 
+        private lateinit var timenote: Timenote
 
-        fun bindTimenote(
-            timenote: Timenote,
-            timenoteListenerListener: TimenoteOptionsListener,
-            fragment: Fragment
-        ) {
+        fun bindTimenote(timenote: Timenote, timenoteListenerListener: TimenoteOptionsListener, fragment: Fragment) {
+
+            this.timenote = timenote
 
             Glide
                 .with(itemView)
@@ -130,14 +128,23 @@ class ItemTimenoteAdapter(
                 .into(itemView.timenote_pic_participant_three)
 
 
-            val screenSlideCreationTimenotePagerAdapter = ScreenSlideTimenotePagerAdapter(fragment, timenote.pic, true)
+            val screenSlideCreationTimenotePagerAdapter = TimenoteViewPagerAdapter(timenote.pic, true){
+                if(timenote.status ==statusTimenote.PAID || (timenote.status ==statusTimenote.FREE && !timenote.url.isNullOrBlank())) {
+                    itemView.timenote_buy.visibility = View.VISIBLE
+                    if(timenote.status == statusTimenote.PAID){
+                        itemView.timenote_buy.text = "Buy " + timenote.price.toString() + "$"
+                    } else {
+                        itemView.timenote_buy.text = timenote.url
+                    }
+                }
+            }
             itemView.timenote_vp.adapter = screenSlideCreationTimenotePagerAdapter
             itemView.timenote_indicator.setViewPager(itemView.timenote_vp)
             if(timenote.pic?.size == 1) itemView.timenote_indicator.visibility = View.GONE
             screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(itemView.timenote_indicator.adapterDataObserver)
             itemView.timenote_username.text = timenote.username
             itemView.timenote_place.text = timenote.place
-            val test = "Ronny Dahan et 1228 autres personnes ont enregistré ce Dayzee"
+            val test = "Ronny Dahan et des milliers d'autres personnes ont enregistré ce Dayzee"
 
             val p = Typeface.create("sans-serif-light", Typeface.NORMAL)
             val m = Typeface.create("sans-serif", Typeface.NORMAL)
@@ -145,9 +152,8 @@ class ItemTimenoteAdapter(
             val k = ItemTimenoteToComeAdapter.CustomTypefaceSpan(m)
 
             val t = SpannableStringBuilder(test)
-            t.setSpan(k, 0, 10, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
-            t.setSpan(k, 15, 36, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
-            t.setSpan(o, 36, test.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+            t.setSpan(k, 0, 45, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+            t.setSpan(o, 46, test.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
 
             itemView.timenote_added_by.text = t
 
@@ -167,21 +173,18 @@ class ItemTimenoteAdapter(
                 itemView.timenote_year.visibility = View.GONE
             }
 
-            itemView.timenote_options.setOnClickListener { createOptionsOnTimenote(itemView.context, false, timenoteListenerListener) }
+            itemView.timenote_options.setOnClickListener {
+                createOptionsOnTimenote(itemView.context, false, timenoteListenerListener)
+            }
             itemView.timenote_pic_user_imageview.setOnClickListener { timenoteListenerListener.onPictureClicked() }
             itemView.timenote_comment.setOnClickListener { timenoteListenerListener.onCommentClicked() }
             itemView.timenote_plus.setOnClickListener { timenoteListenerListener.onPlusClicked() }
             itemView.timenote_see_more.setOnClickListener { timenoteListenerListener.onSeeMoreClicked() }
             itemView.timenote_place.setOnClickListener{timenoteListenerListener.onAddressClicked()}
-
         }
 
-        private fun createOptionsOnTimenote(
-            context: Context,
-            isMine: Boolean,
-            timenoteListenerListener: TimenoteOptionsListener
-        ){
-            var listItems = mutableListOf<String>()
+        private fun createOptionsOnTimenote(context: Context, isMine: Boolean, timenoteListenerListener: TimenoteOptionsListener){
+            val listItems: MutableList<String>
             if(isMine) listItems = mutableListOf(context.getString(R.string.duplicate), context.getString(
                             R.string.edit), context.getString(R.string.delete), context.getString(R.string.alarm))
             else listItems = mutableListOf(context.getString(R.string.duplicate), context.getString(R.string.delete), context.getString(R.string.alarm), context.getString(R.string.report))
@@ -200,9 +203,7 @@ class ItemTimenoteAdapter(
             }
         }
 
-
     }
-
 
     class TimenoteToComeViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
 
@@ -211,7 +212,6 @@ class ItemTimenoteAdapter(
             itemView.home_recent_rv.adapter = ItemTimenoteToComeAdapter(timenote, timenoteRecentClicked)
         }
     }
-
 }
 
 class ItemTimenoteToComeAdapter(private val timenotesToCome: List<Timenote>, private val timenoteClicked: ItemTimenoteAdapter.TimenoteRecentClicked?): RecyclerView.Adapter<ItemTimenoteToComeAdapter.ItemAdapter>(){

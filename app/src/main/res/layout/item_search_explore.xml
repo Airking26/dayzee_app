@@ -6,12 +6,13 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
 xmlns:tools="http://schemas.android.com/tools">
 
 <TextView
+    android:textColor="@color/colorText"
     android:id="@+id/search_explore_subcategory"
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     android:layout_marginHorizontal="24dp"
-    android:layout_marginTop="8dp"
+    android:layout_marginBottom="12dp"
     android:textSize="15sp"
     tools:text="Football"
     android:fontFamily="sans-serif-light"

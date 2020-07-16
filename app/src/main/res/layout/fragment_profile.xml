@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -51,9 +52,7 @@
             android:layout_height="wrap_content">
 
             <com.timenoteco.timenote.androidView.CollapsibleToolbar
-                xmlns:tools="http://schemas.android.com/tools"
                 android:id="@+id/motionLayout"
-                xmlns:fancy="http://schemas.android.com/apk/res-auto"
                 tools:context=".view.profileFlow.Profile"
                 app:layoutDescription="@xml/motion_scene"
                 android:layout_width="match_parent"
@@ -202,22 +201,22 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/profile_location"
-                        fancy:fb_defaultColor="@android:color/holo_orange_dark"
-                        fancy:fb_radius="5dp"
-                        fancy:fb_text="@string/modify"
-                        fancy:fb_textColor="@android:color/white" />
+                        app:fb_defaultColor="@android:color/holo_orange_dark"
+                        app:fb_radius="5dp"
+                        app:fb_text="@string/modify"
+                        app:fb_textColor="@android:color/white" />
 
 
                     <mehdi.sakout.fancybuttons.FancyButton
                         android:visibility="invisible"
                         android:layout_marginStart="68dp"
-                        fancy:fb_defaultColor="@color/colorAccentCustom"
-                        fancy:fb_radius="5dp"
+                        app:fb_defaultColor="@color/colorAccentCustom"
+                        app:fb_radius="5dp"
                         android:layout_marginTop="16dp"
-                        fancy:fb_text="FOLLOW"
+                        app:fb_text="FOLLOW"
                         android:paddingVertical="6dp"
                         android:paddingHorizontal="30dp"
-                        fancy:fb_textColor="@color/white"
+                        app:fb_textColor="@color/white"
                         android:gravity="center"
                         app:layout_constraintEnd_toStartOf="@id/profile_message_btn"
                         app:layout_constraintStart_toStartOf="parent"
@@ -229,15 +228,15 @@
 
                     <mehdi.sakout.fancybuttons.FancyButton
                         android:visibility="invisible"
-                        fancy:fb_defaultColor="@color/white"
-                        fancy:fb_borderWidth="1dp"
-                        fancy:fb_borderColor="@color/colorAccentCustom"
-                        fancy:fb_radius="5dp"
+                        app:fb_defaultColor="@color/white"
+                        app:fb_borderWidth="1dp"
+                        app:fb_borderColor="@color/colorAccentCustom"
+                        app:fb_radius="5dp"
                         android:layout_marginTop="16dp"
-                        fancy:fb_text="@string/message"
+                        app:fb_text="@string/message"
                         android:paddingVertical="6dp"
                         android:paddingHorizontal="30dp"
-                        fancy:fb_textColor="@color/colorAccentCustom"
+                        app:fb_textColor="@color/colorAccentCustom"
                         android:gravity="center"
                         android:layout_marginEnd="68dp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -262,71 +261,20 @@
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/past_future"
-                        app:layout_constraintTop_toBottomOf="@id/profile_desc"
-                    app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        android:focusableInTouchMode="false"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp">
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/profile_desc">
 
-                        <ImageView
-                            android:layout_marginEnd="36dp"
-                            android:tint="@android:color/black"
-                            android:id="@+id/profile_arrow_back_btn"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:src="@drawable/ic_baseline_keyboard_arrow_left_24"
-                            app:layout_constraintEnd_toStartOf="@id/profile_arrow_forward_btn"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintStart_toStartOf="parent" />
-
-                        <ImageView
-                            android:layout_marginStart="36dp"
-                            android:tint="@android:color/black"
-                            android:id="@+id/profile_arrow_forward_btn"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:src="@drawable/ic_baseline_keyboard_arrow_right_24"
-                            app:layout_constraintEnd_toStartOf="@id/profile_view_type_btn"
-                            app:layout_constraintStart_toEndOf="@id/profile_arrow_back_btn"
-                            app:layout_constraintTop_toTopOf="parent"
-                            />
-
-
-                        <ImageView
-                            android:visibility="gone"
-                            android:id="@+id/profile_view_type_btn"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:src="@drawable/ic_view_module_black_24dp"
-                            app:layout_constraintEnd_toStartOf="@id/profile_filter_btn"
-                            app:layout_constraintStart_toEndOf="@id/profile_arrow_forward_btn"
-                            app:layout_constraintTop_toTopOf="parent"
-                            />
-
-                        <ImageView
-                            android:visibility="gone"
-                            android:id="@+id/profile_filter_btn"
-                            android:layout_width="22dp"
-                            android:layout_height="22dp"
-                            android:layout_marginTop="16dp"
-                            android:src="@drawable/logo"
-                            android:tint="@android:color/black"
+                        <com.google.android.material.tabs.TabLayout
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toEndOf="@id/profile_view_type_btn"
                             app:layout_constraintTop_toTopOf="parent"
-                            />
-
-                        <TextView
-                            android:id="@+id/view_demarcation"
-                            style="@style/AppTheme.Divider.Toolbar"
-                            android:layout_marginTop="8dp"
-                            app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintBottom_toBottomOf="parent" />
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            android:id="@+id/profile_tablayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -340,7 +288,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                xmlns:tools="http://schemas.android.com/tools"
                 android:id="@+id/scrollable"
                 android:fillViewport="true"
                 android:layout_width="match_parent"
@@ -348,26 +295,10 @@
                 android:scrollbars="none"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:nestedScrollingEnabled="false"
-                        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                        android:layout_gravity="bottom"
-                        android:id="@+id/profile_rv"
-                        android:background="@color/colorBackgroundForward"
-                        android:paddingBottom="12dp"
-                        android:clipToPadding="false"
-                        tools:listitem="@layout/item_profile_timenote_list_style"
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/profile_vp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
-
-
-                </LinearLayout>
-
 
             </androidx.core.widget.NestedScrollView>
 

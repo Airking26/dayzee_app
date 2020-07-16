@@ -24,6 +24,7 @@ class NearbyFilters : Fragment(), View.OnClickListener {
 
     private lateinit var nearbyFilterCategoryTv: TextView
     private lateinit var nearbyFilterFromTv: TextView
+    private lateinit var nearbyFilterPaidTimenoteTv: TextView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_nearby_filters, container, false)
@@ -32,32 +33,79 @@ class NearbyFilters : Fragment(), View.OnClickListener {
 
         nearbyFilterCategoryTv = nearby_filter_category_tv
         nearbyFilterFromTv = nearby_filter_from_tv
+        nearbyFilterPaidTimenoteTv = nearby_filter_paid_timenote_tv
 
         nearby_filter_from.setOnClickListener(this)
         nearby_filter_category.setOnClickListener(this)
         nearby_filter_done_btn.setOnClickListener(this)
+        nearby_filter_paid_timenote.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
-        when(v){
-            nearby_filter_category -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+        when (v) {
+            nearby_filter_category -> MaterialDialog(
+                requireContext(),
+                BottomSheet(LayoutMode.WRAP_CONTENT)
+            ).show {
                 title(R.string.category)
                 positiveButton(R.string.done)
-                listItemsMultiChoice(items = listOf("Judaisme", "Bouddhisme", "Techno", "Pop", "Football", "Tennis",
-                    "Judaisme", "Bouddhisme", "Techno", "Pop", "Football", "Tennis", "Judaisme", "Bouddhisme",
-                    "Techno", "Pop", "Football", "Tennis")){_, index, text ->
+                listItemsMultiChoice(
+                    items = listOf(
+                        "Judaisme",
+                        "Bouddhisme",
+                        "Techno",
+                        "Pop",
+                        "Football",
+                        "Tennis",
+                        "Judaisme",
+                        "Bouddhisme",
+                        "Techno",
+                        "Pop",
+                        "Football",
+                        "Tennis",
+                        "Judaisme",
+                        "Bouddhisme",
+                        "Techno",
+                        "Pop",
+                        "Football",
+                        "Tennis"
+                    )
+                ) { _, index, text ->
                     //nearbyFilterCategoryTv.text = text.toString()
                 }
                 lifecycleOwner(this@NearbyFilters)
             }
-            nearby_filter_from -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            nearby_filter_from -> MaterialDialog(
+                requireContext(),
+                BottomSheet(LayoutMode.WRAP_CONTENT)
+            ).show {
                 title(R.string.from)
-                listItems(null, listOf("Public", "Private", "Public and Private")) { dialog, index, text ->
+                listItems(
+                    null,
+                    listOf("Public", "Private", "Public and Private")
+                ) { dialog, index, text ->
                     nearbyFilterFromTv.text = text.toString()
                 }
                 lifecycleOwner(this@NearbyFilters)
             }
             nearby_filter_done_btn -> findNavController().navigate(NearbyFiltersDirections.actionNearbyFiltersToNearBy())
+            nearby_filter_paid_timenote -> MaterialDialog(
+                requireContext(),
+                BottomSheet(LayoutMode.WRAP_CONTENT)
+            ).show {
+                title(R.string.from)
+                listItems(
+                    null,
+                    listOf(
+                        getString(R.string.free),
+                        getString(R.string.paid),
+                        getString(R.string.free_and_paid)
+                    )
+                ) { dialog, index, text ->
+                    nearbyFilterPaidTimenoteTv.text = text.toString()
+                }
+                lifecycleOwner(this@NearbyFilters)
+            }
         }
     }
 

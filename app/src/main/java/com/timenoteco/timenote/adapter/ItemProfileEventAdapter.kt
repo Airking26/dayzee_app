@@ -13,7 +13,6 @@ import com.afollestad.materialdialogs.list.listItems
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
-import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.Timenote
 import kotlinx.android.synthetic.main.item_profile_timenote_list_style.view.*
@@ -38,7 +37,6 @@ class ItemProfileEventAdapter(private var events: List<Timenote>, private val fr
             else -> (holder as TimenoteGridHolder).bindGridStyleItem(events[position], fragment)
         }
     }
-
 
     fun switchViewType() : Int{
         if(this.style == 0) this.style = 1
@@ -108,7 +106,10 @@ class ItemProfileEventAdapter(private var events: List<Timenote>, private val fr
                 .apply(RequestOptions.circleCropTransform())
                 .into(itemView.timenote_pic_user_imageview)
 
-            val screenSlideCreationTimenotePagerAdapter = ScreenSlideTimenotePagerAdapter(fragment, timenote.pic, true)
+            val screenSlideCreationTimenotePagerAdapter = TimenoteViewPagerAdapter(
+                timenote.pic,
+                true
+            ){}
             itemView.timenote_vp.adapter = screenSlideCreationTimenotePagerAdapter
             itemView.timenote_indicator.setViewPager(itemView.timenote_vp)
             if(timenote.pic?.size == 1) itemView.timenote_indicator.visibility = View.GONE

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:nestedScrollingEnabled="false"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:layout_gravity="bottom"
+            android:id="@+id/profile_rv"
+            android:background="@color/white"
+            android:paddingBottom="12dp"
+            android:clipToPadding="false"
+            tools:listitem="@layout/item_profile_timenote_list_style"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+
+</LinearLayout>

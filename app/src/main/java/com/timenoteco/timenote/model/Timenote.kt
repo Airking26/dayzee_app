@@ -29,4 +29,7 @@ data class Timenote(
     @Nullable
     var title: String?,
     @Nullable
-    var dateIn: String?)
+    var dateIn: String?,
+    var price: Long?,
+    var url: String?,
+    var status: statusTimenote)
