@@ -139,7 +139,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener {
                         bottomNavView.visibility = View.GONE
                     }
                     R.id.settings -> {
-                        utils.hideStatusBar(this)
+                        utils.showStatusBar(this)
                         bottomNavView.visibility = View.GONE
                     }
                     R.id.home -> {

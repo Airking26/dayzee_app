@@ -2,9 +2,12 @@ package com.timenoteco.timenote.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
@@ -15,45 +18,35 @@ import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.Timenote
+import kotlinx.android.synthetic.main.fragment_filter.view.*
 import kotlinx.android.synthetic.main.item_profile_timenote_list_style.view.*
-import kotlinx.android.synthetic.main.item_timenote.view.*
+import kotlin.math.abs
+
 
 class ItemProfileEventAdapter(private var events: List<Timenote>, private val fragment: Fragment, private val timenoteOptionsListener: TimenoteOptionsListener): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    var style: Int = 0
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-       return when(this.style){
-           0 -> TimenoteListHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_profile_timenote_list_style, parent, false))
-           else -> TimenoteGridHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_timenote, parent, false))
-       }
+        val itemView: View = if(viewType == R.layout.item_profile_timenote_list_style){
+            LayoutInflater.from(parent.context).inflate(R.layout.item_profile_timenote_list_style, parent, false)
+        } else {
+            LayoutInflater.from(parent.context).inflate(R.layout.fragment_filter, parent, false)
         }
+        return TimenoteListHolder(itemView)
+    }
 
     override fun getItemCount(): Int = events.size
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when(this.style){
-            0 -> (holder as TimenoteListHolder).bindListStyleItem(events[position], timenoteOptionsListener)
-            else -> (holder as TimenoteGridHolder).bindGridStyleItem(events[position], fragment)
-        }
-    }
-
-    fun switchViewType() : Int{
-        if(this.style == 0) this.style = 1
-        else this.style = 0
-        notifyDataSetChanged()
-        return this.style
+        if(position == 0) (holder as TimenoteListHolder).showFilterBar() else
+        (holder as TimenoteListHolder).bindListStyleItem(events[position], timenoteOptionsListener)
     }
 
     override fun getItemViewType(position: Int): Int {
-        return this.style
+        return if(position == 0) R.layout.fragment_filter else R.layout.item_profile_timenote_list_style
     }
 
     class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        fun bindListStyleItem(
-            event: Timenote,
-            timenoteOptionsListener: TimenoteOptionsListener
-        ) {
+        fun bindListStyleItem(event: Timenote, timenoteOptionsListener: TimenoteOptionsListener) {
             itemView.profile_item_name_event.text = event.title
             itemView.profile_item_address_event.text = event.place
             itemView.profile_item_date_event.text = event.dateIn
@@ -69,12 +62,7 @@ class ItemProfileEventAdapter(private var events: List<Timenote>, private val fr
                 .apply(RequestOptions.circleCropTransform())
                 .into(itemView.profile_item_pic_profile_imageview)
         }
-
-        private fun createOptionsOnTimenote(
-            context: Context,
-            isMine: Boolean,
-            timenoteListenerListener: TimenoteOptionsListener
-        ){
+        private fun createOptionsOnTimenote(context: Context, isMine: Boolean, timenoteListenerListener: TimenoteOptionsListener){
             var listItems = mutableListOf<String>()
             if(isMine) listItems = mutableListOf(context.getString(R.string.duplicate), context.getString(
                 R.string.edit), context.getString(R.string.delete), context.getString(R.string.alarm))
@@ -94,8 +82,44 @@ class ItemProfileEventAdapter(private var events: List<Timenote>, private val fr
                 }
             }
         }
+
+        fun showFilterBar() {
+            val chips = mutableListOf("With Alarm", "My Timenotes", "The Liked", "Tagged Ones", "With Note")
+            val chipProfileFilterAdapter = ProfileFilterChipAdapter(chips)
+            itemView.profile_filter_rv_chips_in_rv.apply {
+                layoutManager = LinearLayoutManager(itemView.context, LinearLayoutManager.HORIZONTAL, false)
+                adapter = chipProfileFilterAdapter
+            }
+        }
     }
-    class TimenoteGridHolder(itemView: View): RecyclerView.ViewHolder(itemView){
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*class TimenoteGridHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         fun bindGridStyleItem(
             timenote: Timenote,
             fragment: Fragment
@@ -106,10 +130,7 @@ class ItemProfileEventAdapter(private var events: List<Timenote>, private val fr
                 .apply(RequestOptions.circleCropTransform())
                 .into(itemView.timenote_pic_user_imageview)
 
-            val screenSlideCreationTimenotePagerAdapter = TimenoteViewPagerAdapter(
-                timenote.pic,
-                true
-            ){}
+            val screenSlideCreationTimenotePagerAdapter = ScreenSlideTimenotePagerAdapter(fragment, timenote.pic, true){}
             itemView.timenote_vp.adapter = screenSlideCreationTimenotePagerAdapter
             itemView.timenote_indicator.setViewPager(itemView.timenote_vp)
             if(timenote.pic?.size == 1) itemView.timenote_indicator.visibility = View.GONE
@@ -123,7 +144,7 @@ class ItemProfileEventAdapter(private var events: List<Timenote>, private val fr
             itemView.timenote_day_month.text = timenote.month
             itemView.timenote_time.text = timenote.date
         }
-    }
+    }*/
 
 
 }

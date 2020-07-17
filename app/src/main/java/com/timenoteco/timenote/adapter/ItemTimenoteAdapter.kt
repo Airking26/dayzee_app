@@ -128,7 +128,7 @@ class ItemTimenoteAdapter(
                 .into(itemView.timenote_pic_participant_three)
 
 
-            val screenSlideCreationTimenotePagerAdapter = TimenoteViewPagerAdapter(timenote.pic, true){
+            val screenSlideCreationTimenotePagerAdapter =  ScreenSlideTimenotePagerAdapter(fragment, timenote.pic, true){
                 if(timenote.status ==statusTimenote.PAID || (timenote.status ==statusTimenote.FREE && !timenote.url.isNullOrBlank())) {
                     itemView.timenote_buy.visibility = View.VISIBLE
                     if(timenote.status == statusTimenote.PAID){

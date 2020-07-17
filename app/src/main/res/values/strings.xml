@@ -221,4 +221,7 @@
     <string name="saturday">SAT</string>
     <string name="sunday">SUN</string>
     <string name="free_and_paid">Free and Paid</string>
+    <string name="menu">Menu</string>
+    <string name="invite_friends">Invite Friends</string>
+    <string name="profile_preview">Profile Preview</string>
 </resources>

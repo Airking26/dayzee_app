@@ -12,13 +12,11 @@
         style="@style/AppTheme.Toolbar.LinearLayout">
 
         <androidx.appcompat.widget.Toolbar
-            android:layout_height="96dp"
-            android:background="@color/colorPrimary"
+            android:background="@color/white"
             style="@style/AppTheme.Toolbar">
 
             <TextView
-                android:paddingTop="16dp"
-                android:textColor="@color/white"
+                android:textColor="@color/colorText"
                 style="@style/AppTheme.Toolbar.Title"
                 android:text="@string/settings"/>
 

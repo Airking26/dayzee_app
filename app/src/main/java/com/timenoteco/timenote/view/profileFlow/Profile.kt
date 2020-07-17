@@ -51,8 +51,10 @@ class Profile : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsList
             .apply(RequestOptions.circleCropTransform())
             .into(profile_pic_imageview)
 
-        val profilePastFuturePagerAdapter = ProfilePastFuturePagerAdapter(this)
+        val profilePastFuturePagerAdapter = ProfilePastFuturePagerAdapter(childFragmentManager, lifecycle)
         profile_vp.adapter = profilePastFuturePagerAdapter
+        profile_vp.isUserInputEnabled = false
+        profile_vp.isSaveEnabled = false
         TabLayoutMediator(profile_tablayout, profile_vp){ tab, position ->
             when(position){
             }
@@ -77,7 +79,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsList
         when(v){
             profile_modify_btn -> findNavController().navigate(ProfileDirections.actionProfileToProfilModify())
             profile_calendar_btn -> findNavController().navigate(ProfileDirections.actionProfileToProfileCalendar())
-            profile_settings_btn -> findNavController().navigate(ProfileDirections.actionProfileToSettings())
+            profile_settings_btn -> findNavController().navigate(ProfileDirections.actionProfileToMenu())
             profile_notif_btn -> findNavController().navigate(ProfileDirections.actionProfileToNotifications())
             profile_followers_label -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage())
             profile_following_label -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage())

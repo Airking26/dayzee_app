@@ -16,9 +16,6 @@
             android:id="@+id/action_profile_to_profileCalendar"
             app:destination="@id/profileCalendar" />
         <action
-            android:id="@+id/action_profile_to_settings"
-            app:destination="@id/settings" />
-        <action
             android:id="@+id/action_profile_to_notifications"
             app:destination="@id/notifications" />
         <action
@@ -31,6 +28,9 @@
         <action
             android:id="@+id/action_profile_to_followPage"
             app:destination="@id/followPage" />
+        <action
+            android:id="@+id/action_profile_to_menu"
+            app:destination="@id/menu" />
     </fragment>
     <fragment
         android:id="@+id/profilModify"
@@ -72,4 +72,13 @@
         android:name="com.timenoteco.timenote.view.profileFlow.FollowPage"
         android:label="fragment_follow_page"
         tools:layout="@layout/fragment_follow_page" />
+    <fragment
+        android:id="@+id/menu"
+        android:name="com.timenoteco.timenote.view.profileFlow.Menu"
+        android:label="fragment_menu"
+        tools:layout="@layout/fragment_menu" >
+        <action
+            android:id="@+id/action_menu_to_settings"
+            app:destination="@id/settings" />
+    </fragment>
 </navigation>

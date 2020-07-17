@@ -246,7 +246,6 @@ class ProfileFutureEvents: Fragment(), TimenoteOptionsListener {
     }
 
     override fun onReportClicked() {
-
     }
 
     override fun onEditClicked() {

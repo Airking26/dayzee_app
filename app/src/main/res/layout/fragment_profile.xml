@@ -201,7 +201,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/profile_location"
-                        app:fb_defaultColor="@android:color/holo_orange_dark"
+                        app:fb_defaultColor="@color/colorAccentCustom"
                         app:fb_radius="5dp"
                         app:fb_text="@string/modify"
                         app:fb_textColor="@android:color/white" />
