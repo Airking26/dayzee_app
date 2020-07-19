@@ -1,42 +1,42 @@
 package com.timenoteco.timenote.view.profileFlow
 
-import android.content.ContentValues.TAG
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
-import com.afollestad.materialdialogs.LayoutMode
-import com.afollestad.materialdialogs.MaterialDialog
-import com.afollestad.materialdialogs.bottomsheets.BottomSheet
-import com.afollestad.materialdialogs.list.listItems
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.timenoteco.timenote.R
-import com.timenoteco.timenote.adapter.ProfilePastFuturePagerAdapter
-import com.timenoteco.timenote.common.BaseThroughFragment
+import com.timenoteco.timenote.adapter.ItemProfileEventAdapter
 import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.Timenote
 import com.timenoteco.timenote.model.statusTimenote
-import kotlinx.android.synthetic.main.fragment_profile.*
+import kotlinx.android.synthetic.main.fragment_profile_future_events.*
 
-class Profile : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListener, OnRemoveFilterBarListener {
+private const val ARG_PARAM1 = "showHideFilterBar"
 
-    private var profilePastFuturePagerAdapter: ProfilePastFuturePagerAdapter? = null
-    private var showFilterBar: Boolean = false
-    private val args : ProfileArgs by navArgs()
+class ProfilePastEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarListener {
+
+    private var showHideFilterBar: Boolean? = null
+    private var eventAdapter: ItemProfileEventAdapter? = null
     private var timenotes: MutableList<Timenote> = mutableListOf()
+    private lateinit var onRemoveFilterBarListener: OnRemoveFilterBarListener
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_profile)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            showHideFilterBar = it.getBoolean(ARG_PARAM1)
+        }
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? = inflater.inflate(R.layout.fragment_profile_future_events, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
         timenotes = mutableListOf(
             Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
@@ -249,79 +249,11 @@ class Profile : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsList
                 statusTimenote.FREE
             )
         )
+        eventAdapter = ItemProfileEventAdapter(timenotes,this, this, showHideFilterBar!!)
 
-
-        if(args.whereFrom){
-            profile_modify_btn.visibility = View.INVISIBLE
-            profile_follow_btn.visibility = View.VISIBLE
-            profile_message_btn.visibility = View.VISIBLE
-            profile_settings_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_baseline_info_24))
-            profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_share_black_24dp))
-        }
-
-        Glide
-            .with(this)
-            .load("https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792")
-            .apply(RequestOptions.circleCropTransform())
-            .into(profile_pic_imageview)
-
-        profilePastFuturePagerAdapter = ProfilePastFuturePagerAdapter(childFragmentManager, lifecycle, showFilterBar, this)
-        profile_vp.apply {
-            adapter = profilePastFuturePagerAdapter
-            isUserInputEnabled = false
-            isSaveEnabled = false
-            post {
-                profile_vp.currentItem = 1
-            }
-        }
-
-        profile_tablayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
-            override fun onTabReselected(tab: TabLayout.Tab?) {
-                profilePastFuturePagerAdapter?.setShowFilterBar(true, tab?.position!!, true)
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-                profilePastFuturePagerAdapter?.setShowFilterBar(true, tab?.position!!, false)
-            }
-
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                Log.d(TAG, "onTabSelected: ")
-            }
-
-        })
-
-        TabLayoutMediator(profile_tablayout, profile_vp){ tab, position -> }.attach()
-
-        profile_tablayout.getTabAt(1)?.icon = resources.getDrawable(R.drawable.ic_baseline_keyboard_arrow_right_24)
-        profile_tablayout.getTabAt(0)?.icon = resources.getDrawable(R.drawable.ic_baseline_keyboard_arrow_left_24)
-
-        profile_modify_btn.setOnClickListener(this)
-        profile_calendar_btn.setOnClickListener(this)
-        profile_settings_btn.setOnClickListener(this)
-        profile_notif_btn.setOnClickListener(this)
-        profile_location.setOnClickListener(this)
-        profile_followers_label.setOnClickListener(this)
-        profile_nbr_followers.setOnClickListener(this)
-        profile_nbr_following.setOnClickListener(this)
-        profile_following_label.setOnClickListener(this)
-
-    }
-
-    override fun onClick(v: View?) {
-        when(v){
-            profile_modify_btn -> findNavController().navigate(ProfileDirections.actionProfileToProfilModify())
-            profile_calendar_btn -> findNavController().navigate(ProfileDirections.actionProfileToProfileCalendar())
-            profile_settings_btn -> findNavController().navigate(ProfileDirections.actionProfileToMenu())
-            profile_notif_btn -> findNavController().navigate(ProfileDirections.actionProfileToNotifications())
-            profile_followers_label -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage())
-            profile_following_label -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage())
-            profile_nbr_followers -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage())
-            profile_nbr_following -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage())
-            profile_location -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                title(R.string.location)
-                listItems(items = listOf(getString(R.string.no_location), getString(R.string.city), getString(
-                                    R.string.address))) { dialog, index, text ->  }
-            }
+        profile_rv.apply {
+            layoutManager = LinearLayoutManager(view.context)
+            adapter = eventAdapter
         }
     }
 
@@ -356,11 +288,31 @@ class Profile : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsList
     }
 
     override fun onHideToOthersClicked() {
-
     }
 
-    override fun onCloseClicked(position:Int?) {
-        profilePastFuturePagerAdapter?.setShowFilterBar(false, position, null)
+    override fun onCloseClicked(position: Int?) {
+        this.onRemoveFilterBarListener.onCloseClicked(0)
+    }
+
+    fun setShowFilterBar(b: Boolean) {
+        eventAdapter?.showHideFilterBar(b)
+    }
+
+
+    fun setListener(onRemoveFilterBarListener: OnRemoveFilterBarListener){
+        this.onRemoveFilterBarListener = onRemoveFilterBarListener
+    }
+
+    companion object{
+        @JvmStatic
+        fun newIstance(showHideFilterBar: Boolean, fragment: Fragment) =
+            ProfilePastEvents().apply {
+                arguments = Bundle().apply {
+                    putBoolean(ARG_PARAM1, showHideFilterBar)
+                    setListener(fragment as OnRemoveFilterBarListener)
+                }
+            }
+
     }
 
 }

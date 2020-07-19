@@ -2,10 +2,8 @@ package com.timenoteco.timenote.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,14 +14,19 @@ import com.afollestad.materialdialogs.list.listItems
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
+import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.Timenote
 import kotlinx.android.synthetic.main.fragment_filter.view.*
 import kotlinx.android.synthetic.main.item_profile_timenote_list_style.view.*
-import kotlin.math.abs
 
 
-class ItemProfileEventAdapter(private var events: List<Timenote>, private val fragment: Fragment, private val timenoteOptionsListener: TimenoteOptionsListener): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ItemProfileEventAdapter(
+    private var events: MutableList<Timenote>,
+    private val timenoteOptionsListener: TimenoteOptionsListener,
+    private val onRemoveFilterBarListener: OnRemoveFilterBarListener,
+    private var showHideFilterBar: Boolean
+): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val itemView: View = if(viewType == R.layout.item_profile_timenote_list_style){
@@ -34,15 +37,20 @@ class ItemProfileEventAdapter(private var events: List<Timenote>, private val fr
         return TimenoteListHolder(itemView)
     }
 
+    fun showHideFilterBar(boolean: Boolean){
+        this.showHideFilterBar = boolean
+        notifyDataSetChanged()
+    }
+
     override fun getItemCount(): Int = events.size
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if(position == 0) (holder as TimenoteListHolder).showFilterBar() else
+        if(position == 0 && showHideFilterBar) (holder as TimenoteListHolder).showFilterBar(onRemoveFilterBarListener) else
         (holder as TimenoteListHolder).bindListStyleItem(events[position], timenoteOptionsListener)
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if(position == 0) R.layout.fragment_filter else R.layout.item_profile_timenote_list_style
+        return if(position == 0 && showHideFilterBar) R.layout.fragment_filter else R.layout.item_profile_timenote_list_style
     }
 
     class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
@@ -83,68 +91,14 @@ class ItemProfileEventAdapter(private var events: List<Timenote>, private val fr
             }
         }
 
-        fun showFilterBar() {
+        fun showFilterBar(onRemoveFilterBarListener: OnRemoveFilterBarListener) {
             val chips = mutableListOf("With Alarm", "My Timenotes", "The Liked", "Tagged Ones", "With Note")
-            val chipProfileFilterAdapter = ProfileFilterChipAdapter(chips)
+            val chipProfileFilterAdapter = ProfileFilterChipAdapter(chips, onRemoveFilterBarListener)
             itemView.profile_filter_rv_chips_in_rv.apply {
                 layoutManager = LinearLayoutManager(itemView.context, LinearLayoutManager.HORIZONTAL, false)
                 adapter = chipProfileFilterAdapter
             }
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /*class TimenoteGridHolder(itemView: View): RecyclerView.ViewHolder(itemView){
-        fun bindGridStyleItem(
-            timenote: Timenote,
-            fragment: Fragment
-        ){
-            Glide
-                .with(itemView)
-                .load(timenote.pic_user)
-                .apply(RequestOptions.circleCropTransform())
-                .into(itemView.timenote_pic_user_imageview)
-
-            val screenSlideCreationTimenotePagerAdapter = ScreenSlideTimenotePagerAdapter(fragment, timenote.pic, true){}
-            itemView.timenote_vp.adapter = screenSlideCreationTimenotePagerAdapter
-            itemView.timenote_indicator.setViewPager(itemView.timenote_vp)
-            if(timenote.pic?.size == 1) itemView.timenote_indicator.visibility = View.GONE
-            screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(itemView.timenote_indicator.adapterDataObserver)
-
-            itemView.timenote_username.text = timenote.username
-            itemView.timenote_place.text = timenote.place
-            itemView.timenote_username_desc.text = timenote.desc
-            itemView.timenote_title.text = timenote.title
-            itemView.timenote_year.text = timenote.year
-            itemView.timenote_day_month.text = timenote.month
-            itemView.timenote_time.text = timenote.date
-        }
-    }*/
-
 
 }

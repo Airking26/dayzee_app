@@ -1,6 +1,8 @@
 package com.timenoteco.timenote.view.profileFlow
 
+import android.content.Context
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,15 +10,29 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ItemProfileEventAdapter
+import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.Timenote
 import com.timenoteco.timenote.model.statusTimenote
 import kotlinx.android.synthetic.main.fragment_profile_future_events.*
+import java.text.FieldPosition
 
-class ProfileFutureEvents: Fragment(), TimenoteOptionsListener {
+private const val ARG_PARAM1 = "showHideFilterBar"
 
-    private lateinit var eventAdapter: ItemProfileEventAdapter
+class ProfileFutureEvents : Fragment(), TimenoteOptionsListener,
+    OnRemoveFilterBarListener {
+
+    private var showHideFilterBar: Boolean? = null
+    private var eventAdapter: ItemProfileEventAdapter? = null
     private var timenotes: MutableList<Timenote> = mutableListOf()
+    private lateinit var onRemoveFilterBarListener: OnRemoveFilterBarListener
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            showHideFilterBar = it.getBoolean(ARG_PARAM1)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -237,12 +253,14 @@ class ProfileFutureEvents: Fragment(), TimenoteOptionsListener {
                 statusTimenote.FREE
             )
         )
-        eventAdapter = ItemProfileEventAdapter(timenotes, this as Fragment, this)
+        eventAdapter = ItemProfileEventAdapter(timenotes, this, this, showHideFilterBar!!)
+
 
         profile_rv.apply {
             layoutManager = LinearLayoutManager(view.context)
             adapter = eventAdapter
         }
+
     }
 
     override fun onReportClicked() {
@@ -276,6 +294,29 @@ class ProfileFutureEvents: Fragment(), TimenoteOptionsListener {
     }
 
     override fun onHideToOthersClicked() {
+    }
+
+    override fun onCloseClicked(position: Int?) {
+        this.onRemoveFilterBarListener.onCloseClicked(1)
+    }
+
+    fun setListener(onRemoveFilterBarListener: OnRemoveFilterBarListener){
+        this.onRemoveFilterBarListener = onRemoveFilterBarListener
+    }
+
+    fun setShowFilterBar(b: Boolean) {
+        eventAdapter?.showHideFilterBar(b)
+    }
+
+    companion object{
+        @JvmStatic
+        fun newInstance(showHideFilterBar: Boolean, context: Fragment) =
+            ProfileFutureEvents().apply {
+                arguments = Bundle().apply {
+                    putBoolean(ARG_PARAM1, showHideFilterBar)
+                    setListener(context as OnRemoveFilterBarListener)
+                }
+            }
     }
 
 }
