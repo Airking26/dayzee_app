@@ -424,7 +424,7 @@
                         android:fontFamily="sans-serif-light"
                         android:id="@+id/create_timenote_category"
                         android:drawablePadding="8dp"
-                        android:textColor="@color/colorTextSecondary"
+                        android:textColor="@color/colorText"
                         android:textSize="14sp"
                         android:text="@string/none"
                         app:layout_constraintTop_toTopOf="parent"
@@ -468,7 +468,7 @@
                     <TextView
                         android:fontFamily="sans-serif-light"
                         android:id="@+id/create_timenote_paid_timenote_status_no_answer"
-                        android:textColor="@color/colorTextSecondary"
+                        android:textColor="@color/colorText"
                         android:textSize="14sp"
                         android:text="@string/no_answer"
                         app:layout_constraintTop_toTopOf="@id/create_timenote_paid_timenote_label"

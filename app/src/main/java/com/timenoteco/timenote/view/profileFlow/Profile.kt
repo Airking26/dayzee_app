@@ -20,12 +20,11 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ProfilePastFuturePagerAdapter
 import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
-import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.Timenote
 import com.timenoteco.timenote.model.statusTimenote
 import kotlinx.android.synthetic.main.fragment_profile.*
 
-class Profile : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListener, OnRemoveFilterBarListener {
+class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarListener {
 
     private var profilePastFuturePagerAdapter: ProfilePastFuturePagerAdapter? = null
     private var showFilterBar: Boolean = false
@@ -36,7 +35,6 @@ class Profile : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsList
         getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_profile)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
         timenotes = mutableListOf(
             Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
@@ -325,41 +323,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsList
         }
     }
 
-    override fun onReportClicked() {
-    }
-
-    override fun onEditClicked() {
-    }
-
-    override fun onAlarmClicked() {
-    }
-
-    override fun onDeleteClicked() {
-    }
-
-    override fun onDuplicateClicked() {
-    }
-
-    override fun onAddressClicked() {
-    }
-
-    override fun onSeeMoreClicked() {
-    }
-
-    override fun onCommentClicked() {
-    }
-
-    override fun onPlusClicked() {
-    }
-
-    override fun onPictureClicked() {
-    }
-
-    override fun onHideToOthersClicked() {
-
-    }
-
-    override fun onCloseClicked(position:Int?) {
+    override fun onHideFilterBarClicked(position:Int?) {
         profilePastFuturePagerAdapter?.setShowFilterBar(false, position, null)
     }
 

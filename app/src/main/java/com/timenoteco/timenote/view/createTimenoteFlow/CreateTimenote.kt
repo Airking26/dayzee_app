@@ -115,20 +115,18 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
                     statusTimenote.FREE -> {
                         if(it.url.isNullOrBlank()){
                         noAnswer.text = getString(R.string.free)
-                        noAnswer.setTextColor(resources.getColor(android.R.color.black))
-                        url.visibility = View.GONE } else {
+                        url.visibility = View.GONE
+                        } else {
                             url.visibility = View.VISIBLE
                             url.text = it.url
                         }
                     }
                     statusTimenote.PAID -> {
                         noAnswer.text = it.price.toString() + "$"
-                        noAnswer.setTextColor(resources.getColor(R.color.colorText))
                         url.visibility = View.VISIBLE
                         url.text = it.url
                     }
                     else -> {
-                        noAnswer.setTextColor(resources.getColor(android.R.color.black))
                         noAnswer.text = getString(R.string.no_answer)
                         url.visibility = View.GONE
                     }
@@ -482,7 +480,10 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
                                     creationTimenoteViewModel.setUrl(charSequence.toString())
                                     creationTimenoteViewModel.setStatus(statusTimenote.FREE)
                                 }
-                                negativeButton()
+                                negativeButton{
+                                    creationTimenoteViewModel.setStatus(statusTimenote.FREE)
+                                    creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.url = null
+                                }
                                 lifecycleOwner(this@CreateTimenote)
                             }
                         }
@@ -497,6 +498,11 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
                                         input(inputType = InputType.TYPE_TEXT_VARIATION_URI) { _, charSequence ->
                                             creationTimenoteViewModel.setUrl(charSequence.toString())
                                             creationTimenoteViewModel.setStatus(statusTimenote.PAID)
+                                            if(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.url.isNullOrBlank() ||
+                                                    creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.price.toString().isNullOrBlank()){
+                                                noAnswer.text = resources.getString(R.string.no_answer)
+                                                creationTimenoteViewModel.setStatus(statusTimenote.NOANSWER)
+                                            }
                                         }
                                         lifecycleOwner(this@CreateTimenote)
                                     }

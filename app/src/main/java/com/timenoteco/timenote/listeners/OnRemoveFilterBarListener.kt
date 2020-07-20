@@ -1,5 +1,5 @@
 package com.timenoteco.timenote.listeners
 
 interface OnRemoveFilterBarListener {
-    fun onCloseClicked(position: Int?)
+    fun onHideFilterBarClicked(position: Int?)
 }

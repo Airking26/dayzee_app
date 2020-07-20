@@ -9,6 +9,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
@@ -29,6 +31,8 @@ lateinit var preferenceViewModel: PreferenceViewModel
 
 class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekBarListener, View.OnClickListener,
     SubCategoryChipAdapter.SubCategoryChipListener {
+
+    private val preferenceSubCategoryArgs: PreferenceCategoryArgs by navArgs()
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -104,8 +108,10 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
     }
 
     private fun saveAndNavigate() {
-        setListInSP("key", preferenceViewModel.getPreferences().value!!)
-        view?.findNavController()?.navigate(PreferenceSubCategoryDirections.actionPreferenceSubCategoryToPreferenceSuggestion())
+            setListInSP("key", preferenceViewModel.getPreferences().value!!)
+            view?.findNavController()?.navigate(
+                PreferenceSubCategoryDirections.actionPreferenceSubCategoryToPreferenceSuggestion(preferenceSubCategoryArgs.isInLogin)
+            )
     }
 
     override fun onCloseChip(name: String) = preferenceViewModel.closeChip(name)

@@ -31,7 +31,7 @@ class Signup: Fragment() {
         }
 
         signup_signup_btn.setOnClickListener {
-            findNavController().navigate(SignupDirections.actionSignupToPreferenceCategory())
+            findNavController().navigate(SignupDirections.actionSignupToPreferenceCategory(true))
         }
 
         signup_as_guest.setOnClickListener {

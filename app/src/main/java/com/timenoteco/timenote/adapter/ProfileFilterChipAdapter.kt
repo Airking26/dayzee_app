@@ -54,7 +54,7 @@ class ProfileFilterChipAdapter(private val chips: MutableList<String>, val onRem
         }
 
         fun bindClose(onRemoveFilterBarListener: OnRemoveFilterBarListener) {
-            itemView.close_filter_bar.setOnClickListener { onRemoveFilterBarListener.onCloseClicked(null) }
+            itemView.close_filter_bar.setOnClickListener { onRemoveFilterBarListener.onHideFilterBarClicked(null) }
         }
     }
 }

@@ -20,6 +20,9 @@
         <action
             android:id="@+id/action_home_to_timenoteAddress"
             app:destination="@id/timenoteAddress" />
+        <action
+            android:id="@+id/action_home_to_createTimenote"
+            app:destination="@id/createTimenote" />
     </fragment>
     <fragment
         android:id="@+id/comments"
@@ -48,4 +51,18 @@
         android:name="com.timenoteco.timenote.view.homeFlow.TimenoteAddress"
         android:label="fragment_timenote_address"
         tools:layout="@layout/fragment_timenote_address" />
+    <fragment
+        android:id="@+id/createTimenote"
+        android:name="com.timenoteco.timenote.view.createTimenoteFlow.CreateTimenote"
+        android:label="fragment_create_timenote"
+        tools:layout="@layout/fragment_create_timenote" >
+        <action
+            android:id="@+id/action_createTimenote_to_previewTimenoteCreated"
+            app:destination="@id/previewTimenoteCreated" />
+    </fragment>
+    <fragment
+        android:id="@+id/previewTimenoteCreated"
+        android:name="com.timenoteco.timenote.view.createTimenoteFlow.PreviewTimenoteCreated"
+        android:label="fragment_preview_timenote_created"
+        tools:layout="@layout/fragment_preview_timenote_created" />
 </navigation>

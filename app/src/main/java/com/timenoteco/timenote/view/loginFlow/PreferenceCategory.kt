@@ -27,7 +27,7 @@ class PreferenceCategory : Fragment(), View.OnClickListener {
 
     lateinit var preferenceViewModel: PreferenceViewModel
     private val viewModel: LoginViewModel by activityViewModels()
-
+    private val preferenceCategoryArgs: PreferenceCategoryArgs by navArgs()
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -86,12 +86,13 @@ class PreferenceCategory : Fragment(), View.OnClickListener {
             pref_shopping_btn -> preferenceViewModel.setStatusCategory(8)
             pref_holiday_btn -> preferenceViewModel.setStatusCategory(9)
             pref_category_btn_next -> {
-                var count = 0
-                preferenceViewModel.getPreferences().value?.forEach { if(it.category.isSelected) count++}
-                if(count > 0) view?.findNavController()?.navigate(PreferenceCategoryDirections.actionPreferenceCategoryToPreferenceSubCategory())
-                else {
-                    viewModel.authenticationState.value = LoginViewModel.AuthenticationState.UNAUTHENTICATED_CHOOSED
-                }
+                    var count = 0
+                    preferenceViewModel.getPreferences().value?.forEach { if(it.category.isSelected) count++}
+                    if(count > 0) view?.findNavController()?.navigate(PreferenceCategoryDirections.actionPreferenceCategoryToPreferenceSubCategory(preferenceCategoryArgs.isInLogin))
+                    else {
+                        viewModel.authenticationState.value = LoginViewModel.AuthenticationState.UNAUTHENTICATED_CHOOSED
+                    }
+
             }
         }
     }

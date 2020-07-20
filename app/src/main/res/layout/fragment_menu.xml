@@ -28,7 +28,7 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/menu_settings_cv"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         app:cardCornerRadius="10dp"
@@ -42,7 +42,7 @@
             android:layout_height="match_parent"
             android:paddingVertical="16dp"
             android:paddingStart="16dp"
-            android:paddingEnd="80dp">
+            android:paddingEnd="16dp">
 
             <ImageView
                 android:id="@+id/menu_setting_iv"
@@ -67,7 +67,7 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/menu_invite_friends_cv"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="8dp"
         android:layout_marginTop="16dp"
@@ -82,7 +82,7 @@
             android:layout_height="match_parent"
             android:paddingVertical="16dp"
             android:paddingStart="16dp"
-            android:paddingEnd="80dp">
+            android:paddingEnd="16dp">
 
             <ImageView
                 android:id="@+id/menu_invite_friends_iv"
@@ -95,6 +95,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:ellipsize="end"
                 android:text="@string/invite_friends"
                 android:textColor="@color/colorText"
                 android:textSize="16sp"
@@ -107,13 +109,15 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/menu_profile_cv"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="8dp"
-        android:layout_marginStart="22dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="12dp"
+        app:layout_constraintEnd_toStartOf="@id/menu_preferences_cv"
         app:layout_constraintStart_toStartOf="parent"
         app:cardCornerRadius="10dp"
+        app:layout_constraintEnd_toEndOf="@id/menu_settings_cv"
         app:layout_constraintTop_toBottomOf="@id/menu_settings_cv">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -121,7 +125,7 @@
             android:layout_height="match_parent"
             android:paddingVertical="16dp"
             android:paddingStart="16dp"
-            android:paddingEnd="90dp">
+            android:paddingEnd="16dp">
 
             <ImageView
                 android:id="@+id/menu_profile_iv"
@@ -139,6 +143,47 @@
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="@id/menu_profile_iv"
                 app:layout_constraintTop_toBottomOf="@id/menu_profile_iv" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/menu_preferences_cv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        app:cardCornerRadius="10dp"
+        app:layout_constraintStart_toEndOf="@id/menu_profile_cv"
+        app:layout_constraintEnd_toEndOf="@id/menu_invite_friends_cv"
+        app:layout_constraintTop_toBottomOf="@id/menu_invite_friends_cv">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingVertical="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <ImageView
+                android:id="@+id/menu_preferences_iv"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/profile_calendar"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/preferrence"
+                android:textColor="@color/colorText"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@id/menu_preferences_iv"
+                app:layout_constraintTop_toBottomOf="@id/menu_preferences_iv" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

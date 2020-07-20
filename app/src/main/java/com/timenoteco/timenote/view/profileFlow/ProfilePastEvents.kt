@@ -290,8 +290,8 @@ class ProfilePastEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBar
     override fun onHideToOthersClicked() {
     }
 
-    override fun onCloseClicked(position: Int?) {
-        this.onRemoveFilterBarListener.onCloseClicked(0)
+    override fun onHideFilterBarClicked(position: Int?) {
+        this.onRemoveFilterBarListener.onHideFilterBarClicked(0)
     }
 
     fun setShowFilterBar(b: Boolean) {

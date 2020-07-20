@@ -54,7 +54,7 @@
             <com.timenoteco.timenote.androidView.CollapsibleToolbar
                 android:id="@+id/motionLayout"
                 tools:context=".view.profileFlow.Profile"
-                app:layoutDescription="@xml/motion_scene"
+                app:layoutDescription="@xml/motion_scene_profile"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:minHeight="50dp"

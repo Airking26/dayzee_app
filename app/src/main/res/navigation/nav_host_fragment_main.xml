@@ -31,6 +31,9 @@
         <action
             android:id="@+id/action_preferenceCategory_to_login"
             app:destination="@id/login" />
+        <argument
+            android:name="isInLogin"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/preferenceSubCategory"
@@ -40,6 +43,9 @@
         <action
             android:id="@+id/action_preferenceSubCategory_to_preferenceSuggestion"
             app:destination="@id/preferenceSuggestion" />
+        <argument
+            android:name="isInLogin"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/preferenceSuggestion"
@@ -49,6 +55,12 @@
         <action
             android:id="@+id/action_preferenceSuggestion_to_login"
             app:destination="@id/login" />
+        <argument
+            android:name="isInLogin"
+            app:argType="boolean" />
+        <action
+            android:id="@+id/action_preferenceSuggestion_to_tabProfile"
+            app:destination="@id/tabProfile" />
     </fragment>
     <fragment
         android:id="@+id/signup"

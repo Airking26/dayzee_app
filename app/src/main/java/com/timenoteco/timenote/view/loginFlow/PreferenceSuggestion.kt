@@ -14,6 +14,7 @@ import kotlinx.android.synthetic.main.fragment_preference_suggestion.*
 
 class PreferenceSuggestion : Fragment() {
 
+    private val args : PreferenceCategoryArgs by navArgs()
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -36,7 +37,10 @@ class PreferenceSuggestion : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        suggestion_ok_btn.setOnClickListener { findNavController().navigate(PreferenceSuggestionDirections.actionPreferenceSuggestionToLogin(true))}
+        suggestion_ok_btn.setOnClickListener {
+            if(args.isInLogin) findNavController().navigate(PreferenceSuggestionDirections.actionPreferenceSuggestionToLogin(true))
+            else findNavController().popBackStack(R.id.profile, false)
+        }
 
         /*val prefs = PreferenceHelper.defaultPrefs(requireContext())
         val type: Type = object : TypeToken<List<Preference?>?>() {}.type

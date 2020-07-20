@@ -1,13 +1,17 @@
 package com.timenoteco.timenote.view.profileFlow
 
-import android.content.Context
 import android.os.Bundle
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.afollestad.materialdialogs.LayoutMode
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.bottomsheets.BottomSheet
+import com.afollestad.materialdialogs.datetime.datePicker
+import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ItemProfileEventAdapter
 import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
@@ -15,12 +19,10 @@ import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.Timenote
 import com.timenoteco.timenote.model.statusTimenote
 import kotlinx.android.synthetic.main.fragment_profile_future_events.*
-import java.text.FieldPosition
 
 private const val ARG_PARAM1 = "showHideFilterBar"
 
-class ProfileFutureEvents : Fragment(), TimenoteOptionsListener,
-    OnRemoveFilterBarListener {
+class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarListener {
 
     private var showHideFilterBar: Boolean? = null
     private var eventAdapter: ItemProfileEventAdapter? = null
@@ -267,37 +269,30 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener,
     }
 
     override fun onEditClicked() {
+        findNavController().navigate(ProfileDirections.actionProfileToCreateTimenote())
     }
 
     override fun onAlarmClicked() {
+        MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            datePicker { dialog, datetime ->
+
+            }
+            lifecycleOwner(this@ProfileFutureEvents)
+        }
     }
 
     override fun onDeleteClicked() {
     }
 
     override fun onDuplicateClicked() {
-    }
-
-    override fun onAddressClicked() {
-    }
-
-    override fun onSeeMoreClicked() {
-    }
-
-    override fun onCommentClicked() {
-    }
-
-    override fun onPlusClicked() {
-    }
-
-    override fun onPictureClicked() {
+        findNavController().navigate(ProfileDirections.actionProfileToCreateTimenote())
     }
 
     override fun onHideToOthersClicked() {
     }
 
-    override fun onCloseClicked(position: Int?) {
-        this.onRemoveFilterBarListener.onCloseClicked(1)
+    override fun onHideFilterBarClicked(position: Int?) {
+        this.onRemoveFilterBarListener.onHideFilterBarClicked(1)
     }
 
     fun setListener(onRemoveFilterBarListener: OnRemoveFilterBarListener){
@@ -307,6 +302,16 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener,
     fun setShowFilterBar(b: Boolean) {
         eventAdapter?.showHideFilterBar(b)
     }
+
+    override fun onAddressClicked() {
+    }
+    override fun onSeeMoreClicked() {
+    }
+    override fun onCommentClicked() {
+    }
+    override fun onPlusClicked() {
+    }
+    override fun onPictureClicked() {}
 
     companion object{
         @JvmStatic

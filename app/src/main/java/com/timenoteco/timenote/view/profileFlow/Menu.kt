@@ -16,11 +16,15 @@ class Menu : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         menu_settings_cv.setOnClickListener(this)
+        menu_preferences_cv.setOnClickListener(this)
+        menu_profile_cv.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
         when(v){
             menu_settings_cv -> findNavController().navigate(MenuDirections.actionMenuToSettings())
+            menu_profile_cv -> findNavController().navigate(MenuDirections.actionMenuToProfile(true))
+            menu_preferences_cv -> findNavController().navigate(MenuDirections.actionMenuToPreferenceCategory(false))
         }
     }
 }

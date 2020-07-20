@@ -7,6 +7,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.afollestad.materialdialogs.LayoutMode
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.bottomsheets.BottomSheet
+import com.afollestad.materialdialogs.datetime.dateTimePicker
+import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ItemTimenoteAdapter
 import com.timenoteco.timenote.common.BaseThroughFragment
@@ -274,15 +279,23 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
     }
 
     override fun onEditClicked() {
+        findNavController().navigate(HomeDirections.actionHomeToCreateTimenote())
     }
 
     override fun onAlarmClicked() {
+        MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            dateTimePicker { dialog, datetime ->
+
+            }
+            lifecycleOwner(this@Home)
+        }
     }
 
     override fun onDeleteClicked() {
     }
 
     override fun onDuplicateClicked() {
+        findNavController().navigate(HomeDirections.actionHomeToCreateTimenote())
     }
 
     override fun onAddressClicked() {
