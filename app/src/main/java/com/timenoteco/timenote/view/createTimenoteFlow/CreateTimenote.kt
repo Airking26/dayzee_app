@@ -39,6 +39,12 @@ import com.afollestad.materialdialogs.list.listItems
 import com.afollestad.materialdialogs.list.listItemsMultiChoice
 import com.asksira.bsimagepicker.BSImagePicker
 import com.bumptech.glide.Glide
+import com.google.android.gms.common.api.Status
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.theartofdev.edmodo.cropper.CropImageView
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ScreenSlideCreationTimenotePagerAdapter
@@ -103,6 +109,14 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
     private val DATE_FORMAT_DAY_AND_TIME = "EEE, d MMM yyyy hh:mm aaa"
     private val DATE_FORMAT_ONLY_DAY = "EEE, d MMM yyyy"
     private lateinit var dateFormatDateAndTime: SimpleDateFormat
+    private lateinit var placesClient: PlacesClient
+    private var placesList: List<Place.Field> = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Places.initialize(requireContext(), "AIzaSyBhM9HQo1fzDlwkIVqobfmrRmEMCWTU1CA")
+        placesClient = Places.createClient(requireContext())
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_create_timenote, container, false)
@@ -205,6 +219,19 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
                     }
                 }
             })
+
+        val autoComp = childFragmentManager.findFragmentById(R.id.places_autocomplete_fragment) as AutocompleteSupportFragment
+        autoComp.setPlaceFields(placesList)
+        autoComp.setOnPlaceSelectedListener(object: PlaceSelectionListener{
+            override fun onPlaceSelected(p0: Place) {
+                Toast.makeText(requireContext(), p0.address, Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onError(p0: Status) {
+                Toast.makeText(requireContext(), p0.statusMessage, Toast.LENGTH_SHORT).show()
+            }
+
+        })
     }
 
     private fun setUp() {

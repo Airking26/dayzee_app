@@ -2,6 +2,7 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:background="@android:color/white"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_marginStart="8dp"
@@ -15,6 +16,7 @@
         android:layout_height="match_parent">
 
         <ImageView
+            android:foreground="@drawable/gradient_timenote_top"
             android:id="@+id/timenote_recent_pic_imageview"
             android:layout_width="150dp"
             android:layout_height="150dp"

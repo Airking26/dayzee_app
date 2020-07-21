@@ -23,7 +23,8 @@
             app:destination="@id/filterProfile" />
         <argument
             android:name="whereFrom"
-            app:argType="boolean" />
+            app:argType="boolean"
+            android:defaultValue="false" />
         <action
             android:id="@+id/action_profile_to_followPage"
             app:destination="@id/followPage" />
@@ -86,8 +87,11 @@
             android:id="@+id/action_menu_to_preferenceCategory"
             app:destination="@id/preferenceCategory" />
         <action
-            android:id="@+id/action_menu_to_profile"
-            app:destination="@id/profile" />
+            android:id="@+id/action_menu_to_profilePreview"
+            app:destination="@id/profilePreview" />
+        <action
+            android:id="@+id/action_menu_to_contacts"
+            app:destination="@id/contacts" />
     </fragment>
     <fragment
         android:id="@+id/preferenceCategory"
@@ -136,4 +140,12 @@
         android:name="com.timenoteco.timenote.view.createTimenoteFlow.PreviewTimenoteCreated"
         android:label="fragment_preview_timenote_created"
         tools:layout="@layout/fragment_preview_timenote_created" />
+    <fragment
+        android:id="@+id/profilePreview"
+        android:name="com.timenoteco.timenote.view.profileFlow.ProfilePreview"
+        android:label="ProfilePreview" />
+    <fragment
+        android:id="@+id/contacts"
+        android:name="com.timenoteco.timenote.view.profileFlow.Contacts"
+        android:label="Contacts" />
 </navigation>

@@ -45,20 +45,20 @@ class ItemTimenoteAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if(isHeterogeneous) {
-            when (viewType) {
-                0 -> TimenoteToComeViewHolder(
+            if(viewType == R.layout.adapter_timenote_recent){
+                TimenoteToComeViewHolder(
                     LayoutInflater.from(parent.context)
-                        .inflate(R.layout.adapter_timenote_recent, parent, false)
-                )
-                else -> TimenoteViewHolder(
+                        .inflate(R.layout.adapter_timenote_recent, parent, false))
+            } else {
+                TimenoteViewHolder(
                     LayoutInflater.from(parent.context)
-                        .inflate(R.layout.item_timenote, parent, false)
-                )
+                        .inflate(R.layout.item_timenote, parent, false))
             }
         } else {
-            TimenoteViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_timenote, parent, false))
+            TimenoteViewHolder(
+                LayoutInflater.from(parent.context)
+                    .inflate(R.layout.item_timenote, parent, false))
         }
-
     }
 
     override fun getItemCount(): Int{
@@ -74,10 +74,8 @@ class ItemTimenoteAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if(isHeterogeneous){
-            when(itemViewType){
-                0 -> (holder as TimenoteToComeViewHolder).bindTimenoteTocome(timenotesToCome, timenoteRecentClicked)
-                else -> (holder as TimenoteViewHolder).bindTimenote(timenotes[position],timenoteListenerListener, fragment)
-            }
+            return if(position == 0) (holder as TimenoteToComeViewHolder).bindTimenoteTocome(timenotesToCome, timenoteRecentClicked)
+            else (holder as TimenoteViewHolder).bindTimenote(timenotes[position],timenoteListenerListener, fragment)
         } else {
             (holder as TimenoteViewHolder).bindTimenote(
                 timenotes[position],
@@ -90,8 +88,7 @@ class ItemTimenoteAdapter(
 
     override fun getItemViewType(position: Int): Int {
         return if(isHeterogeneous) {
-            itemViewType = position % 4 * 5
-            itemViewType
+            if(position == 0) R.layout.adapter_timenote_recent else R.layout.item_timenote
         } else {
             super.getItemViewType(position)
         }

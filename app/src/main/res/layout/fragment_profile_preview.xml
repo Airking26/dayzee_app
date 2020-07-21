@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/cl"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:id="@+id/profile_ll"
+        style="@style/AppTheme.Toolbar.LinearLayout">
+
+        <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
+
+            <TextView
+                android:id="@+id/profile_name_toolbar"
+                style="@style/AppTheme.Toolbar.Title"
+                android:text="Ronny" />
+
+            <ImageView
+                android:id="@+id/profile_settings_btn"
+                style="@style/AppTheme.Toolbar.ImageRight"
+                android:src="@drawable/ic_settings_black_24dp" />
+
+            <ImageView
+                android:id="@+id/profile_notif_btn"
+                style="@style/AppTheme.Toolbar.ImageLeft"
+                android:src="@drawable/ic_flag_black_24dp" />
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <TextView style="@style/AppTheme.Divider.Toolbar"/>
+
+    </LinearLayout>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/profile_ll"
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fitsSystemWindows="false"
+        android:background="@color/white">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:background="@color/white"
+            android:id="@+id/app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.timenoteco.timenote.androidView.CollapsibleToolbar
+                android:id="@+id/motionLayout"
+                tools:context=".view.profileFlow.Profile"
+                app:layoutDescription="@xml/motion_scene_profile"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:minHeight="50dp"
+                android:fitsSystemWindows="false"
+                app:layout_scrollFlags="scroll|enterAlways|snap|exitUntilCollapsed">
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/background"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/profile_ll">
+
+                    <TextView
+                        android:id="@+id/profile_nbr_followers"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="16dp"
+                        android:text="654"
+                        android:textColor="@color/colorText"
+                        android:textSize="17sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+
+                    <TextView
+                        android:id="@+id/profile_followers_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:fontFamily="sans-serif-light"
+                        android:text="@string/followers"
+                        android:textSize="15sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/profile_nbr_followers" />
+
+                    <TextView
+                        android:id="@+id/profile_nbr_following"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="15dp"
+                        android:text="233"
+                        android:textColor="@color/colorText"
+                        android:textSize="17sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/profile_followers_label" />
+
+                    <TextView
+                        android:id="@+id/profile_following_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:fontFamily="sans-serif-light"
+                        android:text="@string/following"
+                        android:textSize="15sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/profile_nbr_following"
+                        tools:text="Following" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="24dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            android:id="@+id/profile_calendar_btn"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:src="@drawable/profile_calendar"/>
+
+                        <TextView
+                            android:text="mon."
+                            tools:text="merc."
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:textColor="@android:color/white"
+                            android:fontFamily="sans-serif-light"
+                            android:textSize="10sp"
+                            android:id="@+id/profile_day_name_calendar"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:fontFamily="sans-serif-light"
+                            android:textColor="@color/colorText"
+                            android:text="12"
+                            android:textSize="12sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/profile_day_name_calendar"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+                    <ImageView
+                        android:id="@+id/profile_pic_imageview"
+                        android:layout_width="108dp"
+                        android:layout_height="108dp"
+                        android:layout_marginTop="16dp"
+                        android:src="@drawable/ic_pref_holiday_clicked"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:fontFamily="sans-serif-light"
+                        android:id="@+id/profile_location"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:drawableStart="@drawable/ic_profile_from"
+                        android:text=" Israel"
+                        android:textColor="@color/colorText"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/profile_pic_imageview" />
+
+
+                    <mehdi.sakout.fancybuttons.FancyButton
+                        android:visibility="invisible"
+                        android:id="@+id/profile_modify_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center"
+                        android:paddingHorizontal="18dp"
+                        android:paddingVertical="4dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/profile_location"
+                        app:fb_defaultColor="@color/colorAccentCustom"
+                        app:fb_radius="5dp"
+                        app:fb_text="@string/modify"
+                        app:fb_textColor="@android:color/white" />
+
+
+                    <mehdi.sakout.fancybuttons.FancyButton
+                        android:visibility="visible"
+                        android:layout_marginStart="68dp"
+                        app:fb_defaultColor="@color/colorAccentCustom"
+                        app:fb_radius="5dp"
+                        android:layout_marginTop="16dp"
+                        app:fb_text="FOLLOW"
+                        android:paddingVertical="6dp"
+                        android:paddingHorizontal="30dp"
+                        app:fb_textColor="@color/white"
+                        android:gravity="center"
+                        app:layout_constraintEnd_toStartOf="@id/profile_message_btn"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/profile_location"
+                        android:id="@+id/profile_follow_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+
+                    <mehdi.sakout.fancybuttons.FancyButton
+                        android:visibility="visible"
+                        app:fb_defaultColor="@color/white"
+                        app:fb_borderWidth="1dp"
+                        app:fb_borderColor="@color/colorAccentCustom"
+                        app:fb_radius="5dp"
+                        android:layout_marginTop="16dp"
+                        app:fb_text="@string/message"
+                        android:paddingVertical="6dp"
+                        android:paddingHorizontal="30dp"
+                        app:fb_textColor="@color/colorAccentCustom"
+                        android:gravity="center"
+                        android:layout_marginEnd="68dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/profile_follow_btn"
+                        app:layout_constraintTop_toBottomOf="@id/profile_location"
+                        android:id="@+id/profile_message_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+
+                    <TextView
+                        android:fontFamily="sans-serif-light"
+                        android:id="@+id/profile_desc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Founder of Timenote"
+                        android:textSize="15sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/profile_modify_btn" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/past_future"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/profile_desc">
+
+                        <com.google.android.material.tabs.TabLayout
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            android:id="@+id/profile_tablayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.timenoteco.timenote.androidView.CollapsibleToolbar>
+        </com.google.android.material.appbar.AppBarLayout>
+
+            <androidx.core.widget.NestedScrollView
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:id="@+id/scrollable"
+                android:fillViewport="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/profile_vp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+            </androidx.core.widget.NestedScrollView>
+
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

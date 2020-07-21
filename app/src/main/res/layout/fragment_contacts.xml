@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:id="@+id/profile_contacts_ll"
+        style="@style/AppTheme.Toolbar.LinearLayout">
+
+        <androidx.appcompat.widget.Toolbar
+            style="@style/AppTheme.Toolbar"
+            android:background="@color/white">
+
+            <TextView
+                style="@style/AppTheme.Toolbar.Title"
+                android:text="@string/contacts"
+                android:textColor="@color/colorText" />
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <TextView style="@style/AppTheme.Divider.Toolbar" />
+
+    </LinearLayout>
+
+    <ListView
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/profile_contacts_ll"
+        tools:listitem="@layout/item_contact"
+    android:id="@+id/contact_list_view"
+    android:background="@android:color/white"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
