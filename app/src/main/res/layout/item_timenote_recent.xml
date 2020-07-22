@@ -16,7 +16,6 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:foreground="@drawable/gradient_timenote_top"
             android:id="@+id/timenote_recent_pic_imageview"
             android:layout_width="150dp"
             android:layout_height="150dp"
@@ -28,6 +27,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <View
+            android:background="@drawable/gradient_timenote_top"
+            app:layout_constraintTop_toTopOf="@id/timenote_recent_pic_imageview"
+            app:layout_constraintEnd_toEndOf="@id/timenote_recent_pic_imageview"
+            app:layout_constraintStart_toStartOf="@id/timenote_recent_pic_imageview"
+            app:layout_constraintBottom_toBottomOf="@id/timenote_recent_title"
+            android:layout_width="0dp"
+            android:layout_height="0dp"/>
+
         <TextView
             android:shadowDy="1"
             android:fontFamily="sans-serif-light"
@@ -37,8 +45,8 @@
             android:id="@+id/timenote_recent_title"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="8dp"
+            android:paddingVertical="8dp"
+            android:paddingStart="8dp"
             android:textAllCaps="true"
             android:textColor="@android:color/white"
             android:textSize="15sp"
@@ -53,28 +61,13 @@
             android:id="@+id/timenote_recent_pic_user_imageview"
             android:layout_marginEnd="8dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/timenote_recent_title"
             app:layout_constraintBottom_toBottomOf="@id/timenote_recent_title"
             android:layout_width="18dp"
             android:layout_height="18dp"/>
 
         <TextView
-            android:visibility="gone"
-            android:shadowDy="1"
-            android:fontFamily="sans-serif-light"
-            android:shadowDx="1"
-            android:shadowRadius="1.5"
-            android:shadowColor="@android:color/black"
-            android:id="@+id/timenote_recent_username"
-            android:layout_marginStart="8dp"
-            tools:text="Samuel"
-            android:textSize="13sp"
-            android:textColor="@color/white"
-            app:layout_constraintStart_toEndOf="@id/timenote_recent_pic_user_imageview"
-            app:layout_constraintTop_toBottomOf="@id/timenote_recent_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <TextView
+            android:background="@drawable/gradient_timenote_bottom"
             android:shadowDy="1"
             android:fontFamily="sans-serif-light"
             android:shadowDx="1"
@@ -84,11 +77,13 @@
             app:layout_constraintBottom_toBottomOf="@id/timenote_recent_pic_imageview"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginBottom="8dp"
             android:textSize="14sp"
             android:textColor="@android:color/white"
+            android:gravity="center"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             tools:text="In 12 days"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"/>
 
 

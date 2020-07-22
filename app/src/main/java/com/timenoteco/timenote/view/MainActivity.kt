@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.view
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Context.*
 import android.graphics.Bitmap
@@ -11,6 +12,7 @@ import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
@@ -24,6 +26,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.iid.FirebaseInstanceId
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.setupWithNavController
@@ -54,6 +58,21 @@ class MainActivity : AppCompatActivity(), BackToHomeListener {
 
     }
 
+    @SuppressLint("StringFormatInvalid")
+    fun retrieveCurrentRegistrationToken(){
+        FirebaseInstanceId.getInstance().instanceId
+            .addOnCompleteListener(OnCompleteListener{ task ->
+                if (!task.isSuccessful) {
+                    return@OnCompleteListener
+                }
+
+                val token = task.result?.token
+
+                val msg = getString(R.string.msg_token_fmt, token)
+                Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+            })
+    }
+
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
@@ -62,7 +81,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener {
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun setupController(finished: Boolean) {
-
+        //retrieveCurrentRegistrationToken()
         val view = this.currentFocus
         view?.let { v ->
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
@@ -166,7 +185,6 @@ class MainActivity : AppCompatActivity(), BackToHomeListener {
             }
 
         })
-
         currentNavController = controller
     }
 

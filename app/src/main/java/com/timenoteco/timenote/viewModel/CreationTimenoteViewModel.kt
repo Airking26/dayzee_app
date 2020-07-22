@@ -1,12 +1,11 @@
 package com.timenoteco.timenote.viewModel
 
 import android.graphics.Bitmap
-import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.timenoteco.timenote.model.CreateTimenoteModel
-import com.timenoteco.timenote.model.statusTimenote
+import com.timenoteco.timenote.model.StatusTimenote
 import com.timenoteco.timenote.repository.CreationTimenoteData
 import java.text.SimpleDateFormat
 import java.util.*
@@ -39,7 +38,7 @@ class CreationTimenoteViewModel: ViewModel() {
     fun setStartDate(startDate: Long, format: String) = timenoteLiveData.postValue(createTimenoteData.setStartDate(formatDate(format, startDate)))
     fun setEndDate(endDate: Long) = timenoteLiveData.postValue(createTimenoteData.setEndDate(formatDate(DATE_FORMAT_SAME_DAY_SAME_TIME, endDate)))
     fun setColor(color: String) = timenoteLiveData.postValue(createTimenoteData.setColor(color))
-    fun setStatus(statusTimenote: statusTimenote) = timenoteLiveData.postValue(createTimenoteData.setStatus(statusTimenote))
+    fun setStatus(StatusTimenote: StatusTimenote) = timenoteLiveData.postValue(createTimenoteData.setStatus(StatusTimenote))
 
     fun setFormatedStartDate(startDate: Long, endDate: Long){
         if(formatDate(DATE_FORMAT_DAY, startDate) == formatDate(DATE_FORMAT_DAY, endDate)){

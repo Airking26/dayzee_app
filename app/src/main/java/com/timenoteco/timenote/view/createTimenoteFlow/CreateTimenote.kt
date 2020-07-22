@@ -1,17 +1,19 @@
 package com.timenoteco.timenote.view.createTimenoteFlow
 
+import android.app.Activity
 import android.app.Dialog
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Rect
-import android.location.Address
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.text.InputType
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,20 +41,19 @@ import com.afollestad.materialdialogs.list.listItems
 import com.afollestad.materialdialogs.list.listItemsMultiChoice
 import com.asksira.bsimagepicker.BSImagePicker
 import com.bumptech.glide.Glide
-import com.google.android.gms.common.api.Status
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.PlacesClient
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
+import com.google.android.libraries.places.widget.Autocomplete
+import com.google.android.libraries.places.widget.AutocompleteActivity
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.theartofdev.edmodo.cropper.CropImageView
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ScreenSlideCreationTimenotePagerAdapter
 import com.timenoteco.timenote.adapter.WebSearchAdapter
 import com.timenoteco.timenote.common.Utils
-import com.timenoteco.timenote.listeners.PlacePickerListener
 import com.timenoteco.timenote.listeners.TimenoteCreationPicListeners
-import com.timenoteco.timenote.model.statusTimenote
+import com.timenoteco.timenote.model.StatusTimenote
 import com.timenoteco.timenote.viewModel.CreationTimenoteViewModel
 import com.timenoteco.timenote.viewModel.WebSearchViewModel
 import kotlinx.android.synthetic.main.cropview.view.*
@@ -67,10 +68,11 @@ import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
 
-class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BSImagePicker.OnSingleImageSelectedListener,
+class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleImageSelectedListener,
     BSImagePicker.OnMultiImageSelectedListener, BSImagePicker.ImageLoaderDelegate, BSImagePicker.OnSelectImageCancelledListener,
     TimenoteCreationPicListeners, WebSearchAdapter.ImageChoosedListener, WebSearchAdapter.MoreImagesClicked {
 
+    private val AUTOCOMPLETE_REQUEST_CODE: Int = 11
     private lateinit var progressDialog: Dialog
     private lateinit var utils: Utils
     private lateinit var dateFormatDate: SimpleDateFormat
@@ -109,8 +111,8 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
     private val DATE_FORMAT_DAY_AND_TIME = "EEE, d MMM yyyy hh:mm aaa"
     private val DATE_FORMAT_ONLY_DAY = "EEE, d MMM yyyy"
     private lateinit var dateFormatDateAndTime: SimpleDateFormat
-    private lateinit var placesClient: PlacesClient
     private var placesList: List<Place.Field> = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS)
+    private lateinit var placesClient: PlacesClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -126,7 +128,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
         creationTimenoteViewModel.getCreateTimeNoteLiveData()
             .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                 when (it.status) {
-                    statusTimenote.FREE -> {
+                    StatusTimenote.FREE -> {
                         if(it.url.isNullOrBlank()){
                         noAnswer.text = getString(R.string.free)
                         url.visibility = View.GONE
@@ -135,7 +137,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
                             url.text = it.url
                         }
                     }
-                    statusTimenote.PAID -> {
+                    StatusTimenote.PAID -> {
                         noAnswer.text = it.price.toString() + "$"
                         url.visibility = View.VISIBLE
                         url.text = it.url
@@ -219,19 +221,6 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
                     }
                 }
             })
-
-        val autoComp = childFragmentManager.findFragmentById(R.id.places_autocomplete_fragment) as AutocompleteSupportFragment
-        autoComp.setPlaceFields(placesList)
-        autoComp.setOnPlaceSelectedListener(object: PlaceSelectionListener{
-            override fun onPlaceSelected(p0: Place) {
-                Toast.makeText(requireContext(), p0.address, Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onError(p0: Status) {
-                Toast.makeText(requireContext(), p0.statusMessage, Toast.LENGTH_SHORT).show()
-            }
-
-        })
     }
 
     private fun setUp() {
@@ -289,6 +278,31 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
         paidTimenote.setOnClickListener(this)
         noAnswer.setOnClickListener(this)
         url.setOnClickListener(this)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            when (resultCode) {
+                Activity.RESULT_OK -> {
+                    data?.let {
+                        val place = Autocomplete.getPlaceFromIntent(data)
+                        creationTimenoteViewModel.setLocation(place.address!!)
+                        Log.i(TAG, "Place: ${place.name}, ${place.id}")
+                    }
+                }
+                AutocompleteActivity.RESULT_ERROR -> {
+                    data?.let {
+                        val status = Autocomplete.getStatusFromIntent(data)
+                        Log.i(TAG, status.statusMessage!!)
+                    }
+                }
+                Activity.RESULT_CANCELED -> {
+                    // The user canceled the operation.
+                }
+            }
+            return
+        }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -368,7 +382,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
                 }
                 lifecycleOwner(this@CreateTimenote)
             }
-            where_cardview -> utils.placePicker(requireContext(), this@CreateTimenote, create_timenote_where_btn, this, false, requireActivity())
+            where_cardview -> startActivityForResult(Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, placesList).build(requireContext()), AUTOCOMPLETE_REQUEST_CODE)
             share_with_cardview -> shareWith()
             category_cardview -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.category)
@@ -505,10 +519,10 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
                                 title(R.string.link)
                                 input(inputType = InputType.TYPE_TEXT_VARIATION_URI) { _, charSequence ->
                                     creationTimenoteViewModel.setUrl(charSequence.toString())
-                                    creationTimenoteViewModel.setStatus(statusTimenote.FREE)
+                                    creationTimenoteViewModel.setStatus(StatusTimenote.FREE)
                                 }
                                 negativeButton{
-                                    creationTimenoteViewModel.setStatus(statusTimenote.FREE)
+                                    creationTimenoteViewModel.setStatus(StatusTimenote.FREE)
                                     creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.url = null
                                 }
                                 lifecycleOwner(this@CreateTimenote)
@@ -524,11 +538,11 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
                                         title(R.string.link)
                                         input(inputType = InputType.TYPE_TEXT_VARIATION_URI) { _, charSequence ->
                                             creationTimenoteViewModel.setUrl(charSequence.toString())
-                                            creationTimenoteViewModel.setStatus(statusTimenote.PAID)
+                                            creationTimenoteViewModel.setStatus(StatusTimenote.PAID)
                                             if(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.url.isNullOrBlank() ||
                                                     creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.price.toString().isNullOrBlank()){
                                                 noAnswer.text = resources.getString(R.string.no_answer)
-                                                creationTimenoteViewModel.setStatus(statusTimenote.NOANSWER)
+                                                creationTimenoteViewModel.setStatus(StatusTimenote.NOANSWER)
                                             }
                                         }
                                         lifecycleOwner(this@CreateTimenote)
@@ -539,7 +553,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
                         }
                         2 -> {
                             noAnswer.text = text.toString()
-                            creationTimenoteViewModel.setStatus(statusTimenote.NOANSWER)
+                            creationTimenoteViewModel.setStatus(StatusTimenote.NOANSWER)
                         }
                     }
                 }
@@ -695,10 +709,6 @@ class CreateTimenote : Fragment(), View.OnClickListener, PlacePickerListener, BS
         fancyButton4.setBorderWidth(24)
         fancyButton4.setBorderColor(android.R.color.black)
         fancyButton5.setBorderWidth(0)
-    }
-
-    override fun onPlacePicked(address: Address) {
-        creationTimenoteViewModel.setLocation(address.getAddressLine(0))
     }
 
     fun checkFormCompleted(): Boolean {

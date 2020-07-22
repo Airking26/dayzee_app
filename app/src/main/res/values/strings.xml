@@ -224,4 +224,5 @@
     <string name="menu">Menu</string>
     <string name="invite_friends">Invite Friends</string>
     <string name="profile_preview">Profile Preview</string>
+    <string name="msg_token_fmt">token_fcm</string>
 </resources>

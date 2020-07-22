@@ -1,4 +1,4 @@
-package com.timenoteco.timenote.view.profileFlow
+package com.timenoteco.timenote.view.profileFlow.settingsDirectory
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

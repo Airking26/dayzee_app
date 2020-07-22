@@ -17,7 +17,7 @@ import com.timenoteco.timenote.adapter.ItemTimenoteAdapter
 import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.Timenote
-import com.timenoteco.timenote.model.statusTimenote
+import com.timenoteco.timenote.model.StatusTimenote
 import kotlinx.android.synthetic.main.fragment_home.*
 
 class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, TimenoteOptionsListener {
@@ -49,26 +49,7 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.FREE
-            ), Timenote(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                mutableListOf("",
-                    "",
-                    ""),
-                "Samuel",
-                "23 Herzl Street",
-                "34 Likes",
-            "See 63 comments",
-                "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
-                true,
-                "2020",
-                "10\nAug",
-                "15:30",
-                "Beach Party",
-                "In 23 days",
-                12L,
-                "www.google.com",
-                statusTimenote.PAID
+                StatusTimenote.FREE
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -87,7 +68,7 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.NOANSWER
+                StatusTimenote.PAID
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -106,7 +87,7 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.PAID
+                StatusTimenote.NOANSWER
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -125,7 +106,7 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.FREE
+                StatusTimenote.PAID
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -144,7 +125,7 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.NOANSWER
+                StatusTimenote.FREE
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -163,7 +144,7 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.FREE
+                StatusTimenote.NOANSWER
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -182,7 +163,7 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.NOANSWER
+                StatusTimenote.FREE
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -201,7 +182,7 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.NOANSWER
+                StatusTimenote.NOANSWER
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -220,7 +201,7 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.NOANSWER
+                StatusTimenote.NOANSWER
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -239,7 +220,26 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.NOANSWER
+                StatusTimenote.NOANSWER
+            ), Timenote(
+                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
+                mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
+                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
+                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),
+                "Samuel",
+                "23 Herzl Street",
+                "34 Likes",
+            "See 63 comments",
+                "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
+                true,
+                "2020",
+                "10\nAug",
+                "15:30",
+                "Beach Party",
+                "In 23 days",
+                12L,
+                "www.google.com",
+                StatusTimenote.NOANSWER
 
             )
         )

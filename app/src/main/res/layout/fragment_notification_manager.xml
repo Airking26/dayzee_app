@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".view.profileFlow.NotificationManager">
+    tools:context=".view.profileFlow.settingsDirectory.NotificationManager">
 
     <LinearLayout
         android:id="@+id/notification_manager_ll"

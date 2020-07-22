@@ -18,9 +18,6 @@
         <action
             android:id="@+id/action_profile_to_notifications"
             app:destination="@id/notifications" />
-        <action
-            android:id="@+id/action_profile_to_filterProfile"
-            app:destination="@id/filterProfile" />
         <argument
             android:name="whereFrom"
             app:argType="boolean"
@@ -45,7 +42,7 @@
         android:label="ProfileCalendar" />
     <fragment
         android:id="@+id/settings"
-        android:name="com.timenoteco.timenote.view.profileFlow.Settings"
+        android:name="com.timenoteco.timenote.view.profileFlow.settingsDirectory.Settings"
         android:label="fragment_settings"
         tools:layout="@layout/fragment_settings" >
         <action
@@ -62,14 +59,9 @@
         tools:layout="@layout/fragment_notifications" />
     <fragment
         android:id="@+id/notificationManager"
-        android:name="com.timenoteco.timenote.view.profileFlow.NotificationManager"
+        android:name="com.timenoteco.timenote.view.profileFlow.settingsDirectory.NotificationManager"
         android:label="fragment_notification_manager"
         tools:layout="@layout/fragment_notification_manager" />
-    <fragment
-        android:id="@+id/filterProfile"
-        android:name="com.timenoteco.timenote.view.profileFlow.ProfileSorting"
-        android:label="fragment_filter_profile"
-        tools:layout="@layout/fragment_filter_profile" />
     <fragment
         android:id="@+id/followPage"
         android:name="com.timenoteco.timenote.view.profileFlow.FollowPage"
@@ -77,7 +69,6 @@
         tools:layout="@layout/fragment_follow_page" />
     <fragment
         android:id="@+id/menu"
-        android:name="com.timenoteco.timenote.view.profileFlow.Menu"
         android:label="fragment_menu"
         tools:layout="@layout/fragment_menu" >
         <action
@@ -142,10 +133,10 @@
         tools:layout="@layout/fragment_preview_timenote_created" />
     <fragment
         android:id="@+id/profilePreview"
-        android:name="com.timenoteco.timenote.view.profileFlow.ProfilePreview"
+        android:name="com.timenoteco.timenote.view.profileFlow.menuDirectory.ProfilePreview"
         android:label="ProfilePreview" />
     <fragment
         android:id="@+id/contacts"
-        android:name="com.timenoteco.timenote.view.profileFlow.Contacts"
+        android:name="com.timenoteco.timenote.view.profileFlow.menuDirectory.Contacts"
         android:label="Contacts" />
 </navigation>

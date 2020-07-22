@@ -1,4 +1,4 @@
-package com.timenoteco.timenote.view.profileFlow
+package com.timenoteco.timenote.view.profileFlow.menuDirectory
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
+import com.timenoteco.timenote.MenuDirections
 import com.timenoteco.timenote.R
 import kotlinx.android.synthetic.main.fragment_menu.*
 
@@ -28,7 +29,11 @@ class Menu : Fragment(), View.OnClickListener {
         when(v){
             menu_settings_cv -> findNavController().navigate(MenuDirections.actionMenuToSettings())
             menu_profile_cv -> findNavController().navigate(MenuDirections.actionMenuToProfilePreview())
-            menu_preferences_cv -> findNavController().navigate(MenuDirections.actionMenuToPreferenceCategory(false))
+            menu_preferences_cv -> findNavController().navigate(
+                MenuDirections.actionMenuToPreferenceCategory(
+                    false
+                )
+            )
             menu_invite_friends_cv -> {
                 val PERMISSIONS_STORAGE = arrayOf(
                     Manifest.permission.READ_CONTACTS)

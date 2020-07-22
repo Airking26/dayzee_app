@@ -28,7 +28,7 @@ import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.PlacePickerListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.Timenote
-import com.timenoteco.timenote.model.statusTimenote
+import com.timenoteco.timenote.model.StatusTimenote
 import kotlinx.android.synthetic.main.fragment_near_by.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -84,7 +84,7 @@ class NearBy : Fragment(), View.OnClickListener, PlacePickerListener, TimenoteOp
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.FREE
+                StatusTimenote.FREE
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -103,7 +103,7 @@ class NearBy : Fragment(), View.OnClickListener, PlacePickerListener, TimenoteOp
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.PAID
+                StatusTimenote.PAID
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -122,7 +122,7 @@ class NearBy : Fragment(), View.OnClickListener, PlacePickerListener, TimenoteOp
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.FREE
+                StatusTimenote.FREE
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -141,7 +141,7 @@ class NearBy : Fragment(), View.OnClickListener, PlacePickerListener, TimenoteOp
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.PAID
+                StatusTimenote.PAID
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -160,7 +160,7 @@ class NearBy : Fragment(), View.OnClickListener, PlacePickerListener, TimenoteOp
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.FREE
+                StatusTimenote.FREE
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -179,7 +179,7 @@ class NearBy : Fragment(), View.OnClickListener, PlacePickerListener, TimenoteOp
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.FREE
+                StatusTimenote.FREE
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -198,7 +198,7 @@ class NearBy : Fragment(), View.OnClickListener, PlacePickerListener, TimenoteOp
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.FREE
+                StatusTimenote.FREE
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -217,7 +217,7 @@ class NearBy : Fragment(), View.OnClickListener, PlacePickerListener, TimenoteOp
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.FREE
+                StatusTimenote.FREE
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -236,7 +236,7 @@ class NearBy : Fragment(), View.OnClickListener, PlacePickerListener, TimenoteOp
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.FREE
+                StatusTimenote.FREE
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -255,7 +255,7 @@ class NearBy : Fragment(), View.OnClickListener, PlacePickerListener, TimenoteOp
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.FREE
+                StatusTimenote.FREE
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -274,7 +274,7 @@ class NearBy : Fragment(), View.OnClickListener, PlacePickerListener, TimenoteOp
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.FREE
+                StatusTimenote.FREE
             )
         )
         timenoteAdapter = ItemTimenoteAdapter(timenotes, timenotes, true, null, this, this as Fragment)

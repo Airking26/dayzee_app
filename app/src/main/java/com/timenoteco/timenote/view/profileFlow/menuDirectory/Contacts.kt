@@ -1,4 +1,4 @@
-package com.timenoteco.timenote.view.profileFlow
+package com.timenoteco.timenote.view.profileFlow.menuDirectory
 
 import android.annotation.SuppressLint
 import android.database.Cursor
@@ -78,7 +78,8 @@ class Contacts: Fragment(), LoaderManager.LoaderCallbacks<Cursor>, AdapterView.O
                 it,
                 R.layout.item_contact,
                 null,
-                FROM_COLUMNS, TO_IDS,
+                FROM_COLUMNS,
+                TO_IDS,
                 0
             )
             // Sets the adapter for the ListView

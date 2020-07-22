@@ -1,4 +1,4 @@
-package com.timenoteco.timenote.view.profileFlow
+package com.timenoteco.timenote.view.profileFlow.menuDirectory
 
 import android.os.Bundle
 import android.view.LayoutInflater

@@ -1,17 +1,12 @@
-package com.timenoteco.timenote.common
+package com.timenoteco.timenote.repository
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Rect
-import android.os.AsyncTask
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.customsearch.Customsearch
 import java.io.IOException
-import java.net.URL
 
-class SearchTask{
+class CustomSearchAPI{
 
     enum class Result {
         SUCCESS,

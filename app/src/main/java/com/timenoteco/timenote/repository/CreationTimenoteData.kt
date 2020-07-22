@@ -1,13 +1,12 @@
 package com.timenoteco.timenote.repository
 
 import android.graphics.Bitmap
-import android.net.Uri
 import com.timenoteco.timenote.model.CreateTimenoteModel
-import com.timenoteco.timenote.model.statusTimenote
+import com.timenoteco.timenote.model.StatusTimenote
 
 private var timenoteModel: CreateTimenoteModel =
     CreateTimenoteModel(null, null, null, null, null, null,
-        null, null, null, null, null, null, null, statusTimenote.NOANSWER)
+        null, null, null, null, null, null, null, StatusTimenote.NOANSWER)
 
 class CreationTimenoteData {
 
@@ -40,8 +39,8 @@ class CreationTimenoteData {
         return timenoteModel
     }
 
-    fun setStatus(statusTimenote: statusTimenote): CreateTimenoteModel{
-        timenoteModel.status = statusTimenote
+    fun setStatus(StatusTimenote: StatusTimenote): CreateTimenoteModel{
+        timenoteModel.status = StatusTimenote
         return timenoteModel
     }
 
@@ -82,7 +81,7 @@ class CreationTimenoteData {
 
     fun clear(): CreateTimenoteModel {
         timenoteModel = CreateTimenoteModel(null, null, null, null, null,
-            null, null, null, null, null, null, null, null, statusTimenote.NOANSWER)
+            null, null, null, null, null, null, null, null, StatusTimenote.NOANSWER)
         return timenoteModel
     }
 

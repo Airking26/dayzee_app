@@ -1,10 +1,8 @@
 package com.timenoteco.timenote.model
 
 import android.graphics.Bitmap
-import android.net.Uri
-import androidx.annotation.Nullable
 
-enum class statusTimenote{
+enum class StatusTimenote{
     FREE, PAID, NOANSWER
 }
 
@@ -22,5 +20,5 @@ data class CreateTimenoteModel (
     var formatedEndDate: String?,
     var price: Long?,
     var url: String?,
-    var status: statusTimenote
+    var status: StatusTimenote
 )

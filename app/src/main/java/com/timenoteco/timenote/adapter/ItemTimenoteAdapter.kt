@@ -7,7 +7,6 @@ import android.text.SpannableStringBuilder
 import android.text.TextPaint
 import android.text.style.MetricAffectingSpan
 import android.view.*
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,7 +20,7 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.RoundedCornersTransformation
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.Timenote
-import com.timenoteco.timenote.model.statusTimenote
+import com.timenoteco.timenote.model.StatusTimenote
 import kotlinx.android.synthetic.main.adapter_timenote_recent.view.*
 import kotlinx.android.synthetic.main.item_timenote.view.*
 import kotlinx.android.synthetic.main.item_timenote_recent.view.*
@@ -126,9 +125,9 @@ class ItemTimenoteAdapter(
 
 
             val screenSlideCreationTimenotePagerAdapter =  ScreenSlideTimenotePagerAdapter(fragment, timenote.pic, true){
-                if(timenote.status ==statusTimenote.PAID || (timenote.status ==statusTimenote.FREE && !timenote.url.isNullOrBlank())) {
+                if(timenote.status ==StatusTimenote.PAID || (timenote.status ==StatusTimenote.FREE && !timenote.url.isNullOrBlank())) {
                     itemView.timenote_buy.visibility = View.VISIBLE
-                    if(timenote.status == statusTimenote.PAID){
+                    if(timenote.status == StatusTimenote.PAID){
                         itemView.timenote_buy.text = "Buy " + timenote.price.toString() + "$"
                     } else {
                         itemView.timenote_buy.text = timenote.url
@@ -241,7 +240,6 @@ class ItemTimenoteToComeAdapter(private val timenotesToCome: List<Timenote>, pri
                 .apply(RequestOptions.circleCropTransform())
                 .into(itemView.timenote_recent_pic_user_imageview)
 
-            itemView.timenote_recent_username.text = timenote.username
             itemView.timenote_recent_title.text = timenote.title
             itemView.timenote_recent_date.text = timenote.dateIn
             itemView.setOnClickListener { timenoteClicked?.onTimenoteRecentClicked() }

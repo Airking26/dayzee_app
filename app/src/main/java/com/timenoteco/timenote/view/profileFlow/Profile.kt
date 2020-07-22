@@ -21,8 +21,10 @@ import com.timenoteco.timenote.adapter.ProfilePastFuturePagerAdapter
 import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import com.timenoteco.timenote.model.Timenote
-import com.timenoteco.timenote.model.statusTimenote
+import com.timenoteco.timenote.model.StatusTimenote
 import kotlinx.android.synthetic.main.fragment_profile.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarListener {
 
@@ -35,6 +37,13 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
         getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_profile)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        val simpleDateFormatDayName= SimpleDateFormat("EEE.", Locale.getDefault())
+        val simpleDateFormatDayNumber = SimpleDateFormat("dd", Locale.getDefault())
+
+        profile_day_name_calendar.text = simpleDateFormatDayName.format(System.currentTimeMillis())
+        profile_day_number_calendar.text = simpleDateFormatDayNumber.format(System.currentTimeMillis())
+
         timenotes = mutableListOf(
             Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
@@ -54,7 +63,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.FREE
+                StatusTimenote.FREE
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -73,7 +82,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.PAID
+                StatusTimenote.PAID
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -92,7 +101,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.FREE
+                StatusTimenote.FREE
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -111,7 +120,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.PAID
+                StatusTimenote.PAID
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -130,7 +139,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.FREE
+                StatusTimenote.FREE
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -149,7 +158,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.FREE
+                StatusTimenote.FREE
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -168,7 +177,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.FREE
+                StatusTimenote.FREE
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -187,7 +196,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.FREE
+                StatusTimenote.FREE
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -206,7 +215,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.FREE
+                StatusTimenote.FREE
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -225,7 +234,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.FREE
+                StatusTimenote.FREE
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -244,10 +253,9 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 "In 23 days",
                 12L,
                 "www.google.com",
-                statusTimenote.FREE
+                StatusTimenote.FREE
             )
         )
-
 
         if(args.whereFrom){
             profile_modify_btn.visibility = View.INVISIBLE

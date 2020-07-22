@@ -8,10 +8,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.timenoteco.timenote.common.SearchTask
+import com.timenoteco.timenote.repository.CustomSearchAPI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.net.URL
 
@@ -19,7 +18,7 @@ import java.net.URL
 class WebSearchViewModel: ViewModel(){
 
     private lateinit var context: Context
-    private val searchTask = SearchTask()
+    private val searchTask = CustomSearchAPI()
     private var results: MutableList<String> = mutableListOf()
     private var bitmap: Bitmap? = null
     private val searchWebLiveData = MutableLiveData<MutableList<String>>()
@@ -50,7 +49,7 @@ class WebSearchViewModel: ViewModel(){
         searchTask.setContext(context)
         viewModelScope.launch(Dispatchers.IO) {
             when(searchTask.getImagesFromNet(searchQuery)){
-                    SearchTask.Result.SUCCESS -> {
+                    CustomSearchAPI.Result.SUCCESS -> {
                         results = searchTask.getImages()
                         searchWebLiveData.postValue(results)
                     }

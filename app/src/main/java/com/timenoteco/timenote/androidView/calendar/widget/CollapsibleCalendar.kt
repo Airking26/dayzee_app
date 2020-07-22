@@ -24,7 +24,6 @@ import com.timenoteco.timenote.androidView.calendar.data.Day
 import com.timenoteco.timenote.androidView.calendar.data.Event
 import com.timenoteco.timenote.androidView.calendar.view.BounceAnimator
 import com.timenoteco.timenote.androidView.calendar.view.ExpandIconView
-import com.timenoteco.timenote.common.Utils
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.*
@@ -47,11 +46,7 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
     override fun onClick(view: View?) {
         view?.let {
             mListener.let { mListener ->
-                if (mListener == null) {
-                    expandIconView.performClick()
-                } else {
-                    mListener.onClickListener()
-                }
+                mListener?.onClickListener() ?: expandIconView.performClick()
             }
         }
     }
@@ -351,7 +346,7 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
         }
 
         if (mListener != null) {
-            mListener!!.onItemClick(view)
+            mListener!!.onItemClick(view, day)
         }
     }
 
@@ -617,7 +612,7 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
         redraw()
 
         if (mListener != null) {
-            mListener!!.onDaySelect()
+            mListener!!.onDaySelect(day)
         }
     }
 
@@ -638,10 +633,13 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
     interface CalendarListener {
 
         // triggered when a day is selected programmatically or clicked by user.
-        fun onDaySelect()
+        fun onDaySelect(day: Day)
 
         // triggered only when the views of day on calendar are clicked by user.
-        fun onItemClick(v: View)
+        fun onItemClick(
+            v: View,
+            day: Day
+        )
 
         // triggered when the data of calendar are updated by changing month or adding events.
         fun onDataUpdate()
