@@ -58,12 +58,13 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 true,
                 "2020",
                 "10\nAug",
-                "15:30",
+                "15:30 PM",
                 "Beach Party",
                 "In 23 days",
                 12L,
                 "www.google.com",
-                StatusTimenote.FREE
+                StatusTimenote.FREE,
+                0
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -76,14 +77,15 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
                 true,
                 "2020",
-                "10\nAug",
-                "15:30",
+                "10Aug.\n15:45",
+                "11Aug.\n12:30",
                 "Beach Party",
                 "In 23 days",
                 12L,
                 "www.google.com",
-                StatusTimenote.PAID
-            ), Timenote(
+                StatusTimenote.PAID,
+                1
+            ),            Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
                     "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -96,12 +98,13 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 true,
                 "2020",
                 "10\nAug",
-                "15:30",
+                "15:30 PM",
                 "Beach Party",
                 "In 23 days",
                 12L,
                 "www.google.com",
-                StatusTimenote.FREE
+                StatusTimenote.FREE,
+                0
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -114,14 +117,15 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
                 true,
                 "2020",
-                "10\nAug",
-                "15:30",
+                "10Aug.\n15:45",
+                "11Aug.\n12:30",
                 "Beach Party",
                 "In 23 days",
                 12L,
                 "www.google.com",
-                StatusTimenote.PAID
-            ), Timenote(
+                StatusTimenote.PAID,
+                1
+            ),            Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
                     "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -134,12 +138,13 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 true,
                 "2020",
                 "10\nAug",
-                "15:30",
+                "15:30 PM",
                 "Beach Party",
                 "In 23 days",
                 12L,
                 "www.google.com",
-                StatusTimenote.FREE
+                StatusTimenote.FREE,
+                0
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -152,14 +157,15 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
                 true,
                 "2020",
-                "10\nAug",
-                "15:30",
+                "10Aug.\n15:45",
+                "11Aug.\n12:30",
                 "Beach Party",
                 "In 23 days",
                 12L,
                 "www.google.com",
-                StatusTimenote.FREE
-            ), Timenote(
+                StatusTimenote.PAID,
+                1
+            ),            Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
                     "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -172,12 +178,13 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 true,
                 "2020",
                 "10\nAug",
-                "15:30",
+                "15:30 PM",
                 "Beach Party",
                 "In 23 days",
                 12L,
                 "www.google.com",
-                StatusTimenote.FREE
+                StatusTimenote.FREE,
+                0
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -190,14 +197,15 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
                 true,
                 "2020",
-                "10\nAug",
-                "15:30",
+                "10Aug.\n15:45",
+                "11Aug.\n12:30",
                 "Beach Party",
                 "In 23 days",
                 12L,
                 "www.google.com",
-                StatusTimenote.FREE
-            ), Timenote(
+                StatusTimenote.PAID,
+                1
+            ),            Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
                     "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -210,12 +218,13 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 true,
                 "2020",
                 "10\nAug",
-                "15:30",
+                "15:30 PM",
                 "Beach Party",
                 "In 23 days",
                 12L,
                 "www.google.com",
-                StatusTimenote.FREE
+                StatusTimenote.FREE,
+                0
             ), Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -228,14 +237,15 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
                 true,
                 "2020",
-                "10\nAug",
-                "15:30",
+                "10Aug.\n15:45",
+                "11Aug.\n12:30",
                 "Beach Party",
                 "In 23 days",
                 12L,
                 "www.google.com",
-                StatusTimenote.FREE
-            ), Timenote(
+                StatusTimenote.PAID,
+                1
+            ),            Timenote(
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
                     "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -248,12 +258,33 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 true,
                 "2020",
                 "10\nAug",
-                "15:30",
+                "15:30 PM",
                 "Beach Party",
                 "In 23 days",
                 12L,
                 "www.google.com",
-                StatusTimenote.FREE
+                StatusTimenote.FREE,
+                0
+            ), Timenote(
+                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
+                mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
+                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
+                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),
+                "Samuel",
+                "23 Herzl Street",
+                "34 Likes",
+                "See 63 comments",
+                "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
+                true,
+                "2020",
+                "10Aug.\n15:45",
+                "11Aug.\n12:30",
+                "Beach Party",
+                "In 23 days",
+                12L,
+                "www.google.com",
+                StatusTimenote.PAID,
+                1
             )
         )
 

@@ -41,40 +41,52 @@
 
     <TextView
         android:id="@+id/preview_created_timenote_title"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:background="@drawable/gradient_timenote_top"
         android:fontFamily="sans-serif-light"
-        android:paddingHorizontal="8dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="16dp"
         android:shadowColor="@android:color/black"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="15"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="1.5"
+        android:text="BEACH PARTY"
         android:textAllCaps="true"
         android:textColor="@android:color/white"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/preview_created_timenote_vp"
-        tools:text="Hello" />
+        app:layout_constraintTop_toTopOf="@id/preview_created_timenote_vp" />
+
+    <View
+        android:id="@+id/timenote_time_gradient"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/gradient_timenote_bottom"
+        app:layout_constraintBottom_toBottomOf="@id/preview_created_timenote_vp"
+        app:layout_constraintEnd_toEndOf="@id/preview_created_timenote_vp"
+        app:layout_constraintStart_toStartOf="@id/preview_created_timenote_vp"
+        app:layout_constraintTop_toTopOf="@id/separator_2" />
+
 
     <TextView
-        android:layout_marginStart="32dp"
         android:id="@+id/preview_created_timenote_year"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
+        android:paddingEnd="4dp"
         android:fontFamily="sans-serif-light"
+        android:gravity="center"
         android:shadowColor="@android:color/black"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="25"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="1.5"
+        android:text=" 2020 "
         android:textColor="@android:color/white"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@id/separator_1"
         app:layout_constraintEnd_toStartOf="@id/separator_1"
         app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@id/preview_created_timenote_vp"
         app:layout_constraintTop_toTopOf="@id/separator_1" />
 
     <TextView
@@ -84,10 +96,6 @@
         android:layout_marginBottom="8dp"
         android:background="@drawable/custom"
         android:fontFamily="sans-serif-light"
-        android:shadowColor="@android:color/black"
-        android:shadowDx="1"
-        android:shadowDy="1"
-        android:shadowRadius="1.5"
         app:layout_constraintBottom_toBottomOf="@id/preview_created_timenote_vp"
         app:layout_constraintEnd_toStartOf="@id/preview_created_timenote_day_month"
         app:layout_constraintStart_toEndOf="@id/preview_created_timenote_year" />
@@ -96,13 +104,14 @@
         android:id="@+id/preview_created_timenote_day_month"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="8dp"
         android:fontFamily="sans-serif-light"
         android:gravity="center"
         android:shadowColor="@android:color/black"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="5"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="1.5"
+        android:text=" 10 Aug. \n 15:30 "
+        android:paddingHorizontal="4dp"
         android:textColor="@android:color/white"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@id/separator_2"
@@ -117,10 +126,6 @@
         android:layout_marginBottom="8dp"
         android:background="@drawable/custom"
         android:fontFamily="sans-serif-light"
-        android:shadowColor="@android:color/black"
-        android:shadowDx="1"
-        android:shadowDy="1"
-        android:shadowRadius="1.5"
         app:layout_constraintBottom_toBottomOf="@id/preview_created_timenote_vp"
         app:layout_constraintEnd_toStartOf="@id/preview_created_timenote_time"
         app:layout_constraintStart_toEndOf="@id/preview_created_timenote_day_month" />
@@ -129,43 +134,44 @@
         android:id="@+id/preview_created_timenote_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:paddingStart="4dp"
         android:fontFamily="sans-serif-light"
+        android:gravity="center"
         android:shadowColor="@android:color/black"
         android:shadowDx="1"
         android:shadowDy="1"
         android:shadowRadius="1.5"
+        android:text=" 11 Sep. \n 12:00 "
         android:textColor="@android:color/white"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@id/separator_2"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/preview_created_timenote_vp"
         app:layout_constraintStart_toEndOf="@id/separator_2"
-        app:layout_constraintTop_toTopOf="@+id/separator_2" />
-
+        app:layout_constraintTop_toTopOf="@id/separator_2" />
     <TextView
-        app:layout_constraintTop_toBottomOf="@id/preview_created_timenote_vp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/preview_created_timenote_buy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:background="@color/colorAccentCustom"
+        android:fontFamily="sans-serif-light"
+        android:gravity="end"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
         android:textColor="@color/white"
         android:textSize="16sp"
         android:visibility="gone"
-        android:paddingVertical="4dp"
-        android:paddingHorizontal="8dp"
-        android:gravity="end"
-        android:fontFamily="sans-serif-light"
-        android:id="@+id/preview_created_timenote_buy"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/preview_created_timenote_vp" />
 
     <me.relex.circleindicator.CircleIndicator3
         android:id="@+id/preview_created_timenote_indicator"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="12dp"
         android:layout_marginTop="8dp"
         app:ci_drawable="@drawable/dot_selected"
         app:ci_drawable_unselected="@drawable/dot_unselected"
-        app:layout_constraintEnd_toStartOf="@id/separator_2"
         app:layout_constraintStart_toEndOf="@id/separator_1"
+        app:layout_constraintEnd_toStartOf="@id/separator_2"
         app:layout_constraintTop_toBottomOf="@id/preview_created_timenote_buy" />
 
     <TextView
@@ -257,6 +263,13 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="205dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -30,39 +30,14 @@ import java.util.*
 
 
 class CollapsibleCalendar : UICalendar, View.OnClickListener {
-    override fun changeToToday() {
-        val calendar = Calendar.getInstance()
-        val calenderAdapter = CalendarAdapter(context, calendar);
-        calenderAdapter.mEventList = mAdapter!!.mEventList
-        calenderAdapter.setFirstDayOfWeek(firstDayOfWeek)
-        val today = GregorianCalendar()
-        this.selectedItem = null
-        this.selectedItemPosition = -1
-        this.selectedDay = Day(today.get(Calendar.YEAR), today.get(Calendar.MONTH), today.get(Calendar.DAY_OF_MONTH))
-        mCurrentWeekIndex = suitableRowIndex
-        setAdapter(calenderAdapter)
-    }
-
-    override fun onClick(view: View?) {
-        view?.let {
-            mListener.let { mListener ->
-                mListener?.onClickListener() ?: expandIconView.performClick()
-            }
-        }
-    }
 
     private var mAdapter: CalendarAdapter? = null
     private var mListener: CalendarListener? = null
-
     var expanded = false
-
     private var mInitHeight = 0
-
     private val mHandler = Handler()
     private var mIsWaitingForUpdate = false
-
     private var mCurrentWeekIndex: Int = 0
-
     private val suitableRowIndex: Int
         get() {
             if (selectedItemPosition != -1) {
@@ -79,16 +54,10 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
                 return 0
             }
         }
-
     val year: Int
         get() = mAdapter!!.calendar.get(Calendar.YEAR)
-
     val month: Int
         get() = mAdapter!!.calendar.get(Calendar.MONTH)
-
-    /**
-     * The date has been selected and can be used on Calender Listener
-     */
     var selectedDay: Day? = null
         get() {
             if (selectedItem == null) {
@@ -110,7 +79,6 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
             field = value
             redraw()
         }
-
     var selectedItemPosition: Int = -1
         get() {
             var position = -1
@@ -127,7 +95,6 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
             }
             return position
         }
-
     val todayItemPosition: Int
         get() {
             var position = -1
@@ -141,7 +108,6 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
             }
             return position
         }
-
     override var state: Int
         get() = super.state
         set(state) {
@@ -153,15 +119,12 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
                 expanded = true
             }
         }
-
     constructor(context: Context) : super(context) {
         init(context)
     }
-
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         init(context)
     }
-
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
         init(context)
     }
@@ -188,6 +151,7 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
             MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 datePicker { dialog, datetime ->
                     onDismiss { mListener?.onDialogDissmissed() }
+                    mListener?.onDatePicked(datetime)
                 }
             }
         //    changeToToday()
@@ -207,6 +171,26 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
         this.post { collapseTo(mCurrentWeekIndex) }
 
 
+    }
+
+    override fun changeToToday() {
+        val calendar = Calendar.getInstance()
+        val calenderAdapter = CalendarAdapter(context, calendar);
+        calenderAdapter.mEventList = mAdapter!!.mEventList
+        calenderAdapter.setFirstDayOfWeek(firstDayOfWeek)
+        val today = GregorianCalendar()
+        this.selectedItem = null
+        this.selectedItemPosition = -1
+        this.selectedDay = Day(today.get(Calendar.YEAR), today.get(Calendar.MONTH), today.get(Calendar.DAY_OF_MONTH))
+        mCurrentWeekIndex = suitableRowIndex
+        setAdapter(calenderAdapter)
+    }
+    override fun onClick(view: View?) {
+        view?.let {
+            mListener.let { mListener ->
+                mListener?.onClickListener() ?: expandIconView.performClick()
+            }
+        }
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -488,9 +472,6 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
                 && day.day == todayCal.get(Calendar.DAY_OF_MONTH))
     }
 
-    /**
-     * collapse in milliseconds
-     */
     open fun collapse(duration: Int) {
 
         if (state == STATE_EXPANDED) {
@@ -655,6 +636,8 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
         fun onDayChanged()
 
         fun onDialogDissmissed()
+
+        fun onDatePicked(datetime: Calendar)
     }
 
     fun setExpandIconVisible(visible: Boolean) {

@@ -6,8 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.afollestad.date.dayOfMonth
+import com.afollestad.date.month
+import com.afollestad.date.year
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ItemCalendarAdapter
+import com.timenoteco.timenote.androidView.calendar.data.CalendarAdapter
 import com.timenoteco.timenote.androidView.calendar.data.Day
 import com.timenoteco.timenote.androidView.calendar.widget.CollapsibleCalendar
 import com.timenoteco.timenote.model.EventCalendar
@@ -78,6 +82,15 @@ class ProfileCalendar: Fragment() {
 
             override fun onDialogDissmissed() {
                 com.timenoteco.timenote.common.Utils().hideStatusBar(requireActivity())
+            }
+
+            override fun onDatePicked(datetime: Calendar) {
+                calendarView.setAdapter(CalendarAdapter(requireContext(), datetime))
+                calendarView.select(Day(datetime.year, datetime.month, datetime.dayOfMonth))
+                calendarAdapter.checkEventForDay(Day(datetime.year, datetime.month, datetime.dayOfMonth))
+                for (e in eventsCalendar){
+                    calendarView.addEventTag(simpleDateFormatYear.format(e.date).toInt(), simpleDateFormatMonth.format(e.date).toInt() - 1, simpleDateFormatDay.format(e.date).toInt(), R.color.colorAccent)
+                }
             }
 
             override fun onDaySelect(day: Day) {

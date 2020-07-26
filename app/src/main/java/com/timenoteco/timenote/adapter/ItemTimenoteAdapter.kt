@@ -134,6 +134,13 @@ class ItemTimenoteAdapter(
                     }
                 }
             }
+
+            /*if(timenote.format == 0){
+                itemView.timenote_time_ll.setPadding(((itemView.context.resources.displayMetrics.density * 38) + 0.5f).toInt(), 0, 0, ((itemView.context.resources.displayMetrics.density * 8) + 0.5f).toInt())
+            } else {
+                itemView.timenote_time_ll.setPadding(((itemView.context.resources.displayMetrics.density * 17) + 0.5f).toInt(), 0, 0, ((itemView.context.resources.displayMetrics.density * 8) + 0.5f).toInt())
+            }*/
+
             itemView.timenote_vp.adapter = screenSlideCreationTimenotePagerAdapter
             itemView.timenote_indicator.setViewPager(itemView.timenote_vp)
             if(timenote.pic?.size == 1) itemView.timenote_indicator.visibility = View.GONE

@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.updatePadding
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -55,6 +56,10 @@ class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
             } else {
                 if(!it.color.isNullOrBlank()) preview_created_timenote_vp.setBackgroundColor(Color.parseColor(it.color))
             }
+            /*if(it.format == 0){
+                preview_created_timenote_date_ll.setPadding(((resources.displayMetrics.density * 38) + 0.5f).toInt(), 0, 0, ((resources.displayMetrics.density * 8) + 0.5f).toInt())
+            } else preview_created_timenote_date_ll.setPadding(((resources.displayMetrics.density * 18) + 0.5f).toInt(), 0, 0, ((resources.displayMetrics.density * 8) + 0.5f).toInt())*/
+
 
             preview_created_timenote_title.text = it.title
             preview_created_timenote_year.text = it.year

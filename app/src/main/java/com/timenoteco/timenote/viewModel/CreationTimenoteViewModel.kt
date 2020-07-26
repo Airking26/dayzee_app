@@ -27,6 +27,7 @@ class CreationTimenoteViewModel: ViewModel() {
         return timenoteLiveData
     }
 
+    fun setFormat(format: Int) = timenoteLiveData.postValue(createTimenoteData.setFormat(format))
     fun setTitle(title : String) = timenoteLiveData.postValue(createTimenoteData.setTtile(title))
     fun setPrice(price: Long) = timenoteLiveData.postValue(createTimenoteData.setPrice(price))
     fun setUrl(url: String) = timenoteLiveData.postValue(createTimenoteData.setUrl(url))
@@ -45,13 +46,16 @@ class CreationTimenoteViewModel: ViewModel() {
             if(formatDate(DATE_FORMAT_TIME, startDate) == formatDate(DATE_FORMAT_TIME, endDate)){
                 timenoteLiveData.postValue(createTimenoteData.setFormatedStartDate(formatDate(DATE_FORMAT_TIME_FORMATED, startDate)))
                 timenoteLiveData.postValue(createTimenoteData.setFormatedEndDate(formatDate(DATE_FORMAT_TIME, startDate)))
+                timenoteLiveData.postValue(createTimenoteData.setFormat(0))
             } else {
                 timenoteLiveData.postValue(createTimenoteData.setFormatedStartDate(formatDate(DATE_FORMAT_TIME_FORMATED, startDate)))
                 timenoteLiveData.postValue(createTimenoteData.setFormatedEndDate(formatDate(DATE_FORMAT_TIME, startDate) + "\n" + formatDate(DATE_FORMAT_TIME, endDate)))
+                timenoteLiveData.postValue(createTimenoteData.setFormat(0))
             }
         } else {
             timenoteLiveData.postValue(createTimenoteData.setFormatedStartDate(formatDate(DATE_FORMAT_SAME_DAY_DIFFERENT_TIME, startDate)))
             timenoteLiveData.postValue(createTimenoteData.setFormatedEndDate(formatDate(DATE_FORMAT_SAME_DAY_DIFFERENT_TIME, endDate)))
+            timenoteLiveData.postValue(createTimenoteData.setFormat(1))
         }
     }
 

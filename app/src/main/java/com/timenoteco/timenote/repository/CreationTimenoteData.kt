@@ -6,7 +6,7 @@ import com.timenoteco.timenote.model.StatusTimenote
 
 private var timenoteModel: CreateTimenoteModel =
     CreateTimenoteModel(null, null, null, null, null, null,
-        null, null, null, null, null, null, null, StatusTimenote.NOANSWER)
+        null, null, null, null, null, null, null, StatusTimenote.NOANSWER, null)
 
 class CreationTimenoteData {
 
@@ -79,9 +79,14 @@ class CreationTimenoteData {
         return timenoteModel
     }
 
+    fun setFormat(format: Int): CreateTimenoteModel{
+        timenoteModel.format = format
+        return timenoteModel
+    }
+
     fun clear(): CreateTimenoteModel {
         timenoteModel = CreateTimenoteModel(null, null, null, null, null,
-            null, null, null, null, null, null, null, null, StatusTimenote.NOANSWER)
+            null, null, null, null, null, null, null, null, StatusTimenote.NOANSWER, null)
         return timenoteModel
     }
 
