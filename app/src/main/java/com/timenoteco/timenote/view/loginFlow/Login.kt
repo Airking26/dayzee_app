@@ -6,18 +6,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import androidx.activity.addCallback
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.navigation.navArgs
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.viewModel.LoginViewModel
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_login.*
 
 class Login : Fragment() {
@@ -25,18 +21,14 @@ class Login : Fragment() {
     private val viewModel: LoginViewModel by activityViewModels()
     private val args: LoginArgs by navArgs()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view =  inflater.inflate(R.layout.fragment_login, container, false)
-        Utils().hideStatusBar(requireActivity())
-        return view
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
+            =  inflater.inflate(R.layout.fragment_login, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         button1.setOnClickListener {
             findNavController().navigate(LoginDirections.actionLoginToSignup())
         }
-
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             viewModel.refuseAuthentication()
         }
@@ -47,7 +39,7 @@ class Login : Fragment() {
                 LoginViewModel.AuthenticationState.UNAUTHENTICATED -> Log.d("", "")
                 LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION -> Log.d("", "")
                 null -> Log.d("", "")
-                LoginViewModel.AuthenticationState.UNAUTHENTICATED_CHOOSED -> findNavController().popBackStack()
+                LoginViewModel.AuthenticationState.GUEST -> findNavController().popBackStack()
             }
         })
     }

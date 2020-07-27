@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "39040998101",
+    "firebase_url": "https://dayzee-978d4.firebaseio.com",
+    "project_id": "dayzee-978d4",
+    "storage_bucket": "dayzee-978d4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:39040998101:android:9b28e046239271da1be05c",
+        "android_client_info": {
+          "package_name": "com.timenoteco.timenote"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "39040998101-c0vofsrtipn95r2poqfu8p5a23fmj31f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD2LT6kkOYmuQzQGFPaYhB2FMaWm6UCGxA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "39040998101-c0vofsrtipn95r2poqfu8p5a23fmj31f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

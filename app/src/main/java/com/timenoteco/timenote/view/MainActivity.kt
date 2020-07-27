@@ -2,7 +2,6 @@ package com.timenoteco.timenote.view
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Context.*
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
@@ -10,7 +9,6 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -52,7 +50,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener {
                 AuthenticationState.AUTHENTICATED -> setupController(true)
                 AuthenticationState.UNAUTHENTICATED -> findNavController(R.id.nav_host_fragment_main).navigate(R.id.login)
                 AuthenticationState.INVALID_AUTHENTICATION -> Log.d("", "")
-                AuthenticationState.UNAUTHENTICATED_CHOOSED -> setupController(false)
+                AuthenticationState.GUEST -> setupController(false)
             }
         })
 

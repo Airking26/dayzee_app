@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.timenoteco.timenote.model.CreateTimenoteModel
 import com.timenoteco.timenote.model.StatusTimenote
-import com.timenoteco.timenote.repository.CreationTimenoteData
+import com.timenoteco.timenote.webService.CreationTimenoteData
 import java.text.SimpleDateFormat
 import java.util.*
 

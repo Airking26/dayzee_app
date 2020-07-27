@@ -2,25 +2,21 @@ package com.timenoteco.timenote.view.loginFlow
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ImageView
-import androidx.activity.addCallback
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.PreferenceViewModel
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_preference_category.*
 
 class PreferenceCategory : Fragment(), View.OnClickListener {
@@ -90,7 +86,7 @@ class PreferenceCategory : Fragment(), View.OnClickListener {
                     preferenceViewModel.getPreferences().value?.forEach { if(it.category.isSelected) count++}
                     if(count > 0) view?.findNavController()?.navigate(PreferenceCategoryDirections.actionPreferenceCategoryToPreferenceSubCategory(preferenceCategoryArgs.isInLogin))
                     else {
-                        viewModel.authenticationState.value = LoginViewModel.AuthenticationState.UNAUTHENTICATED_CHOOSED
+                        viewModel.authenticationState.value = LoginViewModel.AuthenticationState.GUEST
                     }
 
             }

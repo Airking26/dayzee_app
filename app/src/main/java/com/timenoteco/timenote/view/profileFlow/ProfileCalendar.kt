@@ -61,8 +61,7 @@ class ProfileCalendar: Fragment() {
             layoutManager = LinearLayoutManager(view.context)
             adapter = calendarAdapter
         }
-
-
+        
         val simpleDateFormatYear = SimpleDateFormat("yyyy", Locale.getDefault())
         val simpleDateFormatMonth = SimpleDateFormat("M", Locale.getDefault())
         val simpleDateFormatDay = SimpleDateFormat("d", Locale.getDefault())

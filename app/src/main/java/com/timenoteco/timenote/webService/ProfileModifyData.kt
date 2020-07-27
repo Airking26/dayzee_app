@@ -1,4 +1,4 @@
-package com.timenoteco.timenote.repository
+package com.timenoteco.timenote.webService
 
 import android.content.Context
 import android.content.SharedPreferences

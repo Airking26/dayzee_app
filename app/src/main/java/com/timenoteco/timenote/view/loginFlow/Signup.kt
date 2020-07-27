@@ -1,18 +1,14 @@
 package com.timenoteco.timenote.view.loginFlow
 
-import android.content.ContentValues.TAG
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import com.timenoteco.timenote.R
+import com.timenoteco.timenote.model.UserSignUpBody
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import kotlinx.android.synthetic.main.fragment_signup.*
 
@@ -31,12 +27,16 @@ class Signup: Fragment() {
         }
 
         signup_signup_btn.setOnClickListener {
-            findNavController().navigate(SignupDirections.actionSignupToPreferenceCategory(true))
+            viewModel.addUser(UserSignUpBody("", "", signup_mail.text.toString(), signup_password.text.toString()))
         }
 
         signup_as_guest.setOnClickListener {
-            viewModel.authenticationState.postValue(LoginViewModel.AuthenticationState.UNAUTHENTICATED_CHOOSED)
+            viewModel.authenticationState.postValue(LoginViewModel.AuthenticationState.GUEST)
         }
+
+        viewModel.authenticationState.observe(viewLifecycleOwner, Observer {
+
+        })
 
     }
 }

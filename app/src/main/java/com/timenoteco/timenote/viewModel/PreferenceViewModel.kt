@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.timenoteco.timenote.model.Preference
-import com.timenoteco.timenote.repository.PreferenceData
+import com.timenoteco.timenote.view.loginFlow.PreferenceData
 
 class PreferenceViewModel: ViewModel() {
 
@@ -16,15 +16,18 @@ class PreferenceViewModel: ViewModel() {
     }
 
     fun setStatusCategory(index: Int){
-        preference.value = PreferenceData().changeStatusCategory(index)
+        preference.value = PreferenceData()
+            .changeStatusCategory(index)
     }
 
     fun setLikedLevelSubCategory(likedLevel: Int, categoryName: String, subCategoryPosition: Int){
-        preference.value = PreferenceData().setLikedLevelSubCategory(likedLevel, categoryName, subCategoryPosition)
+        preference.value = PreferenceData()
+            .setLikedLevelSubCategory(likedLevel, categoryName, subCategoryPosition)
     }
 
     fun closeChip(name: String){
-        preference.value = PreferenceData().closeChip(name)
+        preference.value = PreferenceData()
+            .closeChip(name)
     }
 
     private fun loadPreferences(listPreferences: MutableList<Preference>) {

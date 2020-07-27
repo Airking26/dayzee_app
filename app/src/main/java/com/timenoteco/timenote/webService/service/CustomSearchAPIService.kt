@@ -1,4 +1,4 @@
-package com.timenoteco.timenote.repository
+package com.timenoteco.timenote.webService.service
 
 import android.content.Context
 import com.google.api.client.http.javanet.NetHttpTransport
@@ -6,7 +6,7 @@ import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.customsearch.Customsearch
 import java.io.IOException
 
-class CustomSearchAPI{
+class CustomSearchAPIService{
 
     enum class Result {
         SUCCESS,

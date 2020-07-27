@@ -1,4 +1,4 @@
-package com.timenoteco.timenote.repository
+package com.timenoteco.timenote.view.loginFlow
 
 import com.timenoteco.timenote.model.Category
 import com.timenoteco.timenote.model.Preference

@@ -1,9 +1,9 @@
-package com.timenoteco.timenote.repository
+package com.timenoteco.timenote.webService.service
 
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
-class MyFirebaseMessagingService : FirebaseMessagingService() {
+class MyFirebaseNotificationService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String)  =
         sendRegistrationToserver(token)

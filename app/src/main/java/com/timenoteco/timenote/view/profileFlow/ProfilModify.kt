@@ -34,10 +34,9 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.theartofdev.edmodo.cropper.CropImageView
 import com.timenoteco.timenote.R
-import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.stringLiveData
 import com.timenoteco.timenote.model.ProfilModifyModel
-import com.timenoteco.timenote.repository.ProfileModifyData
+import com.timenoteco.timenote.webService.ProfileModifyData
 import kotlinx.android.synthetic.main.cropview_circle.view.*
 import kotlinx.android.synthetic.main.fragment_profil_modify.*
 import java.lang.reflect.Type

@@ -1,4 +1,4 @@
-package com.timenoteco.timenote.repository
+package com.timenoteco.timenote.webService
 
 import android.graphics.Bitmap
 import com.timenoteco.timenote.model.CreateTimenoteModel
