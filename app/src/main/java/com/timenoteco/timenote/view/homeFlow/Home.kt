@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.LayoutMode
@@ -14,16 +16,23 @@ import com.afollestad.materialdialogs.datetime.dateTimePicker
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ItemTimenoteAdapter
+import com.timenoteco.timenote.adapter.TimenoteComparator
+import com.timenoteco.timenote.adapter.TimenotePagingAdapter
 import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.Timenote
 import com.timenoteco.timenote.model.StatusTimenote
+import com.timenoteco.timenote.viewModel.TimenoteViewModel
 import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, TimenoteOptionsListener {
 
     private var timenotes: List<Timenote> = mutableListOf()
     private lateinit var timenoteAdapter: ItemTimenoteAdapter
+    private val timenoteViewModel: TimenoteViewModel by activityViewModels()
+    private lateinit var timenotePagingAdapter: TimenotePagingAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_home)
@@ -273,8 +282,15 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
                 1
             )
         )
-        timenoteAdapter = ItemTimenoteAdapter(timenotes, timenotes, true, this, this, this as Fragment)
+        timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this)
+        home_rv.adapter = timenotePagingAdapter
+        lifecycleScope.launch {
+            timenoteViewModel.timenotePagingFlow.collectLatest {
+                timenotePagingAdapter.submitData(it)
+            }
+        }
 
+        timenoteAdapter = ItemTimenoteAdapter(timenotes, timenotes, true, this, this, this as Fragment)
         home_rv.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = timenoteAdapter

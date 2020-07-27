@@ -10,11 +10,11 @@ import retrofit2.http.POST
 
 interface AuthService {
 
-    @Headers("Content-Type: application/json")
+    //@Headers("Content-Type: application/json")
     @POST("auth/signUp")
     suspend fun signUp(@Body userSignUpBody: UserSignUpBody?): Response<RootUserResponse>
 
-    @Headers("Content-Type: application/json")
+    //@Headers("Content-Type: application/json")
     @POST("auth/signIn")
     suspend fun signIn(@Body userSignInBody: UserSignInBody): Response<RootUserResponse>
 

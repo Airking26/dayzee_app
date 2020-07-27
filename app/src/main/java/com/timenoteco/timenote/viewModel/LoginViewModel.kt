@@ -1,10 +1,12 @@
 package com.timenoteco.timenote.viewModel
 
 import androidx.lifecycle.*
+import com.timenoteco.timenote.model.RootUserResponse
 import com.timenoteco.timenote.model.UserSignInBody
 import com.timenoteco.timenote.model.UserSignUpBody
 import com.timenoteco.timenote.webService.repo.DayzeeRepository
 import kotlinx.coroutines.flow.flow
+import retrofit2.Response
 
 class LoginViewModel: ViewModel() {
 
@@ -15,9 +17,12 @@ class LoginViewModel: ViewModel() {
         GUEST
     }
 
-    private val authService = DayzeeRepository()
-        .getAuthService()
-    val authenticationState = MutableLiveData<AuthenticationState>()
+    private val authService = DayzeeRepository().getAuthService()
+    private val authenticationState = MutableLiveData<AuthenticationState>()
+
+    fun getAuthenticationState() : LiveData<AuthenticationState>{
+        return authenticationState
+    }
 
     init {
         authenticationState.value = AuthenticationState.UNAUTHENTICATED
@@ -41,18 +46,22 @@ class LoginViewModel: ViewModel() {
         }.asLiveData(viewModelScope.coroutineContext)
     }
 
-    fun addUser(userSignUpBody: UserSignUpBody){
-        when (checkAddUser(userSignUpBody).value) {
-            201 -> authenticationState.postValue(AuthenticationState.AUTHENTICATED)
-            409 -> authenticationState.postValue(AuthenticationState.INVALID_AUTHENTICATION)
-            else -> authenticationState.postValue(AuthenticationState.UNAUTHENTICATED)
-        }
+    fun checkAddUser(userSignUpBody: UserSignUpBody): LiveData<Response<RootUserResponse>> {
+        return flow {
+            emit(authService.signUp(userSignUpBody))
+        }.asLiveData(viewModelScope.coroutineContext)
     }
 
-    private fun checkAddUser(userSignUpBody: UserSignUpBody): LiveData<Int> {
-        return flow {
-            emit(authService.signUp(userSignUpBody).code())
-        }.asLiveData(viewModelScope.coroutineContext)
+    fun markAsGuest() {
+        authenticationState.postValue(AuthenticationState.GUEST)
+    }
+
+    fun markAsAuthenticated() {
+        authenticationState.postValue(AuthenticationState.AUTHENTICATED)
+    }
+
+    fun markAsInvalidAuthentication() {
+        authenticationState.postValue(AuthenticationState.INVALID_AUTHENTICATION)
     }
 
 }

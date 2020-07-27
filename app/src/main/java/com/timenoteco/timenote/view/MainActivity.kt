@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         viewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
-        viewModel.authenticationState.observe(this, Observer {
+        viewModel.getAuthenticationState().observe(this, Observer {
             when (it) {
                 AuthenticationState.AUTHENTICATED -> setupController(true)
                 AuthenticationState.UNAUTHENTICATED -> findNavController(R.id.nav_host_fragment_main).navigate(R.id.login)

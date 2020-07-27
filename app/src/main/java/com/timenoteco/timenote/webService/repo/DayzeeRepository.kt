@@ -1,13 +1,14 @@
 package com.timenoteco.timenote.webService.repo
 
 import com.timenoteco.timenote.webService.service.AuthService
+import com.timenoteco.timenote.webService.service.TimenoteService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class DayzeeRepository {
 
     companion object{
-        private const val BASE_URL = "https://timenote-env.eba-2htqeacb.us-east-1.elasticbeanstalk.com/"
+        private const val BASE_URL = "http://timenote-env.eba-2htqeacb.us-east-1.elasticbeanstalk.com/"
     }
 
     private val authService = Retrofit.Builder()
@@ -17,6 +18,10 @@ class DayzeeRepository {
 
     fun getAuthService(): AuthService {
         return authService.create(AuthService::class.java)
+    }
+
+    fun getTimenoteService(): TimenoteService{
+        return  authService.create(TimenoteService::class.java)
     }
 
 }

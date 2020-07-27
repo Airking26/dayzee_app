@@ -86,7 +86,7 @@ class PreferenceCategory : Fragment(), View.OnClickListener {
                     preferenceViewModel.getPreferences().value?.forEach { if(it.category.isSelected) count++}
                     if(count > 0) view?.findNavController()?.navigate(PreferenceCategoryDirections.actionPreferenceCategoryToPreferenceSubCategory(preferenceCategoryArgs.isInLogin))
                     else {
-                        viewModel.authenticationState.value = LoginViewModel.AuthenticationState.GUEST
+                        viewModel.markAsGuest()
                     }
 
             }

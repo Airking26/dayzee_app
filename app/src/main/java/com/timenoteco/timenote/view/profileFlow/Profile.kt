@@ -303,12 +303,12 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
             .into(profile_pic_imageview)
 
         profilePastFuturePagerAdapter = ProfilePastFuturePagerAdapter(childFragmentManager, lifecycle, showFilterBar, this)
-        profile_vp.apply {
+        profile_vp?.apply {
             adapter = profilePastFuturePagerAdapter
             isUserInputEnabled = false
             isSaveEnabled = false
             post {
-                profile_vp.currentItem = 1
+                profile_vp?.currentItem = 1
             }
         }
 

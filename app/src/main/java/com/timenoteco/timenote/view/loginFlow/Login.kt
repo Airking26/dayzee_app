@@ -33,7 +33,7 @@ class Login : Fragment() {
             viewModel.refuseAuthentication()
         }
 
-        viewModel.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
+        viewModel.getAuthenticationState().observe(viewLifecycleOwner, Observer { authenticationState ->
             when (authenticationState) {
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> findNavController().popBackStack()
                 LoginViewModel.AuthenticationState.UNAUTHENTICATED -> Log.d("", "")

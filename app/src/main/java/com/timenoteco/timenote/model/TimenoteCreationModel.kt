@@ -3,7 +3,6 @@ package com.timenoteco.timenote.model
 import com.google.gson.annotations.SerializedName
 
 data class TimenoteCreationModel (
-
 	@SerializedName("createdBy") val createdBy : String,
 	@SerializedName("title") val title : String,
 	@SerializedName("description") val description : String?,
