@@ -147,7 +147,7 @@ class ItemTimenoteAdapter(
             screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(itemView.timenote_indicator.adapterDataObserver)
             itemView.timenote_username.text = timenote.username
             itemView.timenote_place.text = timenote.place
-            val test = "Ronny Dahan et des milliers d'autres personnes ont enregistré ce Dayzee"
+            val test = "Saved by Jordan Dahan and thousands of other people"
 
             val p = Typeface.create("sans-serif-light", Typeface.NORMAL)
             val m = Typeface.create("sans-serif", Typeface.NORMAL)
@@ -155,8 +155,8 @@ class ItemTimenoteAdapter(
             val k = ItemTimenoteToComeAdapter.CustomTypefaceSpan(m)
 
             val t = SpannableStringBuilder(test)
-            t.setSpan(k, 0, 45, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
-            t.setSpan(o, 46, test.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+            t.setSpan(o, 0, 8, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+            t.setSpan(k, 9, test.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
 
             itemView.timenote_added_by.text = t
 

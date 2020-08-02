@@ -51,6 +51,7 @@ import com.theartofdev.edmodo.cropper.CropImageView
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ScreenSlideCreationTimenotePagerAdapter
 import com.timenoteco.timenote.adapter.WebSearchAdapter
+import com.timenoteco.timenote.common.HashTagHelper
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.TimenoteCreationPicListeners
 import com.timenoteco.timenote.model.StatusTimenote
@@ -70,7 +71,8 @@ import java.util.*
 
 class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleImageSelectedListener,
     BSImagePicker.OnMultiImageSelectedListener, BSImagePicker.ImageLoaderDelegate, BSImagePicker.OnSelectImageCancelledListener,
-    TimenoteCreationPicListeners, WebSearchAdapter.ImageChoosedListener, WebSearchAdapter.MoreImagesClicked {
+    TimenoteCreationPicListeners, WebSearchAdapter.ImageChoosedListener, WebSearchAdapter.MoreImagesClicked,
+    HashTagHelper.OnHashTagClickListener {
 
     private val AUTOCOMPLETE_REQUEST_CODE: Int = 11
     private lateinit var progressDialog: Dialog
@@ -439,6 +441,14 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                     prefill = creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.desc
                 ) { materialDialog, charSequence ->
                     descTv.text = charSequence.toString()
+                    val hashTagHelper = HashTagHelper.Creator.create(R.color.colorAccentCustom, this@CreateTimenote, null)
+                    hashTagHelper.handle(descTv)
+                    val hashtagList = hashTagHelper.getAllHashTags(true)
+                    var descWithoutHashtag = descTv.text.toString()
+                    for(hashtag in hashtagList){
+                        descWithoutHashtag = descWithoutHashtag.replace(hashtag, "")
+                    }
+                    var descWithoutHashtagFormated = descWithoutHashtag.replace("\\s+".toRegex(), " ").trim().capitalize()
                     creationTimenoteViewModel.setDescription(charSequence.toString())
                 }
             }
@@ -805,6 +815,9 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
 
     override fun onMoreImagesClicked(position: Int, query: String) {
         webSearchViewModel.search(query, requireContext(), (position).toLong())
+    }
+
+    override fun onHashTagClicked(hashTag: String?) {
     }
 
 }

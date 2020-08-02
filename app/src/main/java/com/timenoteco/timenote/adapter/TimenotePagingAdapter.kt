@@ -17,6 +17,7 @@ class TimenotePagingAdapter(diffCallbacks: DiffUtil.ItemCallback<Json4Kotlin_Bas
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemTimenoteAdapter.TimenoteViewHolder =
         ItemTimenoteAdapter.TimenoteViewHolder(parent)
+
 }
 
 object TimenoteComparator : DiffUtil.ItemCallback<Json4Kotlin_Base>(){

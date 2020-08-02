@@ -225,4 +225,7 @@
     <string name="invite_friends">Invite Friends</string>
     <string name="profile_preview">Profile Preview</string>
     <string name="msg_token_fmt">token_fcm</string>
+    <string name="identifiant">Username</string>
+    <string name="mail">Email</string>
+    <string name="username_email">Email / Username</string>
 </resources>

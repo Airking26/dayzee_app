@@ -282,13 +282,14 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
                 1
             )
         )
-        timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this)
+
+        /*timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this)
         home_rv.adapter = timenotePagingAdapter
         lifecycleScope.launch {
             timenoteViewModel.timenotePagingFlow.collectLatest {
                 timenotePagingAdapter.submitData(it)
             }
-        }
+        }*/
 
         timenoteAdapter = ItemTimenoteAdapter(timenotes, timenotes, true, this, this, this as Fragment)
         home_rv.apply {

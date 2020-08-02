@@ -2,10 +2,14 @@ package com.timenoteco.timenote.view.nearByFlow
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.ContentValues
 import android.content.Context.LOCATION_SERVICE
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.*
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
@@ -22,6 +26,12 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.android.libraries.places.widget.Autocomplete
+import com.google.android.libraries.places.widget.AutocompleteActivity
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ItemTimenoteAdapter
 import com.timenoteco.timenote.common.Utils
@@ -35,6 +45,7 @@ import java.util.*
 
 class NearBy : Fragment(), View.OnClickListener, PlacePickerListener, TimenoteOptionsListener {
 
+    private val AUTOCOMPLETE_REQUEST_CODE: Int = 12
     private lateinit var locationManager: LocationManager
     private lateinit var nearbyDateTv: TextView
     private var timenotes: List<Timenote> = mutableListOf()
@@ -42,9 +53,18 @@ class NearBy : Fragment(), View.OnClickListener, PlacePickerListener, TimenoteOp
     private lateinit var dateFormat : SimpleDateFormat
     private lateinit var timenoteAdapter: ItemTimenoteAdapter
     private var googleMap: GoogleMap? = null
+    private var placesList: List<Place.Field> = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS)
+    private lateinit var placesClient: PlacesClient
     private val callback = OnMapReadyCallback { googleMap ->
         this.googleMap = googleMap
     }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Places.initialize(requireContext(), "AIzaSyBhM9HQo1fzDlwkIVqobfmrRmEMCWTU1CA")
+        placesClient = Places.createClient(requireContext())
+    }
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
        val view =  inflater.inflate(R.layout.fragment_near_by, container, false)
@@ -317,6 +337,31 @@ class NearBy : Fragment(), View.OnClickListener, PlacePickerListener, TimenoteOp
 
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            when (resultCode) {
+                Activity.RESULT_OK -> {
+                    data?.let {
+                        val place = Autocomplete.getPlaceFromIntent(data)
+                        //creationTimenoteViewModel.setLocation(place.address!!)
+                        Log.i(ContentValues.TAG, "Place: ${place.name}, ${place.id}")
+                    }
+                }
+                AutocompleteActivity.RESULT_ERROR -> {
+                    data?.let {
+                        val status = Autocomplete.getStatusFromIntent(data)
+                        Log.i(ContentValues.TAG, status.statusMessage!!)
+                    }
+                }
+                Activity.RESULT_CANCELED -> {
+                    // The user canceled the operation.
+                }
+            }
+            return
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
     private fun checkIfCanGetLocation() {
         locationManager = requireContext().getSystemService(LOCATION_SERVICE) as LocationManager
         if (ActivityCompat.checkSelfPermission(
@@ -351,7 +396,7 @@ class NearBy : Fragment(), View.OnClickListener, PlacePickerListener, TimenoteOp
             )
         )
         googleMap?.animateCamera(CameraUpdateFactory.zoomTo(15.0f))
-        nearby_place.text = geocoder.getFromLocation(location?.latitude!!, location.longitude, 1)[0].getAddressLine(0)
+        nearby_place.text = geocoder.getFromLocation(location?.latitude!!, location.longitude, 1)[0].getAddressLine(0) ?: geocoder.getFromLocation(location.latitude, location.longitude, 1)[0].countryName
 
     }
 
@@ -373,9 +418,7 @@ class NearBy : Fragment(), View.OnClickListener, PlacePickerListener, TimenoteOp
 
     override fun onClick(v: View?) {
         when(v){
-            nearby_place -> {
-                Utils().placePicker(requireContext(), this@NearBy, nearby_place, this, true, requireActivity())
-            }
+            nearby_place -> startActivityForResult(Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, placesList).build(requireContext()), AUTOCOMPLETE_REQUEST_CODE)
             nearby_time -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 onDismiss { Utils().hideStatusBar(requireActivity()) }
                 datePicker { dialog, datetime ->
