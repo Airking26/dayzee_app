@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.LayoutMode
@@ -16,7 +15,6 @@ import com.afollestad.materialdialogs.datetime.dateTimePicker
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ItemTimenoteAdapter
-import com.timenoteco.timenote.adapter.TimenoteComparator
 import com.timenoteco.timenote.adapter.TimenotePagingAdapter
 import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
@@ -24,8 +22,6 @@ import com.timenoteco.timenote.model.Timenote
 import com.timenoteco.timenote.model.StatusTimenote
 import com.timenoteco.timenote.viewModel.TimenoteViewModel
 import kotlinx.android.synthetic.main.fragment_home.*
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, TimenoteOptionsListener {
 

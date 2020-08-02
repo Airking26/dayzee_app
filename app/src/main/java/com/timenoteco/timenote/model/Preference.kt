@@ -2,20 +2,19 @@ package com.timenoteco.timenote.model
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.timenoteco.timenote.model.Category
-import com.timenoteco.timenote.model.SubCategory
 
-data class Preference(var category: Category, var subCategories: List<SubCategory>, var index: Int): Parcelable {
+data class Preference(var category: Category?, var subCategories: List<SubCategory>, var index: Int): Parcelable {
 
     constructor(parcel: Parcel) : this(
-        parcel.readParcelable(Category::class.java.classLoader)!!,
+       // parcel.readParcelable(Category::class.java.classLoader)!!,
+        null,
         parcel.createTypedArrayList(SubCategory)!!,
         parcel.readInt()
     ) {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeParcelable(category, flags)
+        //parcel.writeParcelable(category, flags)
         parcel.writeTypedList(subCategories)
         parcel.writeInt(index)
     }

@@ -82,9 +82,4 @@ class Signup: Fragment(), View.OnClickListener {
             })*/
         }
     }
-
-    fun isValidEmail(target: String?): Boolean {
-        return !TextUtils.isEmpty(target) && Patterns.EMAIL_ADDRESS.matcher(target!!)
-            .matches()
-    }
 }

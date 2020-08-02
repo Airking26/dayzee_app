@@ -1,14 +1,13 @@
 package com.timenoteco.timenote.paging
 
-import androidx.paging.PagingData
 import androidx.paging.PagingSource
-import com.timenoteco.timenote.model.Json4Kotlin_Base
+import com.timenoteco.timenote.model.TimenoteModel
 import com.timenoteco.timenote.webService.service.TimenoteService
 
 class TimenoteRemotePagingSource(val timenoteService: TimenoteService):
-    PagingSource<Int, Json4Kotlin_Base>() {
+    PagingSource<Int, TimenoteModel>() {
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Json4Kotlin_Base> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, TimenoteModel> {
         return try {
             val nextPageNumber = params.key ?: 1
             val response = timenoteService.getAllTimenotes(nextPageNumber)
