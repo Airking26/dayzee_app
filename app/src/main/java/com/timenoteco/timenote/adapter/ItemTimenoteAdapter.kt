@@ -189,8 +189,8 @@ class ItemTimenoteAdapter(
         private fun createOptionsOnTimenote(context: Context, isMine: Boolean, timenoteListenerListener: TimenoteOptionsListener){
             val listItems: MutableList<String>
             if(isMine) listItems = mutableListOf(context.getString(R.string.duplicate), context.getString(
-                            R.string.edit), context.getString(R.string.delete), context.getString(R.string.alarm))
-            else listItems = mutableListOf(context.getString(R.string.duplicate), context.getString(R.string.delete), context.getString(R.string.alarm), context.getString(R.string.report))
+                            R.string.edit), context.getString(R.string.delete), context.getString(R.string.alarm), context.getString(R.string.hide_to_others))
+            else listItems = mutableListOf(context.getString(R.string.duplicate), context.getString(R.string.delete), context.getString(R.string.alarm), context.getString(R.string.report), context.getString(R.string.mask_user))
             MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.posted_false)
                 listItems (items = listItems){ dialog, index, text ->
@@ -201,6 +201,7 @@ class ItemTimenoteAdapter(
                         context.getString(R.string.alarm) -> timenoteListenerListener.onAlarmClicked()
                         context.getString(R.string.delete) -> timenoteListenerListener.onDeleteClicked()
                         context.getString(R.string.hide_to_others) -> timenoteListenerListener.onHideToOthersClicked()
+                        context.getString(R.string.mask_user) -> timenoteListenerListener.onMaskThisUser()
                     }
                 }
             }

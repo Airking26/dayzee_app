@@ -16,7 +16,7 @@ fun BottomNavigationView.setupWithNavController(navGraphIds: List<Int>, fragment
 
     // Map of tags
     val graphIdToTagMap = SparseArray<String>()
-    // Result. Mutable live data with the selected controlled
+    // com.timenoteco.timenote.model.Result. Mutable live data with the selected controlled
     val selectedNavController = MutableLiveData<NavController>()
 
     var firstFragmentGraphId = 0

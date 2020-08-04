@@ -12,21 +12,21 @@ class DayzeeRepository {
         private const val BASE_URL = "http://timenote-env.eba-2htqeacb.us-east-1.elasticbeanstalk.com/"
     }
 
-    private val authService = Retrofit.Builder()
+    private val service = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
     fun getAuthService(): AuthService {
-        return authService.create(AuthService::class.java)
+        return service.create(AuthService::class.java)
     }
 
     fun getTimenoteService(): TimenoteService{
-        return authService.create(TimenoteService::class.java)
+        return service.create(TimenoteService::class.java)
     }
 
     fun getProfileService(): ProfileService{
-        return authService.create(ProfileService::class.java)
+        return service.create(ProfileService::class.java)
     }
 
 }

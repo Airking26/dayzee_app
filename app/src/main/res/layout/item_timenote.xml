@@ -95,9 +95,9 @@
         android:id="@+id/timenote_year"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingEnd="4dp"
         android:fontFamily="sans-serif-light"
         android:gravity="center"
+        android:layout_marginEnd="8dp"
         android:shadowColor="@android:color/black"
         android:shadowDx="1"
         android:shadowDy="1"
@@ -108,19 +108,18 @@
         app:layout_constraintBottom_toBottomOf="@id/separator_1"
         app:layout_constraintEnd_toStartOf="@id/separator_1"
         app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="@id/timenote_vp"
         app:layout_constraintTop_toTopOf="@id/separator_1" />
 
     <TextView
         android:id="@+id/separator_1"
         android:layout_width="2dp"
         android:layout_height="48dp"
+        android:layout_marginStart="160dp"
         android:layout_marginBottom="8dp"
         android:background="@drawable/custom"
         android:fontFamily="sans-serif-light"
         app:layout_constraintBottom_toBottomOf="@id/timenote_vp"
-        app:layout_constraintEnd_toStartOf="@id/timenote_day_month"
-        app:layout_constraintStart_toEndOf="@id/timenote_year" />
+        app:layout_constraintStart_toStartOf="@id/timenote_vp" />
 
     <TextView
         android:id="@+id/timenote_day_month"
@@ -132,8 +131,7 @@
         android:shadowDx="1"
         android:shadowDy="1"
         android:shadowRadius="1.5"
-        android:text="10\nAug."
-        android:paddingHorizontal="4dp"
+        android:text="11\nAug"
         android:textColor="@android:color/white"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@id/separator_2"
@@ -145,29 +143,28 @@
         android:id="@+id/separator_2"
         android:layout_width="2dp"
         android:layout_height="48dp"
+        android:layout_marginEnd="160dp"
         android:layout_marginBottom="8dp"
         android:background="@drawable/custom"
         android:fontFamily="sans-serif-light"
         app:layout_constraintBottom_toBottomOf="@id/timenote_vp"
-        app:layout_constraintEnd_toStartOf="@id/timenote_time"
-        app:layout_constraintStart_toEndOf="@id/timenote_day_month" />
+        app:layout_constraintEnd_toEndOf="@id/timenote_vp" />
 
     <TextView
         android:id="@+id/timenote_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingStart="4dp"
         android:fontFamily="sans-serif-light"
         android:gravity="center"
+        android:layout_marginStart="8dp"
         android:shadowColor="@android:color/black"
         android:shadowDx="1"
         android:shadowDy="1"
         android:shadowRadius="1.5"
-        android:text="11Aug.\n12:30"
+        android:text="12:30"
         android:textColor="@android:color/white"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@id/separator_2"
-        app:layout_constraintEnd_toEndOf="@id/timenote_vp"
         app:layout_constraintStart_toEndOf="@id/separator_2"
         app:layout_constraintTop_toTopOf="@id/separator_2" />
 
@@ -301,5 +298,12 @@
         android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/timenote_username_desc" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="206dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

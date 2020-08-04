@@ -444,6 +444,9 @@ class NearBy : Fragment(), View.OnClickListener, PlacePickerListener, TimenoteOp
 
     }
 
+    override fun onMaskThisUser() {
+    }
+
     override fun onSeeMoreClicked() {
         findNavController().navigate(NearByDirections.actionNearByToDetailedTimenote())
     }

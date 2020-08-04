@@ -288,8 +288,10 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                 Activity.RESULT_OK -> {
                     data?.let {
                         val place = Autocomplete.getPlaceFromIntent(data)
-                        creationTimenoteViewModel.setLocation(place.address!!)
-                        Log.i(TAG, "Place: ${place.name}, ${place.id}")
+                        creationTimenoteViewModel.fetchLocation(place.id!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                            creationTimenoteViewModel.setLocationObject(it.body()!!)
+                            creationTimenoteViewModel.setLocation(place.address!!)
+                        })
                     }
                 }
                 AutocompleteActivity.RESULT_ERROR -> {
@@ -532,7 +534,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                                     creationTimenoteViewModel.setStatus(StatusTimenote.FREE)
                                 }
                                 negativeButton{
-                                    creationTimenoteViewModel.setStatus(StatusTimenote.FREE)
+                                    creationTimenoteViewModel.setStatus(StatusTimenote.NOANSWER)
                                     creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.url = null
                                 }
                                 lifecycleOwner(this@CreateTimenote)

@@ -14,9 +14,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 For support, please feel free to contact me at https://www.linkedin.com/in/syedabsar */
 
 
-data class Location (
+data class Location(
 
-	@SerializedName("longitude") val longitude : Int,
-	@SerializedName("latitude") val latitude : Int,
-	@SerializedName("address") val address : Address
+    @SerializedName("longitude") val longitude: Double,
+    @SerializedName("latitude") val latitude: Double,
+    @SerializedName("address") val address: Address
 )

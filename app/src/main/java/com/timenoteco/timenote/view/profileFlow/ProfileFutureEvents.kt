@@ -322,6 +322,9 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
     override fun onHideToOthersClicked() {
     }
 
+    override fun onMaskThisUser() {
+    }
+
     override fun onHideFilterBarClicked(position: Int?) {
         this.onRemoveFilterBarListener.onHideFilterBarClicked(1)
     }

@@ -1,12 +1,12 @@
 package com.timenoteco.timenote.viewModel
 
 import android.graphics.Bitmap
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.timenoteco.timenote.model.CreateTimenoteModel
-import com.timenoteco.timenote.model.StatusTimenote
+import androidx.lifecycle.*
+import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.webService.CreationTimenoteData
+import com.timenoteco.timenote.webService.repo.PlaceRepository
+import kotlinx.coroutines.flow.flow
+import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -20,11 +20,18 @@ class CreationTimenoteViewModel: ViewModel() {
     private val YEAR = "yyyy"
 
     private val timenoteLiveData = MutableLiveData<CreateTimenoteModel>()
+    private val timenoteLiveDataDB = MutableLiveData<CreateTimenoteModelDB>()
     private val createTimenoteData: CreationTimenoteData = CreationTimenoteData()
+    private val placeService = PlaceRepository().getPlaceService()
 
     fun getCreateTimeNoteLiveData(): LiveData<CreateTimenoteModel>{
         timenoteLiveData.postValue(createTimenoteData.loadCreateTimenoteData())
         return timenoteLiveData
+    }
+
+    fun getCreateTimeNoteLiveDataDB(): LiveData<CreateTimenoteModelDB>{
+        timenoteLiveDataDB.postValue(createTimenoteData.loadCreateTimenoteDataDB())
+        return timenoteLiveDataDB
     }
 
     fun setFormat(format: Int) = timenoteLiveData.postValue(createTimenoteData.setFormat(format))
@@ -40,6 +47,15 @@ class CreationTimenoteViewModel: ViewModel() {
     fun setEndDate(endDate: Long) = timenoteLiveData.postValue(createTimenoteData.setEndDate(formatDate(DATE_FORMAT_SAME_DAY_SAME_TIME, endDate)))
     fun setColor(color: String) = timenoteLiveData.postValue(createTimenoteData.setColor(color))
     fun setStatus(StatusTimenote: StatusTimenote) = timenoteLiveData.postValue(createTimenoteData.setStatus(StatusTimenote))
+    fun fetchLocation(id : String): LiveData<Response<DetailedPlace>> {
+      return flow {
+          emit(placeService.getDetailedPlace(id, "AIzaSyBhM9HQo1fzDlwkIVqobfmrRmEMCWTU1CA"))
+      }.asLiveData(viewModelScope.coroutineContext)
+    }
+
+    fun setLocationObject(detailedPlace: DetailedPlace){
+        timenoteLiveDataDB.postValue(createTimenoteData.setLocation(detailedPlace))
+    }
 
     fun setFormatedStartDate(startDate: Long, endDate: Long){
         if(formatDate(DATE_FORMAT_DAY, startDate) == formatDate(DATE_FORMAT_DAY, endDate)){

@@ -37,7 +37,7 @@ class PreferenceCategory : Fragment(), View.OnClickListener {
         preferenceViewModel = ViewModelProvider(this).get(PreferenceViewModel::class.java)
         preferenceViewModel.getPreferences().observe(viewLifecycleOwner, Observer {
             for(preference in it){
-                when(preference.index){
+               /* when(preference.index){
                     0 -> changeStatusCategory(preference.category.isSelected, pref_city_btn, R.drawable.ic_pref_city, R.drawable.ic_pref_city_clicked)
                     1 -> changeStatusCategory(preference.category.isSelected, pref_sport_btn, R.drawable.ic_pref_sport, R.drawable.ic_pref_sport_clicked)
                     2 -> changeStatusCategory(preference.category.isSelected, pref_music_btn, R.drawable.ic_pref_music, R.drawable.ic_pref_music_clicked)
@@ -49,7 +49,7 @@ class PreferenceCategory : Fragment(), View.OnClickListener {
                     8 -> changeStatusCategory(preference.category.isSelected, pref_shopping_btn, R.drawable.ic_pref_shopping, R.drawable.ic_pref_shopping_clicked)
                     9 -> changeStatusCategory(preference.category.isSelected, pref_holiday_btn, R.drawable.ic_pref_holiday, R.drawable.ic_pref_holiday_clicked)
 
-                }
+                }*/
             }
         })
         setButtons()
@@ -83,8 +83,11 @@ class PreferenceCategory : Fragment(), View.OnClickListener {
             pref_holiday_btn -> preferenceViewModel.setStatusCategory(9)
             pref_category_btn_next -> {
                     var count = 0
-                    preferenceViewModel.getPreferences().value?.forEach { if(it.category.isSelected) count++}
-                    if(count > 0) view?.findNavController()?.navigate(PreferenceCategoryDirections.actionPreferenceCategoryToPreferenceSubCategory(preferenceCategoryArgs.isInLogin))
+                    preferenceViewModel.getPreferences().value?.forEach {
+                //        if(it.category.isSelected) count++
+                    }
+
+                if(count > 0) view?.findNavController()?.navigate(PreferenceCategoryDirections.actionPreferenceCategoryToPreferenceSubCategory(preferenceCategoryArgs.isInLogin))
                     else {
                         viewModel.markAsGuest()
                     }

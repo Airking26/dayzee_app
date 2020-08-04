@@ -228,4 +228,5 @@
     <string name="identifiant">Username</string>
     <string name="mail">Email</string>
     <string name="username_email">Email / Username</string>
+    <string name="mask_user">Mask this user</string>
 </resources>

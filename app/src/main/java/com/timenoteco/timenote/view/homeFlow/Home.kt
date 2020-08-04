@@ -310,6 +310,10 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
 
     }
 
+    override fun onMaskThisUser() {
+
+    }
+
     override fun onTimenoteRecentClicked() {
         findNavController().navigate(HomeDirections.actionHomeToDetailedTimenote())
     }

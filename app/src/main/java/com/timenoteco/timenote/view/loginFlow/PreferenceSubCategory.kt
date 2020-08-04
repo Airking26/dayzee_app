@@ -88,10 +88,9 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
         chips.clear()
         subcategories.clear()
         for (p in prefList) {
-            if (p.category.isSelected) {
-                chips.add(p.category.name)
+            /*if (p.category.isSelected) { chips.add(p.category.name)
                 subcategories[p.category.name] = p.subCategories
-            }
+            }*/
         }
         chipAdapter.notifyDataSetChanged()
         cardAdapter.notifyDataSetChanged()

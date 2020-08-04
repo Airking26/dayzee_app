@@ -34,4 +34,5 @@ interface TimenoteService {
     @GET("timenote/{id}/users/{offset}")
     suspend fun getUsersParticipatingTimenote(@Path("id") id: String, @Path("offset") offset: Int) : Response<List<UserResponse>>
 
+
 }
