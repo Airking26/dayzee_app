@@ -24,6 +24,13 @@
                 style="@style/AppTheme.Toolbar.TextLeft"
                 android:text="@string/next" />
 
+            <TextView
+                android:fontFamily="sans-serif-light"
+                android:drawableStart="@drawable/ic_baseline_keyboard_arrow_left_24"
+                android:id="@+id/create_timenote_btn_back"
+                style="@style/AppTheme.Toolbar.TextRight"
+                android:text="@string/back" />
+
 
         </androidx.appcompat.widget.Toolbar>
 

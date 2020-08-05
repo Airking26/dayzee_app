@@ -12,6 +12,20 @@
         <action
             android:id="@+id/action_createTimenote_to_previewTimenoteCreated"
             app:destination="@id/previewTimenoteCreated" />
+        <argument
+            android:defaultValue="false"
+            android:name="modify"
+            app:argType="boolean" />
+        <argument
+            android:defaultValue="@null"
+            android:name="id"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:defaultValue="@null"
+            android:name="timenoteBody"
+            app:argType="com.timenoteco.timenote.model.TimenoteBody"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/previewTimenoteCreated"

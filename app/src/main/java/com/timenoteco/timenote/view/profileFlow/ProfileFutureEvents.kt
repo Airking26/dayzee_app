@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.LayoutMode
@@ -14,20 +16,28 @@ import com.afollestad.materialdialogs.datetime.datePicker
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ItemProfileEventAdapter
+import com.timenoteco.timenote.adapter.ProfileEventComparator
+import com.timenoteco.timenote.adapter.ProfileEventPagingAdapter
 import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.Timenote
 import com.timenoteco.timenote.model.StatusTimenote
+import com.timenoteco.timenote.viewModel.ProfileViewModel
 import kotlinx.android.synthetic.main.fragment_profile_future_events.*
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 private const val ARG_PARAM1 = "showHideFilterBar"
 
 class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarListener {
 
+
     private var showHideFilterBar: Boolean? = null
     private var eventAdapter: ItemProfileEventAdapter? = null
     private var timenotes: MutableList<Timenote> = mutableListOf()
     private lateinit var onRemoveFilterBarListener: OnRemoveFilterBarListener
+    private val profileViewModel : ProfileViewModel by activityViewModels()
+    private lateinit var profileEventPagingAdapter : ProfileEventPagingAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -288,6 +298,13 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
         )
         eventAdapter = ItemProfileEventAdapter(timenotes, this, this, showHideFilterBar!!)
 
+        /*profileEventPagingAdapter = ProfileEventPagingAdapter(ProfileEventComparator, showHideFilterBar!!, this, this)
+        profile_rv.adapter = profileEventPagingAdapter
+        lifecycleScope.launch {
+            profileViewModel.getFutureTimenotes(showHideFilterBar!!).collectLatest {
+                profileEventPagingAdapter.submitData(it)
+            }
+        }*/
 
         profile_rv.apply {
             layoutManager = LinearLayoutManager(view.context)
@@ -323,6 +340,14 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
     }
 
     override fun onMaskThisUser() {
+    }
+
+    override fun onDoubleClick() {
+
+    }
+
+    override fun onSeeParticipants() {
+
     }
 
     override fun onHideFilterBarClicked(position: Int?) {

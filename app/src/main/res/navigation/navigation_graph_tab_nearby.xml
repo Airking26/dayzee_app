@@ -20,6 +20,12 @@
         <action
             android:id="@+id/action_nearBy_to_profile"
             app:destination="@id/profile" />
+        <action
+            android:id="@+id/action_nearBy_to_timenoteAddress"
+            app:destination="@id/timenoteAddress" />
+        <action
+            android:id="@+id/action_nearBy_to_createTimenote"
+            app:destination="@id/createTimenote" />
     </fragment>
     <fragment
         android:id="@+id/nearbyFilters"
@@ -51,4 +57,34 @@
             android:name="whereFrom"
             app:argType="boolean" />
     </fragment>
+    <fragment
+        android:id="@+id/timenoteAddress"
+        android:name="com.timenoteco.timenote.view.homeFlow.TimenoteAddress"
+        android:label="fragment_timenote_address"
+        tools:layout="@layout/fragment_timenote_address" />
+    <fragment
+        android:id="@+id/createTimenote"
+        android:name="com.timenoteco.timenote.view.createTimenoteFlow.CreateTimenote"
+        android:label="fragment_create_timenote"
+        tools:layout="@layout/fragment_create_timenote" >
+        <action
+            android:id="@+id/action_createTimenote_to_previewTimenoteCreated2"
+            app:destination="@id/previewTimenoteCreated" />
+        <argument
+            android:name="modify"
+            app:argType="boolean" />
+        <argument
+            android:name="id"
+            app:argType="string"
+            app:nullable="true"/>
+        <argument
+            android:name="timenoteBody"
+            app:argType="com.timenoteco.timenote.model.TimenoteBody"
+            app:nullable="true"/>
+    </fragment>
+    <fragment
+        android:id="@+id/previewTimenoteCreated"
+        android:name="com.timenoteco.timenote.view.createTimenoteFlow.PreviewTimenoteCreated"
+        android:label="fragment_preview_timenote_created"
+        tools:layout="@layout/fragment_preview_timenote_created" />
 </navigation>

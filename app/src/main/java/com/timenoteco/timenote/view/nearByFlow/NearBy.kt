@@ -8,19 +8,25 @@ import android.content.Context.LOCATION_SERVICE
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.*
+import android.location.Address
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.callbacks.onDismiss
+import com.afollestad.materialdialogs.customview.customView
+import com.afollestad.materialdialogs.customview.getCustomView
 import com.afollestad.materialdialogs.datetime.datePicker
+import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -34,17 +40,24 @@ import com.google.android.libraries.places.widget.AutocompleteActivity
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ItemTimenoteAdapter
+import com.timenoteco.timenote.adapter.UsersPagingAdapter
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.PlacePickerListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
-import com.timenoteco.timenote.model.Timenote
-import com.timenoteco.timenote.model.StatusTimenote
+import com.timenoteco.timenote.model.*
+import com.timenoteco.timenote.viewModel.ProfileViewModel
+import com.timenoteco.timenote.viewModel.TimenoteViewModel
 import kotlinx.android.synthetic.main.fragment_near_by.*
+import kotlinx.android.synthetic.main.users_participating.view.*
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
 class NearBy : Fragment(), View.OnClickListener, PlacePickerListener, TimenoteOptionsListener {
 
+    private val timenoteViewModel: TimenoteViewModel by activityViewModels()
+    private val profileViewModel: ProfileViewModel by activityViewModels()
     private val AUTOCOMPLETE_REQUEST_CODE: Int = 12
     private lateinit var locationManager: LocationManager
     private lateinit var nearbyDateTv: TextView
@@ -447,26 +460,62 @@ class NearBy : Fragment(), View.OnClickListener, PlacePickerListener, TimenoteOp
     override fun onMaskThisUser() {
     }
 
+    override fun onDoubleClick() {
+        timenoteViewModel.getSpecificTimenote("").observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            if(it.body()?.joinedBy?.contains("")!!) timenoteViewModel.joinTimenote("")
+            else timenoteViewModel.leaveTimenote("")
+        })
+    }
+
+    override fun onSeeParticipants() {
+        val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            customView(R.layout.users_participating)
+            lifecycleOwner(this@NearBy)
+        }
+
+        val recyclerview = dial.getCustomView().users_participating_rv
+        val adapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator)
+        recyclerview.adapter = adapter
+        lifecycleScope.launch{
+            profileViewModel.getUsers(followers = true, useTimenoteService = false, id =  null).collectLatest {
+                adapter.submitData(it)
+            }
+        }
+    }
+
     override fun onSeeMoreClicked() {
         findNavController().navigate(NearByDirections.actionNearByToDetailedTimenote())
     }
 
     override fun onReportClicked() {
+        timenoteViewModel.deleteTimenote("")
     }
 
     override fun onEditClicked() {
+        findNavController().navigate(NearByDirections.actionNearByToCreateTimenote(true, "",
+            TimenoteBody("", CreatedBy("", "", "", "", "", "", ""),
+                "", "", listOf(), "", com.timenoteco.timenote.model.Location(0.0, 0.0, com.timenoteco.timenote.model.Address("", "", "", "")),
+                Category("",""), "", "", listOf(), "", 0, "")
+        ))
     }
 
     override fun onAlarmClicked() {
     }
 
     override fun onDeleteClicked() {
+        timenoteViewModel.deleteTimenote("")
     }
 
     override fun onDuplicateClicked() {
+        findNavController().navigate(NearByDirections.actionNearByToCreateTimenote(true, "",
+            TimenoteBody("", CreatedBy("", "", "", "", "", "", ""),
+                "", "", listOf(), "", com.timenoteco.timenote.model.Location(0.0, 0.0, com.timenoteco.timenote.model.Address("", "", "", "")),
+                Category("",""), "", "", listOf(), "", 0, "")
+        ))
     }
 
     override fun onAddressClicked() {
+        findNavController().navigate(NearByDirections.actionNearByToTimenoteAddress())
     }
 
 }

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.timenoteco.timenote.R
+import com.timenoteco.timenote.listeners.DoubleClickListener
 import kotlinx.android.synthetic.main.timenote_view_image.*
 
 private const val ARG_PARAM1 = "position"
@@ -16,7 +17,7 @@ private const val ARG_PARAM3 = "hideIcons"
 
 
 class ScreenSlideTimenoteImageFragment : Fragment() {
-    private lateinit var itemClickListener: (Int) -> Unit
+    private lateinit var itemClickListener: (Int, Int) -> Unit
     private var position: Int? = null
     private var url: String? = null
     private var hideIcons: Boolean? = null
@@ -43,7 +44,16 @@ class ScreenSlideTimenoteImageFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         Glide.with(this).load(Uri.parse(url)).into(create_timenote_pic)
-        create_timenote_pic.setOnClickListener { itemClickListener(position!!) }
+        create_timenote_pic.setOnClickListener(object: DoubleClickListener(){
+            override fun onSimpleClick() {
+                itemClickListener(position!!, 0)
+            }
+
+            override fun onDoubleClick() {
+                itemClickListener(position!!, 1)
+            }
+
+        })
         if (hideIcons!!) {
             timenote_change_pic.visibility = View.GONE
             timenote_crop_pic.visibility = View.GONE
@@ -57,7 +67,7 @@ class ScreenSlideTimenoteImageFragment : Fragment() {
         }
     }
 
-    fun setImageClickListener(itemClickListener: (Int) -> Unit){
+    fun setImageClickListener(itemClickListener: (Int, Int) -> Unit){
         this.itemClickListener = itemClickListener
     }
 
@@ -67,7 +77,7 @@ class ScreenSlideTimenoteImageFragment : Fragment() {
             position: Int,
             url: String?,
             hideIcons: Boolean,
-            itemClickListener: (Int) -> Unit
+            itemClickListener: (Int, Int) -> Unit
         ) =
             ScreenSlideTimenoteImageFragment().apply {
                     arguments = Bundle().apply {

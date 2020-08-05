@@ -26,6 +26,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.widget.ViewPager2
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
@@ -54,8 +55,10 @@ import com.timenoteco.timenote.adapter.WebSearchAdapter
 import com.timenoteco.timenote.common.HashTagHelper
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.TimenoteCreationPicListeners
+import com.timenoteco.timenote.model.CreateTimenoteModel
 import com.timenoteco.timenote.model.StatusTimenote
 import com.timenoteco.timenote.viewModel.CreationTimenoteViewModel
+import com.timenoteco.timenote.viewModel.TimenoteViewModel
 import com.timenoteco.timenote.viewModel.WebSearchViewModel
 import kotlinx.android.synthetic.main.cropview.view.*
 import kotlinx.android.synthetic.main.fragment_create_timenote.*
@@ -74,6 +77,8 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
     TimenoteCreationPicListeners, WebSearchAdapter.ImageChoosedListener, WebSearchAdapter.MoreImagesClicked,
     HashTagHelper.OnHashTagClickListener {
 
+    private val args : CreateTimenoteArgs by navArgs()
+    private val timenoteViewModel: TimenoteViewModel by activityViewModels()
     private val AUTOCOMPLETE_REQUEST_CODE: Int = 11
     private lateinit var progressDialog: Dialog
     private lateinit var utils: Utils
@@ -127,102 +132,109 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setUp()
-        creationTimenoteViewModel.getCreateTimeNoteLiveData()
-            .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-                when (it.status) {
-                    StatusTimenote.FREE -> {
-                        if(it.url.isNullOrBlank()){
-                        noAnswer.text = getString(R.string.free)
-                        url.visibility = View.GONE
-                        } else {
-                            url.visibility = View.VISIBLE
-                            url.text = it.url
-                        }
-                    }
-                    StatusTimenote.PAID -> {
-                        noAnswer.text = it.price.toString() + "$"
-                        url.visibility = View.VISIBLE
-                        url.text = it.url
-                    }
-                    else -> {
-                        noAnswer.text = getString(R.string.no_answer)
-                        url.visibility = View.GONE
-                    }
-                }
-                if (it.category.isNullOrBlank()) create_timenote_category.text = getString(R.string.none) else create_timenote_category.text = it.category
-                if (it.pic == null) {
-                    takeAddPicTv.visibility = View.VISIBLE
-                    progressBar.visibility = View.GONE
-                    picCl.visibility = View.GONE
-                } else {
-                    hideChooseBackground()
-                    takeAddPicTv.visibility = View.GONE
-                    progressBar.visibility = View.GONE
-                    picCl.visibility = View.VISIBLE
-                }
-                if (it.title.isNullOrBlank()) titleTv.text = getString(R.string.title) else titleTv.text = it.title
-                if (it.place.isNullOrBlank()) create_timenote_where_btn.text = getString(R.string.where) else create_timenote_where_btn.text = it.place
-                if (!it.startDate.isNullOrBlank() && !it.endDate.isNullOrBlank()){
-                    fixedDate.visibility = View.GONE
-                    toLabel.visibility = View.VISIBLE
-                    fromLabel.visibility = View.VISIBLE
-                    toTv.visibility = View.VISIBLE
-                    fromTv.visibility = View.VISIBLE
-                    fromTv.text = it.startDate
-                    toTv.text = it.endDate
-                } else {
-                    fixedDate.visibility = View.VISIBLE
-                    toLabel.visibility = View.GONE
-                    fromLabel.visibility = View.GONE
-                    toTv.visibility = View.GONE
-                    fromTv.visibility = View.GONE
-                    fixedDate.text = it.startDate
-                }
-                if (it.endDate.isNullOrBlank()) toTv.text = "" else toTv.text = it.endDate
-                if (!it.color.isNullOrBlank()) {
-                    when (it.color) {
-                        "#ffff8800" -> colorChoosedUI(
-                            secondColorTv,
-                            thirdColorTv,
-                            fourthColorTv,
-                            moreColorTv,
-                            firstColorTv
-                        )
-                        "#ffcc0000" -> colorChoosedUI(
-                            thirdColorTv,
-                            fourthColorTv,
-                            moreColorTv,
-                            firstColorTv,
-                            secondColorTv
-                        )
-                        "#ff0099cc" -> colorChoosedUI(
-                            fourthColorTv,
-                            moreColorTv,
-                            firstColorTv,
-                            secondColorTv,
-                            thirdColorTv
-                        )
-                        "#ffaa66cc" -> colorChoosedUI(
-                            thirdColorTv,
-                            moreColorTv,
-                            firstColorTv,
-                            secondColorTv,
-                            fourthColorTv
-                        )
-                        else -> {
-                            colorChoosedUI(
-                                firstColorTv,
-                                secondColorTv,
-                                thirdColorTv,
-                                fourthColorTv,
-                                moreColorTv
-                            )
-                            moreColorTv.setBackgroundColor(Color.parseColor(it.color))
-                        }
+        if(!args.modify)creationTimenoteViewModel.getCreateTimeNoteLiveData().observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            populateModel(it)
+        }) else timenoteViewModel.modifySpecificTimenote(args.id!!, args.timenoteBody!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+        })
+    }
 
-                    }
+    private fun populateModel(it: CreateTimenoteModel) {
+        when (it.status) {
+            StatusTimenote.FREE -> {
+                if (it.url.isNullOrBlank()) {
+                    noAnswer.text = getString(R.string.free)
+                    url.visibility = View.GONE
+                } else {
+                    url.visibility = View.VISIBLE
+                    url.text = it.url
                 }
-            })
+            }
+            StatusTimenote.PAID -> {
+                noAnswer.text = it.price.toString() + "$"
+                url.visibility = View.VISIBLE
+                url.text = it.url
+            }
+            else -> {
+                noAnswer.text = getString(R.string.no_answer)
+                url.visibility = View.GONE
+            }
+        }
+        if (it.category.isNullOrBlank()) create_timenote_category.text =
+            getString(R.string.none) else create_timenote_category.text = it.category
+        if (it.pic == null) {
+            takeAddPicTv.visibility = View.VISIBLE
+            progressBar.visibility = View.GONE
+            picCl.visibility = View.GONE
+        } else {
+            hideChooseBackground()
+            takeAddPicTv.visibility = View.GONE
+            progressBar.visibility = View.GONE
+            picCl.visibility = View.VISIBLE
+        }
+        if (it.title.isNullOrBlank()) titleTv.text = getString(R.string.title) else titleTv.text =
+            it.title
+        if (it.place.isNullOrBlank()) create_timenote_where_btn.text =
+            getString(R.string.where) else create_timenote_where_btn.text = it.place
+        if (!it.startDate.isNullOrBlank() && !it.endDate.isNullOrBlank()) {
+            fixedDate.visibility = View.GONE
+            toLabel.visibility = View.VISIBLE
+            fromLabel.visibility = View.VISIBLE
+            toTv.visibility = View.VISIBLE
+            fromTv.visibility = View.VISIBLE
+            fromTv.text = it.startDate
+            toTv.text = it.endDate
+        } else {
+            fixedDate.visibility = View.VISIBLE
+            toLabel.visibility = View.GONE
+            fromLabel.visibility = View.GONE
+            toTv.visibility = View.GONE
+            fromTv.visibility = View.GONE
+            fixedDate.text = it.startDate
+        }
+        if (it.endDate.isNullOrBlank()) toTv.text = "" else toTv.text = it.endDate
+        if (!it.color.isNullOrBlank()) {
+            when (it.color) {
+                "#ffff8800" -> colorChoosedUI(
+                    secondColorTv,
+                    thirdColorTv,
+                    fourthColorTv,
+                    moreColorTv,
+                    firstColorTv
+                )
+                "#ffcc0000" -> colorChoosedUI(
+                    thirdColorTv,
+                    fourthColorTv,
+                    moreColorTv,
+                    firstColorTv,
+                    secondColorTv
+                )
+                "#ff0099cc" -> colorChoosedUI(
+                    fourthColorTv,
+                    moreColorTv,
+                    firstColorTv,
+                    secondColorTv,
+                    thirdColorTv
+                )
+                "#ffaa66cc" -> colorChoosedUI(
+                    thirdColorTv,
+                    moreColorTv,
+                    firstColorTv,
+                    secondColorTv,
+                    fourthColorTv
+                )
+                else -> {
+                    colorChoosedUI(
+                        firstColorTv,
+                        secondColorTv,
+                        thirdColorTv,
+                        fourthColorTv,
+                        moreColorTv
+                    )
+                    moreColorTv.setBackgroundColor(Color.parseColor(it.color))
+                }
+
+            }
+        }
     }
 
     private fun setUp() {
@@ -280,6 +292,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
         paidTimenote.setOnClickListener(this)
         noAnswer.setOnClickListener(this)
         url.setOnClickListener(this)
+        create_timenote_btn_back.setOnClickListener(this)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -577,6 +590,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                 }
                 lifecycleOwner(this@CreateTimenote)
             }
+            create_timenote_btn_back -> findNavController().popBackStack()
 
         }
     }

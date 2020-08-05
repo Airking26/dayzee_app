@@ -13,4 +13,6 @@ interface TimenoteOptionsListener {
     fun onPictureClicked()
     fun onHideToOthersClicked()
     fun onMaskThisUser()
+    fun onDoubleClick()
+    fun onSeeParticipants()
 }

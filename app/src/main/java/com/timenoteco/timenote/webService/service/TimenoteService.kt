@@ -1,5 +1,7 @@
 package com.timenoteco.timenote.webService.service
 
+import com.timenoteco.timenote.model.CreateTimenoteModel
+import com.timenoteco.timenote.model.TimenoteBody
 import com.timenoteco.timenote.model.TimenoteModel
 import com.timenoteco.timenote.model.UserResponse
 import retrofit2.Response
@@ -14,13 +16,13 @@ interface TimenoteService {
     suspend fun getTimenoteId(@Path("id") id: String) : Response<TimenoteModel>
 
     @PATCH("timenote/{id}")
-    suspend fun modifyTimenote(@Path("id") id: String, @Body timenote: TimenoteModel) : Response<TimenoteModel>
+    suspend fun modifyTimenote(@Path("id") id: String, @Body timenote: TimenoteBody) : Response<TimenoteModel>
 
     @DELETE("timenote/{id}")
     suspend fun deleteTimenote(@Path("id") id: String) : Response<Any>
 
     @POST("timenote")
-    suspend fun createTimenote(@Body timenoteModel: TimenoteModel) : Response<TimenoteModel>
+    suspend fun createTimenote(@Body timenoteModel: CreateTimenoteModel) : Response<TimenoteModel>
 
     @PUT("timenote/join/{id}")
     suspend fun joinTimenote(@Path("id") id: String) : Response<Any>

@@ -90,7 +90,6 @@
         app:layout_constraintStart_toStartOf="@id/timenote_vp"
         app:layout_constraintTop_toTopOf="@id/separator_2" />
 
-
     <TextView
         android:id="@+id/timenote_year"
         android:layout_width="wrap_content"
@@ -183,7 +182,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/timenote_vp" />
 
-
     <ImageView
         android:id="@+id/timenote_like"
         android:layout_width="wrap_content"
@@ -203,7 +201,6 @@
         app:layout_constraintBottom_toBottomOf="@id/timenote_like"
         app:layout_constraintStart_toEndOf="@id/timenote_like"
         app:layout_constraintTop_toTopOf="@id/timenote_like" />
-
 
     <me.relex.circleindicator.CircleIndicator3
         android:id="@+id/timenote_indicator"
@@ -226,7 +223,6 @@
         app:layout_constraintBottom_toBottomOf="@id/timenote_like"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/timenote_like" />
-
 
     <LinearLayout
         android:id="@+id/timenote_fl"
@@ -269,7 +265,6 @@
             android:textSize="12sp" />
 
     </LinearLayout>
-
 
     <TextView
         android:id="@+id/timenote_username_desc"

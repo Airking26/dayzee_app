@@ -7,6 +7,7 @@ import android.text.SpannableStringBuilder
 import android.text.TextPaint
 import android.text.style.MetricAffectingSpan
 import android.view.*
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,7 +25,7 @@ import com.timenoteco.timenote.model.StatusTimenote
 import kotlinx.android.synthetic.main.adapter_timenote_recent.view.*
 import kotlinx.android.synthetic.main.item_timenote.view.*
 import kotlinx.android.synthetic.main.item_timenote_recent.view.*
-
+import me.samlss.broccoli.Broccoli
 
 class ItemTimenoteAdapter(
     private val timenotes: List<Timenote>,
@@ -124,14 +125,18 @@ class ItemTimenoteAdapter(
                 .into(itemView.timenote_pic_participant_three)
 
 
-            val screenSlideCreationTimenotePagerAdapter =  ScreenSlideTimenotePagerAdapter(fragment, timenote.pic, true){
-                if(timenote.status ==StatusTimenote.PAID || (timenote.status ==StatusTimenote.FREE && !timenote.url.isNullOrBlank())) {
-                    itemView.timenote_buy.visibility = View.VISIBLE
-                    if(timenote.status == StatusTimenote.PAID){
-                        itemView.timenote_buy.text = "Buy " + timenote.price.toString() + "$"
-                    } else {
-                        itemView.timenote_buy.text = timenote.url
+            val screenSlideCreationTimenotePagerAdapter =  ScreenSlideTimenotePagerAdapter(fragment, timenote.pic, true){ i: Int, i1: Int ->
+                if(i1 == 0) {
+                    if (timenote.status == StatusTimenote.PAID || (timenote.status == StatusTimenote.FREE && !timenote.url.isNullOrBlank())) {
+                        itemView.timenote_buy.visibility = View.VISIBLE
+                        if (timenote.status == StatusTimenote.PAID) {
+                            itemView.timenote_buy.text = "Buy " + timenote.price.toString() + "$"
+                        } else {
+                            itemView.timenote_buy.text = timenote.url
+                        }
                     }
+                } else {
+                    timenoteListenerListener.onDoubleClick()
                 }
             }
 
@@ -179,11 +184,13 @@ class ItemTimenoteAdapter(
             itemView.timenote_options.setOnClickListener {
                 createOptionsOnTimenote(itemView.context, false, timenoteListenerListener)
             }
+
             itemView.timenote_pic_user_imageview.setOnClickListener { timenoteListenerListener.onPictureClicked() }
             itemView.timenote_comment.setOnClickListener { timenoteListenerListener.onCommentClicked() }
             itemView.timenote_plus.setOnClickListener { timenoteListenerListener.onPlusClicked() }
             itemView.timenote_see_more.setOnClickListener { timenoteListenerListener.onSeeMoreClicked() }
             itemView.timenote_place.setOnClickListener{timenoteListenerListener.onAddressClicked()}
+            itemView.timenote_fl.setOnClickListener{timenoteListenerListener.onSeeParticipants()}
         }
 
         private fun createOptionsOnTimenote(context: Context, isMine: Boolean, timenoteListenerListener: TimenoteOptionsListener){

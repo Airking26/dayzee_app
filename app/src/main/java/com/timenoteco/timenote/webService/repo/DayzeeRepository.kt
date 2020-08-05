@@ -1,6 +1,7 @@
 package com.timenoteco.timenote.webService.repo
 
 import com.timenoteco.timenote.webService.service.AuthService
+import com.timenoteco.timenote.webService.service.FollowService
 import com.timenoteco.timenote.webService.service.ProfileService
 import com.timenoteco.timenote.webService.service.TimenoteService
 import retrofit2.Retrofit
@@ -27,6 +28,10 @@ class DayzeeRepository {
 
     fun getProfileService(): ProfileService{
         return service.create(ProfileService::class.java)
+    }
+
+    fun getFollowService(): FollowService{
+        return service.create(FollowService::class.java)
     }
 
 }

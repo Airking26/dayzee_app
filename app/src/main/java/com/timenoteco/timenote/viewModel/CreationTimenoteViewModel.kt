@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import androidx.lifecycle.*
 import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.webService.CreationTimenoteData
+import com.timenoteco.timenote.webService.repo.DayzeeRepository
 import com.timenoteco.timenote.webService.repo.PlaceRepository
 import kotlinx.coroutines.flow.flow
 import retrofit2.Response
@@ -23,6 +24,7 @@ class CreationTimenoteViewModel: ViewModel() {
     private val timenoteLiveDataDB = MutableLiveData<CreateTimenoteModelDB>()
     private val createTimenoteData: CreationTimenoteData = CreationTimenoteData()
     private val placeService = PlaceRepository().getPlaceService()
+    private val timenoteService = DayzeeRepository().getTimenoteService()
 
     fun getCreateTimeNoteLiveData(): LiveData<CreateTimenoteModel>{
         timenoteLiveData.postValue(createTimenoteData.loadCreateTimenoteData())
@@ -84,6 +86,12 @@ class CreationTimenoteViewModel: ViewModel() {
         else dateFormat.format(timestamp)
     }
 
+    fun postTimenote(): LiveData<Response<TimenoteModel>> {
+        return flow {
+            emit(timenoteService.createTimenote(timenoteLiveData.value!!)
+            )
+        }.asLiveData(viewModelScope.coroutineContext)
+    }
 
 
 

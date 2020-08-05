@@ -10,6 +10,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import com.timenoteco.timenote.view.profileFlow.ProfileFutureEvents
@@ -26,7 +27,9 @@ class TimenoteAddress : Fragment() {
     private val callback = OnMapReadyCallback { googleMap ->
         this.googleMap = googleMap
         this.googleMap?.moveCamera(CameraUpdateFactory.newLatLng(LatLng(latitude!!, longitude!!)))
-        this.googleMap?.animateCamera(CameraUpdateFactory.zoomTo(13.0f))    }
+        this.googleMap?.animateCamera(CameraUpdateFactory.zoomTo(13.0f))
+        this.googleMap?.addMarker(MarkerOptions().position(LatLng(latitude!!, longitude!!)))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

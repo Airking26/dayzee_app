@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@android:color/white"
     xmlns:tools="http://schemas.android.com/tools"
     android:padding="4dp"
     xmlns:fancy="http://schemas.android.com/apk/res-auto">
@@ -20,7 +21,7 @@
 
     <TextView
         android:fontFamily="sans-serif-light"
-        android:id="@+id/suggestion_name_user"
+        android:id="@+id/name_user"
         android:gravity="center"
         android:textColor="@color/colorText"
         tools:text="Ligue 1"
