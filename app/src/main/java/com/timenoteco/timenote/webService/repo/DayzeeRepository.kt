@@ -1,9 +1,6 @@
 package com.timenoteco.timenote.webService.repo
 
-import com.timenoteco.timenote.webService.service.AuthService
-import com.timenoteco.timenote.webService.service.FollowService
-import com.timenoteco.timenote.webService.service.ProfileService
-import com.timenoteco.timenote.webService.service.TimenoteService
+import com.timenoteco.timenote.webService.service.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -34,4 +31,7 @@ class DayzeeRepository {
         return service.create(FollowService::class.java)
     }
 
+    fun getPreferencesService(): PreferencesService{
+        return service.create(PreferencesService::class.java)
+    }
 }

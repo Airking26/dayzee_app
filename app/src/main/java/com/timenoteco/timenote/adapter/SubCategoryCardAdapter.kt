@@ -7,17 +7,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.SubCategoryCardAdapter.SubCategorySeekBarListener
-import com.timenoteco.timenote.model.SubCategory
 import com.warkiz.widget.IndicatorSeekBar
 import com.warkiz.widget.OnSeekChangeListener
 import com.warkiz.widget.SeekParams
 import kotlinx.android.synthetic.main.adapter_pref_sub_category_card.view.*
 import kotlinx.android.synthetic.main.item_pref_sub_category.view.*
 
-class SubCategoryCardAdapter(private var categories: Map<String, List<SubCategory>>, private val listener: SubCategorySeekBarListener): RecyclerView.Adapter<SubCategoryCardAdapter.CardViewHolder>(){
+class SubCategoryCardAdapter(private var categories: MutableMap<String, MutableList<String>>, private val listener: SubCategorySeekBarListener): RecyclerView.Adapter<SubCategoryCardAdapter.CardViewHolder>(){
 
     interface SubCategorySeekBarListener{
-        fun onSeekBarModified(likedLevel: Int, categoryName: String, subCategoryPosition: Int)
+        fun onSeekBarModified(likedLevel: Int, subCategoryName: String)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder =
@@ -31,7 +30,7 @@ class SubCategoryCardAdapter(private var categories: Map<String, List<SubCategor
 
     class CardViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
-        fun bindSubCategories(categories: Map<String, List<SubCategory>>, listener: SubCategorySeekBarListener, position: Int) {
+        fun bindSubCategories(categories: MutableMap<String, MutableList<String>>, listener: SubCategorySeekBarListener, position: Int) {
             itemView.pref_sub_category_rv.apply {
                 layoutManager = LinearLayoutManager(itemView.context)
                 isNestedScrollingEnabled = false
@@ -46,7 +45,7 @@ class SubCategoryCardAdapter(private var categories: Map<String, List<SubCategor
 
 }
 
-class SubCategoryItemAdapter(private val categories: List<SubCategory>, private val listener: SubCategorySeekBarListener, private val categoryName: String)
+class SubCategoryItemAdapter(private val categories: MutableList<String>, private val listener: SubCategorySeekBarListener, private val categoryName: String)
     : RecyclerView.Adapter<SubCategoryItemAdapter.ItemViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
@@ -65,15 +64,13 @@ class SubCategoryItemAdapter(private val categories: List<SubCategory>, private 
 
     class ItemViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
-        fun bindItem(categories: List<SubCategory>, subCategoryPosition: Int, listener: SubCategorySeekBarListener, categoryName: String) {
-            itemView.pref_sub_category_title_sub_category.text = categories[subCategoryPosition].name
-            itemView.pref_sub_category_seekbar.setProgress(categories[subCategoryPosition].appreciated.toFloat())
+        fun bindItem(categories: MutableList<String>, subCategoryPosition: Int, listener: SubCategorySeekBarListener, categoryName: String) {
+            itemView.pref_sub_category_title_sub_category.text = categories[subCategoryPosition]
             itemView.pref_sub_category_seekbar.onSeekChangeListener = object: OnSeekChangeListener{
-                override fun onSeeking(seekParams: SeekParams?) {
-                }
+                override fun onSeeking(seekParams: SeekParams?) {}
                 override fun onStartTrackingTouch(seekBar: IndicatorSeekBar?) {}
                 override fun onStopTrackingTouch(seekBar: IndicatorSeekBar?) {
-                    listener.onSeekBarModified(seekBar!!.progress, categoryName, subCategoryPosition)
+                    listener.onSeekBarModified(seekBar!!.progress, categories[subCategoryPosition])
                 }
 
             }

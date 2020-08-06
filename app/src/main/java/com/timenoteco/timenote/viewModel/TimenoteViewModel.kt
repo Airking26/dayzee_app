@@ -16,11 +16,11 @@ class TimenoteViewModel: ViewModel() {
     private val timenoteService = DayzeeRepository().getTimenoteService()
 
     fun getTimenotePagingFlow() = Pager(PagingConfig(pageSize = 12)){ TimenoteRemotePagingSource(timenoteService) }.flow.cachedIn(viewModelScope)
-    fun getSpecificTimenote(id: String) = flow { emit(timenoteService.getTimenoteId(id)) }.asLiveData(viewModelScope.coroutineContext)
-    fun modifySpecificTimenote(id: String, timenoteBody: TimenoteBody) =  flow {emit(timenoteService.modifyTimenote(id, timenoteBody))}.asLiveData(viewModelScope.coroutineContext)
-    fun deleteTimenote(id: String) = flow {emit(timenoteService.deleteTimenote(id))}.asLiveData(viewModelScope.coroutineContext)
-    fun joinTimenote(id: String) = flow { emit(timenoteService.joinTimenote(id)) }.asLiveData(viewModelScope.coroutineContext)
-    fun leaveTimenote(id: String) = flow { emit(timenoteService.leaveTimenote(id)) }.asLiveData(viewModelScope.coroutineContext)
-    fun hideToOthers(id: String) = flow { emit(timenoteService.joinPrivateTimenote(id)) }.asLiveData(viewModelScope.coroutineContext)
+    fun getSpecificTimenote(id: String) = flow { emit(timenoteService.getTimenoteId("Bearer " + "",id)) }.asLiveData(viewModelScope.coroutineContext)
+    fun modifySpecificTimenote(id: String, timenoteBody: TimenoteBody) =  flow {emit(timenoteService.modifyTimenote("Bearer " + "",id, timenoteBody))}.asLiveData(viewModelScope.coroutineContext)
+    fun deleteTimenote(id: String) = flow {emit(timenoteService.deleteTimenote("Bearer " + "",id))}.asLiveData(viewModelScope.coroutineContext)
+    fun joinTimenote(id: String) = flow { emit(timenoteService.joinTimenote("Bearer " + "",id)) }.asLiveData(viewModelScope.coroutineContext)
+    fun leaveTimenote(id: String) = flow { emit(timenoteService.leaveTimenote("Bearer " + "",id)) }.asLiveData(viewModelScope.coroutineContext)
+    fun hideToOthers(id: String) = flow { emit(timenoteService.joinPrivateTimenote("Bearer " + "",id)) }.asLiveData(viewModelScope.coroutineContext)
 
 }

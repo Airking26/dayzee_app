@@ -25,7 +25,7 @@ class LoginViewModel: ViewModel() {
 
     fun getAuthenticationState() : LiveData<AuthenticationState> = authenticationState
 
-    init { authenticationState.value = AuthenticationState.AUTHENTICATED }
+    init { authenticationState.value = AuthenticationState.UNAUTHENTICATED }
 
     fun refuseAuthentication() = authenticationState.postValue(AuthenticationState.UNAUTHENTICATED)
 

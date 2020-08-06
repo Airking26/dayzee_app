@@ -9,7 +9,7 @@ class ProfileEventPagingSource(val profileService: ProfileService, val future: B
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, TimenoteModel> {
         return try {
             val nextPageNumber = params.key ?: 1
-            val response = if(future) profileService.getFutureTimenotes(nextPageNumber) else profileService.getPastTimenotes(nextPageNumber)
+            val response = if(future) profileService.getFutureTimenotes("Bearer " + "",nextPageNumber) else profileService.getPastTimenotes("Bearer " + "",nextPageNumber)
             LoadResult.Page(
                 data = response.body()!!,
                 prevKey = null,

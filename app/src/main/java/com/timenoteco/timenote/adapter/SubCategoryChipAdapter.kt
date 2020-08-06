@@ -11,7 +11,7 @@ import kotlinx.android.synthetic.main.item_pref_sub_category_chip.view.*
 class SubCategoryChipAdapter(private val chips: MutableList<String>, private val listener: SubCategoryChipListener): RecyclerView.Adapter<SubCategoryChipAdapter.ChipViewHolder>() {
 
     interface SubCategoryChipListener{
-        fun onCloseChip(name: String)
+        fun onCloseChip(index: Int)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChipViewHolder {
@@ -31,7 +31,7 @@ class SubCategoryChipAdapter(private val chips: MutableList<String>, private val
         fun bindChip(name: String, listener: SubCategoryChipListener, position: Int) {
             itemView.chip.text = name
             itemView.chip.onCloseClickListener = OnCloseClickListener {
-                listener.onCloseChip(name)
+                listener.onCloseChip(position)
             }
         }
     }

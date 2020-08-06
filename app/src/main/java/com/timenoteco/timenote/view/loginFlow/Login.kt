@@ -1,6 +1,9 @@
 package com.timenoteco.timenote.view.loginFlow
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.os.Bundle
+import android.renderscript.RenderScript
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -12,6 +15,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.timenoteco.timenote.R
+import com.timenoteco.timenote.androidView.blurry.RSBlurProcessor
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import kotlinx.android.synthetic.main.fragment_login.*
@@ -25,7 +29,6 @@ class Login : Fragment() {
             =  inflater.inflate(R.layout.fragment_login, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
         button1.setOnClickListener {
             findNavController().navigate(LoginDirections.actionLoginToSignup())
         }
@@ -46,5 +49,15 @@ class Login : Fragment() {
 
     private fun displayMainOrLoginScreen() {
         val j  = args.x
+    }
+
+
+    fun getBitmapFromView(view: View): Bitmap? {
+        val bitmap =
+            Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+        val c = Canvas(bitmap)
+        view.layout(view.left, view.top, view.right, view.bottom)
+        view.draw(c)
+        return bitmap
     }
 }

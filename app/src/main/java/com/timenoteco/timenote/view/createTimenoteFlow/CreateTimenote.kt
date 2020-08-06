@@ -48,6 +48,7 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.AutocompleteActivity
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
+import com.google.android.play.core.splitinstall.f
 import com.theartofdev.edmodo.cropper.CropImageView
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ScreenSlideCreationTimenotePagerAdapter
@@ -64,6 +65,9 @@ import kotlinx.android.synthetic.main.cropview.view.*
 import kotlinx.android.synthetic.main.fragment_create_timenote.*
 import kotlinx.android.synthetic.main.friends_search.view.*
 import mehdi.sakout.fancybuttons.FancyButton
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
@@ -700,7 +704,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
         }
         if (success) {
             val imageFile = File(storageDir, imageFileName)
-            savedImagePath = imageFile.getAbsolutePath()
+            savedImagePath = imageFile.absolutePath
             try {
                 val fOut: OutputStream = FileOutputStream(imageFile)
                 image.compress(Bitmap.CompressFormat.JPEG, 100, fOut)
@@ -710,7 +714,13 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
             }
 
             galleryAddPic(savedImagePath, dialog)
+
+            //val reqFile: RequestBody = RequestBody.create(MediaType.parse("image/*"), imageFile)
+            //val body: MultipartBody.Part = MultipartBody.Part.createFormData("upload", imageFileName, reqFile)
+
         }
+
+
         return savedImagePath
     }
 

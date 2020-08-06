@@ -39,11 +39,10 @@ class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
                 if(it.url.isNullOrBlank()) preview_created_timenote_buy.visibility = View.GONE
                 else {
                     preview_created_timenote_buy.visibility =View.VISIBLE
-                    preview_created_timenote_buy.text = it.url
                 }
             } else if(it.status == StatusTimenote.PAID){
                 preview_created_timenote_buy.visibility = View.VISIBLE
-                preview_created_timenote_buy.text = """Buy${it.price.toString()}$"""
+                preview_created_timenote_buy.text = """${it.price.toString()}$"""
             } else {
                 preview_created_timenote_buy.visibility =View.GONE
             }

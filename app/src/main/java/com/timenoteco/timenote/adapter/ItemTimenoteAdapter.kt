@@ -129,11 +129,7 @@ class ItemTimenoteAdapter(
                 if(i1 == 0) {
                     if (timenote.status == StatusTimenote.PAID || (timenote.status == StatusTimenote.FREE && !timenote.url.isNullOrBlank())) {
                         itemView.timenote_buy.visibility = View.VISIBLE
-                        if (timenote.status == StatusTimenote.PAID) {
-                            itemView.timenote_buy.text = "Buy " + timenote.price.toString() + "$"
-                        } else {
-                            itemView.timenote_buy.text = timenote.url
-                        }
+                        if (timenote.status == StatusTimenote.PAID) itemView.timenote_buy.text = timenote.price.toString() + "$"
                     }
                 } else {
                     timenoteListenerListener.onDoubleClick()

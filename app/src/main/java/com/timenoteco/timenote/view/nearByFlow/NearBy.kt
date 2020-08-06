@@ -400,16 +400,9 @@ class NearBy : Fragment(), View.OnClickListener, PlacePickerListener, TimenoteOp
         val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
         val geocoder = Geocoder(requireContext())
         //googleMap?.addMarker(MarkerOptions().position(LatLng(location?.latitude!!, location.longitude)))
-        googleMap?.moveCamera(
-            CameraUpdateFactory.newLatLng(
-                LatLng(
-                    location?.latitude!!,
-                    location.longitude
-                )
-            )
-        )
-        googleMap?.animateCamera(CameraUpdateFactory.zoomTo(15.0f))
-        nearby_place.text = geocoder.getFromLocation(location?.latitude!!, location.longitude, 1)[0].getAddressLine(0) ?: geocoder.getFromLocation(location.latitude, location.longitude, 1)[0].countryName
+//        googleMap?.moveCamera(CameraUpdateFactory.newLatLng(LatLng(location?.latitude!!, location.longitude)))
+//       googleMap?.animateCamera(CameraUpdateFactory.zoomTo(15.0f))
+//        nearby_place.text = geocoder.getFromLocation(location?.latitude!!, location.longitude, 1)[0].getAddressLine(0) ?: geocoder.getFromLocation(location.latitude, location.longitude, 1)[0].countryName
 
     }
 

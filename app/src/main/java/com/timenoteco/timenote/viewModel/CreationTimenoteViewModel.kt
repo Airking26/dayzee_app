@@ -88,7 +88,7 @@ class CreationTimenoteViewModel: ViewModel() {
 
     fun postTimenote(): LiveData<Response<TimenoteModel>> {
         return flow {
-            emit(timenoteService.createTimenote(timenoteLiveData.value!!)
+            emit(timenoteService.createTimenote("", timenoteLiveData.value!!)
             )
         }.asLiveData(viewModelScope.coroutineContext)
     }

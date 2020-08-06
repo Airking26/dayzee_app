@@ -206,51 +206,28 @@
 
 
                     <mehdi.sakout.fancybuttons.FancyButton
-                        android:visibility="invisible"
-                        android:layout_marginStart="68dp"
+                        android:visibility="gone"
                         app:fb_defaultColor="@color/colorAccentCustom"
                         app:fb_radius="5dp"
-                        android:layout_marginTop="16dp"
+                        android:layout_marginTop="8dp"
                         app:fb_text="FOLLOW"
-                        android:paddingVertical="6dp"
-                        android:paddingHorizontal="30dp"
+                        android:paddingVertical="4dp"
+                        android:paddingHorizontal="18dp"
                         app:fb_textColor="@color/white"
                         android:gravity="center"
-                        app:layout_constraintEnd_toStartOf="@id/profile_message_btn"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/profile_location"
                         android:id="@+id/profile_follow_btn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
 
-
-                    <mehdi.sakout.fancybuttons.FancyButton
-                        android:visibility="invisible"
-                        app:fb_defaultColor="@color/white"
-                        app:fb_borderWidth="1dp"
-                        app:fb_borderColor="@color/colorAccentCustom"
-                        app:fb_radius="5dp"
-                        android:layout_marginTop="16dp"
-                        app:fb_text="@string/message"
-                        android:paddingVertical="6dp"
-                        android:paddingHorizontal="30dp"
-                        app:fb_textColor="@color/colorAccentCustom"
-                        android:gravity="center"
-                        android:layout_marginEnd="68dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@id/profile_follow_btn"
-                        app:layout_constraintTop_toBottomOf="@id/profile_location"
-                        android:id="@+id/profile_message_btn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-
-
                     <TextView
                         android:fontFamily="sans-serif-light"
                         android:id="@+id/profile_desc"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
+                        android:layout_marginTop="8dp"
                         android:text="Founder of Timenote"
                         android:textSize="15sp"
                         app:layout_constraintEnd_toEndOf="parent"

@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        utils.hideStatusBar(this)
         viewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
         viewModel.getAuthenticationState().observe(this, Observer {
             when (it) {

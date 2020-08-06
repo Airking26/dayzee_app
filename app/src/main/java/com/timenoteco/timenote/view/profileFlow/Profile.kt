@@ -1,12 +1,14 @@
 package com.timenoteco.timenote.view.profileFlow
 
 import android.content.ContentValues.TAG
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.os.Bundle
+import android.renderscript.RenderScript
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.afollestad.materialdialogs.LayoutMode
@@ -18,16 +20,16 @@ import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.timenoteco.timenote.R
-import com.timenoteco.timenote.adapter.ProfileEventPagingAdapter
 import com.timenoteco.timenote.adapter.ProfilePastFuturePagerAdapter
+import com.timenoteco.timenote.androidView.blurry.RSBlurProcessor
 import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
-import com.timenoteco.timenote.model.Timenote
 import com.timenoteco.timenote.model.StatusTimenote
-import com.timenoteco.timenote.viewModel.ProfileViewModel
+import com.timenoteco.timenote.model.Timenote
 import kotlinx.android.synthetic.main.fragment_profile.*
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarListener {
 
@@ -294,7 +296,6 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
         if(args.whereFrom){
             profile_modify_btn.visibility = View.INVISIBLE
             profile_follow_btn.visibility = View.VISIBLE
-            profile_message_btn.visibility = View.VISIBLE
             profile_settings_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_baseline_info_24))
             profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_share_black_24dp))
         }

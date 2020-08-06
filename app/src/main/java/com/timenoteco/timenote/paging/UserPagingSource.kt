@@ -14,10 +14,10 @@ class UserPagingSource(val followService: FollowService,val followers: Boolean, 
             val nextPageNumber = params.key ?: 1
             val response =
                 if(useTimenoteService){
-                    timenoteService.getUsersParticipatingTimenote(id!!, nextPageNumber)
+                    timenoteService.getUsersParticipatingTimenote("Bearer " + "",id!!, nextPageNumber)
                 } else {
-                    if(followers) followService.getFollowedUsers(nextPageNumber)
-                    else followService.getFollowingUsers(nextPageNumber)
+                    if(followers) followService.getFollowedUsers("Bearer " + "",nextPageNumber)
+                    else followService.getFollowingUsers("Bearer " + "",nextPageNumber)
                 }
 
             LoadResult.Page(

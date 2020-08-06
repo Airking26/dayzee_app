@@ -8,8 +8,9 @@
     tools:context=".view.loginFlow.Login">
 
     <ImageView
+        android:id="@+id/login_image"
         android:scaleType="centerCrop"
-        android:src="@drawable/beach"
+        android:src="@drawable/audiance"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
@@ -19,6 +20,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="72dp"
+        android:shadowRadius="1.0"
+        android:shadowDx="1.0"
+        android:shadowDy="1.0"
+        android:shadowColor="@color/colorText"
         android:text="Timenote"
         android:textColor="@color/white"
         android:textSize="72sp"
@@ -27,9 +32,13 @@
         android:layout_height="wrap_content"/>
 
     <TextView
+        android:shadowRadius="1.0"
+        android:shadowDx="1.0"
+        android:shadowDy="1.0"
+        android:shadowColor="@color/colorText"
         android:fontFamily="sans-serif-light"
-        android:text="Don't miss anything important"
-        android:textSize="16sp"
+        android:text="Start Scrolling Forward"
+        android:textSize="18sp"
         android:textColor="@color/white"
         app:layout_constraintTop_toBottomOf="@id/timenote_label"
         app:layout_constraintEnd_toEndOf="parent"
