@@ -13,7 +13,7 @@ import com.timenoteco.timenote.adapter.SearchExploreCategoryAdapter
 import com.timenoteco.timenote.common.BaseThroughFragment
 import kotlinx.android.synthetic.main.fragment_search_explore.*
 
-class SearchExplore : BaseThroughFragment(), SearchExploreCategoryAdapter.SearchSubCategoryListener,
+class SearchExplore : Fragment(), SearchExploreCategoryAdapter.SearchSubCategoryListener,
     SearchExploreCategoryAdapter.SearchCategoryListener {
 
     private lateinit var searchExploreAdapter : SearchExploreCategoryAdapter
@@ -37,6 +37,6 @@ class SearchExplore : BaseThroughFragment(), SearchExploreCategoryAdapter.Search
     }
 
     override fun onCategorySelected() {
-        findNavController().navigate(R.id.action_global_searchExploreClicked)
+        findNavController().navigate(SearchExploreDirections.actionSearchExploreToSearchExploreClicked())
     }
 }

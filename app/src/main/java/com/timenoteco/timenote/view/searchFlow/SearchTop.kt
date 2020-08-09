@@ -1,21 +1,28 @@
 package com.timenoteco.timenote.view.searchFlow
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.SuggestionAdapter
 import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.model.UserSuggested
+import com.timenoteco.timenote.viewModel.LoginViewModel
 import kotlinx.android.synthetic.main.fragment_search_top.*
 
-class SearchTop: BaseThroughFragment(), SuggestionAdapter.SuggestionItemListener {
+class SearchTop: Fragment(), SuggestionAdapter.SuggestionItemListener {
+
+
 
     private lateinit var topAdapter: SuggestionAdapter
     private var tops: Map<String, List<UserSuggested>> = mapOf()
+    private val loginViewModel : LoginViewModel by activityViewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_search_top, container, false)
@@ -53,5 +60,6 @@ class SearchTop: BaseThroughFragment(), SuggestionAdapter.SuggestionItemListener
     }
 
     override fun onItemSelected() {
+        loginViewModel.markAsUnauthenticated()
     }
 }

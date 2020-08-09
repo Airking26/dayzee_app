@@ -4,6 +4,63 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation_graph_tab_1"
     app:startDestination="@id/home">
+    <navigation
+        android:id="@+id/navigation"
+        app:startDestination="@id/login">
+        <fragment
+            android:id="@+id/login"
+            android:name="com.timenoteco.timenote.view.loginFlow.Login"
+            android:label="fragment_login"
+            tools:layout="@layout/fragment_login">
+            <action
+                android:id="@+id/action_login_to_signup"
+                app:destination="@id/signup" />
+            <argument
+                android:name="x"
+                app:argType="boolean" />
+        </fragment>
+        <fragment
+            android:id="@+id/preferenceSubCategory"
+            android:name="com.timenoteco.timenote.view.loginFlow.PreferenceSubCategory"
+            android:label="fragment_preference_sub_category"
+            tools:layout="@layout/fragment_preference_sub_category">
+            <action
+                android:id="@+id/action_preferenceSubCategory_to_preferenceSuggestion"
+                app:destination="@id/preferenceSuggestion" />
+            <argument
+                android:name="isInLogin"
+                app:argType="boolean" />
+        </fragment>
+        <fragment
+            android:id="@+id/preferenceSuggestion"
+            android:name="com.timenoteco.timenote.view.loginFlow.PreferenceSuggestion"
+            android:label="fragment_preference_suggestion"
+            tools:layout="@layout/fragment_preference_suggestion">
+            <argument
+                android:name="isInLogin"
+                app:argType="boolean" />
+        </fragment>
+        <fragment
+            android:id="@+id/preferenceCategory"
+            android:name="com.timenoteco.timenote.view.loginFlow.PreferenceCategory"
+            android:label="fragment_preference_category"
+            tools:layout="@layout/fragment_preference_category">
+            <action
+                android:id="@+id/action_preferenceCategory_to_preferenceSubCategory"
+                app:destination="@id/preferenceSubCategory" />
+            <argument
+                android:name="isInLogin"
+                app:argType="boolean" />
+        </fragment>
+        <fragment
+            android:id="@+id/signup"
+            android:name="com.timenoteco.timenote.view.loginFlow.Signup"
+            android:label="Signup">
+            <action
+                android:id="@+id/action_signup_to_preferenceCategory"
+                app:destination="@id/preferenceCategory" />
+        </fragment>
+    </navigation>
     <fragment
         android:id="@+id/home"
         android:name="com.timenoteco.timenote.view.homeFlow.Home"
@@ -23,6 +80,9 @@
         <action
             android:id="@+id/action_home_to_createTimenote"
             app:destination="@id/createTimenote" />
+        <action
+            android:id="@+id/action_home_to_navigation"
+            app:destination="@id/navigation" />
     </fragment>
     <fragment
         android:id="@+id/comments"

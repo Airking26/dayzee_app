@@ -9,6 +9,7 @@
     xmlns:fancy="http://schemas.android.com/apk/res-auto">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/nearBy_coordinator_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -17,12 +18,13 @@
         android:layout_height="0dp">
 
         <com.google.android.material.appbar.AppBarLayout
+            android:background="@android:color/white"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <com.timenoteco.timenote.androidView.CollapsibleToolbar
                 android:layout_width="match_parent"
-                android:minHeight="100dp"
+                android:minHeight="150dp"
                 android:fitsSystemWindows="false"
                 app:layout_scrollFlags="scroll|enterAlways|snap|exitUntilCollapsed"
                 app:layoutDescription="@xml/motion_scene_map"
@@ -43,6 +45,16 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         tools:context=".MapsFragment" />
+
+                    <ImageView
+                        android:id="@+id/transparent_image_map"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_width="match_parent"
+                        android:layout_height="350dp"/>
+
 
                     <TextView
                         android:id="@+id/nearby_place"

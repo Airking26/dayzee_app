@@ -1,14 +1,12 @@
 package com.timenoteco.timenote.view.profileFlow
 
 import android.content.ContentValues.TAG
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.os.Bundle
-import android.renderscript.RenderScript
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.afollestad.materialdialogs.LayoutMode
@@ -21,11 +19,11 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ProfilePastFuturePagerAdapter
-import com.timenoteco.timenote.androidView.blurry.RSBlurProcessor
 import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import com.timenoteco.timenote.model.StatusTimenote
 import com.timenoteco.timenote.model.Timenote
+import com.timenoteco.timenote.viewModel.LoginViewModel
 import kotlinx.android.synthetic.main.fragment_profile.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -34,9 +32,23 @@ import java.util.*
 class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarListener {
 
     private var profilePastFuturePagerAdapter: ProfilePastFuturePagerAdapter? = null
+    private val loginViewModel : LoginViewModel by activityViewModels()
     private var showFilterBar: Boolean = false
     private val args : ProfileArgs by navArgs()
     private var timenotes: MutableList<Timenote> = mutableListOf()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        loginViewModel.getAuthenticationState().observe(requireActivity(), androidx.lifecycle.Observer {
+            when (it) {
+                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(ProfileDirections.actionProfileToNavigation())
+                LoginViewModel.AuthenticationState.AUTHENTICATED -> findNavController().popBackStack(R.id.profile, false)
+                LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION -> Log.d("", "")
+                LoginViewModel.AuthenticationState.GUEST -> findNavController().popBackStack(R.id.profile, false)
+            }
+        })
+
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_profile)
@@ -361,7 +373,11 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
             profile_location -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.location)
                 listItems(items = listOf(getString(R.string.no_location), getString(R.string.city), getString(
-                                    R.string.address))) { dialog, index, text ->  }
+                                    R.string.address))) { dialog, index, text ->
+                    when(index){
+                        0 -> loginViewModel.markAsUnauthenticated()
+                    }
+                }
             }
         }
     }

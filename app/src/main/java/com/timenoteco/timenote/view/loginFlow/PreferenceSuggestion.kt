@@ -38,8 +38,8 @@ class PreferenceSuggestion : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         suggestion_ok_btn.setOnClickListener {
-            if(args.isInLogin) findNavController().navigate(PreferenceSuggestionDirections.actionPreferenceSuggestionToLogin(true))
-            else findNavController().popBackStack(R.id.profile, false)
+            //if(args.isInLogin) findNavController().navigate(PreferenceSuggestionDirections.actionPreferenceSuggestionToLogin(true))
+            //else findNavController().popBackStack(R.id.profile, false)
         }
 
         /*val prefs = PreferenceHelper.defaultPrefs(requireContext())

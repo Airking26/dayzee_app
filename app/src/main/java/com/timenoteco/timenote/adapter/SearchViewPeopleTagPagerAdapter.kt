@@ -11,7 +11,10 @@ import com.timenoteco.timenote.view.nearByFlow.TabNearby
 import com.timenoteco.timenote.view.profileFlow.TabProfile
 import com.timenoteco.timenote.view.searchFlow.*
 
-class SearchViewPeopleTagPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
+class SearchViewPeopleTagPagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) : FragmentStateAdapter(fragmentManager, lifecycle) {
+
+    private val searchPeople = SearchPeople()
+    private val searchTag = SearchTag()
 
     override fun getItemCount(): Int {
         return 2
@@ -19,9 +22,9 @@ class SearchViewPeopleTagPagerAdapter(fragment: Fragment) : FragmentStateAdapter
 
     override fun createFragment(position: Int): Fragment {
         return when(position){
-                0 -> SearchPeople()
-                1 -> SearchTag()
-                else -> SearchPeople()
+                0 -> searchPeople
+                1 -> searchTag
+                else -> searchPeople
         }
     }
 

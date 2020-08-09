@@ -74,6 +74,7 @@ class LoginViewModel: ViewModel() {
 
     fun markAsGuest() = authenticationState.postValue(AuthenticationState.GUEST)
     fun markAsAuthenticated() = authenticationState.postValue(AuthenticationState.AUTHENTICATED)
+    fun markAsUnauthenticated() = authenticationState.postValue(AuthenticationState.UNAUTHENTICATED)
     fun markAsInvalidAuthentication() = authenticationState.postValue(AuthenticationState.INVALID_AUTHENTICATION)
 
 }

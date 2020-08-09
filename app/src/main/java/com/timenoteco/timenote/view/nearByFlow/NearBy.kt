@@ -10,6 +10,7 @@ import android.content.pm.PackageManager
 import android.location.*
 import android.location.Address
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.*
 import android.widget.TextView
@@ -27,11 +28,9 @@ import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
 import com.afollestad.materialdialogs.datetime.datePicker
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.PlacesClient
@@ -41,10 +40,13 @@ import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ItemTimenoteAdapter
 import com.timenoteco.timenote.adapter.UsersPagingAdapter
+import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.PlacePickerListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.*
+import com.timenoteco.timenote.view.profileFlow.ProfileDirections
+import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.ProfileViewModel
 import com.timenoteco.timenote.viewModel.TimenoteViewModel
 import kotlinx.android.synthetic.main.fragment_near_by.*
@@ -54,40 +56,44 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
-class NearBy : Fragment(), View.OnClickListener, PlacePickerListener, TimenoteOptionsListener {
+class NearBy : BaseThroughFragment(), View.OnClickListener, PlacePickerListener, TimenoteOptionsListener{
 
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
     private val profileViewModel: ProfileViewModel by activityViewModels()
     private val AUTOCOMPLETE_REQUEST_CODE: Int = 12
     private lateinit var locationManager: LocationManager
     private lateinit var nearbyDateTv: TextView
+    private val loginViewModel : LoginViewModel by activityViewModels()
     private var timenotes: List<Timenote> = mutableListOf()
     private val DATE_FORMAT = "EEE, d MMM yyyy"
     private lateinit var dateFormat : SimpleDateFormat
     private lateinit var timenoteAdapter: ItemTimenoteAdapter
     private var googleMap: GoogleMap? = null
-    private var placesList: List<Place.Field> = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS)
+    private var placesList: List<Place.Field> = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
     private lateinit var placesClient: PlacesClient
-    private val callback = OnMapReadyCallback { googleMap ->
-        this.googleMap = googleMap
-    }
+    private var mapFragment : SupportMapFragment? = null
+    private var firstTime: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        loginViewModel.getAuthenticationState().observe(requireActivity(), androidx.lifecycle.Observer {
+            when (it) {
+                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(NearByDirections.actionNearByToNavigation())
+                LoginViewModel.AuthenticationState.AUTHENTICATED -> findNavController().popBackStack(R.id.nearBy, false)
+                LoginViewModel.AuthenticationState.GUEST -> findNavController().popBackStack(R.id.nearBy, false)
+            }
+        })
         Places.initialize(requireContext(), "AIzaSyBhM9HQo1fzDlwkIVqobfmrRmEMCWTU1CA")
         placesClient = Places.createClient(requireContext())
     }
 
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-       val view =  inflater.inflate(R.layout.fragment_near_by, container, false)
-        return view
-    }
+         return inflater.inflate(R.layout.fragment_near_by, container, false)}
 
+
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
-        checkIfCanGetLocation()
-
+        Utils().hideStatusBar(requireActivity())
         dateFormat = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
         nearbyDateTv = nearby_time
 
@@ -95,8 +101,33 @@ class NearBy : Fragment(), View.OnClickListener, PlacePickerListener, TimenoteOp
         nearby_time.setOnClickListener(this)
         nearby_filter_btn.setOnClickListener(this)
 
-        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-        mapFragment?.getMapAsync(callback)
+        if(mapFragment == null){
+            mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        }
+
+        mapFragment?.getMapAsync {
+            this.googleMap = it
+            if(firstTime)checkIfCanGetLocation()
+            firstTime = false
+        }
+
+        transparent_image_map.setOnTouchListener { v, event ->
+            when(event.action){
+                MotionEvent.ACTION_MOVE -> {
+                    nearBy_coordinator_layout.requestDisallowInterceptTouchEvent(false)
+                    true
+                }
+                MotionEvent.ACTION_DOWN -> {
+                    nearBy_coordinator_layout.requestDisallowInterceptTouchEvent(true)
+                    false
+                }
+                MotionEvent.ACTION_UP -> {
+                    nearBy_coordinator_layout.requestDisallowInterceptTouchEvent(true)
+                    false
+                }
+                else -> false
+            }
+        }
 
         timenotes = mutableListOf(
             Timenote(
@@ -357,7 +388,9 @@ class NearBy : Fragment(), View.OnClickListener, PlacePickerListener, TimenoteOp
                     data?.let {
                         val place = Autocomplete.getPlaceFromIntent(data)
                         //creationTimenoteViewModel.setLocation(place.address!!)
-                        Log.i(ContentValues.TAG, "Place: ${place.name}, ${place.id}")
+                        Utils().hideStatusBar(requireActivity())
+                        this.googleMap?.addMarker(MarkerOptions().position(LatLng(place.latLng?.latitude!!, place.latLng?.longitude!!)))
+                        this.googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(place.latLng?.latitude!!, place.latLng?.longitude!!), 15F))
                     }
                 }
                 AutocompleteActivity.RESULT_ERROR -> {
@@ -399,10 +432,9 @@ class NearBy : Fragment(), View.OnClickListener, PlacePickerListener, TimenoteOp
     private fun getLocation() {
         val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
         val geocoder = Geocoder(requireContext())
-        //googleMap?.addMarker(MarkerOptions().position(LatLng(location?.latitude!!, location.longitude)))
-//        googleMap?.moveCamera(CameraUpdateFactory.newLatLng(LatLng(location?.latitude!!, location.longitude)))
-//       googleMap?.animateCamera(CameraUpdateFactory.zoomTo(15.0f))
-//        nearby_place.text = geocoder.getFromLocation(location?.latitude!!, location.longitude, 1)[0].getAddressLine(0) ?: geocoder.getFromLocation(location.latitude, location.longitude, 1)[0].countryName
+        googleMap?.addMarker(MarkerOptions().position(LatLng(location?.latitude!!, location.longitude)))
+        googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(location?.latitude!!, location.longitude), 15F))
+        nearby_place.text = geocoder.getFromLocation(location?.latitude!!, location.longitude, 1)[0].getAddressLine(0) ?: geocoder.getFromLocation(location.latitude, location.longitude, 1)[0].countryName
 
     }
 

@@ -76,7 +76,7 @@ class PreferenceCategory : Fragment(), View.OnClickListener {
 
                 if(count > 0){
                     preferencesViewModel.modifyPreferences(Preferences(mutableListOf())).observe(viewLifecycleOwner, Observer {
-                        if(it.isSuccessful) view?.findNavController()?.navigate(PreferenceCategoryDirections.actionPreferenceCategoryToPreferenceSubCategory(preferenceCategoryArgs.isInLogin))
+                        if(it.isSuccessful) view?.findNavController()?.navigate(PreferenceCategoryDirections.actionPreferenceCategoryToPreferenceSubCategory(true))
                     })
                 } else loginViewModel.markAsGuest()
 

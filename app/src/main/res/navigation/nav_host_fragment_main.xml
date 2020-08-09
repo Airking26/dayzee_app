@@ -1,70 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?><navigation xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_host_fragment"
-    app:startDestination="@id/tabHome">
+    app:startDestination="@id/blankFragment">
 
     <fragment
-        android:id="@+id/tabHome"
-        android:name="com.timenoteco.timenote.view.homeFlow.TabHome"
-        android:label="TabHome" />
-    <fragment
-        android:id="@+id/login"
-        android:name="com.timenoteco.timenote.view.loginFlow.Login"
-        android:label="fragment_login"
-        tools:layout="@layout/fragment_login" >
-        <action
-            android:id="@+id/action_login_to_signup"
-            app:destination="@id/signup" />
-        <argument
-            android:name="x"
-            app:argType="boolean" />
-    </fragment>
-    <fragment
-        android:id="@+id/preferenceCategory"
-        android:name="com.timenoteco.timenote.view.loginFlow.PreferenceCategory"
-        android:label="fragment_preference_category"
-        tools:layout="@layout/fragment_preference_category" >
-        <action
-            android:id="@+id/action_preferenceCategory_to_preferenceSubCategory"
-            app:destination="@id/preferenceSubCategory" />
-        <action
-            android:id="@+id/action_preferenceCategory_to_login"
-            app:destination="@id/login" />
-        <argument
-            android:name="isInLogin"
-            app:argType="boolean" />
-    </fragment>
-    <fragment
-        android:id="@+id/preferenceSubCategory"
-        android:name="com.timenoteco.timenote.view.loginFlow.PreferenceSubCategory"
-        android:label="fragment_preference_sub_category"
-        tools:layout="@layout/fragment_preference_sub_category">
-        <action
-            android:id="@+id/action_preferenceSubCategory_to_preferenceSuggestion"
-            app:destination="@id/preferenceSuggestion" />
-        <argument
-            android:name="isInLogin"
-            app:argType="boolean" />
-    </fragment>
-    <fragment
-        android:id="@+id/preferenceSuggestion"
-        android:name="com.timenoteco.timenote.view.loginFlow.PreferenceSuggestion"
-        android:label="fragment_preference_suggestion"
-        tools:layout="@layout/fragment_preference_suggestion" >
-        <action
-            android:id="@+id/action_preferenceSuggestion_to_login"
-            app:destination="@id/login" />
-        <argument
-            android:name="isInLogin"
-            app:argType="boolean" />
-    </fragment>
-    <fragment
-        android:id="@+id/signup"
-        android:name="com.timenoteco.timenote.view.loginFlow.Signup"
-        android:label="Signup" >
-        <action
-            android:id="@+id/action_signup_to_preferenceCategory"
-            app:destination="@id/preferenceCategory" />
-    </fragment>
+        android:id="@+id/blankFragment"
+        android:name="com.timenoteco.timenote.BlankFragment"
+        android:label="fragment_blank"
+        tools:layout="@layout/fragment_blank" />
+
+
 </navigation>

@@ -102,7 +102,7 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
 
     private fun saveAndNavigate() {
         preferencesViewModel.modifyPreferences(preferences).observe(viewLifecycleOwner, Observer {
-            findNavController().navigate(PreferenceSubCategoryDirections.actionPreferenceSubCategoryToPreferenceSuggestion(preferenceSubCategoryArgs.isInLogin))
+            findNavController().navigate(PreferenceSubCategoryDirections.actionPreferenceSubCategoryToPreferenceSuggestion(true))
         })
     }
 

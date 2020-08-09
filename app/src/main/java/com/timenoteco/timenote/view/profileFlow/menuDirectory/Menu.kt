@@ -28,11 +28,7 @@ class Menu : Fragment(), View.OnClickListener {
         when(v){
             menu_settings_cv -> findNavController().navigate(MenuDirections.actionMenuToSettings())
             menu_profile_cv -> findNavController().navigate(MenuDirections.actionMenuToProfilePreview())
-            menu_preferences_cv -> findNavController().navigate(
-                MenuDirections.actionMenuToPreferenceCategory(
-                    false
-                )
-            )
+            menu_preferences_cv -> findNavController().navigate(MenuDirections.actionMenuToPreferenceCategory())
             menu_invite_friends_cv -> {
                 val PERMISSIONS_STORAGE = arrayOf(
                     Manifest.permission.READ_CONTACTS)

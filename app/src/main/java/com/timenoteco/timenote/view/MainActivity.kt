@@ -24,19 +24,20 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.setupWithNavController
 import com.timenoteco.timenote.listeners.BackToHomeListener
+import com.timenoteco.timenote.view.homeFlow.Home
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel.AuthenticationState
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), BackToHomeListener {
+class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby {
 
-    private lateinit var viewModel: LoginViewModel
     private var currentNavController: LiveData<NavController>? = null
     private val utils = Utils()
 
@@ -44,17 +45,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        utils.hideStatusBar(this)
-        viewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
-        viewModel.getAuthenticationState().observe(this, Observer {
-            when (it) {
-                AuthenticationState.AUTHENTICATED -> setupController(true)
-                AuthenticationState.UNAUTHENTICATED -> findNavController(R.id.nav_host_fragment_main).navigate(R.id.login)
-                AuthenticationState.INVALID_AUTHENTICATION -> Log.d("", "")
-                AuthenticationState.GUEST -> setupController(false)
-            }
-        })
-
+        setupController(true)
     }
 
     @SuppressLint("StringFormatInvalid")
@@ -193,6 +184,10 @@ class MainActivity : AppCompatActivity(), BackToHomeListener {
 
     override fun onBackHome() {
         bottomNavView.selectedItemId = R.id.navigation_graph_tab_1
+    }
+
+    override fun onGuestMode() {
+        bottomNavView.selectedItemId = R.id.navigation_graph_tab_2
     }
 
 

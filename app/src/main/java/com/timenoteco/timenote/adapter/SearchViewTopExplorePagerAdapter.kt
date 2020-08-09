@@ -6,12 +6,16 @@ import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.view.homeFlow.TabHome
 import com.timenoteco.timenote.view.nearByFlow.TabNearby
 import com.timenoteco.timenote.view.profileFlow.TabProfile
 import com.timenoteco.timenote.view.searchFlow.*
 
-class SearchViewTopExplorePagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
+class SearchViewTopExplorePagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) : FragmentStateAdapter(fragmentManager, lifecycle) {
+
+    private val searchTop = SearchTop()
+    private val searchExplore = SearchExplore()
 
     override fun getItemCount(): Int {
         return 2
@@ -19,9 +23,9 @@ class SearchViewTopExplorePagerAdapter(fragment: Fragment) : FragmentStateAdapte
 
     override fun createFragment(position: Int): Fragment {
         return when(position){
-            0 -> SearchTop()
-            1 -> SearchExplore()
-            else -> SearchTop()
+            0 -> searchTop
+            1 -> searchExplore
+            else -> searchTop
         }
     }
 

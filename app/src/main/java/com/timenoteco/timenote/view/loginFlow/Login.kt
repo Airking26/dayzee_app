@@ -35,22 +35,11 @@ class Login : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             viewModel.refuseAuthentication()
         }
-
-        viewModel.getAuthenticationState().observe(viewLifecycleOwner, Observer { authenticationState ->
-            when (authenticationState) {
-                LoginViewModel.AuthenticationState.AUTHENTICATED -> findNavController().popBackStack()
-                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> Log.d("", "")
-                LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION -> Log.d("", "")
-                null -> Log.d("", "")
-                LoginViewModel.AuthenticationState.GUEST -> findNavController().popBackStack()
-            }
-        })
     }
 
     private fun displayMainOrLoginScreen() {
         val j  = args.x
     }
-
 
     fun getBitmapFromView(view: View): Bitmap? {
         val bitmap =
