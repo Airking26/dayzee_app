@@ -29,22 +29,14 @@ class LoginViewModel: ViewModel() {
 
     fun refuseAuthentication() = authenticationState.postValue(AuthenticationState.UNAUTHENTICATED)
 
-    fun authenticate(username: String, password: String) {
-        if (passwordIsValidForUsername(username, password, isValidEmail(username)).value == 201) {
-            authenticationState.value = AuthenticationState.AUTHENTICATED
-        } else {
-            authenticationState.value = AuthenticationState.INVALID_AUTHENTICATION
-        }
-    }
-
-    private fun passwordIsValidForUsername(username: String, password: String, isEmail: Boolean): LiveData<Int> {
+    fun login(username: String, password: String, isEmail: Boolean): LiveData<Response<RootUserResponse>> {
         return if(isEmail) {
             flow {
-                emit(authService.signInEmail(UserEmailSignInBody(username, password)).code())
+                emit(authService.signInEmail(UserEmailSignInBody(username, password)))
             }.asLiveData(viewModelScope.coroutineContext)
         } else {
             flow {
-                emit(authService.signInUsername(UserUserNameSignInBody(username, password)).code())
+                emit(authService.signInUsername(UserUserNameSignInBody(username, password)))
             }.asLiveData(viewModelScope.coroutineContext)
         }
     }
@@ -56,8 +48,7 @@ class LoginViewModel: ViewModel() {
     }
 
     fun isValidEmail(target: String?): Boolean {
-        return !TextUtils.isEmpty(target) && Patterns.EMAIL_ADDRESS.matcher(target!!)
-            .matches()
+        return !TextUtils.isEmpty(target) && Patterns.EMAIL_ADDRESS.matcher(target!!).matches()
     }
 
     fun checkIfEmailAvailable(email: String): LiveData<Boolean>{

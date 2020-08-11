@@ -54,7 +54,6 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
             when (it) {
                 LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(HomeDirections.actionHomeToNavigation())
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> findNavController().popBackStack(R.id.home, false)
-                LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION -> Log.d("", "")
                 LoginViewModel.AuthenticationState.GUEST -> {
                     findNavController().popBackStack(R.id.home, false)
                     onGoToNearby.onGuestMode()
@@ -69,6 +68,12 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
         onGoToNearby = context as OnGoToNearby
     }
 
+    override fun onResume() {
+        super.onResume()
+        when(loginViewModel.getAuthenticationState().value){
+            LoginViewModel.AuthenticationState.GUEST -> loginViewModel.markAsUnauthenticated()
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_home)

@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.tabs.TabLayoutMediator
 import com.mancj.materialsearchbar.MaterialSearchBar
@@ -35,16 +36,24 @@ class Search : BaseThroughFragment() {
             when (it) {
                 LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(SearchDirections.actionSearchToNavigation())
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> findNavController().popBackStack(R.id.search, false)
-                LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION -> Log.d("", "")
                 LoginViewModel.AuthenticationState.GUEST -> findNavController().popBackStack(R.id.search, false)
             }
         })
+    }
 
+    override fun onResume() {
+        super.onResume()
+        when(loginViewModel.getAuthenticationState().value){
+            LoginViewModel.AuthenticationState.GUEST -> loginViewModel.markAsUnauthenticated()
+        }
     }
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_search)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
+
+        return getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_search)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 

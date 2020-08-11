@@ -30,7 +30,7 @@ class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-         inflater.inflate(R.layout.fragment_preview_timenote_created, container, false)
+        inflater.inflate(R.layout.fragment_preview_timenote_created, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         preview_created_timenote_done_btn.setOnClickListener(this)
@@ -55,10 +55,6 @@ class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
             } else {
                 if(!it.color.isNullOrBlank()) preview_created_timenote_vp.setBackgroundColor(Color.parseColor(it.color))
             }
-            /*if(it.format == 0){
-                preview_created_timenote_date_ll.setPadding(((resources.displayMetrics.density * 38) + 0.5f).toInt(), 0, 0, ((resources.displayMetrics.density * 8) + 0.5f).toInt())
-            } else preview_created_timenote_date_ll.setPadding(((resources.displayMetrics.density * 18) + 0.5f).toInt(), 0, 0, ((resources.displayMetrics.density * 8) + 0.5f).toInt())*/
-
 
             preview_created_timenote_title.text = it.title
             preview_created_timenote_year.text = it.year

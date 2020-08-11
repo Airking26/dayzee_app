@@ -109,7 +109,7 @@
                 android:textColor="@android:color/white"
                 android:layout_marginHorizontal="12dp"
                 android:hint="Username"
-                android:id="@+id/signup_identitfiant"
+                android:id="@+id/signup_identifiant"
                 android:textColorHint="#60FFFFFF"
                 android:textSize="14sp"
                 app:layout_constraintTop_toBottomOf="@id/identifiant_label"
@@ -126,7 +126,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginHorizontal="16dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/signup_identitfiant"
+                app:layout_constraintTop_toBottomOf="@id/signup_identifiant"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 

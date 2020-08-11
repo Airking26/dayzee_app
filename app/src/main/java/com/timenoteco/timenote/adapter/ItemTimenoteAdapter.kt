@@ -1,13 +1,15 @@
 package com.timenoteco.timenote.adapter
 
+
 import android.content.Context
 import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.TextPaint
 import android.text.style.MetricAffectingSpan
-import android.view.*
-import android.widget.Toast
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,13 +21,14 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.RoundedCornersTransformation
+import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
-import com.timenoteco.timenote.model.Timenote
 import com.timenoteco.timenote.model.StatusTimenote
+import com.timenoteco.timenote.model.Timenote
 import kotlinx.android.synthetic.main.adapter_timenote_recent.view.*
 import kotlinx.android.synthetic.main.item_timenote.view.*
 import kotlinx.android.synthetic.main.item_timenote_recent.view.*
-import me.samlss.broccoli.Broccoli
+import java.util.*
 
 class ItemTimenoteAdapter(
     private val timenotes: List<Timenote>,
@@ -169,12 +172,24 @@ class ItemTimenoteAdapter(
             itemView.timenote_year.text = timenote.year
             itemView.timenote_day_month.text = timenote.month
             itemView.timenote_time.text = timenote.date
+
             itemView.timenote_day_month.setOnClickListener {
-                itemView.separator_1.visibility = View.GONE
-                itemView.separator_2.visibility = View.GONE
-                itemView.timenote_day_month.visibility = View.GONE
-                itemView.timenote_time.visibility = View.GONE
-                itemView.timenote_year.visibility = View.GONE
+                itemView.separator_1.visibility = View.INVISIBLE
+                itemView.separator_2.visibility = View.INVISIBLE
+                itemView.timenote_day_month.visibility = View.INVISIBLE
+                itemView.timenote_time.visibility = View.INVISIBLE
+                itemView.timenote_year.visibility = View.INVISIBLE
+                itemView.timenote_in_label.visibility = View.VISIBLE
+                itemView.timenote_in_label.text = Utils().calculateDecountTime()
+            }
+
+            itemView.timenote_in_label.setOnClickListener {
+                itemView.separator_1.visibility = View.VISIBLE
+                itemView.separator_2.visibility = View.VISIBLE
+                itemView.timenote_day_month.visibility = View.VISIBLE
+                itemView.timenote_time.visibility = View.VISIBLE
+                itemView.timenote_year.visibility = View.VISIBLE
+                itemView.timenote_in_label.visibility = View.INVISIBLE
             }
 
             itemView.timenote_options.setOnClickListener {

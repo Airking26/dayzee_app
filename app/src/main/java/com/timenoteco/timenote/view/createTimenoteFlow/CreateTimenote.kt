@@ -3,6 +3,7 @@ package com.timenoteco.timenote.view.createTimenoteFlow
 import android.app.Activity
 import android.app.Dialog
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -55,10 +56,13 @@ import com.timenoteco.timenote.adapter.ScreenSlideCreationTimenotePagerAdapter
 import com.timenoteco.timenote.adapter.WebSearchAdapter
 import com.timenoteco.timenote.common.HashTagHelper
 import com.timenoteco.timenote.common.Utils
+import com.timenoteco.timenote.listeners.BackToHomeListener
 import com.timenoteco.timenote.listeners.TimenoteCreationPicListeners
 import com.timenoteco.timenote.model.CreateTimenoteModel
 import com.timenoteco.timenote.model.StatusTimenote
+import com.timenoteco.timenote.view.searchFlow.SearchDirections
 import com.timenoteco.timenote.viewModel.CreationTimenoteViewModel
+import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.TimenoteViewModel
 import com.timenoteco.timenote.viewModel.WebSearchViewModel
 import kotlinx.android.synthetic.main.cropview.view.*
@@ -124,11 +128,32 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
     private lateinit var dateFormatDateAndTime: SimpleDateFormat
     private var placesList: List<Place.Field> = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS)
     private lateinit var placesClient: PlacesClient
+    private val loginViewModel: LoginViewModel by activityViewModels()
+    private lateinit var backToHomeListener: BackToHomeListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        loginViewModel.getAuthenticationState().observe(requireActivity(), androidx.lifecycle.Observer {
+            when (it) {
+                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(
+                    CreateTimenoteDirections.actionCreateTimenoteToNavigation())
+                LoginViewModel.AuthenticationState.AUTHENTICATED -> findNavController().popBackStack(R.id.createTimenote, false)
+                LoginViewModel.AuthenticationState.GUEST -> findNavController().popBackStack(R.id.createTimenote, false)
+            }        })
         Places.initialize(requireContext(), "AIzaSyBhM9HQo1fzDlwkIVqobfmrRmEMCWTU1CA")
         placesClient = Places.createClient(requireContext())
+    }
+
+    override fun onResume() {
+        super.onResume()
+        when(loginViewModel.getAuthenticationState().value){
+            LoginViewModel.AuthenticationState.GUEST -> loginViewModel.markAsUnauthenticated()
+        }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        backToHomeListener = context as BackToHomeListener
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
@@ -139,6 +164,11 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
         if(!args.modify)creationTimenoteViewModel.getCreateTimeNoteLiveData().observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             populateModel(it)
         }) else timenoteViewModel.modifySpecificTimenote(args.id!!, args.timenoteBody!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            /*val createTimenoteModel = CreateTimenoteModel(it.body()?.pictures, it.body()?.location?.address?.address, it.body()?.title, it.body()?.description,
+            "", it?.body()?.startingAt, it.body()?.endingAt, it.body()?.category?.subcategory, it.body()?.colorHex, it.body()?.startingAt, it.body()?.endingAt,
+            it.body()?.price?.toLong(), it.body()?.url, it.body()?.status.toInt())
+            populateModel(createTimenoteModel)
+             */
         })
     }
 
@@ -306,7 +336,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                     data?.let {
                         val place = Autocomplete.getPlaceFromIntent(data)
                         creationTimenoteViewModel.fetchLocation(place.id!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-                            creationTimenoteViewModel.setLocationObject(it.body()!!)
+                            //creationTimenoteViewModel.setLocationObject(it.body()!!)
                             creationTimenoteViewModel.setLocation(place.address!!)
                         })
                     }
@@ -540,7 +570,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
             paid_timenote_cardview -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.paid_timenote)
                 listItems(items = listOf(getString(R.string.free), getString(R.string.paid),getString(R.string.no_answer))){
-                    _, index, text ->
+                        _, index, text ->
                     when(index){
                         0 -> {
                             noAnswer.text = text.toString()
@@ -569,7 +599,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                                             creationTimenoteViewModel.setUrl(charSequence.toString())
                                             creationTimenoteViewModel.setStatus(StatusTimenote.PAID)
                                             if(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.url.isNullOrBlank() ||
-                                                    creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.price.toString().isNullOrBlank()){
+                                                creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.price.toString().isNullOrBlank()){
                                                 noAnswer.text = resources.getString(R.string.no_answer)
                                                 creationTimenoteViewModel.setStatus(StatusTimenote.NOANSWER)
                                             }
@@ -594,7 +624,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                 }
                 lifecycleOwner(this@CreateTimenote)
             }
-            create_timenote_btn_back -> findNavController().popBackStack()
+            create_timenote_btn_back -> backToHomeListener.onBackHome()
 
         }
     }
@@ -789,9 +819,9 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
 
     override fun onCancelled(isMultiSelecting: Boolean, tag: String?) {
         if(images?.isNullOrEmpty()!!){
-        progressBar.visibility = View.GONE
-        takeAddPicTv.visibility = View.VISIBLE
-        picCl.visibility = View.GONE }
+            progressBar.visibility = View.GONE
+            takeAddPicTv.visibility = View.VISIBLE
+            picCl.visibility = View.GONE }
         else {
             progressBar.visibility = View.GONE
         }

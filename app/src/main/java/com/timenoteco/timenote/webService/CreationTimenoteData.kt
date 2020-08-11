@@ -3,29 +3,14 @@ package com.timenoteco.timenote.webService
 import android.graphics.Bitmap
 import com.timenoteco.timenote.model.*
 
-
-private var timenoteModelDB : CreateTimenoteModelDB =
-    CreateTimenoteModelDB("","", "", "",
-        Location(123.3, 133.2, Address("", "", "", "")),
-        Category("", ""), "", "", listOf(), "", 0, "")
-
 private var timenoteModel: CreateTimenoteModel =
     CreateTimenoteModel(null, null, null, null, null, null,
-        null, null, null, null, null, null, null, StatusTimenote.NOANSWER, null)
+        null, null, null, null, null, null, null, StatusTimenote.NOANSWER)
 
 class CreationTimenoteData {
 
     fun loadCreateTimenoteData(): CreateTimenoteModel? {
         return timenoteModel
-    }
-
-    fun loadCreateTimenoteDataDB(): CreateTimenoteModelDB? {
-        return timenoteModelDB
-    }
-
-    fun createdBy(id: String): CreateTimenoteModelDB{
-        timenoteModelDB.createdBy = id
-        return timenoteModelDB
     }
 
     fun setPic(pic: MutableList<Bitmap>): CreateTimenoteModel {
@@ -34,13 +19,11 @@ class CreationTimenoteData {
     }
 
     fun setPrice(price: Long): CreateTimenoteModel{
-        timenoteModelDB.price = price.toInt()
         timenoteModel.price = price
         return timenoteModel
     }
 
     fun setUrl(url: String): CreateTimenoteModel{
-        timenoteModelDB.url = url
         timenoteModel.url = url
         return timenoteModel
     }
@@ -52,7 +35,6 @@ class CreationTimenoteData {
 
     fun setTtile(title: String): CreateTimenoteModel{
         timenoteModel.title = title
-        timenoteModelDB.title = title
         return timenoteModel
     }
 
@@ -62,7 +44,6 @@ class CreationTimenoteData {
     }
 
     fun setDescription(description: String): CreateTimenoteModel{
-        timenoteModelDB.description = description
         timenoteModel.desc = description
         return timenoteModel
     }
@@ -73,20 +54,17 @@ class CreationTimenoteData {
     }
 
     fun setCategory(category: String): CreateTimenoteModel{
-        timenoteModelDB.category = Category("", category)
         timenoteModel.category = category
         return timenoteModel
     }
 
     fun setStartDate(startDate: String): CreateTimenoteModel{
         timenoteModel.startDate = startDate
-        timenoteModelDB.startingAt = startDate
         return timenoteModel
     }
 
     fun setEndDate(endDate: String): CreateTimenoteModel{
         timenoteModel.endDate = endDate
-        timenoteModelDB.endingAt = endDate
         return timenoteModel
     }
 
@@ -100,24 +78,18 @@ class CreationTimenoteData {
         return timenoteModel
     }
 
-    fun setFormat(format: Int): CreateTimenoteModel{
-        timenoteModel.format = format
-        return timenoteModel
-    }
-
     fun clear(): CreateTimenoteModel {
         timenoteModel = CreateTimenoteModel(null, null, null, null, null,
-            null, null, null, null, null, null, null, null, StatusTimenote.NOANSWER, null)
+            null, null, null, null, null, null, null, null, StatusTimenote.NOANSWER)
         return timenoteModel
     }
 
     fun setColor(color: String): CreateTimenoteModel {
         timenoteModel.color = color
-        timenoteModelDB.colorHex = color
         return timenoteModel
     }
 
-    fun setLocation(detailedPlace: DetailedPlace): CreateTimenoteModelDB {
+    fun setLocation(detailedPlace: DetailedPlace): Location {
         var zipcode = ""
         var city = ""
         var country = ""
@@ -126,9 +98,8 @@ class CreationTimenoteData {
             if(n.types.contains("postal_code")) zipcode = n.short_name
             if(n.types.contains("country")) country = n.long_name
         }
-        timenoteModelDB.location = Location(detailedPlace.result.geometry.location.lat, detailedPlace.result.geometry.location.lng,
+        return Location(detailedPlace.result.geometry.location.lat, detailedPlace.result.geometry.location.lng,
             Address(detailedPlace.result.formatted_address, zipcode, city, country))
-        return timenoteModelDB
     }
 
 }

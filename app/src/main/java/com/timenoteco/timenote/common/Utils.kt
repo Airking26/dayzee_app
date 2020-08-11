@@ -49,6 +49,8 @@ import com.timenoteco.timenote.listeners.PlacePickerListener
 import com.timenoteco.timenote.viewModel.WebSearchViewModel
 import kotlinx.android.synthetic.main.autocomplete_search_address.view.*
 import kotlinx.android.synthetic.main.web_search_rv.view.*
+import org.apache.http.impl.cookie.DateUtils.formatDate
+import java.util.*
 
 class Utils {
 
@@ -243,6 +245,70 @@ class Utils {
         dialog.setCancelable(false)
         dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         return dialog
+    }
+
+    fun calculateDecountTime(): String {
+        val o = 1627243200000
+        val t = System.currentTimeMillis()
+        val time = o - t
+        val c: Calendar = Calendar.getInstance(TimeZone.getTimeZone("fr"))
+        c.timeInMillis = time
+        val mYear: Int = c.get(Calendar.YEAR) - 1970
+        val mMonth: Int = c.get(Calendar.MONTH)
+        val mDay: Int = c.get(Calendar.DAY_OF_MONTH) - 1
+        val mHours: Int = c.get(Calendar.HOUR)
+        val mMin : Int = c.get(Calendar.MINUTE)
+        val mWeek: Int = (c.get(Calendar.DAY_OF_MONTH) - 1) / 7
+
+        var decountTime = ""
+        if(mYear == 0){
+            if(mMonth == 0){
+                if(mDay == 0){
+                    if(mHours > 1){
+                        if(mMin > 1){
+                            decountTime = "In $mHours hours and $mMin minutes"
+                        } else {
+                            decountTime = "In $mHours hours and $mMin minute"
+                        }
+                    }
+                } else {
+                    if(mMin > 1){
+                        decountTime = "In $mHours hour and $mMin minutes"
+                    } else {
+                        decountTime = "In $mHours hour and $mMin minute"
+                    }
+                }
+            } else {
+                if(mMonth > 1){
+                    if(mDay > 1){
+                        decountTime = "In $mMonth months and $mDay days"
+                    } else {
+                        decountTime = "In $mMonth months and $mDay day"
+                    }
+                } else {
+                    if(mDay >1){
+                        decountTime = "In $mMonth month and $mDay days"
+                    } else {
+                        decountTime = "In $mMonth month and $mDay day"
+                    }
+                }
+            }
+        } else {
+            if(mYear > 1){
+                if(mMonth > 1) {
+                    decountTime = "In $mYear years and $mMonth months"
+                } else {
+                    decountTime = "In $mYear years and $mMonth month"
+                }
+            } else {
+                if(mMonth > 1){
+                    decountTime = "In $mYear year and $mMonth months"
+                } else {
+                    decountTime = "In $mYear year and $mMonth month"
+                }
+            }
+        }
+        return decountTime
     }
 
 

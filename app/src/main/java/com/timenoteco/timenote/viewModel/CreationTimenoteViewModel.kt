@@ -21,22 +21,14 @@ class CreationTimenoteViewModel: ViewModel() {
     private val YEAR = "yyyy"
 
     private val timenoteLiveData = MutableLiveData<CreateTimenoteModel>()
-    private val timenoteLiveDataDB = MutableLiveData<CreateTimenoteModelDB>()
     private val createTimenoteData: CreationTimenoteData = CreationTimenoteData()
     private val placeService = PlaceRepository().getPlaceService()
-    private val timenoteService = DayzeeRepository().getTimenoteService()
 
     fun getCreateTimeNoteLiveData(): LiveData<CreateTimenoteModel>{
         timenoteLiveData.postValue(createTimenoteData.loadCreateTimenoteData())
         return timenoteLiveData
     }
 
-    fun getCreateTimeNoteLiveDataDB(): LiveData<CreateTimenoteModelDB>{
-        timenoteLiveDataDB.postValue(createTimenoteData.loadCreateTimenoteDataDB())
-        return timenoteLiveDataDB
-    }
-
-    fun setFormat(format: Int) = timenoteLiveData.postValue(createTimenoteData.setFormat(format))
     fun setTitle(title : String) = timenoteLiveData.postValue(createTimenoteData.setTtile(title))
     fun setPrice(price: Long) = timenoteLiveData.postValue(createTimenoteData.setPrice(price))
     fun setUrl(url: String) = timenoteLiveData.postValue(createTimenoteData.setUrl(url))
@@ -50,13 +42,9 @@ class CreationTimenoteViewModel: ViewModel() {
     fun setColor(color: String) = timenoteLiveData.postValue(createTimenoteData.setColor(color))
     fun setStatus(StatusTimenote: StatusTimenote) = timenoteLiveData.postValue(createTimenoteData.setStatus(StatusTimenote))
     fun fetchLocation(id : String): LiveData<Response<DetailedPlace>> {
-      return flow {
-          emit(placeService.getDetailedPlace(id, "AIzaSyBhM9HQo1fzDlwkIVqobfmrRmEMCWTU1CA"))
-      }.asLiveData(viewModelScope.coroutineContext)
-    }
-
-    fun setLocationObject(detailedPlace: DetailedPlace){
-        timenoteLiveDataDB.postValue(createTimenoteData.setLocation(detailedPlace))
+        return flow {
+            emit(placeService.getDetailedPlace(id, "AIzaSyBhM9HQo1fzDlwkIVqobfmrRmEMCWTU1CA"))
+        }.asLiveData(viewModelScope.coroutineContext)
     }
 
     fun setFormatedStartDate(startDate: Long, endDate: Long){
@@ -64,16 +52,13 @@ class CreationTimenoteViewModel: ViewModel() {
             if(formatDate(DATE_FORMAT_TIME, startDate) == formatDate(DATE_FORMAT_TIME, endDate)){
                 timenoteLiveData.postValue(createTimenoteData.setFormatedStartDate(formatDate(DATE_FORMAT_TIME_FORMATED, startDate)))
                 timenoteLiveData.postValue(createTimenoteData.setFormatedEndDate(formatDate(DATE_FORMAT_TIME, startDate)))
-                timenoteLiveData.postValue(createTimenoteData.setFormat(0))
             } else {
                 timenoteLiveData.postValue(createTimenoteData.setFormatedStartDate(formatDate(DATE_FORMAT_TIME_FORMATED, startDate)))
                 timenoteLiveData.postValue(createTimenoteData.setFormatedEndDate(formatDate(DATE_FORMAT_TIME, startDate) + "\n" + formatDate(DATE_FORMAT_TIME, endDate)))
-                timenoteLiveData.postValue(createTimenoteData.setFormat(0))
             }
         } else {
             timenoteLiveData.postValue(createTimenoteData.setFormatedStartDate(formatDate(DATE_FORMAT_SAME_DAY_DIFFERENT_TIME, startDate)))
             timenoteLiveData.postValue(createTimenoteData.setFormatedEndDate(formatDate(DATE_FORMAT_SAME_DAY_DIFFERENT_TIME, endDate)))
-            timenoteLiveData.postValue(createTimenoteData.setFormat(1))
         }
     }
 
@@ -86,11 +71,8 @@ class CreationTimenoteViewModel: ViewModel() {
         else dateFormat.format(timestamp)
     }
 
-    fun postTimenote(): LiveData<Response<TimenoteModel>> {
-        return flow {
-            emit(timenoteService.createTimenote("", timenoteLiveData.value!!)
-            )
-        }.asLiveData(viewModelScope.coroutineContext)
+    fun postTimenote() {
+        //return flow { //emit(timenoteService.createTimenote("", null) ) }.asLiveData(viewModelScope.coroutineContext)
     }
 
 

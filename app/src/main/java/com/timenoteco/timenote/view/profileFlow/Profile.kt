@@ -1,6 +1,8 @@
 package com.timenoteco.timenote.view.profileFlow
 
 import android.content.ContentValues.TAG
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,6 +11,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.preference.PreferenceManager
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
@@ -28,7 +31,6 @@ import kotlinx.android.synthetic.main.fragment_profile.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarListener {
 
     private var profilePastFuturePagerAdapter: ProfilePastFuturePagerAdapter? = null
@@ -36,25 +38,31 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
     private var showFilterBar: Boolean = false
     private val args : ProfileArgs by navArgs()
     private var timenotes: MutableList<Timenote> = mutableListOf()
+    val TOKEN: String = "TOKEN"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loginViewModel.getAuthenticationState().observe(requireActivity(), androidx.lifecycle.Observer {
+            findNavController().popBackStack(R.id.profile, false)
             when (it) {
                 LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(ProfileDirections.actionProfileToNavigation())
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> findNavController().popBackStack(R.id.profile, false)
-                LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION -> Log.d("", "")
-                LoginViewModel.AuthenticationState.GUEST -> findNavController().popBackStack(R.id.profile, false)
             }
         })
-
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_profile)
+    override fun onResume() {
+        super.onResume()
+        when(loginViewModel.getAuthenticationState().value){
+            LoginViewModel.AuthenticationState.GUEST -> loginViewModel.markAsUnauthenticated()
+        }
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_profile)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
         val simpleDateFormatDayName= SimpleDateFormat("EEE.", Locale.getDefault())
         val simpleDateFormatDayNumber = SimpleDateFormat("dd", Locale.getDefault())
 

@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ContentValues
+import android.content.Context
 import android.content.Context.LOCATION_SERVICE
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -43,6 +44,7 @@ import com.timenoteco.timenote.adapter.UsersPagingAdapter
 import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.PlacePickerListener
+import com.timenoteco.timenote.listeners.ShowBarListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.view.profileFlow.ProfileDirections
@@ -58,6 +60,7 @@ import java.util.*
 
 class NearBy : BaseThroughFragment(), View.OnClickListener, PlacePickerListener, TimenoteOptionsListener{
 
+    private lateinit var makeBarVisibleListener: ShowBarListener
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
     private val profileViewModel: ProfileViewModel by activityViewModels()
     private val AUTOCOMPLETE_REQUEST_CODE: Int = 12
@@ -88,7 +91,13 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, PlacePickerListener,
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        makeBarVisibleListener.onBarAskedToShow()
          return inflater.inflate(R.layout.fragment_near_by, container, false)}
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        makeBarVisibleListener = context as ShowBarListener
+    }
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -434,7 +443,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, PlacePickerListener,
         val geocoder = Geocoder(requireContext())
         googleMap?.addMarker(MarkerOptions().position(LatLng(location?.latitude!!, location.longitude)))
         googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(location?.latitude!!, location.longitude), 15F))
-        nearby_place.text = geocoder.getFromLocation(location?.latitude!!, location.longitude, 1)[0].getAddressLine(0) ?: geocoder.getFromLocation(location.latitude, location.longitude, 1)[0].countryName
+        nearby_place?.text = geocoder.getFromLocation(location?.latitude!!, location.longitude, 1)[0].getAddressLine(0) ?: geocoder.getFromLocation(location.latitude, location.longitude, 1)[0].countryName
 
     }
 

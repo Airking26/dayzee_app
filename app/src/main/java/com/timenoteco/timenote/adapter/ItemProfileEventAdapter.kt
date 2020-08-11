@@ -14,6 +14,7 @@ import com.afollestad.materialdialogs.list.listItems
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
+import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.Timenote
@@ -57,7 +58,7 @@ class ItemProfileEventAdapter(
         fun bindListStyleItem(event: Timenote, timenoteOptionsListener: TimenoteOptionsListener) {
             itemView.profile_item_name_event.text = event.title
             itemView.profile_item_address_event.text = event.place
-            itemView.profile_item_date_event.text = event.dateIn
+            itemView.profile_item_date_event.text = Utils().calculateDecountTime()
             itemView.profile_item_options.setOnClickListener { createOptionsOnTimenote(itemView.context, true, timenoteOptionsListener) }
             Glide
                 .with(itemView)

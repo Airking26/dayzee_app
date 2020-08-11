@@ -1,9 +1,6 @@
 package com.timenoteco.timenote.webService.service
 
-import com.timenoteco.timenote.model.CreateTimenoteModel
-import com.timenoteco.timenote.model.TimenoteBody
-import com.timenoteco.timenote.model.TimenoteModel
-import com.timenoteco.timenote.model.UserResponse
+import com.timenoteco.timenote.model.*
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -22,7 +19,7 @@ interface TimenoteService {
     suspend fun deleteTimenote(@Header("Authorization") token: String, @Path("id") id: String) : Response<Any>
 
     @POST("timenote")
-    suspend fun createTimenote(@Header("Authorization") token: String, @Body timenoteModel: CreateTimenoteModel) : Response<TimenoteModel>
+    suspend fun createTimenote(@Header("Authorization") token: String, @Body timenoteModel: CreateTimenoteModelDB) : Response<TimenoteModel>
 
     @PUT("timenote/join/{id}")
     suspend fun joinTimenote(@Header("Authorization") token: String, @Path("id") id: String) : Response<Any>

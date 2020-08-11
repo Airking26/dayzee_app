@@ -31,12 +31,13 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.setupWithNavController
 import com.timenoteco.timenote.listeners.BackToHomeListener
+import com.timenoteco.timenote.listeners.ShowBarListener
 import com.timenoteco.timenote.view.homeFlow.Home
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel.AuthenticationState
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby {
+class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby, ShowBarListener {
 
     private var currentNavController: LiveData<NavController>? = null
     private val utils = Utils()
@@ -188,6 +189,10 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby 
 
     override fun onGuestMode() {
         bottomNavView.selectedItemId = R.id.navigation_graph_tab_2
+    }
+
+    override fun onBarAskedToShow() {
+        bottomNavView.visibility = View.VISIBLE
     }
 
 

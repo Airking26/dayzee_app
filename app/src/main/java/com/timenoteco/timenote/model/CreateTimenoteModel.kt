@@ -20,6 +20,5 @@ data class CreateTimenoteModel (
     var formatedEndDate: String?,
     var price: Long?,
     var url: String?,
-    var status: StatusTimenote,
-    var format: Int?
+    var status: StatusTimenote
 )

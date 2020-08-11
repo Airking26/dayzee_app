@@ -168,6 +168,24 @@
         app:layout_constraintTop_toTopOf="@id/separator_2" />
 
     <TextView
+        android:visibility="invisible"
+        android:id="@+id/timenote_in_label"
+        android:fontFamily="sans-serif-light"
+        android:textSize="16sp"
+        android:shadowColor="@android:color/black"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="1.5"
+        android:textColor="@android:color/white"
+        tools:text="In 2 days and 23 hours"
+        app:layout_constraintEnd_toEndOf="@id/timenote_vp"
+        app:layout_constraintStart_toStartOf="@id/timenote_vp"
+        app:layout_constraintBottom_toBottomOf="@id/separator_2"
+        app:layout_constraintTop_toTopOf="@id/separator_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
         android:id="@+id/timenote_buy"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

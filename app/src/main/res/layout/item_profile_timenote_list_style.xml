@@ -39,7 +39,7 @@
             android:fontFamily="sans-serif-light"
             android:id="@+id/profile_item_name_event"
             android:layout_marginStart="8dp"
-            android:textSize="16sp"
+            android:textSize="15sp"
             android:textColor="@color/colorText"
             android:textAllCaps="true"
             tools:text="beach Volley"
@@ -95,10 +95,11 @@
             android:id="@+id/profile_item_date_event"
             tools:text="Dans 12 jours"
             android:textColor="@color/colorText"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toBottomOf="@id/profile_item_pic_profile_imageview"
+            app:layout_constraintTop_toTopOf="@id/profile_item_pic_profile_imageview"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
