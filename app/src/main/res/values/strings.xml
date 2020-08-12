@@ -229,4 +229,7 @@
     <string name="mail">Email</string>
     <string name="username_email">Email / Username</string>
     <string name="mask_user">Mask this user</string>
+    <string name="add_an_url">Add a link</string>
+    <string name="public_and_private">Public and Private</string>
+    <string name="today">Today</string>
 </resources>

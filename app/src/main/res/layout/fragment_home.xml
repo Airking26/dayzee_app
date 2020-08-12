@@ -16,17 +16,20 @@
 
         <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
 
-            <TextView
+            <ImageView
+                android:tint="@android:color/black"
+                android:layout_width="80dp"
+                android:src="@drawable/dayzee"
                 style="@style/AppTheme.Toolbar.Title"
                 android:text="@string/timeline" />
 
             <ImageView
-                android:src="@drawable/ic_arrow_forward_black_24dp"
+                android:src="@drawable/ic_futur_plein_grad"
                 android:id="@+id/home_future_timeline"
                 style="@style/AppTheme.Toolbar.ImageRight"/>
 
             <ImageView
-                android:src="@drawable/ic_arrow_back_black_24dp"
+                android:src="@drawable/ic_passe_ok"
                 android:id="@+id/home_past_timeline"
                 style="@style/AppTheme.Toolbar.ImageLeft"/>
 

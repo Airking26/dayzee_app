@@ -7,6 +7,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.content.Context.LOCATION_SERVICE
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.*
 import android.location.Address
@@ -20,6 +21,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
@@ -34,31 +36,39 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.AutocompleteActivity
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ItemTimenoteAdapter
 import com.timenoteco.timenote.adapter.UsersPagingAdapter
 import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.common.Utils
+import com.timenoteco.timenote.common.stringLiveData
 import com.timenoteco.timenote.listeners.PlacePickerListener
 import com.timenoteco.timenote.listeners.ShowBarListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.view.profileFlow.ProfileDirections
 import com.timenoteco.timenote.viewModel.LoginViewModel
+import com.timenoteco.timenote.viewModel.NearbyViewModel
 import com.timenoteco.timenote.viewModel.ProfileViewModel
 import com.timenoteco.timenote.viewModel.TimenoteViewModel
+import com.timenoteco.timenote.webService.NearbyFilterData
 import kotlinx.android.synthetic.main.fragment_near_by.*
 import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import okhttp3.internal.Util
+import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
 
-class NearBy : BaseThroughFragment(), View.OnClickListener, PlacePickerListener, TimenoteOptionsListener{
+class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListener{
 
     private lateinit var makeBarVisibleListener: ShowBarListener
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
@@ -76,6 +86,9 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, PlacePickerListener,
     private lateinit var placesClient: PlacesClient
     private var mapFragment : SupportMapFragment? = null
     private var firstTime: Boolean = true
+    private lateinit var prefs : SharedPreferences
+    private lateinit var nearbyFilterData: NearbyFilterData
+    private val nearbyViewModel: NearbyViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,13 +112,19 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, PlacePickerListener,
         makeBarVisibleListener = context as ShowBarListener
     }
 
+    override fun onResume() {
+        super.onResume()
+        Utils().hideStatusBar(requireActivity())
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         Utils().hideStatusBar(requireActivity())
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        nearbyFilterData = NearbyFilterData(requireContext())
         dateFormat = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
         nearbyDateTv = nearby_time
-
         nearby_place.setOnClickListener(this)
         nearby_time.setOnClickListener(this)
         nearby_filter_btn.setOnClickListener(this)
@@ -116,8 +135,9 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, PlacePickerListener,
 
         mapFragment?.getMapAsync {
             this.googleMap = it
-            if(firstTime)checkIfCanGetLocation()
-            firstTime = false
+            if(firstTime) {
+                checkIfCanGetLocation()
+            }
         }
 
         transparent_image_map.setOnTouchListener { v, event ->
@@ -388,7 +408,13 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, PlacePickerListener,
             adapter = timenoteAdapter
         }
 
-    }
+        prefs.stringLiveData("nearby", Gson().toJson(nearbyFilterData.loadNearbyFilter())).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            val type: Type = object : TypeToken<NearbyFilterModel?>() {}.type
+            val nearbyModifyModel : NearbyFilterModel? = Gson().fromJson<NearbyFilterModel>(prefs.getString("nearby", null), type)
+            nearby_place.text = nearbyModifyModel?.where?.address?.address
+            if(nearbyModifyModel?.whenn.isNullOrBlank()) nearby_time.text = getString(R.string.today) else nearby_time.text = nearbyModifyModel?.whenn
+        })
+     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
@@ -396,10 +422,13 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, PlacePickerListener,
                 Activity.RESULT_OK -> {
                     data?.let {
                         val place = Autocomplete.getPlaceFromIntent(data)
-                        //creationTimenoteViewModel.setLocation(place.address!!)
                         Utils().hideStatusBar(requireActivity())
                         this.googleMap?.addMarker(MarkerOptions().position(LatLng(place.latLng?.latitude!!, place.latLng?.longitude!!)))
                         this.googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(place.latLng?.latitude!!, place.latLng?.longitude!!), 15F))
+                        nearbyViewModel.fetchLocation(place.id!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer { detailedPlace ->
+                            val location = Utils().setLocation(detailedPlace.body()!!)
+                            if(detailedPlace.isSuccessful) nearbyFilterData.setWhere(location)
+                        })
                     }
                 }
                 AutocompleteActivity.RESULT_ERROR -> {
@@ -439,12 +468,19 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, PlacePickerListener,
 
     @SuppressLint("MissingPermission")
     private fun getLocation() {
-        val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-        val geocoder = Geocoder(requireContext())
-        googleMap?.addMarker(MarkerOptions().position(LatLng(location?.latitude!!, location.longitude)))
-        googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(location?.latitude!!, location.longitude), 15F))
-        nearby_place?.text = geocoder.getFromLocation(location?.latitude!!, location.longitude, 1)[0].getAddressLine(0) ?: geocoder.getFromLocation(location.latitude, location.longitude, 1)[0].countryName
-
+        placesClient.findCurrentPlace(FindCurrentPlaceRequest.newInstance(placesList)).addOnCompleteListener {
+            if(it.isSuccessful){
+                val place = it.result?.placeLikelihoods?.get(0)?.place
+                googleMap?.addMarker(MarkerOptions().position(LatLng(place?.latLng?.latitude!!, place.latLng?.longitude!!)))
+                googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(place?.latLng?.latitude!!, place.latLng?.longitude!!), 15F))
+                nearbyViewModel.fetchLocation(place?.id!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer { detailedPlace ->
+                    if(detailedPlace.isSuccessful) nearbyFilterData.setWhere(Utils().setLocation(detailedPlace.body()!!))
+                    nearbyFilterData.setWhen(getString(R.string.today))
+                    firstTime = false
+                    prefs.edit().putBoolean("firstTime", true).apply()
+                })
+            }
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -470,17 +506,11 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, PlacePickerListener,
                 onDismiss { Utils().hideStatusBar(requireActivity()) }
                 datePicker { dialog, datetime ->
                     nearbyDateTv.text = dateFormat.format(datetime.time.time)
+                    nearbyFilterData.setWhen(dateFormat.format(datetime.time.time))
                 }
             }
             nearby_filter_btn -> findNavController().navigate(NearByDirections.actionNearByToNearbyFilters())
         }
-    }
-
-    override fun onPlacePicked(address: Address) {
-        Utils().hideStatusBar(requireActivity())
-        //this.googleMap?.addMarker(MarkerOptions().position(LatLng(address.latitude, address.longitude)))
-        this.googleMap?.moveCamera(CameraUpdateFactory.newLatLng(LatLng(address.latitude, address.longitude)))
-        this.googleMap?.animateCamera(CameraUpdateFactory.zoomTo(13.0f))
     }
 
     override fun onPictureClicked() {

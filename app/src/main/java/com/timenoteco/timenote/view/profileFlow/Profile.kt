@@ -352,9 +352,10 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
         })
 
         TabLayoutMediator(profile_tablayout, profile_vp){ tab, position -> }.attach()
+        //profile_tablayout.setSelectedTabIndicatorColor()
 
-        profile_tablayout.getTabAt(1)?.icon = resources.getDrawable(R.drawable.ic_baseline_keyboard_arrow_right_24)
-        profile_tablayout.getTabAt(0)?.icon = resources.getDrawable(R.drawable.ic_baseline_keyboard_arrow_left_24)
+        profile_tablayout.getTabAt(1)?.icon = resources.getDrawable(R.drawable.ic_futur_plein_grad)
+        profile_tablayout.getTabAt(0)?.icon = resources.getDrawable(R.drawable.ic_passe_ok)
 
         profile_modify_btn.setOnClickListener(this)
         profile_calendar_btn.setOnClickListener(this)

@@ -95,7 +95,6 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
     private lateinit var toLabel : TextView
     private lateinit var addEndDateTv: TextView
     private lateinit var fixedDate : TextView
-    private lateinit var url: TextView
     private lateinit var paidTimenote : CardView
     private lateinit var picCl: ConstraintLayout
     private lateinit var noAnswer: TextView
@@ -177,22 +176,16 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
             StatusTimenote.FREE -> {
                 if (it.url.isNullOrBlank()) {
                     noAnswer.text = getString(R.string.free)
-                    url.visibility = View.GONE
-                } else {
-                    url.visibility = View.VISIBLE
-                    url.text = it.url
                 }
             }
             StatusTimenote.PAID -> {
                 noAnswer.text = it.price.toString() + "$"
-                url.visibility = View.VISIBLE
-                url.text = it.url
             }
             else -> {
                 noAnswer.text = getString(R.string.no_answer)
-                url.visibility = View.GONE
             }
         }
+        if(it.url.isNullOrBlank()) create_timenote_url_btn.hint = getString(R.string.add_an_url) else create_timenote_url_btn.text = it.url
         if (it.category.isNullOrBlank()) create_timenote_category.text =
             getString(R.string.none) else create_timenote_category.text = it.category
         if (it.pic == null) {
@@ -283,7 +276,6 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
         paidTimenote = paid_timenote_cardview
         fixedDate = create_timenote_fixed_date
         fromTv = create_timenote_from
-        url = create_timenote_paid_timenote_status_price
         toTv = create_timenote_to
         categoryTv = create_timenote_category
         titleTv = create_timenote_title_btn
@@ -325,8 +317,8 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
         addEndDateTv.setOnClickListener(this)
         paidTimenote.setOnClickListener(this)
         noAnswer.setOnClickListener(this)
-        url.setOnClickListener(this)
         create_timenote_btn_back.setOnClickListener(this)
+        url_cardview.setOnClickListener(this)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -574,38 +566,15 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                     when(index){
                         0 -> {
                             noAnswer.text = text.toString()
-                            MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                                title(R.string.link)
-                                input(inputType = InputType.TYPE_TEXT_VARIATION_URI) { _, charSequence ->
-                                    creationTimenoteViewModel.setUrl(charSequence.toString())
-                                    creationTimenoteViewModel.setStatus(StatusTimenote.FREE)
-                                }
-                                negativeButton{
-                                    creationTimenoteViewModel.setStatus(StatusTimenote.NOANSWER)
-                                    creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.url = null
-                                }
-                                lifecycleOwner(this@CreateTimenote)
-                            }
-                        }
+                            creationTimenoteViewModel.setStatus(StatusTimenote.FREE)
+                            creationTimenoteViewModel.setPrice(0L) }
                         1 -> {
                             noAnswer.text = text.toString()
                             MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                                 title(R.string.price)
                                 input(inputType = InputType.TYPE_CLASS_NUMBER) { _, charSequence ->
                                     creationTimenoteViewModel.setPrice(charSequence.toString().toLong())
-                                    MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                                        title(R.string.link)
-                                        input(inputType = InputType.TYPE_TEXT_VARIATION_URI) { _, charSequence ->
-                                            creationTimenoteViewModel.setUrl(charSequence.toString())
-                                            creationTimenoteViewModel.setStatus(StatusTimenote.PAID)
-                                            if(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.url.isNullOrBlank() ||
-                                                creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.price.toString().isNullOrBlank()){
-                                                noAnswer.text = resources.getString(R.string.no_answer)
-                                                creationTimenoteViewModel.setStatus(StatusTimenote.NOANSWER)
-                                            }
-                                        }
-                                        lifecycleOwner(this@CreateTimenote)
-                                    }
+                                    creationTimenoteViewModel.setStatus(StatusTimenote.PAID)
                                     lifecycleOwner(this@CreateTimenote)
                                 }
                             }
@@ -617,7 +586,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                     }
                 }
             }
-            url -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            url_cardview -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.link)
                 input(inputType = InputType.TYPE_TEXT_VARIATION_URI, prefill = creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.url) { _, charSequence ->
                     creationTimenoteViewModel.setUrl(charSequence.toString())

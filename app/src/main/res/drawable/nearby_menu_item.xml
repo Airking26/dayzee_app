@@ -3,5 +3,5 @@
     <!--Clicked-->
     <item android:drawable="@drawable/ic_location_clicked_bnv" android:state_checked="true" />
     <!--Not Clicked-->
-    <item android:drawable="@drawable/ic_location_bnv" android:state_checked="false" />
+    <item android:drawable="@drawable/ic_nearby" android:state_checked="false" />
 </selector>

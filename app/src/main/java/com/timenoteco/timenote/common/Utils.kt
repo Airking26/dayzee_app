@@ -46,6 +46,8 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.AutoSuggestAdapter
 import com.timenoteco.timenote.adapter.WebSearchAdapter
 import com.timenoteco.timenote.listeners.PlacePickerListener
+import com.timenoteco.timenote.model.DetailedPlace
+import com.timenoteco.timenote.model.Location
 import com.timenoteco.timenote.viewModel.WebSearchViewModel
 import kotlinx.android.synthetic.main.autocomplete_search_address.view.*
 import kotlinx.android.synthetic.main.web_search_rv.view.*
@@ -309,6 +311,20 @@ class Utils {
             }
         }
         return decountTime
+    }
+
+    fun setLocation(detailedPlace: DetailedPlace): Location {
+        var zipcode = ""
+        var city = ""
+        var country = ""
+        for(n in detailedPlace.result.address_components){
+            if(n.types.contains("locality")) city = n.long_name
+            if(n.types.contains("postal_code")) zipcode = n.short_name
+            if(n.types.contains("country")) country = n.long_name
+        }
+        return Location(detailedPlace.result.geometry.location.lat, detailedPlace.result.geometry.location.lng,
+            com.timenoteco.timenote.model.Address(detailedPlace.result.name, zipcode, city, country)
+        )
     }
 
 

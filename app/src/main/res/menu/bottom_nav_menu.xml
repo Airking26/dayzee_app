@@ -9,6 +9,12 @@
         app:showAsAction="always" />
 
     <item
+        android:id="@+id/navigation_graph_tab_3"
+        android:icon="@drawable/search_menu_item"
+        android:title=""
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/navigation_graph_tab_2"
         android:icon="@drawable/nearby_menu_item"
         android:title=""
@@ -16,13 +22,7 @@
 
     <item
         android:id="@+id/navigation_graph_tab_5"
-        android:icon="@drawable/logo"
-        android:title=""
-        app:showAsAction="always" />
-
-    <item
-        android:id="@+id/navigation_graph_tab_3"
-        android:icon="@drawable/search_menu_item"
+        android:icon="@drawable/add_menu_item"
         android:title=""
         app:showAsAction="always" />
 

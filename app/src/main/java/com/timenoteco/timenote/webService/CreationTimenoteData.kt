@@ -89,17 +89,4 @@ class CreationTimenoteData {
         return timenoteModel
     }
 
-    fun setLocation(detailedPlace: DetailedPlace): Location {
-        var zipcode = ""
-        var city = ""
-        var country = ""
-        for(n in detailedPlace.result.address_components){
-            if(n.types.contains("locality")) city = n.long_name
-            if(n.types.contains("postal_code")) zipcode = n.short_name
-            if(n.types.contains("country")) country = n.long_name
-        }
-        return Location(detailedPlace.result.geometry.location.lat, detailedPlace.result.geometry.location.lng,
-            Address(detailedPlace.result.formatted_address, zipcode, city, country))
-    }
-
 }

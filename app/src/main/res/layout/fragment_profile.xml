@@ -21,12 +21,12 @@
             <ImageView
                 android:id="@+id/profile_settings_btn"
                 style="@style/AppTheme.Toolbar.ImageRight"
-                android:src="@drawable/ic_settings_black_24dp" />
+                android:src="@drawable/ic_reglages_1_ok" />
 
             <ImageView
                 android:id="@+id/profile_notif_btn"
                 style="@style/AppTheme.Toolbar.ImageLeft"
-                android:src="@drawable/ic_flag_black_24dp" />
+                android:src="@drawable/ic_notifications_ok" />
 
         </androidx.appcompat.widget.Toolbar>
 
@@ -173,6 +173,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
+                        android:visibility="gone"
                         android:fontFamily="sans-serif-light"
                         android:id="@+id/profile_location"
                         android:layout_width="wrap_content"
@@ -199,7 +200,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/profile_location"
-                        app:fb_defaultColor="@color/colorAccentCustom"
+                        app:fb_defaultColor="#ffcc33"
                         app:fb_radius="5dp"
                         app:fb_text="@string/modify"
                         app:fb_textColor="@android:color/white" />
