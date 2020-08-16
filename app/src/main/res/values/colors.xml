@@ -2,12 +2,15 @@
 <resources>
     <color name="colorPrimary">#5A599D</color>
     <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorAccent">#63BFD2</color>
+    <color name="colorAccent">#ffcc33</color>
     <color name="colorText">#000000</color>
     <color name="colorTextSecondary">#5A599D</color>
     <color name="colorTextThirdly">#4A90E2</color>
     <color name="colorBackgroundForward">#103700B3</color>
     <color name="colorBackgroundBackward">#10aaaaaa</color>
     <color name="colorAccentCustom">#63BFD2</color>
+    <color name="colorStartGradient">#09539d</color>
+    <color name="colorEndGradient">#892981</color>
+    <color name="colorYellow">#ffcc33</color>
 
 </resources>

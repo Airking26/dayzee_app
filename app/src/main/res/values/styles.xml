@@ -17,6 +17,9 @@
         <item name="colorBackgroundForward">@color/colorBackgroundForward</item>
         <item name="colorBackgroundBackward">@color/colorBackgroundBackward</item>
         <item name="colorAccentCustom">@color/colorAccentCustom</item>
+        <item name="colorStartGradient">@color/colorStartGradient</item>
+        <item name="colorEndGradient">@color/colorEndGradient</item>
+        <item name="colorYellow">@color/colorYellow</item>
     </style>
 
 

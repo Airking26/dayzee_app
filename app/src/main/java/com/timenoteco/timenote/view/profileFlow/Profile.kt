@@ -316,8 +316,8 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
         if(args.whereFrom){
             profile_modify_btn.visibility = View.INVISIBLE
             profile_follow_btn.visibility = View.VISIBLE
-            profile_settings_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_baseline_info_24))
-            profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_share_black_24dp))
+            profile_settings_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_more_vert_black_profile_24dp))
+            profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_partage))
         }
 
         Glide
@@ -336,6 +336,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
             }
         }
 
+        profile_tablayout.setSelectedTabIndicatorColor(resources.getColor(android.R.color.darker_gray))
         profile_tablayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
             override fun onTabReselected(tab: TabLayout.Tab?) {
                 profilePastFuturePagerAdapter?.setShowFilterBar(true, tab?.position!!, true)
@@ -345,17 +346,25 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 profilePastFuturePagerAdapter?.setShowFilterBar(true, tab?.position!!, false)
             }
 
+
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                Log.d(TAG, "onTabSelected: ")
+                when(tab?.position){
+                    0 -> {
+                        profile_tablayout.getTabAt(1)?.icon = resources.getDrawable(R.drawable.ic_futur_ok)
+                        profile_tablayout.getTabAt(0)?.icon = resources.getDrawable(R.drawable.ic_passe_plein_grad_ok)
+                    }
+                    1 -> {
+                        profile_tablayout.getTabAt(1)?.icon = resources.getDrawable(R.drawable.ic_futur_plein_grad)
+                        profile_tablayout.getTabAt(0)?.icon = resources.getDrawable(R.drawable.ic_passe_ok)
+                    }
+                }
             }
 
         })
 
         TabLayoutMediator(profile_tablayout, profile_vp){ tab, position -> }.attach()
-        //profile_tablayout.setSelectedTabIndicatorColor()
 
-        profile_tablayout.getTabAt(1)?.icon = resources.getDrawable(R.drawable.ic_futur_plein_grad)
-        profile_tablayout.getTabAt(0)?.icon = resources.getDrawable(R.drawable.ic_passe_ok)
+
 
         profile_modify_btn.setOnClickListener(this)
         profile_calendar_btn.setOnClickListener(this)

@@ -3,7 +3,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="preferrence">Preference</string>
+    <string name="preferrence">Preferences</string>
     <string name="next">Next</string>
     <string name="select_what_you_like">Select what you like</string>
     <string name="my_city">My City</string>
@@ -26,7 +26,7 @@
     <string name="followers">Followers</string>
     <string name="following">Following</string>
     <string name="share_profile">SHARE PROFILE</string>
-    <string name="modify">MODIFY</string>
+    <string name="modify">Modify</string>
     <string name="follow">Follow</string>
     <string name="name_you_want_to_appear">Name you want to appear</string>
     <string name="your_name">Your name</string>
@@ -53,13 +53,13 @@
     <string name="confidentiality_politic">Confidentiality politic</string>
     <string name="send_comments">Send comments</string>
     <string name="disconnect">DISCONNECT</string>
-    <string name="new_timenote">New Timenote</string>
-    <string name="take_add_a_picture">TAKE/ADD A PICTURE</string>
+    <string name="new_timenote">New Post</string>
+    <string name="take_add_a_picture">ADD A PICTURE</string>
     <string name="choose_a_color">OR CHOOSE A BACKGROUND COLOR</string>
     <string name="when">When</string>
     <string name="to">To</string>
     <string name="where">Where</string>
-    <string name="share_with">Share with</string>
+    <string name="share_with">Share With</string>
     <string name="category">Category</string>
     <string name="none">None</string>
     <string name="title">Title</string>

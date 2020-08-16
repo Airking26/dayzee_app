@@ -9,8 +9,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
 import kotlinx.android.synthetic.main.fragment_menu.*
+import kotlinx.android.synthetic.main.fragment_profile.*
 
 class Menu : Fragment(), View.OnClickListener {
 
@@ -22,6 +25,12 @@ class Menu : Fragment(), View.OnClickListener {
         menu_preferences_cv.setOnClickListener(this)
         menu_profile_cv.setOnClickListener(this)
         menu_invite_friends_cv.setOnClickListener(this)
+
+        Glide
+            .with(this)
+            .load("https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792")
+            .apply(RequestOptions.circleCropTransform())
+            .into(profile_menu_iv)
     }
 
     override fun onClick(v: View?) {

@@ -6,6 +6,9 @@
     <attr name="colorBackgroundForward" format="reference|color" />
     <attr name="colorBackgroundBackward" format="reference|color" />
     <attr name="colorAccentCustom" format="reference|color" />
+    <attr name="colorStartGradient" format="reference|color"/>
+    <attr name="colorEndGradient" format="reference|color"/>
+    <attr name="colorYellow" format="reference|color"/>
 
     <declare-styleable name="ExpandIconView">
         <attr name="eiv_roundedCorners" format="boolean"/>

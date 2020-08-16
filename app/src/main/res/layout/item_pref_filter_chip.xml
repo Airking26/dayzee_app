@@ -9,7 +9,7 @@
     android:gravity="center"
     app:mcv_backgroundColor="@color/white"
     app:mcv_textColor="@android:color/black"
-    app:mcv_selectedTextColor="@color/colorAccentCustom"
+    app:mcv_selectedTextColor="@color/colorEndGradient"
     app:mcv_selectedBackgroundColor="@android:color/white"
     app:mcv_strokeColor="@android:color/darker_gray"
     app:mcv_strokeSize="1dp"

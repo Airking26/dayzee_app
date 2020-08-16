@@ -222,7 +222,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="16dp"
-                android:src="@drawable/ic_facebook"
+                android:src="@drawable/ic_facebook_ok"
                 app:layout_constraintEnd_toStartOf="@id/preview_created_timenote_twitter"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/share_label" />
@@ -232,7 +232,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:src="@drawable/ic_twitter"
+                android:src="@drawable/ic_wa_ok"
                 app:layout_constraintEnd_toStartOf="@id/preview_created_timenote_linkedin"
                 app:layout_constraintStart_toEndOf="@id/preview_created_timenote_facebook"
                 app:layout_constraintTop_toBottomOf="@id/share_label" />
@@ -242,7 +242,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:src="@drawable/ic_linkedin"
+                android:src="@drawable/ic_linkedin_ok"
                 app:layout_constraintEnd_toStartOf="@id/preview_created_timenote_instagram"
                 app:layout_constraintStart_toEndOf="@id/preview_created_timenote_twitter"
                 app:layout_constraintTop_toBottomOf="@id/share_label" />
@@ -253,7 +253,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="24dp"
-                android:src="@drawable/ic_instagram"
+                android:src="@drawable/ic_insta_ok"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/preview_created_timenote_linkedin"
                 app:layout_constraintTop_toBottomOf="@id/share_label" />

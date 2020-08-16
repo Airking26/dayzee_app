@@ -72,6 +72,7 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
         super.onResume()
         when(loginViewModel.getAuthenticationState().value){
             LoginViewModel.AuthenticationState.GUEST -> loginViewModel.markAsUnauthenticated()
+            LoginViewModel.AuthenticationState.UNAUTHENTICATED -> loginViewModel.markAsUnauthenticated()
         }
     }
 
@@ -113,9 +114,9 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
             "See 63 comments",
                 "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
                 true,
-                " 2020 ",
-                " 10 Aug. \n 15:45 ",
-                " 11 Sep. \n 12:30 ",
+                "2020",
+                "10 Aug.\n15:45",
+                "11 Sep.\n12:30",
                 "Beach Party",
                 "In 23 days",
                 12L,
@@ -133,9 +134,9 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
             "See 63 comments",
                 "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
                 true,
-                " 2020 ",
-                " 24 \n Aug. ",
-                " 15:30 \n PM ",
+                "2020",
+                "24\nAug.",
+                "15:30\nPM",
                 "Beach Party",
                 "In 23 days",
                 12L,

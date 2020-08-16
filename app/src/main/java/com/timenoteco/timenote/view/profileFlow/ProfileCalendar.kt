@@ -53,7 +53,7 @@ class ProfileCalendar: Fragment() {
             EventCalendar("Beach Party",
                 "34 Olhio Street",
                 "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                1595425853001)
+                1597934152000)
         )
         calendarAdapter = ItemCalendarAdapter(mutableListOf(), eventsCalendar)
 
@@ -71,7 +71,7 @@ class ProfileCalendar: Fragment() {
         calendarAdapter.checkEventForDay(today)
 
         for (e in eventsCalendar){
-            calendarView.addEventTag(simpleDateFormatYear.format(e.date).toInt(), simpleDateFormatMonth.format(e.date).toInt() - 1, simpleDateFormatDay.format(e.date).toInt(), R.color.colorAccent)
+            calendarView.addEventTag(simpleDateFormatYear.format(e.date).toInt(), simpleDateFormatMonth.format(e.date).toInt() - 1, simpleDateFormatDay.format(e.date).toInt(), R.color.colorYellow)
         }
 
         calendarView.setCalendarListener(object: CollapsibleCalendar.CalendarListener{
@@ -88,7 +88,7 @@ class ProfileCalendar: Fragment() {
                 calendarView.select(Day(datetime.year, datetime.month, datetime.dayOfMonth))
                 calendarAdapter.checkEventForDay(Day(datetime.year, datetime.month, datetime.dayOfMonth))
                 for (e in eventsCalendar){
-                    calendarView.addEventTag(simpleDateFormatYear.format(e.date).toInt(), simpleDateFormatMonth.format(e.date).toInt() - 1, simpleDateFormatDay.format(e.date).toInt(), R.color.colorAccent)
+                    calendarView.addEventTag(simpleDateFormatYear.format(e.date).toInt(), simpleDateFormatMonth.format(e.date).toInt() - 1, simpleDateFormatDay.format(e.date).toInt(), R.color.colorYellow)
                 }
             }
 

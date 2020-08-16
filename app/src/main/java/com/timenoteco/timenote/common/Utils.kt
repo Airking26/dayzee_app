@@ -28,8 +28,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
@@ -167,7 +169,8 @@ class Utils {
                                     charSequence.toString(),
                                     dialog
                                 )
-                                layoutManager = LinearLayoutManager(context)
+                                layoutManager = GridLayoutManager(context, 2)
+                                (layoutManager as GridLayoutManager).spanSizeLookup
                                 adapter = webSearchAdapter
                                 webSearchAdapter?.notifyDataSetChanged()
                                 progressDialog.hide()
@@ -326,6 +329,5 @@ class Utils {
             com.timenoteco.timenote.model.Address(detailedPlace.result.name, zipcode, city, country)
         )
     }
-
 
 }

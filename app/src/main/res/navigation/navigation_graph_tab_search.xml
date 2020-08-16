@@ -80,11 +80,7 @@
     <fragment
         android:id="@+id/searchExplore"
         android:name="com.timenoteco.timenote.view.searchFlow.SearchExplore"
-        android:label="SearchExplore" >
-        <action
-            android:id="@+id/action_searchExplore_to_searchExploreClicked"
-            app:destination="@id/searchExploreClicked" />
-    </fragment>
+        android:label="SearchExplore" />
     <fragment
         android:id="@+id/searchExploreClicked"
         android:name="com.timenoteco.timenote.view.searchFlow.SearchExploreClicked"
@@ -96,5 +92,5 @@
         <action
             android:id="@+id/action_searchTop_to_navigation"
             app:destination="@id/navigation" />
-    </fragment>
+    </fragment><action android:id="@+id/action_global_searchExploreClicked" app:destination="@id/searchExploreClicked"/>
 </navigation>

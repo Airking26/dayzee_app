@@ -17,7 +17,6 @@
         <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
 
             <ImageView
-                android:tint="@android:color/black"
                 android:layout_width="80dp"
                 android:src="@drawable/dayzee"
                 style="@style/AppTheme.Toolbar.Title"

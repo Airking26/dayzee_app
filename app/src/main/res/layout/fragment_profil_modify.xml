@@ -76,7 +76,7 @@
 
                 <mehdi.sakout.fancybuttons.FancyButton
                     android:layout_marginTop="16dp"
-                    fancy:fb_defaultColor="@color/colorPrimary"
+                    fancy:fb_defaultColor="@color/colorYellow"
                     fancy:fb_radius="5dp"
                     fancy:fb_text="@string/share_profile"
                     android:paddingVertical="6dp"
@@ -293,7 +293,7 @@
                     android:textSize="15sp"
                     android:padding="16dp"
                     android:backgroundTint="#60000000"
-                    android:drawableStart="@drawable/ic_profile_youtube"
+                    android:drawableStart="@drawable/ic_facebook_ok"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
@@ -330,7 +330,7 @@
                     android:textSize="15sp"
                     android:padding="16dp"
                     android:backgroundTint="#60000000"
-                    android:drawableStart="@drawable/ic_profile_youtube"
+                    android:drawableStart="@drawable/ic_insta_ok"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
@@ -367,7 +367,7 @@
                     android:textSize="15sp"
                     android:padding="16dp"
                     android:backgroundTint="#60000000"
-                    android:drawableStart="@drawable/ic_profile_youtube"
+                    android:drawableStart="@drawable/ic_wa_ok"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
@@ -404,7 +404,7 @@
                     android:textSize="15sp"
                     android:padding="16dp"
                     android:backgroundTint="#60000000"
-                    android:drawableStart="@drawable/ic_profile_youtube"
+                    android:drawableStart="@drawable/ic_linkedin_ok"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 

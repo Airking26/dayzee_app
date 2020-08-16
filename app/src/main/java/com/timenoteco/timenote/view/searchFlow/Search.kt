@@ -65,6 +65,7 @@ class Search : BaseThroughFragment() {
             isSaveEnabled = false
         }
 
+        search_tablayout.setSelectedTabIndicatorColor(resources.getColor(android.R.color.darker_gray))
         TabLayoutMediator(search_tablayout, search_viewpager){ tab, position ->
             when(position){
                 0 -> tab.text = tabText0

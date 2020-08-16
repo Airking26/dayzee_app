@@ -201,13 +201,13 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:padding="8dp">
 
             <TextView
                 android:id="@+id/share_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_share_primary_color_24dp"
+                android:drawableStart="@drawable/ic_partage"
                 android:drawablePadding="8dp"
                 android:fontFamily="sans-serif-light"
                 android:text="@string/share_to"
@@ -221,8 +221,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="16dp"
-                android:src="@drawable/ic_facebook"
+                android:layout_marginTop="8dp"
+                android:src="@drawable/ic_facebook_ok"
                 app:layout_constraintEnd_toStartOf="@id/preview_created_timenote_twitter"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/share_label" />
@@ -231,8 +231,8 @@
                 android:id="@+id/preview_created_timenote_twitter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:src="@drawable/ic_twitter"
+                android:layout_marginTop="8dp"
+                android:src="@drawable/ic_wa_ok"
                 app:layout_constraintEnd_toStartOf="@id/preview_created_timenote_linkedin"
                 app:layout_constraintStart_toEndOf="@id/preview_created_timenote_facebook"
                 app:layout_constraintTop_toBottomOf="@id/share_label" />
@@ -241,8 +241,8 @@
                 android:id="@+id/preview_created_timenote_linkedin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:src="@drawable/ic_linkedin"
+                android:layout_marginTop="8dp"
+                android:src="@drawable/ic_linkedin_ok"
                 app:layout_constraintEnd_toStartOf="@id/preview_created_timenote_instagram"
                 app:layout_constraintStart_toEndOf="@id/preview_created_timenote_twitter"
                 app:layout_constraintTop_toBottomOf="@id/share_label" />
@@ -251,9 +251,9 @@
                 android:id="@+id/preview_created_timenote_instagram"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="24dp"
-                android:src="@drawable/ic_instagram"
+                android:src="@drawable/ic_insta_ok"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/preview_created_timenote_linkedin"
                 app:layout_constraintTop_toBottomOf="@id/share_label" />

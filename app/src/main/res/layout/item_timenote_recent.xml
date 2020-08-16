@@ -57,7 +57,6 @@
             android:layout_height="wrap_content"/>
 
         <ImageView
-            android:src="@drawable/ic_linkedin"
             android:id="@+id/timenote_recent_pic_user_imageview"
             android:layout_marginEnd="8dp"
             app:layout_constraintEnd_toEndOf="parent"

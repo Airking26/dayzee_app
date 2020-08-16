@@ -41,7 +41,7 @@ class ProfileFilterChipAdapter(private val chips: MutableList<String>, val onRem
                 if((it as Chip).chipTextColor == itemView.context.resources.getColor(R.color.colorText)) {
                     it.apply {
                         chipBackgroundColor = itemView.context.resources.getColor(R.color.white)
-                        chipTextColor = itemView.context.resources.getColor(R.color.colorAccentCustom)
+                        chipTextColor = itemView.context.resources.getColor(R.color.colorYellow)
                     }
                 } else {
                     it.apply {

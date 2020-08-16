@@ -5,7 +5,7 @@ import com.timenoteco.timenote.model.*
 
 private var timenoteModel: CreateTimenoteModel =
     CreateTimenoteModel(null, null, null, null, null, null,
-        null, null, null, null, null, null, null, StatusTimenote.NOANSWER)
+        null, null, null, null, null, null, null, null)
 
 class CreationTimenoteData {
 
@@ -80,7 +80,7 @@ class CreationTimenoteData {
 
     fun clear(): CreateTimenoteModel {
         timenoteModel = CreateTimenoteModel(null, null, null, null, null,
-            null, null, null, null, null, null, null, null, StatusTimenote.NOANSWER)
+            null, null, null, null, null, null, null, null, null)
         return timenoteModel
     }
 

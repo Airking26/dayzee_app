@@ -94,7 +94,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         super.onCreate(savedInstanceState)
         loginViewModel.getAuthenticationState().observe(requireActivity(), androidx.lifecycle.Observer {
             when (it) {
-                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(NearByDirections.actionNearByToNavigation())
+                //LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(NearByDirections.actionNearByToNavigation())
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> findNavController().popBackStack(R.id.nearBy, false)
                 LoginViewModel.AuthenticationState.GUEST -> findNavController().popBackStack(R.id.nearBy, false)
             }
@@ -522,6 +522,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     }
 
     override fun onMaskThisUser() {
+        loginViewModel.markAsAuthenticated()
     }
 
     override fun onDoubleClick() {

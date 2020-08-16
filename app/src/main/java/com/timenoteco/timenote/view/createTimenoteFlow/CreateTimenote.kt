@@ -181,13 +181,13 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
             StatusTimenote.PAID -> {
                 noAnswer.text = it.price.toString() + "$"
             }
-            else -> {
+            StatusTimenote.NOANSWER -> {
                 noAnswer.text = getString(R.string.no_answer)
             }
+            else -> noAnswer.text = ""
         }
         if(it.url.isNullOrBlank()) create_timenote_url_btn.hint = getString(R.string.add_an_url) else create_timenote_url_btn.text = it.url
-        if (it.category.isNullOrBlank()) create_timenote_category.text =
-            getString(R.string.none) else create_timenote_category.text = it.category
+        if (it.category.isNullOrBlank()) create_timenote_category.text = "" else create_timenote_category.text = it.category
         if (it.pic == null) {
             takeAddPicTv.visibility = View.VISIBLE
             progressBar.visibility = View.GONE
