@@ -317,7 +317,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
             profile_modify_btn.visibility = View.INVISIBLE
             profile_follow_btn.visibility = View.VISIBLE
             profile_settings_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_more_vert_black_profile_24dp))
-            profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_partage))
+            profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_back_thin))
         }
 
         Glide
@@ -345,7 +345,6 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
             override fun onTabUnselected(tab: TabLayout.Tab?) {
                 profilePastFuturePagerAdapter?.setShowFilterBar(true, tab?.position!!, false)
             }
-
 
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 when(tab?.position){

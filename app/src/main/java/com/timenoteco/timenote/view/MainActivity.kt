@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.get
 import androidx.fragment.app.activityViewModels
@@ -176,7 +177,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                         utils.showStatusBar(this)
                     }
                     R.id.detailedTimenote -> {
-                        bottomNavView.visibility = View.VISIBLE
+                        bottomNavView.visibility = View.GONE
                         utils.showStatusBar(this)
                     }
                 }

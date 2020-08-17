@@ -8,6 +8,7 @@
     android:background="@color/white">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:background="@color/colorBackground"
         android:id="@+id/profile_ll"
         style="@style/AppTheme.Toolbar.LinearLayout"
         app:layout_constraintEnd_toEndOf="parent"
@@ -95,7 +96,7 @@
             android:id="@+id/app_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white">
+            android:background="@color/colorBackground">
 
             <com.timenoteco.timenote.androidView.CollapsibleToolbar
                 android:id="@+id/motionLayout"
@@ -285,9 +286,12 @@
                         app:layout_constraintTop_toBottomOf="@id/profile_desc">
 
                         <com.google.android.material.tabs.TabLayout
+                            app:tabIconTint="@android:color/transparent"
+                            app:tabIconTintMode="add"
                             android:id="@+id/profile_tablayout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:background="@color/colorBackground"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
@@ -303,6 +307,7 @@
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.core.widget.NestedScrollView
+            android:background="@color/colorBackground"
             android:id="@+id/scrollable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -314,6 +319,7 @@
             app:layout_constraintStart_toStartOf="parent">
 
             <androidx.viewpager2.widget.ViewPager2
+                android:background="@color/colorBackground"
                 android:id="@+id/profile_vp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

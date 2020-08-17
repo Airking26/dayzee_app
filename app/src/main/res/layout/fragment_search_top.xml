@@ -6,6 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.recyclerview.widget.RecyclerView
+        android:background="@color/colorBackground"
         android:padding="8dp"
         tools:listitem="@layout/adapter_suggestion_card"
         android:id="@+id/search_top_rv"

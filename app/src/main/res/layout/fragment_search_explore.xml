@@ -6,6 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.recyclerview.widget.RecyclerView
+        android:background="@color/colorBackground"
         tools:listitem="@layout/item_search_explore"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"

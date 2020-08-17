@@ -496,10 +496,7 @@ class RoundedCornersTransformation @JvmOverloads constructor(
         )
     }
 
-    private fun drawBorder(
-        canvas: Canvas, paint: Paint, right: Float,
-        bottom: Float
-    ) {
+    private fun drawBorder(canvas: Canvas, paint: Paint, right: Float, bottom: Float) {
 
         // stroke
         val strokePaint = Paint()

@@ -1,13 +1,13 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources xmlns:tools="http://schemas.android.com/tools" xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="o_mr1">shortEdges</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:statusBarColor">@android:color/white</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        <item name="android:statusBarColor">@color/colorBackground</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -20,6 +20,9 @@
         <item name="colorStartGradient">@color/colorStartGradient</item>
         <item name="colorEndGradient">@color/colorEndGradient</item>
         <item name="colorYellow">@color/colorYellow</item>
+        <item name="colorBackground">@color/colorBackground</item>
+        <item name="colorToolbar">@color/colorToolbar</item>
+        <item name="colorDivider">@color/colorDivider</item>
     </style>
 
 
@@ -36,10 +39,11 @@
         <item name="layout_constraintStart_toStartOf">parent</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">0.1dp</item>
-        <item name="android:background">#60000000</item>
+        <item name="android:background">@color/colorDivider</item>
     </style>
 
     <style name="AppTheme.Toolbar.LinearLayout" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:background">@color/colorBackground</item>
         <item name="layout_constraintStart_toStartOf">parent</item>
         <item name="layout_constraintEnd_toEndOf">parent</item>
         <item name="layout_constraintTop_toTopOf">parent</item>

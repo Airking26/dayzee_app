@@ -53,7 +53,7 @@
 
     <TextView
         android:fontFamily="sans-serif-light"
-        android:textColor="@color/colorPrimary"
+        android:textColor="@color/colorStartGradient"
         android:text="@string/publish"
         app:layout_constraintTop_toTopOf="@id/comments_edittext"
         android:textSize="14sp"

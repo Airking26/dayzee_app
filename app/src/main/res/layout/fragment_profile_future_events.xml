@@ -12,7 +12,7 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:layout_gravity="bottom"
             android:id="@+id/profile_rv"
-            android:background="@color/white"
+            android:background="@color/colorBackground"
             android:paddingBottom="12dp"
             android:clipToPadding="false"
             tools:listitem="@layout/item_profile_timenote_list_style"

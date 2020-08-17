@@ -231,7 +231,8 @@ class Utils {
 
     @RequiresApi(Build.VERSION_CODES.M)
     fun showStatusBar(activity: Activity){
-        activity.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        //activity.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        activity.window.statusBarColor = activity.resources.getColor(R.color.colorBackground)
         activity.window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
     }
 

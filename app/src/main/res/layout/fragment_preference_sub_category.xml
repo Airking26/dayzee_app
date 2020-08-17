@@ -35,10 +35,10 @@
 
                 <TextView
                     android:fontFamily="sans-serif-light"
-                    android:drawableStart="@drawable/ic_baseline_keyboard_arrow_left_24"
+                    android:drawableStart="@drawable/ic_back_thin"
                     android:id="@+id/pref_sub_category_btn_back"
                     style="@style/AppTheme.Toolbar.TextRight"
-                    android:text="@string/back" />
+                    android:text="" />
 
             </androidx.appcompat.widget.Toolbar>
 

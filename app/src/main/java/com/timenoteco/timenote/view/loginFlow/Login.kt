@@ -15,7 +15,6 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.timenoteco.timenote.R
-import com.timenoteco.timenote.androidView.blurry.RSBlurProcessor
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import kotlinx.android.synthetic.main.fragment_login.*

@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/white">
+    android:background="@color/colorBackground">
 
     <ImageView
         android:id="@+id/timenote_pic_user_imageview"
@@ -214,7 +214,7 @@
         android:id="@+id/timenote_comment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
+        android:layout_marginStart="18dp"
         android:src="@drawable/ic_partage_sans_fleche_ok"
         app:layout_constraintBottom_toBottomOf="@id/timenote_like"
         app:layout_constraintStart_toEndOf="@id/timenote_like"
@@ -246,7 +246,7 @@
         android:id="@+id/timenote_fl"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="8dp"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="@id/timenote_like"

@@ -21,7 +21,7 @@
         android:layout_marginStart="8dp"
         android:textSize="13sp"
         android:textColor="@color/colorText"
-        tools:text="This is a test"
+        tools:text="Ronny Dahan"
         app:layout_constraintEnd_toStartOf="@id/comment_like"
         app:layout_constraintStart_toEndOf="@id/comment_user_pic_imageview"
         app:layout_constraintTop_toTopOf="@id/comment_user_pic_imageview"
@@ -29,6 +29,7 @@
         android:layout_height="wrap_content"/>
 
     <ImageView
+        android:visibility="gone"
         android:id="@+id/comment_like"
         android:layout_margin="8dp"
         android:src="@drawable/ic_heart"
@@ -50,6 +51,7 @@
         android:layout_height="wrap_content"/>
 
     <TextView
+        android:visibility="gone"
         tools:text="Answer"
         android:textSize="12sp"
         android:layout_marginStart="16dp"

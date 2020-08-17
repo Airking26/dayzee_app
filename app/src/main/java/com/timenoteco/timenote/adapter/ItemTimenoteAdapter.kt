@@ -114,17 +114,19 @@ class ItemTimenoteAdapter(
             Glide
                 .with(itemView)
                 .load(timenote.pic_user)
-                .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(itemView.context, 90, 0, "#FFFFFF", 4)))
+                .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(itemView.context, 90, 0, itemView.context.resources.getString(0 + R.color.colorBackground), 4)))
                 .into(itemView.timenote_pic_participant_one)
+
             Glide
                 .with(itemView)
                 .load("https://wl-sympa.cf.tsp.li/resize/728x/jpg/f6e/ef6/b5b68253409b796f61f6ecd1f1.jpg")
-                .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(itemView.context, 90, 0, "#FFFFFF", 4)))
+                .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(itemView.context, 90, 0, itemView.context.resources.getString(0 + R.color.colorBackground), 4)))
                 .into(itemView.timenote_pic_participant_two)
+
             Glide
                 .with(itemView)
                 .load("https://www.fc-photos.com/wp-content/uploads/2016/09/fc-photos-Weynacht-0001.jpg")
-                .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(itemView.context, 90, 0, "#FFFFFF", 4)))
+                .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(itemView.context, 90, 0, itemView.context.resources.getString(0 + R.color.colorBackground), 4)))
                 .into(itemView.timenote_pic_participant_three)
 
 
@@ -151,7 +153,7 @@ class ItemTimenoteAdapter(
             screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(itemView.timenote_indicator.adapterDataObserver)
             itemView.timenote_username.text = timenote.username
             itemView.timenote_place.text = timenote.place
-            val test = "Saved by Jordan Dahan and thousands of other people"
+            val test = "Saved by Ronny Dahan and thousands of other people"
 
             val p = Typeface.create("sans-serif-light", Typeface.NORMAL)
             val m = Typeface.create("sans-serif", Typeface.NORMAL)

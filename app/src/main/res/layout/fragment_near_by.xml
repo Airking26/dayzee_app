@@ -2,7 +2,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@android:color/white"
+    android:background="@color/colorBackground"
     android:id="@+id/nearBy_cl"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
@@ -134,7 +134,7 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     tools:listitem="@layout/item_timenote"
-                    android:background="@android:color/white"
+                    android:background="@color/colorBackground"
                     android:clipToPadding="false"
                     android:paddingBottom="8dp"
                     app:layout_constraintStart_toStartOf="parent"

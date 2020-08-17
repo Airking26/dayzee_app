@@ -9,6 +9,9 @@
     <attr name="colorStartGradient" format="reference|color"/>
     <attr name="colorEndGradient" format="reference|color"/>
     <attr name="colorYellow" format="reference|color"/>
+    <attr name="colorBackground" format="reference|color"/>
+    <attr name="colorToolbar" format="reference|color"/>
+    <attr name="colorDivider" format="reference|color"/>
 
     <declare-styleable name="ExpandIconView">
         <attr name="eiv_roundedCorners" format="boolean"/>
