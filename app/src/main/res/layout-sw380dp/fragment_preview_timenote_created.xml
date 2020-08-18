@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    android:background="@color/colorBackground"
     tools:context=".view.createTimenoteFlow.PreviewTimenoteCreated">
 
     <LinearLayout
@@ -149,12 +149,12 @@
         android:id="@+id/preview_created_timenote_buy"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorAccentCustom"
+        android:background="@color/colorYellow"
         android:fontFamily="sans-serif-light"
         android:gravity="end"
         android:paddingHorizontal="8dp"
         android:paddingVertical="4dp"
-        android:textColor="@color/white"
+        android:textColor="@color/colorBackground"
         android:textSize="16sp"
         tools:text="12$"
         android:drawableEnd="@drawable/ic_baseline_keyboard_arrow_right_white_24"
@@ -182,8 +182,8 @@
         android:fontFamily="sans-serif-light"
         android:textColor="@color/colorText"
         android:textSize="15sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/where_cardview"
+        app:layout_constraintStart_toStartOf="@id/where_cardview"
         app:layout_constraintTop_toBottomOf="@id/preview_created_timenote_indicator" />
 
     <androidx.cardview.widget.CardView

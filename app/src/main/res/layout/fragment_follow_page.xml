@@ -25,6 +25,7 @@
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
+        android:background="@color/colorBackground"
         android:id="@+id/users_rv"
         tools:listitem="@layout/item_user"
         app:layout_constraintEnd_toEndOf="parent"

@@ -32,7 +32,6 @@
         android:visibility="gone"
         android:id="@+id/comment_like"
         android:layout_margin="8dp"
-        android:src="@drawable/ic_heart"
         app:layout_constraintBottom_toBottomOf="@id/comment_user_pic_imageview"
         app:layout_constraintTop_toTopOf="@id/comment_user_pic_imageview"
         app:layout_constraintEnd_toEndOf="parent"

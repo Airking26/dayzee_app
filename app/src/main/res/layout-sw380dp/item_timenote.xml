@@ -188,7 +188,7 @@
         android:id="@+id/timenote_buy"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorAccentCustom"
+        android:background="@color/colorYellow"
         android:fontFamily="sans-serif-light"
         android:gravity="end"
         android:visibility="gone"

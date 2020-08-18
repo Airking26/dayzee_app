@@ -207,7 +207,7 @@
                 android:id="@+id/share_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_share_primary_color_24dp"
+                android:drawableStart="@drawable/ic_partage_sans_fleche_ok"
                 android:drawablePadding="8dp"
                 android:fontFamily="sans-serif-light"
                 android:text="@string/share_to"

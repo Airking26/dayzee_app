@@ -21,12 +21,12 @@
             <ImageView
                 android:id="@+id/profile_settings_btn"
                 style="@style/AppTheme.Toolbar.ImageRight"
-                android:src="@drawable/ic_settings_black_24dp" />
+                android:src="@drawable/ic_more_vert_black_profile_24dp" />
 
             <ImageView
                 android:id="@+id/profile_notif_btn"
                 style="@style/AppTheme.Toolbar.ImageLeft"
-                android:src="@drawable/ic_flag_black_24dp" />
+                android:src="@drawable/ic_back_thin" />
 
         </androidx.appcompat.widget.Toolbar>
 

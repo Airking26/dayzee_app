@@ -12,7 +12,6 @@
         style="@style/AppTheme.Toolbar.LinearLayout">
 
         <androidx.appcompat.widget.Toolbar
-            android:background="@color/white"
             style="@style/AppTheme.Toolbar">
 
             <TextView
@@ -27,6 +26,7 @@
     </LinearLayout>
 
     <ScrollView
+        android:background="@color/colorBackgroundSettings"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/profile_settings_ll"
@@ -41,7 +41,7 @@
             <TextView
                 android:fontFamily="sans-serif-light"
                 android:id="@+id/general_label"
-                android:textColor="@android:color/black"
+                android:textColor="@color/colorText"
                 android:text="@string/general"
                 android:textAllCaps="true"
                 app:layout_constraintStart_toStartOf="parent"
@@ -53,10 +53,10 @@
 
             <TextView
                 android:fontFamily="sans-serif-light"
-                android:background="@color/white"
+                android:background="@color/colorBackground"
                 android:id="@+id/profile_settings_edit_personnal_infos"
                 android:padding="16dp"
-                android:textColor="@android:color/black"
+                android:textColor="@color/colorText"
                 android:text="@string/edit_my_personnals_informations"
                 android:layout_marginTop="8dp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -73,9 +73,9 @@
             <TextView
                 android:fontFamily="sans-serif-light"
                 android:id="@+id/profile_settings_change_password"
-                android:background="@color/white"
+                android:background="@color/colorBackground"
                 android:padding="16dp"
-                android:textColor="@android:color/black"
+                android:textColor="@color/colorText"
                 android:text="@string/change_password"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -90,7 +90,7 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/private_account_cl"
-                android:background="@color/white"
+                android:background="@color/colorBackground"
                 android:padding="16dp"
                 app:layout_constraintTop_toBottomOf="@id/card_line_1"
                 app:layout_constraintStart_toStartOf="parent"
@@ -104,7 +104,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     android:layout_gravity="start"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/colorText"
                     android:text="@string/private_account"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
@@ -128,9 +128,9 @@
             <TextView
                 android:fontFamily="sans-serif-light"
                 android:id="@+id/profile_settings_asked_sent"
-                android:background="@color/white"
+                android:background="@color/colorBackground"
                 android:padding="16dp"
-                android:textColor="@android:color/black"
+                android:textColor="@color/colorText"
                 android:text="@string/asked_sent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -141,7 +141,7 @@
             <TextView
                 android:fontFamily="sans-serif-light"
                 android:id="@+id/push_label"
-                android:textColor="@android:color/black"
+                android:textColor="@color/colorText"
                 android:text="@string/push"
                 android:textAllCaps="true"
                 app:layout_constraintStart_toStartOf="parent"
@@ -154,7 +154,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_marginTop="8dp"
                 android:id="@+id/push_notification_cl"
-                android:background="@color/white"
+                android:background="@color/colorBackground"
                 android:padding="16dp"
                 app:layout_constraintTop_toBottomOf="@id/push_label"
                 app:layout_constraintStart_toStartOf="parent"
@@ -168,7 +168,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     android:layout_gravity="start"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/colorText"
                     android:text="@string/push_notifications"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
@@ -190,7 +190,7 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/push_notification_certified_cl"
-                android:background="@color/white"
+                android:background="@color/colorBackground"
                 android:padding="16dp"
                 app:layout_constraintTop_toBottomOf="@id/card_line_3"
                 app:layout_constraintStart_toStartOf="parent"
@@ -204,7 +204,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     android:layout_gravity="start"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/colorText"
                     android:text="@string/certified_push_notifications"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
@@ -227,9 +227,9 @@
             <TextView
                 android:fontFamily="sans-serif-light"
                 android:id="@+id/profile_settings_notification_manager"
-                android:background="@color/white"
+                android:background="@color/colorBackground"
                 android:padding="16dp"
-                android:textColor="@android:color/black"
+                android:textColor="@color/colorText"
                 android:text="@string/notification_manager_settings"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -240,7 +240,7 @@
             <TextView
                 android:fontFamily="sans-serif-light"
                 android:id="@+id/default_settings_label"
-                android:textColor="@android:color/black"
+                android:textColor="@color/colorText"
                 android:text="@string/default_settings"
                 android:textAllCaps="true"
                 app:layout_constraintStart_toStartOf="parent"
@@ -254,9 +254,9 @@
                 android:fontFamily="sans-serif-light"
                 android:layout_marginTop="8dp"
                 android:id="@+id/profile_settings_date_format"
-                android:background="@color/white"
+                android:background="@color/colorBackground"
                 android:padding="16dp"
-                android:textColor="@android:color/black"
+                android:textColor="@color/colorText"
                 android:text="@string/timenote_date_format"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -272,9 +272,9 @@
             <TextView
                 android:fontFamily="sans-serif-light"
                 android:id="@+id/profile_settings_timenote_format"
-                android:background="@color/white"
+                android:background="@color/colorBackground"
                 android:padding="16dp"
-                android:textColor="@android:color/black"
+                android:textColor="@color/colorText"
                 android:text="@string/timenote_visibility_format"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -287,12 +287,13 @@
                 app:layout_constraintTop_toBottomOf="@id/profile_settings_timenote_format"
                 style="@style/AppTheme.Divider.Toolbar"/>
 
+
             <TextView
                 android:fontFamily="sans-serif-light"
                 android:id="@+id/profile_settings_timenote_visibility"
-                android:background="@color/white"
+                android:background="@color/colorBackground"
                 android:padding="16dp"
-                android:textColor="@android:color/black"
+                android:textColor="@color/colorText"
                 android:text="@string/timenote_visibility"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -303,7 +304,7 @@
             <TextView
                 android:fontFamily="sans-serif-light"
                 android:id="@+id/others_label"
-                android:textColor="@android:color/black"
+                android:textColor="@color/colorText"
                 android:text="@string/others"
                 android:textAllCaps="true"
                 app:layout_constraintStart_toStartOf="parent"
@@ -316,10 +317,10 @@
             <TextView
                 android:fontFamily="sans-serif-light"
                 android:id="@+id/profile_settings_confidentiality_politic"
-                android:background="@color/white"
+                android:background="@color/colorBackground"
                 android:padding="16dp"
                 android:layout_marginTop="8dp"
-                android:textColor="@android:color/black"
+                android:textColor="@color/colorText"
                 android:text="@string/confidentiality_politic"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -335,9 +336,9 @@
             <TextView
                 android:fontFamily="sans-serif-light"
                 android:id="@+id/profile_settings_send_comments"
-                android:background="@color/white"
+                android:background="@color/colorBackground"
                 android:padding="16dp"
-                android:textColor="@android:color/black"
+                android:textColor="@color/colorText"
                 android:text="@string/send_comments"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -352,7 +353,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="72dp"
-                android:background="@color/white"
+                android:background="@color/colorBackground"
                 android:padding="16dp"
                 android:gravity="center"
                 android:text="@string/disconnect"

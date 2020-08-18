@@ -7,7 +7,6 @@
         <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="o_mr1">shortEdges</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@color/colorBackground</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -23,6 +22,7 @@
         <item name="colorBackground">@color/colorBackground</item>
         <item name="colorToolbar">@color/colorToolbar</item>
         <item name="colorDivider">@color/colorDivider</item>
+        <item name="colorBackgroundSettings">@color/colorBackgroundSettings</item>
     </style>
 
 

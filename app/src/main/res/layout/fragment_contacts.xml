@@ -10,8 +10,7 @@
         style="@style/AppTheme.Toolbar.LinearLayout">
 
         <androidx.appcompat.widget.Toolbar
-            style="@style/AppTheme.Toolbar"
-            android:background="@color/white">
+            style="@style/AppTheme.Toolbar">
 
             <TextView
                 style="@style/AppTheme.Toolbar.Title"
@@ -31,7 +30,7 @@
         app:layout_constraintTop_toBottomOf="@id/profile_contacts_ll"
         tools:listitem="@layout/item_contact"
     android:id="@+id/contact_list_view"
-    android:background="@android:color/white"
+    android:background="@color/colorBackground"
     android:layout_width="match_parent"
     android:layout_height="0dp"/>
 

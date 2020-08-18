@@ -25,7 +25,7 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     android:fontFamily="sans-serif-light"
-                    android:drawableStart="@drawable/ic_baseline_keyboard_arrow_left_24"
+                    android:drawableStart="@drawable/ic_back_thin"
                     android:id="@+id/create_timenote_btn_back"
                     android:text="" />
 

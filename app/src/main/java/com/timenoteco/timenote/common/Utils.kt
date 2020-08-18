@@ -1,6 +1,7 @@
 package com.timenoteco.timenote.common
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
@@ -229,10 +230,14 @@ class Utils {
         activity.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_IMMERSIVE
     }
 
+    @SuppressLint("InlinedApi")
     @RequiresApi(Build.VERSION_CODES.M)
     fun showStatusBar(activity: Activity){
-        //activity.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-        activity.window.statusBarColor = activity.resources.getColor(R.color.colorBackground)
+        if(activity.resources.getColor(R.color.colorBackground) == activity.resources.getColor(android.R.color.white)){
+            activity.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        } else {
+            activity.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+        }
         activity.window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
     }
 

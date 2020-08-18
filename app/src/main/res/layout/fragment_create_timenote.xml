@@ -125,7 +125,7 @@
                     android:layout_gravity="center"
                     android:layout_marginTop="12dp"
                     android:id="@+id/card_line_0"
-                    android:background="#60000000"
+                    android:background="@color/colorDivider"
                     android:layout_width="200dp"
                     android:layout_height="0.1dp"/>
             </LinearLayout>
@@ -206,11 +206,11 @@
             <mehdi.sakout.fancybuttons.FancyButton
                 android:layout_marginEnd="48dp"
                 android:layout_marginTop="16dp"
-                fancy:fb_defaultColor="@android:color/black"
+                fancy:fb_defaultColor="@color/colorText"
                 fancy:fb_radius="5dp"
                 fancy:fb_text="+"
                 fancy:fb_textSize="24dp"
-                fancy:fb_textColor="@android:color/white"
+                fancy:fb_textColor="@color/colorBackground"
                 android:gravity="center"
                 app:layout_constraintTop_toBottomOf="@id/choose_color_label"
                 app:layout_constraintStart_toEndOf="@+id/create_timenote_fourth_color"

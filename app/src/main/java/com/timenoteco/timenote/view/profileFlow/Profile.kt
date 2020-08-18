@@ -374,6 +374,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
         profile_nbr_followers.setOnClickListener(this)
         profile_nbr_following.setOnClickListener(this)
         profile_following_label.setOnClickListener(this)
+        profile_infos.setOnClickListener(this)
 
     }
 
@@ -387,6 +388,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
             profile_following_label -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage())
             profile_nbr_followers -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage())
             profile_nbr_following -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage())
+            profile_infos -> findNavController().navigate(ProfileDirections.actionProfileToProfilModify())
             profile_location -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.location)
                 listItems(items = listOf(getString(R.string.no_location), getString(R.string.city), getString(

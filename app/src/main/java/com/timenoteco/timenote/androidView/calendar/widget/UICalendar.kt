@@ -119,7 +119,7 @@ abstract class UICalendar constructor(context: Context, attrs: AttributeSet? = n
     /**
      * This can be used to defined the left icon drawable other than predefined icon
      */
-    var buttonLeftDrawable = resources.getDrawable(R.drawable.ic_baseline_keyboard_arrow_left_24)
+    var buttonLeftDrawable = resources.getDrawable(R.drawable.ic_back_thin)
         set(buttonLeftDrawable) {
             field = buttonLeftDrawable
             mBtnPrevMonth.setImageDrawable(buttonLeftDrawable)
@@ -129,7 +129,7 @@ abstract class UICalendar constructor(context: Context, attrs: AttributeSet? = n
     /**
      *  This can be used to set the drawable for the right icon, other than predefined icon
      */
-    var buttonRightDrawable = resources.getDrawable(R.drawable.ic_baseline_keyboard_arrow_right_24)
+    var buttonRightDrawable = resources.getDrawable(R.drawable.ic_back_thin)
         set(buttonRightDrawable) {
             field = buttonRightDrawable
             mBtnNextMonth.setImageDrawable(buttonRightDrawable)

@@ -189,7 +189,7 @@
         android:id="@+id/timenote_buy"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorAccentCustom"
+        android:background="@color/colorYellow"
         android:fontFamily="sans-serif-light"
         android:gravity="end"
         android:visibility="gone"
@@ -216,7 +216,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="18dp"
-        android:src="@drawable/ic_partage"
+        android:src="@drawable/ic_partage_sans_fleche_ok"
         app:layout_constraintBottom_toBottomOf="@id/timenote_like"
         app:layout_constraintStart_toEndOf="@id/timenote_like"
         app:layout_constraintTop_toTopOf="@id/timenote_like" />
