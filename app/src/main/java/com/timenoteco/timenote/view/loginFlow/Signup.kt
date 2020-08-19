@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.model.UserSignUpBody
@@ -47,7 +48,8 @@ class Signup: Fragment(), View.OnClickListener {
                 if (!TextUtils.isEmpty(signup_mail.text)) {
                     if(viewModel.isValidEmail(signup_mail.text.toString())){
                         viewModel.checkIfEmailAvailable(signup_mail.text.toString()).observe(viewLifecycleOwner, Observer {
-                            availableMail = it
+                            if(it.code() == 200) availableMail = it.body()?.isAvailable!!
+                            if(!availableMail) signup_mail.error = getString(R.string.email_already_exists)
                         })
                     }
                 }
@@ -60,7 +62,8 @@ class Signup: Fragment(), View.OnClickListener {
             if (msg.what == TRIGGER_AUTO_COMPLETE) {
                 if (!TextUtils.isEmpty(signup_identifiant.text)) {
                         viewModel.checkIfUsernameAvailable(signup_identifiant.text.toString()).observe(viewLifecycleOwner, Observer {
-                            availableIdentifiant = it
+                            if(it.code() == 200) availableIdentifiant = it.body()?.isAvailable!!
+                            if(!availableIdentifiant) signup_identifiant.error = getString(R.string.usermane_already_exists)
                         })
                 }
             }
@@ -115,7 +118,7 @@ class Signup: Fragment(), View.OnClickListener {
 
                 email_label.text = getString(R.string.username_email)
 
-                if(isOnLogin && !signup_mail.text.toString().isNullOrBlank() && !signup_password.text.toString().isNullOrBlank()){
+                if(isOnLogin && !signup_mail.text.toString().isBlank() && !signup_password.text.toString().isBlank()){
                     viewModel.login(signup_mail.text.toString(), signup_password.text.toString(), viewModel.isValidEmail(signup_mail.text.toString())).observe(viewLifecycleOwner, Observer {
                         when(it.code()){
                             201 -> {
@@ -128,7 +131,6 @@ class Signup: Fragment(), View.OnClickListener {
                 }
             }
             signup_signup_btn -> {
-                isOnLogin = false
                 signup_signin_btn.apply {
                     setBorderColor(resources.getColor(android.R.color.white))
                     setBorderWidth(2)
@@ -153,7 +155,8 @@ class Signup: Fragment(), View.OnClickListener {
                     viewModel.checkAddUser(UserSignUpBody(signup_mail.text.toString(), signup_identifiant.text.toString(), signup_password.text.toString())).observe(viewLifecycleOwner, Observer {
                         when(it.code()){
                             201 -> {
-                                viewModel.markAsAuthenticated()
+                                //viewModel.markAsAuthenticated()
+                                findNavController().navigate(SignupDirections.actionSignupToPreferenceCategory(true))
                                 prefs.edit().putString(TOKEN, it.body()?.token).apply()
                             }
                             409 -> viewModel.markAsInvalidAuthentication()
@@ -161,7 +164,20 @@ class Signup: Fragment(), View.OnClickListener {
                         }
                     })
                 }
+                if(!isOnLogin && signup_mail.text.isNullOrBlank()){
+                    signup_mail.error = getString(R.string.field_cannot_be_empty)
+                }
+                if(!isOnLogin && signup_identifiant.text.isNullOrBlank()){
+                    signup_identifiant.error = getString(R.string.field_cannot_be_empty)
+                }
+                if(!isOnLogin && signup_password.text.isNullOrBlank()){
+                    signup_password.error = getString(R.string.field_cannot_be_empty)
+                }
+
+                isOnLogin = false
+
             }
+
 
         }
     }

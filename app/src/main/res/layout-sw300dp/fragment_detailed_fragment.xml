@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    android:background="@color/colorBackground"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".view.homeFlow.DetailedTimenote">
 
@@ -26,7 +26,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     android:fontFamily="sans-serif-light"
                     android:drawableStart="@drawable/ic_back_thin"
-                    android:id="@+id/create_timenote_btn_back"
+                    android:id="@+id/detailed_timenote_btn_back"
                     android:text="" />
 
 
@@ -39,7 +39,7 @@
                 android:layout_height="wrap_content"
                 android:text="Samuel"
                 android:id="@+id/detailed_timenote_username"
-                android:textColor="@android:color/black"
+                android:textColor="@color/colorText"
                 android:textSize="17sp"/>
 
                 <ImageView

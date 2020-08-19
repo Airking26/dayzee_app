@@ -318,6 +318,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
             profile_follow_btn.visibility = View.VISIBLE
             profile_settings_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_more_vert_black_profile_24dp))
             profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_back_thin))
+            profile_follow_btn.setOnClickListener(this)
         }
 
         Glide
@@ -383,12 +384,24 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
             profile_modify_btn -> findNavController().navigate(ProfileDirections.actionProfileToProfilModify())
             profile_calendar_btn -> findNavController().navigate(ProfileDirections.actionProfileToProfileCalendar())
             profile_settings_btn -> findNavController().navigate(ProfileDirections.actionProfileToMenu())
-            profile_notif_btn -> findNavController().navigate(ProfileDirections.actionProfileToNotifications())
+            profile_notif_btn -> {
+                if(args.whereFrom)findNavController().popBackStack()
+                else findNavController().navigate(ProfileDirections.actionProfileToNotifications())
+            }
             profile_followers_label -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage())
             profile_following_label -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage())
             profile_nbr_followers -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage())
             profile_nbr_following -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage())
             profile_infos -> findNavController().navigate(ProfileDirections.actionProfileToProfilModify())
+            profile_follow_btn -> {
+                profile_follow_btn.apply {
+                    setBorderColor(resources.getColor(android.R.color.darker_gray))
+                    setBorderWidth(1)
+                    setText(resources.getString(R.string.unfollow))
+                    setBackgroundColor(resources.getColor(android.R.color.transparent))
+                    setTextColor(resources.getColor(android.R.color.darker_gray))
+                }
+            }
             profile_location -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.location)
                 listItems(items = listOf(getString(R.string.no_location), getString(R.string.city), getString(

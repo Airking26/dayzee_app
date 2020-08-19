@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.view.loginFlow
 
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.view.*
@@ -33,6 +34,8 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
     private val preferenceSubCategoryArgs: PreferenceCategoryArgs by navArgs()
     private val preferencesViewModel: PreferencesViewModel by activityViewModels()
     private lateinit var preferences: Preferences
+    private lateinit var prefs: SharedPreferences
+    open val TOKEN: String = "TOKEN"
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -53,12 +56,12 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
+        prefs = PreferenceManager.getDefaultSharedPreferences(context)
         setListenerOnClick()
         setRvAndAdapters(view)
         preferencesViewModel.getPreferences().observe(viewLifecycleOwner, Observer {
-            preferences = Preferences(it.body()!!)
-            updateListCategoryAndSubCategory(it.body())
+//            preferences = Preferences(it.body()!!)
+//            updateListCategoryAndSubCategory(it.body())
         })
     }
 
@@ -101,14 +104,14 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
     }
 
     private fun saveAndNavigate() {
-        preferencesViewModel.modifyPreferences(preferences).observe(viewLifecycleOwner, Observer {
+        preferencesViewModel.modifyPreferences(prefs.getString(TOKEN, "")!!, preferences).observe(viewLifecycleOwner, Observer {
             findNavController().navigate(PreferenceSubCategoryDirections.actionPreferenceSubCategoryToPreferenceSuggestion(true))
         })
     }
 
     override fun onCloseChip(index: Int) {
         preferences.category.removeAt(index)
-        preferencesViewModel.modifyPreferences(preferences).observe(viewLifecycleOwner, Observer {
+        preferencesViewModel.modifyPreferences(prefs.getString(TOKEN, "")!!,preferences).observe(viewLifecycleOwner, Observer {
             if(it.isSuccessful) {
                 chipAdapter.notifyDataSetChanged()
                 cardAdapter.notifyDataSetChanged()

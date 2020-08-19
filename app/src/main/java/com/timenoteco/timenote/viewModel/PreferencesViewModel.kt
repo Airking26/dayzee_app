@@ -22,9 +22,9 @@ class PreferencesViewModel: ViewModel() {
         return flow {emit(preferencesService.getAllCategories())}.asLiveData(viewModelScope.coroutineContext)
     }
 
-    fun modifyPreferences(preferences: Preferences): LiveData<Response<List<SubCategoryRated>>> {
+    fun modifyPreferences(token: String, preferences: Preferences): LiveData<Response<List<SubCategoryRated>>> {
         return flow {
-            emit(preferencesService.modifyPreferences("", preferences))
+            emit(preferencesService.modifyPreferences("Bearer $token", preferences))
         }.asLiveData(viewModelScope.coroutineContext)
     }
 }

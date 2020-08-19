@@ -23,6 +23,7 @@
         <item name="colorToolbar">@color/colorToolbar</item>
         <item name="colorDivider">@color/colorDivider</item>
         <item name="colorBackgroundSettings">@color/colorBackgroundSettings</item>
+        <item name="colorElevated">@color/colorElevated</item>
     </style>
 
 

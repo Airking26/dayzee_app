@@ -30,6 +30,7 @@ import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.ProfileViewModel
 import com.timenoteco.timenote.viewModel.TimenoteViewModel
+import kotlinx.android.synthetic.main.fragment_detailed_fragment.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest

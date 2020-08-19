@@ -5,7 +5,7 @@
         android:color="@color/colorBackground"
         />
     <stroke
-        android:color="@android:color/darker_gray"
+        android:color="@color/colorText"
         android:width="@dimen/day_circle_stroke_width" />
     <corners
         android:radius="@dimen/day_circle_radius" />

@@ -15,6 +15,7 @@
     <color name="colorBackground">#121212</color>
     <color name="colorToolbar">#212121</color>
     <color name="colorDivider">#60FFFFFF</color>
-    <color name="colorBackgroundSettings">#000</color>
+    <color name="colorBackgroundSettings">#121212</color>
+    <color name="colorElevated">#282828</color>
 
 </resources>

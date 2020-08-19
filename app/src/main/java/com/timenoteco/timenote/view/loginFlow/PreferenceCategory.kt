@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.view.loginFlow
 
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -13,8 +14,11 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.preference.PreferenceManager
 import com.timenoteco.timenote.R
+import com.timenoteco.timenote.model.Category
 import com.timenoteco.timenote.model.Preferences
+import com.timenoteco.timenote.model.SubCategoryRated
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.PreferencesViewModel
 import kotlinx.android.synthetic.main.fragment_preference_category.*
@@ -24,6 +28,8 @@ class PreferenceCategory : Fragment(), View.OnClickListener {
     private val preferencesViewModel: PreferencesViewModel by activityViewModels()
     private val loginViewModel: LoginViewModel by activityViewModels()
     private val preferenceCategoryArgs: PreferenceCategoryArgs by navArgs()
+    private lateinit var prefs: SharedPreferences
+    open val TOKEN: String = "TOKEN"
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -35,6 +41,7 @@ class PreferenceCategory : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setButtons()
+        prefs = PreferenceManager.getDefaultSharedPreferences(context)
         preferencesViewModel.getCategories().observe(viewLifecycleOwner, Observer {
             if(it.code() == 200){
 
@@ -74,9 +81,12 @@ class PreferenceCategory : Fragment(), View.OnClickListener {
                 //        if(it.category.isSelected) count++
                     }
 
-                if(count > 0){
-                    preferencesViewModel.modifyPreferences(Preferences(mutableListOf())).observe(viewLifecycleOwner, Observer {
-                        if(it.isSuccessful) view?.findNavController()?.navigate(PreferenceCategoryDirections.actionPreferenceCategoryToPreferenceSubCategory(true))
+                if(count == 0){
+                    preferencesViewModel.modifyPreferences(prefs.getString(TOKEN, "")!!, Preferences(mutableListOf(SubCategoryRated(
+                        Category("", "") ,1
+                    ), SubCategoryRated(Category("", ""), 2) ))).observe(viewLifecycleOwner, Observer {
+                        //if(it.isSuccessful)
+                            view?.findNavController()?.navigate(PreferenceCategoryDirections.actionPreferenceCategoryToPreferenceSubCategory(true))
                     })
                 } else loginViewModel.markAsGuest()
 

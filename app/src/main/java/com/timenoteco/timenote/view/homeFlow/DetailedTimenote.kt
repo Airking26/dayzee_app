@@ -63,17 +63,17 @@ class DetailedTimenote : Fragment(), View.OnClickListener {
         Glide
             .with(this)
             .load("https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792")
-            .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(requireContext(), 90, 0, "#FFFFFF", 4)))
+            .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(requireContext(), 90, 0, getString(0 + R.color.colorBackground), 4)))
             .into(detailed_timenote_pic_participant_one)
         Glide
             .with(this)
             .load("https://wl-sympa.cf.tsp.li/resize/728x/jpg/f6e/ef6/b5b68253409b796f61f6ecd1f1.jpg")
-            .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(requireContext(), 90, 0, "#FFFFFF", 4)))
+            .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(requireContext(), 90, 0, getString(0 + R.color.colorBackground), 4)))
             .into(detailed_timenote_pic_participant_two)
         Glide
             .with(this)
             .load("https://www.fc-photos.com/wp-content/uploads/2016/09/fc-photos-Weynacht-0001.jpg")
-            .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(requireContext(), 90, 0, "#FFFFFF", 4)))
+            .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(requireContext(), 90, 0, getString(0 + R.color.colorBackground), 4)))
             .into(detailed_timenote_pic_participant_three)
 
         Glide
@@ -83,6 +83,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener {
             .into(detailed_timenote_pic_user)
 
         detailed_timenote_comment.setOnClickListener(this)
+        detailed_timenote_btn_back.setOnClickListener { findNavController().popBackStack() }
     }
 
     override fun onClick(v: View?) {

@@ -3,10 +3,7 @@ package com.timenoteco.timenote.viewModel
 import android.text.TextUtils
 import android.util.Patterns
 import androidx.lifecycle.*
-import com.timenoteco.timenote.model.RootUserResponse
-import com.timenoteco.timenote.model.UserEmailSignInBody
-import com.timenoteco.timenote.model.UserSignUpBody
-import com.timenoteco.timenote.model.UserUserNameSignInBody
+import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.webService.repo.DayzeeRepository
 import kotlinx.coroutines.flow.flow
 import retrofit2.Response
@@ -25,7 +22,7 @@ class LoginViewModel: ViewModel() {
 
     fun getAuthenticationState() : LiveData<AuthenticationState> = authenticationState
 
-    init { authenticationState.value = AuthenticationState.AUTHENTICATED }
+    init { authenticationState.value = AuthenticationState.UNAUTHENTICATED }
 
     fun refuseAuthentication() = authenticationState.postValue(AuthenticationState.UNAUTHENTICATED)
 
@@ -51,13 +48,14 @@ class LoginViewModel: ViewModel() {
         return !TextUtils.isEmpty(target) && Patterns.EMAIL_ADDRESS.matcher(target!!).matches()
     }
 
-    fun checkIfEmailAvailable(email: String): LiveData<Boolean>{
+    fun checkIfEmailAvailable(email: String): LiveData<Response<IsAvailable>> {
         return flow{
-         emit(authService.checkEmailAvailability(email))
+            val o = authService.checkEmailAvailability(email)
+            emit(authService.checkEmailAvailability(email))
         }.asLiveData(viewModelScope.coroutineContext)
     }
 
-    fun checkIfUsernameAvailable(username: String): LiveData<Boolean>{
+    fun checkIfUsernameAvailable(username: String): LiveData<Response<IsAvailable>> {
         return flow{
          emit(authService.checkUsernameAvailability(username))
         }.asLiveData(viewModelScope.coroutineContext)

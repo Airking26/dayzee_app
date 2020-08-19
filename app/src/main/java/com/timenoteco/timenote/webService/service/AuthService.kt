@@ -1,9 +1,6 @@
 package com.timenoteco.timenote.webService.service
 
-import com.timenoteco.timenote.model.RootUserResponse
-import com.timenoteco.timenote.model.UserEmailSignInBody
-import com.timenoteco.timenote.model.UserSignUpBody
-import com.timenoteco.timenote.model.UserUserNameSignInBody
+import com.timenoteco.timenote.model.*
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -22,9 +19,9 @@ interface AuthService {
     suspend fun signInUsername(@Body userUserNameSignInBody: UserUserNameSignInBody): Response<RootUserResponse>
 
     @GET("auth/availability/email/{email}")
-    suspend fun checkEmailAvailability(@Path("email") email: String): Boolean
+    suspend fun checkEmailAvailability(@Path("email") email: String): Response<IsAvailable>
 
     @GET("auth/availability/userName/{userName}")
-    suspend fun checkUsernameAvailability(@Path("userName") username: String): Boolean
+    suspend fun checkUsernameAvailability(@Path("userName") username: String): Response<IsAvailable>
 
 }

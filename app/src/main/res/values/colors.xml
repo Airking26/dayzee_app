@@ -16,6 +16,7 @@
     <color name="colorToolbar">#FFFFFF</color>
     <color name="colorDivider">#60000000</color>
     <color name="colorBackgroundSettings">#10aaaaaa</color>
+    <color name="colorElevated">#fff</color>
 
 
 </resources>

@@ -232,4 +232,8 @@
     <string name="add_an_url">Add a link</string>
     <string name="public_and_private">Public and Private</string>
     <string name="today">Today</string>
+    <string name="unfollow">Unfollow</string>
+    <string name="email_already_exists">This Email already exists</string>
+    <string name="usermane_already_exists">This username already exists</string>
+    <string name="field_cannot_be_empty">This field can\'t be empty</string>
 </resources>
