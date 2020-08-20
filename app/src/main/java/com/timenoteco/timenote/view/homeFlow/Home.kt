@@ -1,6 +1,7 @@
 package com.timenoteco.timenote.view.homeFlow
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
@@ -45,6 +47,8 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
     private val profileViewModel: ProfileViewModel by activityViewModels()
     private lateinit var timenotePagingAdapter: TimenotePagingAdapter
     private lateinit var onGoToNearby: OnGoToNearby
+    private lateinit var prefs: SharedPreferences
+    val TOKEN: String = "TOKEN"
 
     interface OnGoToNearby{
         fun onGuestMode()
@@ -52,6 +56,8 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        //if(!prefs.getString(TOKEN, "").isNullOrBlank()) loginViewModel.markAsAuthenticated()
         loginViewModel.getAuthenticationState().observe(requireActivity(), Observer {
             when (it) {
                 LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(HomeDirections.actionHomeToNavigation())

@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -34,8 +35,6 @@ class PreferenceCategory : Fragment(), View.OnClickListener {
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_preference_category, container, false)
-        requireActivity().window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-        requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         return view
     }
 
@@ -81,14 +80,18 @@ class PreferenceCategory : Fragment(), View.OnClickListener {
                 //        if(it.category.isSelected) count++
                     }
 
-                if(count == 0){
+                if(count > 0){
                     preferencesViewModel.modifyPreferences(prefs.getString(TOKEN, "")!!, Preferences(mutableListOf(SubCategoryRated(
                         Category("", "") ,1
                     ), SubCategoryRated(Category("", ""), 2) ))).observe(viewLifecycleOwner, Observer {
-                        //if(it.isSuccessful)
-                            view?.findNavController()?.navigate(PreferenceCategoryDirections.actionPreferenceCategoryToPreferenceSubCategory(true))
+                        if(it.isSuccessful)
+                            view?.findNavController()?.navigate(PreferenceCategoryDirections.actionPreferenceCategoryToPreferenceSubCategory(preferenceCategoryArgs.isInLogin))
                     })
-                } else loginViewModel.markAsGuest()
+                } else Toast.makeText(
+                    requireContext(),
+                    "Choose at least one category",
+                    Toast.LENGTH_SHORT
+                ).show()
 
             }
         }

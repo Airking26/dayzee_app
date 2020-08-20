@@ -50,8 +50,6 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
             }
         }
 
-        requireActivity().window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-        requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         return view
     }
 
@@ -98,14 +96,14 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
 
     override fun onClick(v: View?) {
         when(v){
-            pref_sub_category_btn_back -> Navigation.findNavController(v!!).popBackStack()
+            pref_sub_category_btn_back -> findNavController().popBackStack()
             pref_sub_category_btn_done -> saveAndNavigate()
         }
     }
 
     private fun saveAndNavigate() {
         preferencesViewModel.modifyPreferences(prefs.getString(TOKEN, "")!!, preferences).observe(viewLifecycleOwner, Observer {
-            findNavController().navigate(PreferenceSubCategoryDirections.actionPreferenceSubCategoryToPreferenceSuggestion(true))
+            findNavController().navigate(PreferenceSubCategoryDirections.actionPreferenceSubCategoryToPreferenceSuggestion(preferenceSubCategoryArgs.isInLogin))
         })
     }
 

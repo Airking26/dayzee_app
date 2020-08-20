@@ -155,7 +155,8 @@
             app:destination="@id/preferenceSubCategory" />
         <argument
             android:name="isInLogin"
-            app:argType="boolean" />
+            app:argType="boolean"
+            android:defaultValue="false" />
     </fragment>
     <fragment
         android:id="@+id/preferenceSubCategory"
@@ -167,7 +168,8 @@
             app:destination="@id/preferenceSuggestion" />
         <argument
             android:name="isInLogin"
-            app:argType="boolean" />
+            app:argType="boolean"
+            android:defaultValue="false" />
     </fragment>
     <fragment
         android:id="@+id/preferenceSuggestion"
@@ -176,7 +178,8 @@
         tools:layout="@layout/fragment_preference_suggestion" >
         <argument
             android:name="isInLogin"
-            app:argType="boolean" />
+            app:argType="boolean"
+            android:defaultValue="false" />
     </fragment>
     <fragment
         android:id="@+id/createTimenote"

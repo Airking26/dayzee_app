@@ -11,8 +11,10 @@ import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
 import android.widget.ImageView
 import android.widget.ProgressBar
+import android.widget.Switch
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -21,10 +23,10 @@ import androidx.preference.PreferenceManager
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
+import com.afollestad.materialdialogs.checkbox.getCheckBoxPrompt
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
 import com.afollestad.materialdialogs.datetime.datePicker
-import com.afollestad.materialdialogs.input.input
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
 import com.bumptech.glide.Glide
@@ -34,6 +36,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.theartofdev.edmodo.cropper.CropImageView
 import com.timenoteco.timenote.R
+import com.timenoteco.timenote.androidView.input
 import com.timenoteco.timenote.common.stringLiveData
 import com.timenoteco.timenote.model.ProfilModifyModel
 import com.timenoteco.timenote.webService.ProfileModifyData
@@ -75,6 +78,26 @@ class ProfilModify: Fragment(), View.OnClickListener{
 
         setListeners()
         setProfilModifyViewModel()
+
+        profile_modify_youtube_switch.setOnCheckedChangeListener { _, isChecked ->
+            if(isChecked) setStateSwitch(profile_modify_youtube_switch, profile_modify_facebook_switch, profile_modify_insta_switch, profile_modify_whatsapp_switch, profile_modify_linkedin_switch)
+        }
+
+        profile_modify_facebook_switch.setOnCheckedChangeListener{ _, isChecked ->
+            if(isChecked)setStateSwitch( profile_modify_facebook_switch, profile_modify_youtube_switch, profile_modify_insta_switch, profile_modify_whatsapp_switch, profile_modify_linkedin_switch)
+        }
+
+        profile_modify_insta_switch.setOnCheckedChangeListener{ _, isChecked ->
+            if(isChecked)setStateSwitch( profile_modify_insta_switch, profile_modify_facebook_switch, profile_modify_youtube_switch, profile_modify_whatsapp_switch, profile_modify_linkedin_switch)
+        }
+
+        profile_modify_whatsapp_switch.setOnCheckedChangeListener{ _, isChecked ->
+            if(isChecked)setStateSwitch( profile_modify_whatsapp_switch, profile_modify_insta_switch, profile_modify_facebook_switch, profile_modify_youtube_switch, profile_modify_linkedin_switch)
+        }
+
+        profile_modify_linkedin_switch.setOnCheckedChangeListener{ _, isChecked ->
+            if(isChecked)setStateSwitch(profile_modify_linkedin_switch, profile_modify_whatsapp_switch, profile_modify_insta_switch, profile_modify_facebook_switch, profile_modify_youtube_switch)
+        }
     }
 
     private fun setProfilModifyViewModel() {
@@ -204,6 +227,43 @@ class ProfilModify: Fragment(), View.OnClickListener{
                 positiveButton(R.string.done)
                 lifecycleOwner(this@ProfilModify)
             }
+            profile_modify_facebook -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                title(R.string.facebook)
+            input(inputType = InputType.TYPE_CLASS_TEXT, prefill = profileModifyData.loadProfileModifyModel()?.link
+            ){ _, text ->
+                profileModifyData.setLink(text.toString())
+            }
+                    positiveButton(R.string.done)
+                    lifecycleOwner(this@ProfilModify)
+            }
+            profile_modify_instagram -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                title(R.string.instagram)
+            input(inputType = InputType.TYPE_CLASS_TEXT, prefill = profileModifyData.loadProfileModifyModel()?.link
+            ){ _, text ->
+                profileModifyData.setLink(text.toString())
+            }
+                    positiveButton(R.string.done)
+                    lifecycleOwner(this@ProfilModify)
+        }
+            profile_modify_whatsapp -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                title(R.string.whatsapp)
+            input(inputType = InputType.TYPE_CLASS_TEXT, prefill = profileModifyData.loadProfileModifyModel()?.link
+            ){ _, text ->
+                profileModifyData.setLink(text.toString())
+            }
+                    positiveButton(R.string.done)
+                    lifecycleOwner(this@ProfilModify)
+        }
+            profile_modify_linkedin -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                title(R.string.linkedin)
+            input(inputType = InputType.TYPE_CLASS_TEXT, prefill = profileModifyData.loadProfileModifyModel()?.link
+            ){ _, text ->
+                profileModifyData.setLink(text.toString())
+            }
+                    positiveButton(R.string.done)
+                    lifecycleOwner(this@ProfilModify)
+        }
+
             profile_modify_description -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.describe_yourself)
                 input(inputType = InputType.TYPE_CLASS_TEXT, prefill = profileModifyData.loadProfileModifyModel()?.description
@@ -245,5 +305,13 @@ class ProfilModify: Fragment(), View.OnClickListener{
 
         cropView = dialog.getCustomView().crop_view_circle as CropImageView
         cropView.setImageBitmap(bitmap)
+    }
+
+    private fun setStateSwitch(switchActive: Switch, switchInactive1: Switch, switchInactive2: Switch, switchInactive3: Switch, switchInactive4: Switch){
+        switchActive.isChecked = true
+        switchInactive1.isChecked = false
+        switchInactive2.isChecked = false
+        switchInactive3.isChecked = false
+        switchInactive4.isChecked = false
     }
 }

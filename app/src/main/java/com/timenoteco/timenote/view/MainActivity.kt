@@ -136,6 +136,18 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                         utils.hideStatusBar(this)
                         bottomNavView.visibility = View.GONE
                     }
+                    R.id.preferenceCategory -> {
+                        utils.showStatusBar(this)
+                        bottomNavView.visibility = View.GONE
+                    }
+                    R.id.preferenceSubCategory ->{
+                        utils.showStatusBar(this)
+                        bottomNavView.visibility = View.GONE
+                    }
+                    R.id.preferenceSuggestion -> {
+                        utils.showStatusBar(this)
+                        bottomNavView.visibility = View.GONE
+                    }
                     R.id.search -> {
                         utils.showStatusBar(this)
                         bottomNavView.visibility = View.VISIBLE

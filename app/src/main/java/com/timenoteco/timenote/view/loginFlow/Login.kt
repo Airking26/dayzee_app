@@ -39,13 +39,4 @@ class Login : Fragment() {
     private fun displayMainOrLoginScreen() {
         val j  = args.x
     }
-
-    fun getBitmapFromView(view: View): Bitmap? {
-        val bitmap =
-            Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
-        val c = Canvas(bitmap)
-        view.layout(view.left, view.top, view.right, view.bottom)
-        view.draw(c)
-        return bitmap
-    }
 }

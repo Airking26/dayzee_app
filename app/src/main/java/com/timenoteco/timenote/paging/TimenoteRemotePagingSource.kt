@@ -4,8 +4,7 @@ import androidx.paging.PagingSource
 import com.timenoteco.timenote.model.TimenoteModel
 import com.timenoteco.timenote.webService.service.TimenoteService
 
-class TimenoteRemotePagingSource(val timenoteService: TimenoteService):
-    PagingSource<Int, TimenoteModel>() {
+class TimenoteRemotePagingSource(val timenoteService: TimenoteService): PagingSource<Int, TimenoteModel>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, TimenoteModel> {
         return try {

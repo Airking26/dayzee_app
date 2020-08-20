@@ -22,7 +22,7 @@ class LoginViewModel: ViewModel() {
 
     fun getAuthenticationState() : LiveData<AuthenticationState> = authenticationState
 
-    init { authenticationState.value = AuthenticationState.UNAUTHENTICATED }
+    init { authenticationState.value = AuthenticationState.AUTHENTICATED }
 
     fun refuseAuthentication() = authenticationState.postValue(AuthenticationState.UNAUTHENTICATED)
 
@@ -46,6 +46,10 @@ class LoginViewModel: ViewModel() {
 
     fun isValidEmail(target: String?): Boolean {
         return !TextUtils.isEmpty(target) && Patterns.EMAIL_ADDRESS.matcher(target!!).matches()
+    }
+
+    fun isValidUsername(username: String): Boolean{
+        return username.contains('@')
     }
 
     fun checkIfEmailAvailable(email: String): LiveData<Response<IsAvailable>> {

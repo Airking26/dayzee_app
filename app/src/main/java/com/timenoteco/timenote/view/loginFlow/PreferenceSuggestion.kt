@@ -34,21 +34,14 @@ class PreferenceSuggestion : Fragment() {
             true
         }
 
-        requireActivity().window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-        requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         suggestion_ok_btn.setOnClickListener {
-            viewModel.markAsAuthenticated()
-            //if(args.isInLogin) findNavController().navigate(PreferenceSuggestionDirections.actionPreferenceSuggestionToLogin(true))
-            //else findNavController().popBackStack(R.id.profile, false)
+            if(args.isInLogin) viewModel.markAsAuthenticated()
+            else findNavController().popBackStack(R.id.profile, false)
         }
-
-        /*val prefs = PreferenceHelper.defaultPrefs(requireContext())
-        val type: Type = object : TypeToken<List<Preference?>?>() {}.type
-        val list = Gson().fromJson<List<Preference>>(prefs.getString("key", ""), type)*/
     }
 }

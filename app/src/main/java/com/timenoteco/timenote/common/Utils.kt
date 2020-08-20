@@ -40,7 +40,6 @@ import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.callbacks.onDismiss
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
-import com.afollestad.materialdialogs.input.input
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
 import com.asksira.bsimagepicker.BSImagePicker
@@ -48,6 +47,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.AutoSuggestAdapter
 import com.timenoteco.timenote.adapter.WebSearchAdapter
+import com.timenoteco.timenote.androidView.input
 import com.timenoteco.timenote.listeners.PlacePickerListener
 import com.timenoteco.timenote.model.DetailedPlace
 import com.timenoteco.timenote.model.Location
