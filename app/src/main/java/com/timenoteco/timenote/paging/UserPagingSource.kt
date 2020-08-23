@@ -7,17 +7,19 @@ import com.timenoteco.timenote.webService.service.ProfileService
 import com.timenoteco.timenote.webService.service.TimenoteService
 import retrofit2.Response
 
-class UserPagingSource(val followService: FollowService,val followers: Boolean, val timenoteService: TimenoteService, val useTimenoteService: Boolean, val id: String?): PagingSource<Int, UserResponse>() {
+class UserPagingSource(val token: String, private val followService: FollowService,
+                       val followers: Boolean, private val timenoteService: TimenoteService,
+                       private val useTimenoteService: Boolean, val id: String?): PagingSource<Int, UserResponse>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, UserResponse> {
         return try {
             val nextPageNumber = params.key ?: 1
             val response =
                 if(useTimenoteService){
-                    timenoteService.getUsersParticipatingTimenote("Bearer " + "",id!!, nextPageNumber)
+                    timenoteService.getUsersParticipatingTimenote("Bearer $token",id!!, nextPageNumber)
                 } else {
-                    if(followers) followService.getFollowedUsers("Bearer " + "",nextPageNumber)
-                    else followService.getFollowingUsers("Bearer " + "",nextPageNumber)
+                    if(followers) followService.getFollowedUsers("Bearer $token",nextPageNumber)
+                    else followService.getFollowingUsers("Bearer $token",nextPageNumber)
                 }
 
             LoadResult.Page(

@@ -2,6 +2,7 @@ package com.timenoteco.timenote.view
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
@@ -43,7 +44,10 @@ import com.timenoteco.timenote.view.homeFlow.Home
 import com.timenoteco.timenote.view.homeFlow.HomeDirections
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel.AuthenticationState
+import io.branch.referral.Branch
+import io.branch.referral.BranchError
 import kotlinx.android.synthetic.main.activity_main.*
+import org.json.JSONObject
 
 class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby, ShowBarListener {
 
@@ -52,12 +56,37 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
     private lateinit var prefs : SharedPreferences
     private val loginViewModel : LoginViewModel by viewModels()
 
+    object branchListener : Branch.BranchReferralInitListener {
+        override fun onInitFinished(referringParams: JSONObject?, error: BranchError?) {
+            if (error == null) {
+                Log.i("BRANCH SDK", referringParams.toString())
+                // Retrieve deeplink keys from 'referringParams' and evaluate the values to determine where to route the user
+                // Check '+clicked_branch_link' before deciding whether to use your Branch routing logic
+            } else {
+                Log.e("BRANCH SDK", error.message)
+            }
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setupController(true)
+        Branch.getAutoInstance(this);
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Branch.sessionBuilder(this).withCallback(branchListener).withData(this.intent?.data).init()
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        this.intent = intent
+        // Branch reinit (in case Activity is already in foreground when Branch link is clicked)
+        Branch.sessionBuilder(this).withCallback(branchListener).reInit()
     }
 
     @SuppressLint("StringFormatInvalid")

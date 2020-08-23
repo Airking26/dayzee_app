@@ -15,12 +15,13 @@ class TimenoteViewModel: ViewModel() {
 
     private val timenoteService = DayzeeRepository().getTimenoteService()
 
-    fun getTimenotePagingFlow() = Pager(PagingConfig(pageSize = 12)){ TimenoteRemotePagingSource(timenoteService) }.flow.cachedIn(viewModelScope)
-    fun getSpecificTimenote(id: String) = flow { emit(timenoteService.getTimenoteId("Bearer " + "",id)) }.asLiveData(viewModelScope.coroutineContext)
-    fun modifySpecificTimenote(id: String, timenoteBody: TimenoteBody) =  flow {emit(timenoteService.modifyTimenote("Bearer " + "",id, timenoteBody))}.asLiveData(viewModelScope.coroutineContext)
-    fun deleteTimenote(id: String) = flow {emit(timenoteService.deleteTimenote("Bearer " + "",id))}.asLiveData(viewModelScope.coroutineContext)
-    fun joinTimenote(id: String) = flow { emit(timenoteService.joinTimenote("Bearer " + "",id)) }.asLiveData(viewModelScope.coroutineContext)
-    fun leaveTimenote(id: String) = flow { emit(timenoteService.leaveTimenote("Bearer " + "",id)) }.asLiveData(viewModelScope.coroutineContext)
-    fun hideToOthers(id: String) = flow { emit(timenoteService.joinPrivateTimenote("Bearer " + "",id)) }.asLiveData(viewModelScope.coroutineContext)
+    fun getTimenotePagingFlow(token: String) =
+        Pager(PagingConfig(pageSize = 12)){ TimenoteRemotePagingSource(token, timenoteService) }.flow.cachedIn(viewModelScope)
+    fun getSpecificTimenote(token: String, id: String) = flow { emit(timenoteService.getTimenoteId("Bearer $token",id)) }.asLiveData(viewModelScope.coroutineContext)
+    fun modifySpecificTimenote(token: String, id: String, timenoteBody: TimenoteBody) =  flow {emit(timenoteService.modifyTimenote("Bearer $token",id, timenoteBody))}.asLiveData(viewModelScope.coroutineContext)
+    fun deleteTimenote(token: String, id: String) = flow {emit(timenoteService.deleteTimenote("Bearer $token",id))}.asLiveData(viewModelScope.coroutineContext)
+    fun joinTimenote(token: String, id: String) = flow { emit(timenoteService.joinTimenote("Bearer $token",id)) }.asLiveData(viewModelScope.coroutineContext)
+    fun leaveTimenote(token: String, id: String) = flow { emit(timenoteService.leaveTimenote("Bearer $token",id)) }.asLiveData(viewModelScope.coroutineContext)
+    fun hideToOthers(token: String, id: String) = flow { emit(timenoteService.joinPrivateTimenote("Bearer $token",id)) }.asLiveData(viewModelScope.coroutineContext)
 
 }

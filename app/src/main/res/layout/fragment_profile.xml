@@ -5,7 +5,7 @@
     android:id="@+id/cl"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/colorBackground">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:background="@color/colorBackground"
@@ -17,7 +17,8 @@
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/profile_toolbar"
-            style="@style/AppTheme.Toolbar">
+            style="@style/AppTheme.Toolbar"
+            tools:ignore="MissingConstraints">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -108,7 +109,6 @@
                 app:layout_scrollFlags="scroll|enterAlways|snap|exitUntilCollapsed"
                 tools:context=".view.profileFlow.Profile">
 
-
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/background"
                     android:layout_width="match_parent"
@@ -170,8 +170,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="16dp"
-                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintBottom_toBottomOf="@id/profile_followers_label"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@id/profile_nbr_followers">
 
                         <ImageView
@@ -200,8 +200,8 @@
                             android:id="@+id/profile_day_number_calendar"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif-light"
                             android:layout_marginTop="1dp"
+                            android:fontFamily="sans-serif-light"
                             android:textColor="@color/colorText"
                             android:textSize="10sp"
                             app:layout_constraintEnd_toEndOf="parent"
@@ -213,13 +213,13 @@
 
                     <ImageView
                         android:id="@+id/profile_infos"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:src="@drawable/ic_icons8_contacts"
                         app:layout_constraintBottom_toBottomOf="@id/profile_following_label"
-                        app:layout_constraintTop_toTopOf="@id/profile_nbr_following"
                         app:layout_constraintEnd_toEndOf="@id/profile_calendar_cl"
                         app:layout_constraintStart_toStartOf="@id/profile_calendar_cl"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        app:layout_constraintTop_toTopOf="@id/profile_nbr_following" />
 
 
                     <ImageView
@@ -242,9 +242,9 @@
                         android:paddingHorizontal="18dp"
                         android:paddingVertical="4dp"
                         android:visibility="visible"
-                        app:fb_defaultColor="@android:color/transparent"
                         app:fb_borderColor="@android:color/darker_gray"
                         app:fb_borderWidth="1dp"
+                        app:fb_defaultColor="@android:color/transparent"
                         app:fb_radius="5dp"
                         app:fb_text="@string/modify"
                         app:fb_textColor="@android:color/darker_gray"
@@ -261,7 +261,7 @@
                         android:gravity="center"
                         android:paddingHorizontal="18dp"
                         android:paddingVertical="4dp"
-                        android:visibility="gone"
+                        android:visibility="invisible"
                         app:fb_defaultColor="@color/colorYellow"
                         app:fb_radius="5dp"
                         app:fb_text="@string/follow"
@@ -270,14 +270,54 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/profile_pic_imageview" />
 
+                    <mehdi.sakout.fancybuttons.FancyButton
+                        android:layout_marginEnd="4dp"
+                        android:id="@+id/profile_accept_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center"
+                        android:paddingHorizontal="18dp"
+                        android:paddingVertical="4dp"
+                        android:visibility="gone"
+                        app:fb_defaultColor="@color/colorYellow"
+                        app:fb_radius="5dp"
+                        app:fb_text="@string/accept"
+                        app:fb_textColor="@color/white"
+                        app:layout_constraintEnd_toStartOf="@id/profile_decline_btn"
+                        app:layout_constraintHorizontal_chainStyle="packed"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/profile_pic_imageview" />
+
+                    <mehdi.sakout.fancybuttons.FancyButton
+                        android:layout_marginStart="4dp"
+                        android:id="@+id/profile_decline_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center"
+                        android:paddingHorizontal="18dp"
+                        android:paddingVertical="4dp"
+                        android:visibility="gone"
+                        app:fb_borderColor="@android:color/darker_gray"
+                        app:fb_borderWidth="1dp"
+                        app:fb_defaultColor="@android:color/transparent"
+                        app:fb_radius="5dp"
+                        app:fb_text="@string/decline"
+                        app:fb_textColor="@android:color/darker_gray"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/profile_accept_btn"
+                        app:layout_constraintTop_toBottomOf="@id/profile_pic_imageview" />
+
+
                     <TextView
                         android:id="@+id/profile_desc"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:fontFamily="sans-serif-light"
-                        android:textColor="@color/colorText"
                         android:text="Founder of Timenote"
+                        android:textColor="@color/colorText"
                         android:textSize="15sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -292,8 +332,6 @@
                         app:layout_constraintTop_toBottomOf="@id/profile_desc">
 
                         <com.google.android.material.tabs.TabLayout
-                            app:tabIconTint="@android:color/transparent"
-                            app:tabIconTintMode="add"
                             android:id="@+id/profile_tablayout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -302,6 +340,8 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
+                            app:tabIconTint="@android:color/transparent"
+                            app:tabIconTintMode="add"
                             app:tabIndicatorHeight="1dp" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -319,10 +359,7 @@
             android:layout_height="wrap_content"
             android:fillViewport="true"
             android:scrollbars="none"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <androidx.viewpager2.widget.ViewPager2
                 android:background="@color/colorBackground"
@@ -332,14 +369,6 @@
 
         </androidx.core.widget.NestedScrollView>
 
-
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.5" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

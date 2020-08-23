@@ -26,6 +26,7 @@ import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import com.timenoteco.timenote.model.StatusTimenote
 import com.timenoteco.timenote.model.Timenote
+import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import kotlinx.android.synthetic.main.fragment_profile.*
 import java.text.SimpleDateFormat
@@ -35,13 +36,18 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
 
     private var profilePastFuturePagerAdapter: ProfilePastFuturePagerAdapter? = null
     private val loginViewModel : LoginViewModel by activityViewModels()
+    private val followViewModel: FollowViewModel by activityViewModels()
     private var showFilterBar: Boolean = false
     private val args : ProfileArgs by navArgs()
     private var timenotes: MutableList<Timenote> = mutableListOf()
+    private lateinit var prefs: SharedPreferences
     val TOKEN: String = "TOKEN"
+    private var tokenId : String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        tokenId = prefs.getString(TOKEN, null)
         loginViewModel.getAuthenticationState().observe(requireActivity(), androidx.lifecycle.Observer {
             findNavController().popBackStack(R.id.profile, false)
             when (it) {
@@ -381,7 +387,11 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
 
     override fun onClick(v: View?) {
         when(v){
-            profile_modify_btn -> findNavController().navigate(ProfileDirections.actionProfileToProfilModify())
+            profile_modify_btn -> {
+                if(args.whereFrom){
+
+                } else findNavController().navigate(ProfileDirections.actionProfileToProfilModify())
+            }
             profile_calendar_btn -> findNavController().navigate(ProfileDirections.actionProfileToProfileCalendar())
             profile_settings_btn -> findNavController().navigate(ProfileDirections.actionProfileToMenu())
             profile_notif_btn -> {

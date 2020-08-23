@@ -19,8 +19,8 @@ class ProfileViewModel: ViewModel() {
     private val followService = DayzeeRepository().getFollowService()
     private val timenoteService = DayzeeRepository().getTimenoteService()
 
-    fun getUsers(followers: Boolean, useTimenoteService: Boolean, id: String?): Flow<PagingData<UserResponse>> {
-        return Pager(PagingConfig(pageSize = 8)){UserPagingSource(followService, followers, timenoteService, useTimenoteService, id)}.flow.cachedIn(viewModelScope)
+    fun getUsers(token: String, followers: Boolean, useTimenoteService: Boolean, id: String?): Flow<PagingData<UserResponse>> {
+        return Pager(PagingConfig(pageSize = 8)){UserPagingSource(token, followService, followers, timenoteService, useTimenoteService, id)}.flow.cachedIn(viewModelScope)
     }
 
     fun getFutureTimenotes(future: Boolean): Flow<PagingData<TimenoteModel>> {

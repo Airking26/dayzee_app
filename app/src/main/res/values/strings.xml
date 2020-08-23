@@ -238,4 +238,6 @@
     <string name="field_cannot_be_empty">This field can\'t be empty</string>
     <string name="not_valid_mail_form">This is not a valid mail address</string>
     <string name="not_username_valid_form">Username can\'t contains @</string>
+    <string name="accept">Accept</string>
+    <string name="decline">Decline</string>
 </resources>

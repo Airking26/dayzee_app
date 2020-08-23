@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -38,7 +39,7 @@ import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, TimenoteOptionsListener {
+class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, TimenoteOptionsListener, View.OnClickListener {
 
     private var timenotes: List<Timenote> = mutableListOf()
     private lateinit var timenoteAdapter: ItemTimenoteAdapter
@@ -49,6 +50,7 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
     private lateinit var onGoToNearby: OnGoToNearby
     private lateinit var prefs: SharedPreferences
     val TOKEN: String = "TOKEN"
+    private var tokenId: String? = null
 
     interface OnGoToNearby{
         fun onGuestMode()
@@ -56,7 +58,8 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        tokenId = prefs.getString(TOKEN, null)
         //if(!prefs.getString(TOKEN, "").isNullOrBlank()) loginViewModel.markAsAuthenticated()
         loginViewModel.getAuthenticationState().observe(requireActivity(), Observer {
             when (it) {
@@ -347,11 +350,33 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
             layoutManager = LinearLayoutManager(context)
             adapter = timenoteAdapter
         }
+
+        home_past_timeline.setOnClickListener(this)
+        home_future_timeline.setOnClickListener(this)
+
+    }
+
+    override fun onClick(v: View?) {
+        when(v){
+            home_past_timeline -> {
+                if(home_past_timeline.drawable.constantState == resources.getDrawable(R.drawable.ic_passe_ok).constantState){
+                    home_recent_rv.visibility = View.GONE
+                    home_past_timeline.setImageDrawable(resources.getDrawable(R.drawable.ic_passe_plein_grad_ok))
+                    home_future_timeline.setImageDrawable(resources.getDrawable(R.drawable.ic_futur_ok))
+                }
+            }
+            home_future_timeline ->{
+                if(home_future_timeline.drawable.constantState == resources.getDrawable(R.drawable.ic_futur_ok).constantState){
+                    home_recent_rv.visibility = View.VISIBLE
+                    home_future_timeline.setImageDrawable(resources.getDrawable(R.drawable.ic_futur_plein_grad))
+                    home_past_timeline.setImageDrawable(resources.getDrawable(R.drawable.ic_passe_ok))
+                }
+            }
+        }
     }
 
     override fun onCommentClicked() {
-        loginViewModel.markAsUnauthenticated()
-        //findNavController().navigate(HomeDirections.actionHomeToComments())
+        findNavController().navigate(HomeDirections.actionHomeToComments())
     }
 
 
@@ -371,9 +396,9 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
     }
 
     override fun onDoubleClick() {
-        timenoteViewModel.getSpecificTimenote("").observe(viewLifecycleOwner, Observer {
-            if(it.body()?.joinedBy?.contains("")!!) timenoteViewModel.joinTimenote("")
-            else timenoteViewModel.leaveTimenote("")
+        timenoteViewModel.getSpecificTimenote(tokenId!!, "").observe(viewLifecycleOwner, Observer {
+            if(it.body()?.joinedBy?.contains("")!!) timenoteViewModel.joinTimenote(tokenId!!, "")
+            else timenoteViewModel.leaveTimenote(tokenId!!, "")
 
         })
     }
@@ -388,7 +413,7 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
         val adapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator)
         recyclerview.adapter = adapter
         lifecycleScope.launch{
-            profileViewModel.getUsers(followers = true, useTimenoteService = false, id =  null).collectLatest {
+            profileViewModel.getUsers(tokenId!!, followers = true, useTimenoteService = true, id =  null).collectLatest {
                 adapter.submitData(it)
             }
         }
@@ -403,7 +428,7 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
     }
 
     override fun onReportClicked() {
-        timenoteViewModel.deleteTimenote("")
+        timenoteViewModel.deleteTimenote(tokenId!!, "")
     }
 
     override fun onEditClicked() {
@@ -423,7 +448,7 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
     }
 
     override fun onDeleteClicked() {
-        timenoteViewModel.deleteTimenote("")
+        timenoteViewModel.deleteTimenote(tokenId!!, "")
     }
 
     override fun onDuplicateClicked() {
