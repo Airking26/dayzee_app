@@ -1,64 +1,104 @@
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_height="match_parent">
-
-<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/home_ll"
-        style="@style/AppTheme.Toolbar.LinearLayout"
-        tools:ignore="MissingConstraints">
+        <com.google.android.material.appbar.AppBarLayout
+            android:background="@color/colorBackground"
+            style="@style/AppTheme.Toolbar">
 
-        <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:layout_width="match_parent"
+                app:layout_scrollFlags="scroll|enterAlways|snap|exitUntilCollapsed"
+                android:layout_height="wrap_content">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
             <ImageView
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/home_future_timeline"
+                app:layout_constraintStart_toEndOf="@id/home_past_timeline"
                 android:layout_width="80dp"
                 android:src="@drawable/dayzee"
-                style="@style/AppTheme.Toolbar.Title"
                 android:text="@string/timeline" />
 
             <ImageView
+                android:layout_marginEnd="16dp"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 android:src="@drawable/ic_futur_plein_grad"
-                android:id="@+id/home_future_timeline"
-                style="@style/AppTheme.Toolbar.ImageRight"/>
+                android:id="@+id/home_future_timeline"/>
 
             <ImageView
+                android:layout_marginStart="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 android:src="@drawable/ic_passe_ok"
-                android:id="@+id/home_past_timeline"
-                style="@style/AppTheme.Toolbar.ImageLeft"/>
+                android:id="@+id/home_past_timeline"/>
 
-        </androidx.appcompat.widget.Toolbar>
+                    <TextView
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        style="@style/AppTheme.Divider.Toolbar"/>
 
-        <TextView style="@style/AppTheme.Divider.Toolbar"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
 
-    </LinearLayout>
+        </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_gravity="top"
+        app:layout_anchorGravity="bottom"
+        android:id="@+id/home_swipe_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
     <androidx.recyclerview.widget.RecyclerView
+        android:nestedScrollingEnabled="true"
         android:background="@color/white"
         android:id="@+id/home_recent_rv"
-        app:layout_constraintBottom_toTopOf="@id/home_rv"
-        app:layout_constraintTop_toBottomOf="@id/home_ll"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
     <androidx.recyclerview.widget.RecyclerView
+        android:nestedScrollingEnabled="true"
         android:background="@color/white"
         tools:listitem="@layout/item_timenote"
         android:orientation="vertical"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/home_recent_rv"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:id="@+id/home_rv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.core.widget.NestedScrollView>
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

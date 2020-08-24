@@ -1,5 +1,7 @@
 package com.timenoteco.timenote.view.homeFlow
 
+import android.content.Context
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.SharedPreferences
 import android.graphics.Typeface
 import android.os.Bundle
@@ -8,26 +10,33 @@ import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
+import com.timenoteco.timenote.adapter.CommentAdapter
 import com.timenoteco.timenote.adapter.ItemTimenoteToComeAdapter
 import com.timenoteco.timenote.adapter.ScreenSlideTimenotePagerAdapter
 import com.timenoteco.timenote.common.RoundedCornersTransformation
-import com.timenoteco.timenote.model.StatusTimenote
+import com.timenoteco.timenote.model.CommentModel
 import com.timenoteco.timenote.viewModel.TimenoteViewModel
 import kotlinx.android.synthetic.main.fragment_detailed_fragment.*
-import kotlinx.android.synthetic.main.item_timenote.view.*
+
 
 class DetailedTimenote : Fragment(), View.OnClickListener {
 
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
     private lateinit var prefs: SharedPreferences
+    private lateinit var commentAdapter: CommentAdapter
+    private var comments : List<CommentModel> = listOf()
     val TOKEN: String = "TOKEN"
     private var tokenId: String? = null
 
@@ -44,6 +53,33 @@ class DetailedTimenote : Fragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         timenoteViewModel.getSpecificTimenote(tokenId!!, "").observe(viewLifecycleOwner, Observer {})
+
+        comments_edittext.requestFocus()
+
+        comments = listOf(
+            CommentModel("", "Ronny Dahan", "Nice place, i love the food and the view, i would love to go back there", "2h Ago"),
+            CommentModel("", "Ronny Dahan", "Nice place, i love the food and the view, i would love to go back there", "2h Ago"),
+            CommentModel("", "Ronny Dahan", "Nice place, i love the food and the view, i would love to go back there", "2h Ago"),
+            CommentModel("", "Ronny Dahan", "Nice place, i love the food and the view, i would love to go back there", "2h Ago"),
+            CommentModel("", "Ronny Dahan", "Nice place, i love the food and the view, i would love to go back there", "2h Ago"),
+            CommentModel("", "Ronny Dahan", "Nice place, i love the food and the view, i would love to go back there", "2h Ago"),
+            CommentModel("", "Ronny Dahan", "Nice place, i love the food and the view, i would love to go back there", "2h Ago"),
+            CommentModel("", "Ronny Dahan", "Nice place, i love the food and the view, i would love to go back there", "2h Ago"),
+            CommentModel("", "Ronny Dahan", "Nice place, i love the food and the view, i would love to go back there", "2h Ago"),
+            CommentModel("", "Ronny Dahan", "Nice place, i love the food and the view, i would love to go back there", "2h Ago"),
+            CommentModel("", "Ronny Dahan", "Nice place, i love the food and the view, i would love to go back there", "2h Ago"),
+            CommentModel("", "Ronny Dahan", "Nice place, i love the food and the view, i would love to go back there", "2h Ago"),
+            CommentModel("", "Ronny Dahan", "Nice place, i love the food and the view, i would love to go back there", "2h Ago")
+
+        )
+
+        commentAdapter = CommentAdapter(comments)
+
+        detailed_timenote_comments_rv.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = commentAdapter
+        }
+
 
         val screenSlideCreationTimenotePagerAdapter =  ScreenSlideTimenotePagerAdapter(this, mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
             "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -100,7 +136,11 @@ class DetailedTimenote : Fragment(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when(v){
-            detailed_timenote_comment -> findNavController().navigate(DetailedTimenoteDirections.actionDetailedTimenoteToComments())
+            detailed_timenote_comment -> {
+                comments_edittext.requestFocus()
+                val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
+                imm?.showSoftInput(comments_edittext, InputMethodManager.SHOW_IMPLICIT)
+            }
         }
     }
 

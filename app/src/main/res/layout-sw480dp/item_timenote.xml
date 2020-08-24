@@ -201,7 +201,7 @@
         app:layout_constraintTop_toBottomOf="@id/timenote_vp" />
 
     <ImageView
-        android:id="@+id/timenote_like"
+        android:id="@+id/timenote_comment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -211,14 +211,14 @@
         app:layout_constraintTop_toBottomOf="@id/timenote_buy" />
 
     <ImageView
-        android:id="@+id/timenote_comment"
+        android:id="@+id/timenote_share"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="18dp"
         android:src="@drawable/ic_partage_sans_fleche_ok"
-        app:layout_constraintBottom_toBottomOf="@id/timenote_like"
-        app:layout_constraintStart_toEndOf="@id/timenote_like"
-        app:layout_constraintTop_toTopOf="@id/timenote_like" />
+        app:layout_constraintBottom_toBottomOf="@id/timenote_comment"
+        app:layout_constraintStart_toEndOf="@id/timenote_comment"
+        app:layout_constraintTop_toTopOf="@id/timenote_comment" />
 
     <me.relex.circleindicator.CircleIndicator3
         android:id="@+id/timenote_indicator"
@@ -238,9 +238,9 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:src="@drawable/ic_ajout_cal"
-        app:layout_constraintBottom_toBottomOf="@id/timenote_like"
+        app:layout_constraintBottom_toBottomOf="@id/timenote_comment"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/timenote_like" />
+        app:layout_constraintTop_toTopOf="@id/timenote_comment" />
 
     <LinearLayout
         android:id="@+id/timenote_fl"
@@ -250,8 +250,8 @@
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="@id/timenote_plus"
-        app:layout_constraintStart_toStartOf="@id/timenote_like"
-        app:layout_constraintTop_toBottomOf="@id/timenote_like">
+        app:layout_constraintStart_toStartOf="@id/timenote_comment"
+        app:layout_constraintTop_toBottomOf="@id/timenote_comment">
 
         <ImageView
             android:id="@+id/timenote_pic_participant_one"
@@ -293,7 +293,7 @@
         android:maxLines="2"
         android:textColor="@color/colorText"
         android:textSize="13sp"
-        app:layout_constraintStart_toStartOf="@id/timenote_like"
+        app:layout_constraintStart_toStartOf="@id/timenote_comment"
         app:layout_constraintEnd_toEndOf="@id/timenote_plus"
         app:layout_constraintTop_toBottomOf="@id/timenote_fl"
         tools:targetApi="m"
@@ -306,7 +306,7 @@
         android:text="@string/see_more"
         android:textColor="@color/colorText"
         android:textSize="13sp"
-        app:layout_constraintStart_toStartOf="@id/timenote_like"
+        app:layout_constraintStart_toStartOf="@id/timenote_comment"
         app:layout_constraintTop_toBottomOf="@id/timenote_username_desc" />
 
     <androidx.constraintlayout.widget.Guideline

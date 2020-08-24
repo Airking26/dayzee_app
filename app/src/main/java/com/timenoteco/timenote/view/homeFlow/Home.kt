@@ -337,6 +337,11 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
             )
         )
 
+        home_swipe_refresh.setColorSchemeResources(R.color.colorStartGradient, R.color.colorEndGradient)
+        home_swipe_refresh.setOnRefreshListener {
+            home_swipe_refresh.isRefreshing = false
+        }
+
         /*timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this)
         home_rv.adapter = timenotePagingAdapter
         lifecycleScope.launch {
@@ -376,7 +381,7 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
     }
 
     override fun onCommentClicked() {
-        findNavController().navigate(HomeDirections.actionHomeToComments())
+        findNavController().navigate(HomeDirections.actionHomeToDetailedTimenote())
     }
 
 

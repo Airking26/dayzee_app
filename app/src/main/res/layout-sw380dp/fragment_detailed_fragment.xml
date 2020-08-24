@@ -10,7 +10,8 @@
 
     <LinearLayout
         android:id="@+id/detailed_timenote_ll"
-        style="@style/AppTheme.Toolbar.LinearLayout">
+        style="@style/AppTheme.Toolbar.LinearLayout"
+        tools:ignore="MissingConstraints">
 
         <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
 
@@ -74,8 +75,8 @@
         android:layout_height="250dp"
         android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/detailed_timenote_ll" />
+        app:layout_constraintTop_toBottomOf="@id/detailed_timenote_ll"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/detailed_timenote_title"
@@ -217,7 +218,7 @@
         app:layout_constraintTop_toBottomOf="@id/detailed_timenote_vp" />
 
     <ImageView
-        android:id="@+id/detailed_timenote_like"
+        android:id="@+id/detailed_timenote_comment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -227,14 +228,14 @@
         app:layout_constraintTop_toBottomOf="@id/detailed_timenote_buy" />
 
     <ImageView
-        android:id="@+id/detailed_timenote_comment"
+        android:id="@+id/detailed_timenote_share"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="18dp"
         android:src="@drawable/ic_partage_sans_fleche_ok"
-        app:layout_constraintBottom_toBottomOf="@id/detailed_timenote_like"
-        app:layout_constraintStart_toEndOf="@id/detailed_timenote_like"
-        app:layout_constraintTop_toTopOf="@id/detailed_timenote_like" />
+        app:layout_constraintBottom_toBottomOf="@id/detailed_timenote_comment"
+        app:layout_constraintStart_toEndOf="@id/detailed_timenote_comment"
+        app:layout_constraintTop_toTopOf="@id/detailed_timenote_comment" />
 
     <me.relex.circleindicator.CircleIndicator3
         android:id="@+id/detailed_timenote_indicator"
@@ -254,9 +255,9 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:src="@drawable/ic_ajout_cal"
-        app:layout_constraintBottom_toBottomOf="@id/detailed_timenote_like"
+        app:layout_constraintBottom_toBottomOf="@id/detailed_timenote_comment"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/detailed_timenote_like" />
+        app:layout_constraintTop_toTopOf="@id/detailed_timenote_comment" />
 
     <LinearLayout
         android:id="@+id/timenote_fl"
@@ -266,8 +267,8 @@
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="@id/timenote_plus"
-        app:layout_constraintStart_toStartOf="@id/detailed_timenote_like"
-        app:layout_constraintTop_toBottomOf="@id/detailed_timenote_like">
+        app:layout_constraintStart_toStartOf="@id/detailed_timenote_comment"
+        app:layout_constraintTop_toBottomOf="@id/detailed_timenote_comment">
 
         <ImageView
             android:id="@+id/detailed_timenote_pic_participant_one"
@@ -307,7 +308,7 @@
         android:breakStrategy="simple"
         android:textColor="@color/colorText"
         android:textSize="13sp"
-        app:layout_constraintStart_toStartOf="@id/detailed_timenote_like"
+        app:layout_constraintStart_toStartOf="@id/detailed_timenote_comment"
         app:layout_constraintTop_toBottomOf="@id/timenote_fl"
         app:layout_constraintEnd_toEndOf="@id/timenote_plus"
         tools:targetApi="m"
@@ -331,6 +332,7 @@
 </androidx.core.widget.NestedScrollView>
 
     <LinearLayout
+        android:layout_marginTop="8dp"
         android:id="@+id/fragment_detailed_comment_ll"
         android:layout_marginHorizontal="12dp"
         android:layout_marginBottom="12dp"
@@ -363,7 +365,5 @@
             android:layout_height="wrap_content"/>
 
     </LinearLayout>
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

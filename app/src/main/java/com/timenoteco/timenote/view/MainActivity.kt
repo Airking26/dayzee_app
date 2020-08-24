@@ -16,23 +16,17 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.get
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
 import com.timenoteco.timenote.R
@@ -41,9 +35,7 @@ import com.timenoteco.timenote.common.setupWithNavController
 import com.timenoteco.timenote.listeners.BackToHomeListener
 import com.timenoteco.timenote.listeners.ShowBarListener
 import com.timenoteco.timenote.view.homeFlow.Home
-import com.timenoteco.timenote.view.homeFlow.HomeDirections
 import com.timenoteco.timenote.viewModel.LoginViewModel
-import com.timenoteco.timenote.viewModel.LoginViewModel.AuthenticationState
 import io.branch.referral.Branch
 import io.branch.referral.BranchError
 import kotlinx.android.synthetic.main.activity_main.*
@@ -56,7 +48,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
     private lateinit var prefs : SharedPreferences
     private val loginViewModel : LoginViewModel by viewModels()
 
-    object branchListener : Branch.BranchReferralInitListener {
+    object BranchListener : Branch.BranchReferralInitListener {
         override fun onInitFinished(referringParams: JSONObject?, error: BranchError?) {
             if (error == null) {
                 Log.i("BRANCH SDK", referringParams.toString())
@@ -73,20 +65,23 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setupController(true)
-        Branch.getAutoInstance(this);
+        Branch.getAutoInstance(this)
+        //val layoutParams = bottomNavView.layoutParams as CoordinatorLayout.LayoutParams
+        //layoutParams.behavior = BottomNavigationBehavior()
+
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
     }
 
     override fun onStart() {
         super.onStart()
-        Branch.sessionBuilder(this).withCallback(branchListener).withData(this.intent?.data).init()
+        Branch.sessionBuilder(this).withCallback(BranchListener).withData(this.intent?.data).init()
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         this.intent = intent
         // Branch reinit (in case Activity is already in foreground when Branch link is clicked)
-        Branch.sessionBuilder(this).withCallback(branchListener).reInit()
+        Branch.sessionBuilder(this).withCallback(BranchListener).reInit()
     }
 
     @SuppressLint("StringFormatInvalid")

@@ -18,7 +18,7 @@
 
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:visibility="gone"
+        android:visibility="visible"
         app:labelVisibilityMode="unlabeled"
         android:id="@+id/bottomNavView"
         android:layout_width="match_parent"

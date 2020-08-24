@@ -97,10 +97,6 @@
             app:popUpTo="@id/nearBy" />
     </fragment>
     <fragment
-        android:id="@+id/comments"
-        android:name="com.timenoteco.timenote.view.homeFlow.Comments"
-        android:label="Comments" />
-    <fragment
         android:id="@+id/detailedTimenote"
         android:name="com.timenoteco.timenote.view.homeFlow.DetailedTimenote"
         android:label="fragment_detailed_fragment"

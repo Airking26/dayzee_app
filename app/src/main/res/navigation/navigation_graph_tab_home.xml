@@ -66,9 +66,6 @@
         android:name="com.timenoteco.timenote.view.homeFlow.Home"
         android:label="Home" >
         <action
-            android:id="@+id/action_home_to_comments"
-            app:destination="@id/comments" />
-        <action
             android:id="@+id/action_home_to_detailedTimenote"
             app:destination="@id/detailedTimenote" />
         <action
@@ -85,19 +82,10 @@
             app:destination="@id/navigation" />
     </fragment>
     <fragment
-        android:id="@+id/comments"
-        android:name="com.timenoteco.timenote.view.homeFlow.Comments"
-        android:label="fragment_comments"
-        tools:layout="@layout/fragment_comments" />
-    <fragment
         android:id="@+id/detailedTimenote"
         android:name="com.timenoteco.timenote.view.homeFlow.DetailedTimenote"
         android:label="fragment_detailed_timenote"
-        tools:layout="@layout/fragment_detailed_fragment" >
-        <action
-            android:id="@+id/action_detailedTimenote_to_comments"
-            app:destination="@id/comments" />
-    </fragment>
+        tools:layout="@layout/fragment_detailed_fragment" />
     <fragment
         android:id="@+id/profile"
         android:name="com.timenoteco.timenote.view.profileFlow.Profile"
