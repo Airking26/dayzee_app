@@ -12,8 +12,6 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.timenoteco.timenote.R
-import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
-import com.timenoteco.timenote.view.profileFlow.ProfileFutureEvents
 
 private const val LATITUDE = "latitude"
 private const val LONGITUDE = "longitude"
@@ -49,7 +47,7 @@ class TimenoteAddress : Fragment() {
     companion object{
         @JvmStatic
         fun newInstance(latitude: Double, longitude: Double) =
-            ProfileFutureEvents().apply {
+            TimenoteAddress().apply {
                 arguments = Bundle().apply {
                     putDouble(LATITUDE, latitude)
                     putDouble(LONGITUDE, longitude)

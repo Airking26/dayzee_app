@@ -21,6 +21,7 @@ import androidx.core.view.get
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -33,6 +34,7 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.setupWithNavController
 import com.timenoteco.timenote.listeners.BackToHomeListener
+import com.timenoteco.timenote.listeners.ExitCreationTimenote
 import com.timenoteco.timenote.listeners.ShowBarListener
 import com.timenoteco.timenote.view.homeFlow.Home
 import com.timenoteco.timenote.viewModel.LoginViewModel
@@ -41,7 +43,7 @@ import io.branch.referral.BranchError
 import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONObject
 
-class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby, ShowBarListener {
+class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby, ShowBarListener, ExitCreationTimenote {
 
     private var currentNavController: LiveData<NavController>? = null
     private val utils = Utils()
@@ -118,8 +120,8 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
             listOf(
                 R.navigation.navigation_graph_tab_home,
                 R.navigation.navigation_graph_tab_search,
-                R.navigation.navigation_graph_tab_nearby,
                 R.navigation.navigation_graph_tab_profile,
+                R.navigation.navigation_graph_tab_nearby,
                 R.navigation.navigation_graph_tab_create_timenote
             )
 
@@ -204,10 +206,6 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                         utils.showStatusBar(this)
                         bottomNavView.visibility = View.GONE
                     }
-                    R.id.comments -> {
-                        utils.showStatusBar(this)
-                        bottomNavView.visibility = View.GONE
-                    }
                     R.id.profilModify -> {
                         bottomNavView.visibility = View.VISIBLE
                         utils.showStatusBar(this)
@@ -237,6 +235,17 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
 
     override fun onBarAskedToShow() {
         bottomNavView.visibility = View.VISIBLE
+    }
+
+    override fun onDone(from: Int) {
+        when(from){
+            0 -> bottomNavView.selectedItemId = R.id.navigation_graph_tab_1
+            1 -> bottomNavView.selectedItemId = R.id.navigation_graph_tab_1
+            2 -> bottomNavView.selectedItemId = R.id.navigation_graph_tab_3
+            3 -> bottomNavView.selectedItemId = R.id.navigation_graph_tab_2
+            4 -> bottomNavView.selectedItemId = R.id.navigation_graph_tab_4
+
+        }
     }
 
 }

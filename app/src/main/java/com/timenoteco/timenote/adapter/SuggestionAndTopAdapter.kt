@@ -11,10 +11,16 @@ import com.timenoteco.timenote.model.UserSuggested
 import kotlinx.android.synthetic.main.adapter_suggestion_card.view.*
 import kotlinx.android.synthetic.main.item_suggestion.view.*
 
-class SuggestionAdapter(private var suggestions: Map<String, List<UserSuggested>>, private val listener: SuggestionItemListener): RecyclerView.Adapter<SuggestionAdapter.CardViewHolder>() {
+class SuggestionAdapter(private var suggestions: Map<String, List<UserSuggested>>,
+                        private val listener: SuggestionItemListener, private val picClicked: SuggestionItemPicListener):
+    RecyclerView.Adapter<SuggestionAdapter.CardViewHolder>() {
 
     interface SuggestionItemListener{
         fun onItemSelected()
+    }
+
+    interface SuggestionItemPicListener{
+        fun onPicClicked()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder =
@@ -24,18 +30,23 @@ class SuggestionAdapter(private var suggestions: Map<String, List<UserSuggested>
     override fun getItemCount(): Int = suggestions.size
 
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
-        holder.bindSuggestions(suggestions, position, listener)
+        holder.bindSuggestions(suggestions, position, listener, picClicked)
     }
 
     class CardViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
-        fun bindSuggestions(suggestions: Map<String, List<UserSuggested>>, position: Int, listener: SuggestionItemListener) {
+        fun bindSuggestions(
+            suggestions: Map<String, List<UserSuggested>>,
+            position: Int,
+            listener: SuggestionItemListener,
+            picClicked: SuggestionItemPicListener
+        ) {
             itemView.suggestion_title_category.text = suggestions.keys.elementAt(position)
 
             itemView.suggestion_rv.apply {
                 layoutManager = LinearLayoutManager(itemView.context)
                 isNestedScrollingEnabled = false
-                adapter = SuggestionItemAdapter(suggestions.values.elementAt(position), listener)
+                adapter = SuggestionItemAdapter(suggestions.values.elementAt(position), listener, picClicked)
             }
         }
 
@@ -43,7 +54,11 @@ class SuggestionAdapter(private var suggestions: Map<String, List<UserSuggested>
 
 }
 
-class SuggestionItemAdapter(private val suggestions: List<UserSuggested>, private val listener: SuggestionAdapter.SuggestionItemListener):
+class SuggestionItemAdapter(
+    private val suggestions: List<UserSuggested>,
+    private val listener: SuggestionAdapter.SuggestionItemListener,
+    private val picClicked: SuggestionAdapter.SuggestionItemPicListener
+):
     RecyclerView.Adapter<SuggestionItemAdapter.ItemViewHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SuggestionItemAdapter.ItemViewHolder =
@@ -52,18 +67,25 @@ class SuggestionItemAdapter(private val suggestions: List<UserSuggested>, privat
     override fun getItemCount(): Int = suggestions.size
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        holder.bindItemSuggestion(suggestions, position, listener)
+        holder.bindItemSuggestion(suggestions, position, listener, picClicked)
     }
 
     class ItemViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
-        fun bindItemSuggestion(suggestions: List<UserSuggested>, position: Int, listener: SuggestionAdapter.SuggestionItemListener) {
+        fun bindItemSuggestion(
+            suggestions: List<UserSuggested>,
+            position: Int,
+            listener: SuggestionAdapter.SuggestionItemListener,
+            picClicked: SuggestionAdapter.SuggestionItemPicListener
+        ) {
             itemView.suggestion_name_user.text = suggestions[position].name
             Glide
                 .with(itemView)
                 .load(suggestions[position].picUrl)
                 .circleCrop()
                 .into(itemView.suggestion_imageview)
+
+            itemView.suggestion_imageview.setOnClickListener { picClicked.onPicClicked() }
 
             itemView.suggestion_follow_btn.setOnClickListener {
                 listener.onItemSelected()

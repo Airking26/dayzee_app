@@ -12,5 +12,10 @@ data class ProfilModifyModel(
     var gender: Int?,
     var statusAccount: Int?,
     var formatTimenote: Int?,
-    var link: String?,
+    var stateSwitch: Int?,
+    var youtubeLink: String?,
+    var instaLink: String?,
+    var whatsappLink: String?,
+    var linkedinLink: String?,
+    var facebookLink: String?,
     var description: String?) : Parcelable

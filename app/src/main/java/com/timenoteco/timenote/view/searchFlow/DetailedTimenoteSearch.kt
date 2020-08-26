@@ -1,4 +1,4 @@
-package com.timenoteco.timenote.view.homeFlow
+package com.timenoteco.timenote.view.searchFlow
 
 import android.content.Context
 import android.content.Context.INPUT_METHOD_SERVICE
@@ -31,7 +31,7 @@ import com.timenoteco.timenote.viewModel.TimenoteViewModel
 import kotlinx.android.synthetic.main.fragment_detailed_fragment.*
 
 
-class DetailedTimenote : Fragment(), View.OnClickListener {
+class DetailedTimenoteSearch : Fragment(), View.OnClickListener {
 
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
     private lateinit var prefs: SharedPreferences

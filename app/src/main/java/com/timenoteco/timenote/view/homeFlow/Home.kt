@@ -389,7 +389,7 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
     }
 
     override fun onPictureClicked() {
-        findNavController().navigate(HomeDirections.actionHomeToProfile(true))
+        findNavController().navigate(HomeDirections.actionHomeToProfile(true, 1))
     }
 
     override fun onHideToOthersClicked() {
@@ -440,7 +440,7 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
         findNavController().navigate(HomeDirections.actionHomeToCreateTimenote(true, "",
             TimenoteBody("", CreatedBy("", "", "", "", "", "", ""),
                 "", "", listOf(), "", Location(0.0, 0.0, Address("", "", "", "")),
-                Category("",""), "", "", listOf(), "", 0, "")))
+                Category("",""), "", "", listOf(), "", 0, ""), 1))
     }
 
     override fun onAlarmClicked() {
@@ -460,7 +460,7 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
         findNavController().navigate(HomeDirections.actionHomeToCreateTimenote(true, "",
             TimenoteBody("", CreatedBy("", "", "", "", "", "", ""),
                 "", "", listOf(), "", Location(0.0, 0.0, Address("", "", "", "")),
-                Category("",""), "", "", listOf(), "", 0, "")))    }
+                Category("",""), "", "", listOf(), "", 0, ""), 1))    }
 
     override fun onAddressClicked() {
         findNavController().navigate(HomeDirections.actionHomeToTimenoteAddress())

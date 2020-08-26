@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.view.searchFlow
 
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,7 +17,8 @@ import com.timenoteco.timenote.model.UserSuggested
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import kotlinx.android.synthetic.main.fragment_search_top.*
 
-class SearchTop: Fragment(), SuggestionAdapter.SuggestionItemListener {
+class SearchTop: Fragment(), SuggestionAdapter.SuggestionItemListener,
+    SuggestionAdapter.SuggestionItemPicListener {
 
 
 
@@ -52,7 +54,7 @@ class SearchTop: Fragment(), SuggestionAdapter.SuggestionItemListener {
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 "Techno",
                 false)))
-        topAdapter = SuggestionAdapter(tops, this)
+        topAdapter = SuggestionAdapter(tops, this, this)
         search_top_rv.apply {
             layoutManager = LinearLayoutManager(view.context)
             adapter = topAdapter
@@ -60,6 +62,9 @@ class SearchTop: Fragment(), SuggestionAdapter.SuggestionItemListener {
     }
 
     override fun onItemSelected() {
-        loginViewModel.markAsUnauthenticated()
+    }
+
+    override fun onPicClicked() {
+        findNavController().navigate(SearchDirections.actionSearchToProfileSearch())
     }
 }

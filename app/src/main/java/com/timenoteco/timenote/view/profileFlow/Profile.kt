@@ -20,21 +20,29 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ProfilePastFuturePagerAdapter
 import com.timenoteco.timenote.common.BaseThroughFragment
+import com.timenoteco.timenote.common.stringLiveData
 import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
+import com.timenoteco.timenote.model.ProfilModifyModel
 import com.timenoteco.timenote.model.StatusTimenote
 import com.timenoteco.timenote.model.Timenote
+import com.timenoteco.timenote.view.profileFlow.ProfileDirections
 import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
+import com.timenoteco.timenote.webService.ProfileModifyData
 import kotlinx.android.synthetic.main.fragment_profile.*
+import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
 
 class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarListener {
 
     private var profilePastFuturePagerAdapter: ProfilePastFuturePagerAdapter? = null
+    private lateinit var profileModifyData: ProfileModifyData
     private val loginViewModel : LoginViewModel by activityViewModels()
     private val followViewModel: FollowViewModel by activityViewModels()
     private var showFilterBar: Boolean = false
@@ -74,6 +82,20 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
 
         profile_day_name_calendar.text = simpleDateFormatDayName.format(System.currentTimeMillis())
         profile_day_number_calendar.text = simpleDateFormatDayNumber.format(System.currentTimeMillis())
+
+        profileModifyData = ProfileModifyData(requireContext())
+        prefs.stringLiveData("profile", Gson().toJson(profileModifyData.loadProfileModifyModel())).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            val type: Type = object : TypeToken<ProfilModifyModel?>() {}.type
+            val profilModifyModel : ProfilModifyModel? = Gson().fromJson<ProfilModifyModel>(prefs.getString("profile", ""), type)
+            when(profilModifyModel?.stateSwitch){
+                0 -> if(!profilModifyModel.youtubeLink.isNullOrBlank()) profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_youtube_colored))
+                1 -> if(!profilModifyModel.facebookLink.isNullOrBlank()) profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_facebook_colored))
+                2 -> if(!profilModifyModel.instaLink.isNullOrBlank()) profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_insta_colored))
+                3 -> if(!profilModifyModel.whatsappLink.isNullOrBlank()) profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_whatsapp))
+                4 -> if(!profilModifyModel.linkedinLink.isNullOrBlank()) profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_linkedin_colored))
+                else profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_icons8_contacts))
+            }
+        })
 
         timenotes = mutableListOf(
             Timenote(
@@ -333,7 +355,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
             .apply(RequestOptions.circleCropTransform())
             .into(profile_pic_imageview)
 
-        profilePastFuturePagerAdapter = ProfilePastFuturePagerAdapter(childFragmentManager, lifecycle, showFilterBar, this)
+        profilePastFuturePagerAdapter = ProfilePastFuturePagerAdapter(childFragmentManager, lifecycle, showFilterBar, this, args.from)
         profile_vp?.apply {
             adapter = profilePastFuturePagerAdapter
             isUserInputEnabled = false

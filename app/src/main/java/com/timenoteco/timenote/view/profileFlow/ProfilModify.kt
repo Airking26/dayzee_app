@@ -11,19 +11,18 @@ import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Switch
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
-import com.afollestad.materialdialogs.checkbox.getCheckBoxPrompt
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
 import com.afollestad.materialdialogs.datetime.datePicker
@@ -39,6 +38,7 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.androidView.input
 import com.timenoteco.timenote.common.stringLiveData
 import com.timenoteco.timenote.model.ProfilModifyModel
+import com.timenoteco.timenote.viewModel.ProfileModifyViewModel
 import com.timenoteco.timenote.webService.ProfileModifyData
 import kotlinx.android.synthetic.main.cropview_circle.view.*
 import kotlinx.android.synthetic.main.fragment_profil_modify.*
@@ -55,9 +55,20 @@ class ProfilModify: Fragment(), View.OnClickListener{
     private lateinit var profileModifyData: ProfileModifyData
     private val DATE_FORMAT = "dd MMMM yyyy"
     private var dateFormat : SimpleDateFormat
+    val TOKEN: String = "TOKEN"
+    private var tokenId: String? = null
+    private val profileModVieModel: ProfileModifyViewModel by activityViewModels()
 
     init {
         dateFormat = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        tokenId = prefs.getString(TOKEN, null)
+        if(prefs.getString("pmtc", "") == "")
+        prefs.edit().putString("pmtc", "").apply()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
@@ -66,7 +77,6 @@ class ProfilModify: Fragment(), View.OnClickListener{
     @SuppressLint("RestrictedApi")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         profileModifyPb = profile_modify_pb
         profileModifyPicIv = profile_modify_pic_imageview
         Glide
@@ -80,23 +90,23 @@ class ProfilModify: Fragment(), View.OnClickListener{
         setProfilModifyViewModel()
 
         profile_modify_youtube_switch.setOnCheckedChangeListener { _, isChecked ->
-            if(isChecked) setStateSwitch(profile_modify_youtube_switch, profile_modify_facebook_switch, profile_modify_insta_switch, profile_modify_whatsapp_switch, profile_modify_linkedin_switch)
+            if(isChecked) profileModifyData.setStateSwitch(0)
         }
 
         profile_modify_facebook_switch.setOnCheckedChangeListener{ _, isChecked ->
-            if(isChecked)setStateSwitch( profile_modify_facebook_switch, profile_modify_youtube_switch, profile_modify_insta_switch, profile_modify_whatsapp_switch, profile_modify_linkedin_switch)
+            if(isChecked) profileModifyData.setStateSwitch(1)
         }
 
         profile_modify_insta_switch.setOnCheckedChangeListener{ _, isChecked ->
-            if(isChecked)setStateSwitch( profile_modify_insta_switch, profile_modify_facebook_switch, profile_modify_youtube_switch, profile_modify_whatsapp_switch, profile_modify_linkedin_switch)
+            if(isChecked) profileModifyData.setStateSwitch(2)
         }
 
         profile_modify_whatsapp_switch.setOnCheckedChangeListener{ _, isChecked ->
-            if(isChecked)setStateSwitch( profile_modify_whatsapp_switch, profile_modify_insta_switch, profile_modify_facebook_switch, profile_modify_youtube_switch, profile_modify_linkedin_switch)
+            if(isChecked) profileModifyData.setStateSwitch(3)
         }
 
         profile_modify_linkedin_switch.setOnCheckedChangeListener{ _, isChecked ->
-            if(isChecked)setStateSwitch(profile_modify_linkedin_switch, profile_modify_whatsapp_switch, profile_modify_insta_switch, profile_modify_facebook_switch, profile_modify_youtube_switch)
+            if(isChecked) profileModifyData.setStateSwitch(4)
         }
     }
 
@@ -131,12 +141,50 @@ class ProfilModify: Fragment(), View.OnClickListener{
                 null -> profile_modify_format_timenote.hint =
                     getString(R.string.timenote_date_format)
             }
-            if (profilModifyModel?.link.isNullOrBlank()) profile_modify_youtube_channel.hint =
-                getString(R.string.youtube_channel) else profile_modify_youtube_channel.text =
-                profilModifyModel?.link
+            if (profilModifyModel?.youtubeLink.isNullOrBlank()) profile_modify_youtube_channel.hint =
+                getString(R.string.youtube_channel) else profile_modify_youtube_channel.text = profilModifyModel?.youtubeLink
+
+            if(profilModifyModel?.facebookLink.isNullOrBlank()) profile_modify_facebook.hint = getString(R.string.facebook)
+            else profile_modify_facebook.text = profilModifyModel?.facebookLink
+
+            if(profilModifyModel?.whatsappLink.isNullOrBlank()) profile_modify_whatsapp.hint = getString(R.string.whatsapp)
+            else profile_modify_whatsapp.text = profilModifyModel?.whatsappLink
+
+            if(profilModifyModel?.instaLink.isNullOrBlank()) profile_modify_instagram.hint = getString(R.string.instagram)
+            else profile_modify_instagram.text = profilModifyModel?.instaLink
+
+            if(profilModifyModel?.linkedinLink.isNullOrBlank()) profile_modify_linkedin.hint = getString(R.string.linkedin)
+            else profile_modify_linkedin.text = profilModifyModel?.linkedinLink
+
+            when(profilModifyModel?.stateSwitch){
+                0 -> setStateSwitch(profile_modify_youtube_switch, profile_modify_facebook_switch, profile_modify_insta_switch, profile_modify_whatsapp_switch, profile_modify_linkedin_switch)
+                1 -> setStateSwitch( profile_modify_facebook_switch, profile_modify_youtube_switch, profile_modify_insta_switch, profile_modify_whatsapp_switch, profile_modify_linkedin_switch)
+                2 -> setStateSwitch( profile_modify_insta_switch, profile_modify_facebook_switch, profile_modify_youtube_switch, profile_modify_whatsapp_switch, profile_modify_linkedin_switch)
+                3 -> setStateSwitch( profile_modify_whatsapp_switch, profile_modify_insta_switch, profile_modify_facebook_switch, profile_modify_youtube_switch, profile_modify_linkedin_switch)
+                4 -> setStateSwitch(profile_modify_linkedin_switch, profile_modify_whatsapp_switch, profile_modify_insta_switch, profile_modify_facebook_switch, profile_modify_youtube_switch)
+                else -> {
+                    profile_modify_youtube_switch.isChecked = false
+                    profile_modify_facebook_switch.isChecked = false
+                    profile_modify_insta_switch.isChecked = false
+                    profile_modify_whatsapp_switch.isChecked = false
+                    profile_modify_linkedin_switch.isChecked = false
+                }
+            }
+
+
             if (profilModifyModel?.description.isNullOrBlank()) profile_modify_description.hint =
                 getString(R.string.describe_yourself) else profile_modify_description.text =
                 profilModifyModel?.description
+
+            val o = Gson().toJson(profileModifyData.loadProfileModifyModel())
+
+            if(prefs.getString("pmtc", "") != Gson().toJson(profileModifyData.loadProfileModifyModel())){
+                profileModVieModel.modifyProfile(tokenId!!, profileModifyData.loadProfileModifyModel()!!).observe(viewLifecycleOwner, Observer {
+
+                })
+            }
+
+            prefs.edit().putString("pmtc", Gson().toJson(profileModifyData.loadProfileModifyModel())).apply()
         })
     }
 
@@ -158,6 +206,10 @@ class ProfilModify: Fragment(), View.OnClickListener{
         profile_modify_name.setOnClickListener(this)
         profile_modify_from.setOnClickListener(this)
         profile_modify_youtube_channel.setOnClickListener(this)
+        profile_modify_facebook.setOnClickListener(this)
+        profile_modify_instagram.setOnClickListener(this)
+        profile_modify_whatsapp.setOnClickListener(this)
+        profile_modify_linkedin.setOnClickListener(this)
         profile_modify_description.setOnClickListener(this)
         profile_modify_done_btn.setOnClickListener(this)
         profile_modify_pic_imageview.setOnClickListener(this)
@@ -220,45 +272,45 @@ class ProfilModify: Fragment(), View.OnClickListener{
             }
             profile_modify_youtube_channel -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.youtube_channel)
-                input(inputType = InputType.TYPE_CLASS_TEXT, prefill = profileModifyData.loadProfileModifyModel()?.link
+                input(inputType = InputType.TYPE_CLASS_TEXT, prefill = profileModifyData.loadProfileModifyModel()?.youtubeLink
                 ){ _, text ->
-                    profileModifyData.setLink(text.toString())
+                    profileModifyData.setYoutubeLink(text.toString())
                 }
                 positiveButton(R.string.done)
                 lifecycleOwner(this@ProfilModify)
             }
             profile_modify_facebook -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.facebook)
-            input(inputType = InputType.TYPE_CLASS_TEXT, prefill = profileModifyData.loadProfileModifyModel()?.link
+            input(inputType = InputType.TYPE_CLASS_TEXT, prefill = profileModifyData.loadProfileModifyModel()?.facebookLink
             ){ _, text ->
-                profileModifyData.setLink(text.toString())
+                profileModifyData.setFacebookLink(text.toString())
             }
                     positiveButton(R.string.done)
                     lifecycleOwner(this@ProfilModify)
             }
             profile_modify_instagram -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.instagram)
-            input(inputType = InputType.TYPE_CLASS_TEXT, prefill = profileModifyData.loadProfileModifyModel()?.link
+            input(inputType = InputType.TYPE_CLASS_TEXT, prefill = profileModifyData.loadProfileModifyModel()?.instaLink
             ){ _, text ->
-                profileModifyData.setLink(text.toString())
+                profileModifyData.setInstaLink(text.toString())
             }
                     positiveButton(R.string.done)
                     lifecycleOwner(this@ProfilModify)
         }
             profile_modify_whatsapp -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.whatsapp)
-            input(inputType = InputType.TYPE_CLASS_TEXT, prefill = profileModifyData.loadProfileModifyModel()?.link
+            input(inputType = InputType.TYPE_CLASS_TEXT, prefill = profileModifyData.loadProfileModifyModel()?.whatsappLink
             ){ _, text ->
-                profileModifyData.setLink(text.toString())
+                profileModifyData.setWhatsappLink(text.toString())
             }
                     positiveButton(R.string.done)
                     lifecycleOwner(this@ProfilModify)
         }
             profile_modify_linkedin -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.linkedin)
-            input(inputType = InputType.TYPE_CLASS_TEXT, prefill = profileModifyData.loadProfileModifyModel()?.link
+            input(inputType = InputType.TYPE_CLASS_TEXT, prefill = profileModifyData.loadProfileModifyModel()?.linkedinLink
             ){ _, text ->
-                profileModifyData.setLink(text.toString())
+                profileModifyData.setLinkedinLink(text.toString())
             }
                     positiveButton(R.string.done)
                     lifecycleOwner(this@ProfilModify)

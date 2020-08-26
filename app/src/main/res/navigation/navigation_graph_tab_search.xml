@@ -65,8 +65,7 @@
     <fragment
         android:id="@+id/search"
         android:name="com.timenoteco.timenote.view.searchFlow.Search"
-        android:label="fragment_search"
-        tools:layout="@layout/fragment_search" >
+        android:label="Search">
         <action
             android:id="@+id/action_search_to_searchTop"
             app:destination="@id/searchTop" />
@@ -76,6 +75,15 @@
         <action
             android:id="@+id/action_search_to_navigation"
             app:destination="@id/navigation" />
+        <action
+            android:id="@+id/action_search_to_searchExploreClicked"
+            app:destination="@id/searchExploreClicked" />
+        <action
+            android:id="@+id/action_search_to_detailedTimenote"
+            app:destination="@id/detailedTimenote" />
+        <action
+            android:id="@+id/action_search_to_profileSearch"
+            app:destination="@id/profileSearch" />
     </fragment>
     <fragment
         android:id="@+id/searchExplore"
@@ -88,9 +96,69 @@
     <fragment
         android:id="@+id/searchTop"
         android:name="com.timenoteco.timenote.view.searchFlow.SearchTop"
-        android:label="SearchTop" >
+        android:label="SearchTop" />
+    <fragment
+        android:id="@+id/detailedTimenote"
+        android:name="com.timenoteco.timenote.view.homeFlow.DetailedTimenote"
+        android:label="fragment_detailed_fragment"
+        tools:layout="@layout/fragment_detailed_fragment" />
+    <fragment
+        android:id="@+id/profileSearch"
+        android:name="com.timenoteco.timenote.view.searchFlow.ProfileSearch"
+        android:label="ProfileSearch" >
         <action
-            android:id="@+id/action_searchTop_to_navigation"
-            app:destination="@id/navigation" />
-    </fragment><action android:id="@+id/action_global_searchExploreClicked" app:destination="@id/searchExploreClicked"/>
+            android:id="@+id/action_profileSearch_to_followPageSearch"
+            app:destination="@id/followPageSearch" />
+        <action
+            android:id="@+id/action_profileSearch_to_createTimenoteSearch"
+            app:destination="@id/createTimenoteSearch" />
+        <action
+            android:id="@+id/action_profileSearch_to_detailedTimenoteSearch"
+            app:destination="@id/detailedTimenoteSearch" />
+        <action
+            android:id="@+id/action_profileSearch_to_profileCalendarSearch"
+            app:destination="@id/profileCalendarSearch" />
+    </fragment>
+    <fragment
+        android:id="@+id/followPageSearch"
+        android:name="com.timenoteco.timenote.view.searchFlow.FollowPageSearch"
+        android:label="FollowPageSearch" />
+    <fragment
+        android:id="@+id/createTimenoteSearch"
+        android:name="com.timenoteco.timenote.view.searchFlow.CreateTimenoteSearch"
+        android:label="CreateTimenoteSearch" >
+        <action
+            android:id="@+id/action_createTimenoteSearch_to_previewTimenoteCreatedSearch"
+            app:destination="@id/previewTimenoteCreatedSearch" />
+        <argument
+            android:name="modify"
+            app:argType="boolean" />
+        <argument
+            android:name="id"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="timenoteBody"
+            app:argType="com.timenoteco.timenote.model.TimenoteBody"
+            app:nullable="true" />
+        <argument
+            android:name="from"
+            app:argType="integer"/>
+    </fragment>
+    <fragment
+        android:id="@+id/previewTimenoteCreatedSearch"
+        android:name="com.timenoteco.timenote.view.searchFlow.PreviewTimenoteCreatedSearch"
+        android:label="PreviewTimenoteCreatedSearch">
+        <argument
+            android:name="from"
+            app:argType="integer" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailedTimenoteSearch"
+        android:name="com.timenoteco.timenote.view.searchFlow.DetailedTimenoteSearch"
+        android:label="DetailedTimenoteSearch" />
+    <fragment
+        android:id="@+id/profileCalendarSearch"
+        android:name="com.timenoteco.timenote.view.searchFlow.ProfileCalendarSearch"
+        android:label="ProfileCalendarSearch" />
 </navigation>

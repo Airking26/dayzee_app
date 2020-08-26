@@ -50,13 +50,10 @@ class Search : BaseThroughFragment() {
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-
-
         return getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_search)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
         viewTopExplorePagerAdapter = SearchViewTopExplorePagerAdapter(childFragmentManager, lifecycle)
         viewPeopleTagPagerAdapter = SearchViewPeopleTagPagerAdapter(childFragmentManager, lifecycle)
         search_viewpager.apply {

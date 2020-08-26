@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.SuggestionAdapter
@@ -12,7 +13,8 @@ import com.timenoteco.timenote.adapter.SuggestionItemAdapter
 import com.timenoteco.timenote.model.UserSuggested
 import kotlinx.android.synthetic.main.fragment_search_explore_clicked.*
 
-class SearchExploreClicked: Fragment(), SuggestionAdapter.SuggestionItemListener {
+class SearchExploreClicked: Fragment(), SuggestionAdapter.SuggestionItemListener,
+    SuggestionAdapter.SuggestionItemPicListener {
 
     private var suggestions: List<UserSuggested> = listOf()
     private lateinit var suggestionItemAdapter: SuggestionItemAdapter
@@ -35,7 +37,7 @@ class SearchExploreClicked: Fragment(), SuggestionAdapter.SuggestionItemListener
                 "Ligue 1",
                 false))
 
-        suggestionItemAdapter = SuggestionItemAdapter(suggestions, this)
+        suggestionItemAdapter = SuggestionItemAdapter(suggestions, this, this)
         search_explore_clicked_rv.apply {
             layoutManager = LinearLayoutManager(view.context)
             adapter = suggestionItemAdapter
@@ -44,5 +46,8 @@ class SearchExploreClicked: Fragment(), SuggestionAdapter.SuggestionItemListener
 
     override fun onItemSelected() {
 
+    }
+
+    override fun onPicClicked() {
     }
 }

@@ -16,6 +16,7 @@ class ProfileModifyData(context: Context) {
     private var profilModifyModel: ProfilModifyModel? = Gson().fromJson<ProfilModifyModel>(
         prefs.getString("profile",
         Gson().toJson(ProfilModifyModel(null, null, null,
+            null, null, null, null, null,
             null, null, null, null, null, null))), type)
 
     fun loadProfileModifyModel(): ProfilModifyModel? {
@@ -61,13 +62,38 @@ class ProfileModifyData(context: Context) {
         notifyProfileDataChanged()
     }
 
-    fun setLink(link: String) {
-        profilModifyModel?.link = link
+    fun setYoutubeLink(link: String) {
+        profilModifyModel?.youtubeLink = link
+        notifyProfileDataChanged()
+    }
+
+    fun setFacebookLink(link: String){
+        profilModifyModel?.facebookLink = link
+        notifyProfileDataChanged()
+    }
+
+    fun setInstaLink(link: String){
+        profilModifyModel?.instaLink = link
+        profilModifyModel
+    }
+
+    fun setWhatsappLink(link: String){
+        profilModifyModel?.whatsappLink = link
+        notifyProfileDataChanged()
+    }
+
+    fun setLinkedinLink(link: String){
+        profilModifyModel?.linkedinLink = link
         notifyProfileDataChanged()
     }
 
     fun setDescription(description: String) {
         profilModifyModel?.description = description
+        notifyProfileDataChanged()
+    }
+
+    fun setStateSwitch(state: Int){
+        profilModifyModel?.stateSwitch = state
         notifyProfileDataChanged()
     }
 

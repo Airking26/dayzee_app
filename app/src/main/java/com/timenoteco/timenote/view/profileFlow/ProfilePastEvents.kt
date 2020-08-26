@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ItemProfileEventAdapter
+import com.timenoteco.timenote.listeners.ItemProfileCardListener
 import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.Timenote
@@ -16,7 +17,8 @@ import kotlinx.android.synthetic.main.fragment_profile_future_events.*
 
 private const val ARG_PARAM1 = "showHideFilterBar"
 
-class ProfilePastEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarListener {
+class ProfilePastEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarListener,
+    ItemProfileCardListener {
 
     private var showHideFilterBar: Boolean? = null
     private var eventAdapter: ItemProfileEventAdapter? = null
@@ -280,7 +282,7 @@ class ProfilePastEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBar
                 1
             )
         )
-        eventAdapter = ItemProfileEventAdapter(timenotes,this, this, showHideFilterBar!!)
+        eventAdapter = ItemProfileEventAdapter(timenotes,this, this, this, showHideFilterBar!!)
 
         profile_rv.apply {
             layoutManager = LinearLayoutManager(view.context)
@@ -353,6 +355,10 @@ class ProfilePastEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBar
                     setListener(fragment as OnRemoveFilterBarListener)
                 }
             }
+
+    }
+
+    override fun onCardClicked() {
 
     }
 

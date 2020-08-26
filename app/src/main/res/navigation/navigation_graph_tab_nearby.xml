@@ -69,9 +69,6 @@
             android:id="@+id/action_nearBy_to_nearbyFilters"
             app:destination="@id/nearbyFilters" />
         <action
-            android:id="@+id/action_nearBy_to_comments"
-            app:destination="@id/comments" />
-        <action
             android:id="@+id/action_nearBy_to_detailedTimenote"
             app:destination="@id/detailedTimenote" />
         <action
@@ -101,9 +98,6 @@
         android:name="com.timenoteco.timenote.view.homeFlow.DetailedTimenote"
         android:label="fragment_detailed_fragment"
         tools:layout="@layout/fragment_detailed_fragment" >
-        <action
-            android:id="@+id/action_detailedTimenote_to_comments"
-            app:destination="@id/comments" />
     </fragment>
     <fragment
         android:id="@+id/profile"
@@ -112,6 +106,21 @@
         <argument
             android:name="whereFrom"
             app:argType="boolean" />
+        <action
+            android:id="@+id/action_profile_to_detailedTimenote"
+            app:destination="@id/detailedTimenote" />
+        <action
+            android:id="@+id/action_profile_to_createTimenote"
+            app:destination="@id/createTimenote" />
+        <action
+            android:id="@+id/action_profile_to_profileCalendar"
+            app:destination="@id/profileCalendar" />
+        <action
+            android:id="@+id/action_profile_to_followPage"
+            app:destination="@id/followPage" />
+        <argument
+            android:name="from"
+            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/timenoteAddress"
@@ -124,7 +133,7 @@
         android:label="fragment_create_timenote"
         tools:layout="@layout/fragment_create_timenote" >
         <action
-            android:id="@+id/action_createTimenote_to_previewTimenoteCreated2"
+            android:id="@+id/action_createTimenote_to_previewTimenoteCreated"
             app:destination="@id/previewTimenoteCreated" />
         <argument
             android:name="modify"
@@ -137,10 +146,26 @@
             android:name="timenoteBody"
             app:argType="com.timenoteco.timenote.model.TimenoteBody"
             app:nullable="true"/>
+        <argument
+            android:name="from"
+            app:argType="integer"/>
     </fragment>
     <fragment
         android:id="@+id/previewTimenoteCreated"
         android:name="com.timenoteco.timenote.view.createTimenoteFlow.PreviewTimenoteCreated"
         android:label="fragment_preview_timenote_created"
-        tools:layout="@layout/fragment_preview_timenote_created" />
+        tools:layout="@layout/fragment_preview_timenote_created" >
+        <argument
+            android:name="from"
+            app:argType="integer" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileCalendar"
+        android:name="com.timenoteco.timenote.view.profileFlow.ProfileCalendar"
+        android:label="ProfileCalendar" />
+    <fragment
+        android:id="@+id/followPage"
+        android:name="com.timenoteco.timenote.view.profileFlow.FollowPage"
+        android:label="fragment_follow_page"
+        tools:layout="@layout/fragment_follow_page" />
 </navigation>

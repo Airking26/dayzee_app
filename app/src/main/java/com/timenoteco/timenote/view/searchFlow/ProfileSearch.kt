@@ -1,173 +1,93 @@
-package com.timenoteco.timenote.view.nearByFlow
+package com.timenoteco.timenote.view.searchFlow
 
-import android.Manifest
-import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.content.Context
-import android.content.Context.LOCATION_SERVICE
-import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
-import android.location.*
-import android.location.Address
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
-import android.view.*
-import android.widget.TextView
-import androidx.core.app.ActivityCompat
-import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
-import com.afollestad.materialdialogs.callbacks.onDismiss
-import com.afollestad.materialdialogs.customview.customView
-import com.afollestad.materialdialogs.customview.getCustomView
-import com.afollestad.materialdialogs.datetime.datePicker
-import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
-import com.google.android.gms.maps.*
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest
-import com.google.android.libraries.places.api.net.PlacesClient
-import com.google.android.libraries.places.widget.Autocomplete
-import com.google.android.libraries.places.widget.AutocompleteActivity
-import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
+import com.afollestad.materialdialogs.list.listItems
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
-import com.timenoteco.timenote.adapter.ItemTimenoteAdapter
-import com.timenoteco.timenote.adapter.TimenoteComparator
-import com.timenoteco.timenote.adapter.TimenotePagingAdapter
-import com.timenoteco.timenote.adapter.UsersPagingAdapter
+import com.timenoteco.timenote.adapter.ProfilePastFuturePagerAdapter
 import com.timenoteco.timenote.common.BaseThroughFragment
-import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.stringLiveData
-import com.timenoteco.timenote.listeners.PlacePickerListener
-import com.timenoteco.timenote.listeners.ShowBarListener
-import com.timenoteco.timenote.listeners.TimenoteOptionsListener
-import com.timenoteco.timenote.model.*
-import com.timenoteco.timenote.model.Location
-import com.timenoteco.timenote.view.profileFlow.ProfileDirections
+import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
+import com.timenoteco.timenote.model.ProfilModifyModel
+import com.timenoteco.timenote.model.StatusTimenote
+import com.timenoteco.timenote.model.Timenote
+import com.timenoteco.timenote.view.profileFlow.ProfileDirections.actionProfileToProfilModify
+import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
-import com.timenoteco.timenote.viewModel.NearbyViewModel
-import com.timenoteco.timenote.viewModel.ProfileViewModel
-import com.timenoteco.timenote.viewModel.TimenoteViewModel
-import com.timenoteco.timenote.webService.NearbyFilterData
-import kotlinx.android.synthetic.main.fragment_near_by.*
-import kotlinx.android.synthetic.main.users_participating.view.*
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
-import okhttp3.internal.Util
+import com.timenoteco.timenote.webService.ProfileModifyData
+import kotlinx.android.synthetic.main.fragment_profile.*
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
 
-class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListener{
+class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarListener {
 
-    private lateinit var makeBarVisibleListener: ShowBarListener
-    private val timenoteViewModel: TimenoteViewModel by activityViewModels()
-    private val profileViewModel: ProfileViewModel by activityViewModels()
-    private val AUTOCOMPLETE_REQUEST_CODE: Int = 12
-    private lateinit var locationManager: LocationManager
-    private lateinit var nearbyDateTv: TextView
+    private var profilePastFuturePagerAdapter: ProfilePastFuturePagerAdapter? = null
+    private lateinit var profileModifyData: ProfileModifyData
     private val loginViewModel : LoginViewModel by activityViewModels()
-    private var timenotes: List<Timenote> = mutableListOf()
-    private val DATE_FORMAT = "EEE, d MMM yyyy"
-    private lateinit var dateFormat : SimpleDateFormat
-    private lateinit var timenoteAdapter: ItemTimenoteAdapter
-    private var googleMap: GoogleMap? = null
-    private var placesList: List<Place.Field> = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
-    private lateinit var placesClient: PlacesClient
-    private var mapFragment : SupportMapFragment? = null
-    private var firstTime: Boolean = true
-    private lateinit var timenotePagingAdapter: TimenotePagingAdapter
-    private lateinit var prefs : SharedPreferences
-    private lateinit var nearbyFilterData: NearbyFilterData
-    private val nearbyViewModel: NearbyViewModel by activityViewModels()
+    private val followViewModel: FollowViewModel by activityViewModels()
+    private var showFilterBar: Boolean = false
+    private var timenotes: MutableList<Timenote> = mutableListOf()
+    private lateinit var prefs: SharedPreferences
     val TOKEN: String = "TOKEN"
-    private var tokenId: String? = null
-    private var nearbyToCompare: String = ""
+    private var tokenId : String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         tokenId = prefs.getString(TOKEN, null)
-        loginViewModel.getAuthenticationState().observe(requireActivity(), androidx.lifecycle.Observer {
-            when (it) {
-                //LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(NearByDirections.actionNearByToNavigation())
-                LoginViewModel.AuthenticationState.AUTHENTICATED -> findNavController().popBackStack(R.id.nearBy, false)
-                LoginViewModel.AuthenticationState.GUEST -> findNavController().popBackStack(R.id.nearBy, false)
-            }
-        })
-        Places.initialize(requireContext(), "AIzaSyBhM9HQo1fzDlwkIVqobfmrRmEMCWTU1CA")
-        placesClient = Places.createClient(requireContext())
-
-
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        makeBarVisibleListener.onBarAskedToShow()
-         return inflater.inflate(R.layout.fragment_near_by, container, false)}
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        makeBarVisibleListener = context as ShowBarListener
     }
 
     override fun onResume() {
         super.onResume()
-        Utils().hideStatusBar(requireActivity())
+        when(loginViewModel.getAuthenticationState().value){
+            LoginViewModel.AuthenticationState.GUEST -> loginViewModel.markAsUnauthenticated()
+        }
     }
 
-    @SuppressLint("ClickableViewAccessibility")
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_profile)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Utils().hideStatusBar(requireActivity())
+        val simpleDateFormatDayName= SimpleDateFormat("EEE.", Locale.getDefault())
+        val simpleDateFormatDayNumber = SimpleDateFormat("dd", Locale.getDefault())
 
-        nearbyFilterData = NearbyFilterData(requireContext())
-        dateFormat = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
-        nearbyDateTv = nearby_time
-        nearby_place.setOnClickListener(this)
-        nearby_time.setOnClickListener(this)
-        nearby_filter_btn.setOnClickListener(this)
+        profile_day_name_calendar.text = simpleDateFormatDayName.format(System.currentTimeMillis())
+        profile_day_number_calendar.text = simpleDateFormatDayNumber.format(System.currentTimeMillis())
 
-        if(mapFragment == null){
-            mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
-        }
-
-        mapFragment?.getMapAsync {
-            this.googleMap = it
-            if(firstTime) {
-                checkIfCanGetLocation()
+        profileModifyData = ProfileModifyData(requireContext())
+        prefs.stringLiveData("profile", Gson().toJson(profileModifyData.loadProfileModifyModel())).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            val type: Type = object : TypeToken<ProfilModifyModel?>() {}.type
+            val profilModifyModel : ProfilModifyModel? = Gson().fromJson<ProfilModifyModel>(prefs.getString("profile", ""), type)
+            when(profilModifyModel?.stateSwitch){
+                0 -> if(!profilModifyModel.youtubeLink.isNullOrBlank()) profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_youtube_colored))
+                1 -> if(!profilModifyModel.facebookLink.isNullOrBlank()) profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_facebook_colored))
+                2 -> if(!profilModifyModel.instaLink.isNullOrBlank()) profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_insta_colored))
+                3 -> if(!profilModifyModel.whatsappLink.isNullOrBlank()) profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_whatsapp))
+                4 -> if(!profilModifyModel.linkedinLink.isNullOrBlank()) profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_linkedin_colored))
+                else profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_icons8_contacts))
             }
-        }
-
-        transparent_image_map.setOnTouchListener { v, event ->
-            when(event.action){
-                MotionEvent.ACTION_MOVE -> {
-                    nearBy_coordinator_layout.requestDisallowInterceptTouchEvent(false)
-                    true
-                }
-                MotionEvent.ACTION_DOWN -> {
-                    nearBy_coordinator_layout.requestDisallowInterceptTouchEvent(true)
-                    false
-                }
-                MotionEvent.ACTION_UP -> {
-                    nearBy_coordinator_layout.requestDisallowInterceptTouchEvent(true)
-                    false
-                }
-                else -> false
-            }
-        }
+        })
 
         timenotes = mutableListOf(
             Timenote(
@@ -412,198 +332,106 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
                 1
             )
         )
-        timenoteAdapter = ItemTimenoteAdapter(timenotes, timenotes, false, null, this, this as Fragment)
 
-        nearby_rv.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = timenoteAdapter
+            profile_modify_btn.visibility = View.INVISIBLE
+            profile_follow_btn.visibility = View.VISIBLE
+            profile_settings_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_more_vert_black_profile_24dp))
+            profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_back_thin))
+            profile_follow_btn.setOnClickListener(this)
+
+        Glide
+            .with(this)
+            .load("https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792")
+            .apply(RequestOptions.circleCropTransform())
+            .into(profile_pic_imageview)
+
+        profilePastFuturePagerAdapter = ProfilePastFuturePagerAdapter(childFragmentManager, lifecycle, showFilterBar, this, 2)
+        profile_vp?.apply {
+            adapter = profilePastFuturePagerAdapter
+            isUserInputEnabled = false
+            isSaveEnabled = false
+            post {
+                profile_vp?.currentItem = 1
+            }
         }
 
-        prefs.stringLiveData("nearby", Gson().toJson(nearbyFilterData.loadNearbyFilter())).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            val nearbyModifyModel : NearbyFilterModel? = Gson().fromJson<NearbyFilterModel>(prefs.getString("nearby", null),
-                object : TypeToken<NearbyFilterModel?>() {}.type)
-            nearby_place.text = nearbyModifyModel?.where?.address?.address
-            nearby_time.text = nearbyModifyModel?.whenn
-            if(nearbyToCompare != Gson().toJson(nearbyFilterData.loadNearbyFilter())){
-               /* timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this)
-                nearby_rv.adapter = timenotePagingAdapter
-                lifecycleScope.launch {
-                    nearbyViewModel.getNearbyResults(tokenId, NearbyRequestBody(nearbyModifyModel?.where!!,
-                        nearbyModifyModel.distance!!, Categories(nearbyModifyModel.categories!![0].category,
-                            nearbyModifyModel.categories!![0].subcategory), nearbyModifyModel.whenn!!,
-                        0, nearbyModifyModel.from.toString())).collectLatest {
-                        timenotePagingAdapter.submitData(it)
-                    }
-                }*/
+        profile_tablayout.setSelectedTabIndicatorColor(resources.getColor(android.R.color.darker_gray))
+        profile_tablayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+                profilePastFuturePagerAdapter?.setShowFilterBar(true, tab?.position!!, true)
             }
-            nearbyToCompare = Gson().toJson(nearbyFilterData.loadNearbyFilter())
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+                profilePastFuturePagerAdapter?.setShowFilterBar(true, tab?.position!!, false)
+            }
+
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                when(tab?.position){
+                    0 -> {
+                        profile_tablayout.getTabAt(1)?.icon = resources.getDrawable(R.drawable.ic_futur_ok)
+                        profile_tablayout.getTabAt(0)?.icon = resources.getDrawable(R.drawable.ic_passe_plein_grad_ok)
+                    }
+                    1 -> {
+                        profile_tablayout.getTabAt(1)?.icon = resources.getDrawable(R.drawable.ic_futur_plein_grad)
+                        profile_tablayout.getTabAt(0)?.icon = resources.getDrawable(R.drawable.ic_passe_ok)
+                    }
+                }
+            }
+
         })
-     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
-            when (resultCode) {
-                Activity.RESULT_OK -> {
-                    data?.let {
-                        val place = Autocomplete.getPlaceFromIntent(data)
-                        Utils().hideStatusBar(requireActivity())
-                        this.googleMap?.addMarker(MarkerOptions().position(LatLng(place.latLng?.latitude!!, place.latLng?.longitude!!)))
-                        this.googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(place.latLng?.latitude!!, place.latLng?.longitude!!), 15F))
-                        nearbyViewModel.fetchLocation(place.id!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer { detailedPlace ->
-                            val location = Utils().setLocation(detailedPlace.body()!!)
-                            if(detailedPlace.isSuccessful) nearbyFilterData.setWhere(location)
-                        })
-                    }
-                }
-                AutocompleteActivity.RESULT_ERROR -> {
-                    data?.let {
-                        val status = Autocomplete.getStatusFromIntent(data)
-                        Log.i(ContentValues.TAG, status.statusMessage!!)
-                    }
-                }
-                Activity.RESULT_CANCELED -> {
-                    // The user canceled the operation.
-                }
-            }
-            return
-        }
-        super.onActivityResult(requestCode, resultCode, data)
-    }
+        TabLayoutMediator(profile_tablayout, profile_vp){ tab, position -> }.attach()
 
-    private fun checkIfCanGetLocation() {
-        locationManager = requireContext().getSystemService(LOCATION_SERVICE) as LocationManager
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            this.requestPermissions(
-                arrayOf(
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ), 3
-            )
-        } else {
-            getLocation()
-        }
-    }
 
-    @SuppressLint("MissingPermission")
-    private fun getLocation() {
-        placesClient.findCurrentPlace(FindCurrentPlaceRequest.newInstance(placesList)).addOnCompleteListener {
-            if(it.isSuccessful){
-                val place = it.result?.placeLikelihoods?.get(0)?.place
-                googleMap?.addMarker(MarkerOptions().position(LatLng(place?.latLng?.latitude!!, place.latLng?.longitude!!)))
-                googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(place?.latLng?.latitude!!, place.latLng?.longitude!!), 15F))
-                nearbyViewModel.fetchLocation(place?.id!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer { detailedPlace ->
-                    if(detailedPlace.isSuccessful) nearbyFilterData.setWhere(Utils().setLocation(detailedPlace.body()!!))
-                    //nearbyFilterData.setWhen(getString(R.string.today))
-                    firstTime = false
-                })
-            }
-        }
-    }
 
-    @SuppressLint("MissingPermission")
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if(requestCode == 3){
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                getLocation()
-            }
-        }
-    }
+        profile_modify_btn.setOnClickListener(this)
+        profile_calendar_btn.setOnClickListener(this)
+        profile_settings_btn.setOnClickListener(this)
+        profile_notif_btn.setOnClickListener(this)
+        profile_location.setOnClickListener(this)
+        profile_followers_label.setOnClickListener(this)
+        profile_nbr_followers.setOnClickListener(this)
+        profile_nbr_following.setOnClickListener(this)
+        profile_following_label.setOnClickListener(this)
+        profile_infos.setOnClickListener(this)
 
-    override fun onCommentClicked() {
-        findNavController().navigate(NearByDirections.actionNearByToDetailedTimenote())
-    }
-
-    override fun onPlusClicked() {
     }
 
     override fun onClick(v: View?) {
         when(v){
-            nearby_place -> startActivityForResult(Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, placesList).build(requireContext()), AUTOCOMPLETE_REQUEST_CODE)
-            nearby_time -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                onDismiss { Utils().hideStatusBar(requireActivity()) }
-                datePicker { dialog, datetime ->
-                    nearbyDateTv.text = dateFormat.format(datetime.time.time)
-                    nearbyFilterData.setWhen(dateFormat.format(datetime.time.time))
+            profile_modify_btn -> {
+            }
+            profile_calendar_btn -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToProfileCalendarSearch())
+            profile_notif_btn -> {
+                findNavController().popBackStack()
+            }
+            profile_followers_label -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToFollowPageSearch())
+            profile_following_label -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToFollowPageSearch())
+            profile_nbr_followers -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToFollowPageSearch())
+            profile_nbr_following -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToFollowPageSearch())
+            profile_follow_btn -> {
+                profile_follow_btn.apply {
+                    setBorderColor(resources.getColor(android.R.color.darker_gray))
+                    setBorderWidth(1)
+                    setText(resources.getString(R.string.unfollow))
+                    setBackgroundColor(resources.getColor(android.R.color.transparent))
+                    setTextColor(resources.getColor(android.R.color.darker_gray))
                 }
             }
-            nearby_filter_btn -> findNavController().navigate(NearByDirections.actionNearByToNearbyFilters())
-        }
-    }
-
-    override fun onPictureClicked() {
-        findNavController().navigate(NearByDirections.actionNearByToProfile(true, 3))
-    }
-
-    override fun onHideToOthersClicked() {
-
-    }
-
-    override fun onMaskThisUser() {
-        loginViewModel.markAsAuthenticated()
-    }
-
-    override fun onDoubleClick() {
-        timenoteViewModel.getSpecificTimenote(tokenId!!, "").observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            if(it.body()?.joinedBy?.contains("")!!) timenoteViewModel.joinTimenote(tokenId!!, "")
-            else timenoteViewModel.leaveTimenote(tokenId!!, "")
-        })
-    }
-
-    override fun onSeeParticipants() {
-        val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-            customView(R.layout.users_participating)
-            lifecycleOwner(this@NearBy)
-        }
-
-        val recyclerview = dial.getCustomView().users_participating_rv
-        val adapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator)
-        recyclerview.adapter = adapter
-        lifecycleScope.launch{
-            profileViewModel.getUsers(tokenId!!, followers = true, useTimenoteService = true, id =  null).collectLatest {
-                adapter.submitData(it)
+            profile_location -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                title(R.string.location)
+                listItems(items = listOf(getString(R.string.no_location), getString(R.string.city), getString(
+                                    R.string.address))) { dialog, index, text ->
+                    when(index){
+                        0 -> loginViewModel.markAsUnauthenticated()
+                    }
+                }
             }
         }
     }
 
-    override fun onSeeMoreClicked() {
-        findNavController().navigate(NearByDirections.actionNearByToDetailedTimenote())
-    }
-
-    override fun onReportClicked() {
-        timenoteViewModel.deleteTimenote(tokenId!!, "")
-    }
-
-    override fun onEditClicked() {
-        findNavController().navigate(NearByDirections.actionNearByToCreateTimenote(true, "",
-            TimenoteBody("", CreatedBy("", "", "", "", "", "", ""),
-                "", "", listOf(), "", com.timenoteco.timenote.model.Location(0.0, 0.0, com.timenoteco.timenote.model.Address("", "", "", "")),
-                Category("",""), "", "", listOf(), "", 0, ""), 3
-        ))
-    }
-
-    override fun onAlarmClicked() {
-    }
-
-    override fun onDeleteClicked() {
-        timenoteViewModel.deleteTimenote(tokenId!!, "")
-    }
-
-    override fun onDuplicateClicked() {
-        findNavController().navigate(NearByDirections.actionNearByToCreateTimenote(true, "",
-            TimenoteBody("", CreatedBy("", "", "", "", "", "", ""),
-                "", "", listOf(), "", com.timenoteco.timenote.model.Location(0.0, 0.0, com.timenoteco.timenote.model.Address("", "", "", "")),
-                Category("",""), "", "", listOf(), "", 0, ""), 3
-        ))
-    }
-
-    override fun onAddressClicked() {
-        findNavController().navigate(NearByDirections.actionNearByToTimenoteAddress())
+    override fun onHideFilterBarClicked(position:Int?) {
+        profilePastFuturePagerAdapter?.setShowFilterBar(false, position, null)
     }
 
 }

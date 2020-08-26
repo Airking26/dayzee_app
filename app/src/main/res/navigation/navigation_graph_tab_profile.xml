@@ -64,8 +64,7 @@
     <fragment
         android:id="@+id/profile"
         android:name="com.timenoteco.timenote.view.profileFlow.Profile"
-        android:label="fragment_profile"
-        tools:layout="@layout/fragment_profile" >
+        android:label="fragment_profile">
         <action
             android:id="@+id/action_profile_to_profilModify"
             app:destination="@id/profilModify" />
@@ -76,9 +75,9 @@
             android:id="@+id/action_profile_to_notifications"
             app:destination="@id/notifications" />
         <argument
+            android:defaultValue="false"
             android:name="whereFrom"
-            app:argType="boolean"
-            android:defaultValue="false" />
+            app:argType="boolean"/>
         <action
             android:id="@+id/action_profile_to_followPage"
             app:destination="@id/followPage" />
@@ -88,6 +87,13 @@
         <action
             android:id="@+id/action_profile_to_createTimenote"
             app:destination="@id/createTimenote" />
+        <action
+            android:id="@+id/action_profile_to_detailedTimenote"
+            app:destination="@id/detailedTimenote" />
+        <argument
+            android:name="from"
+            android:defaultValue="4"
+            app:argType="integer"/>
         <action
             android:id="@+id/action_profile_to_navigation"
             app:destination="@id/navigation" />
@@ -136,14 +142,17 @@
             android:id="@+id/action_menu_to_settings"
             app:destination="@id/settings" />
         <action
-            android:id="@+id/action_menu_to_preferenceCategory"
-            app:destination="@id/preferenceCategory" />
-        <action
             android:id="@+id/action_menu_to_profilePreview"
             app:destination="@id/profilePreview" />
         <action
             android:id="@+id/action_menu_to_contacts"
             app:destination="@id/contacts" />
+        <action
+            android:id="@+id/action_menu_to_profilModify"
+            app:destination="@id/profilModify" />
+        <action
+            android:id="@+id/action_menu_to_preferenceCategory"
+            app:destination="@id/preferenceCategory" />
     </fragment>
     <fragment
         android:id="@+id/preferenceCategory"
@@ -189,12 +198,30 @@
         <action
             android:id="@+id/action_createTimenote_to_previewTimenoteCreated"
             app:destination="@id/previewTimenoteCreated" />
+        <argument
+            android:name="modify"
+            app:argType="boolean" />
+        <argument
+            android:name="id"
+            app:argType="string"
+            app:nullable="true"/>
+        <argument
+            android:name="timenoteBody"
+            app:argType="com.timenoteco.timenote.model.TimenoteBody"
+            app:nullable="true"/>
+        <argument
+            android:name="from"
+            app:argType="integer"/>
     </fragment>
     <fragment
         android:id="@+id/previewTimenoteCreated"
         android:name="com.timenoteco.timenote.view.createTimenoteFlow.PreviewTimenoteCreated"
         android:label="fragment_preview_timenote_created"
-        tools:layout="@layout/fragment_preview_timenote_created" />
+        tools:layout="@layout/fragment_preview_timenote_created" >
+        <argument
+            android:name="from"
+            app:argType="integer"/>
+    </fragment>
     <fragment
         android:id="@+id/profilePreview"
         android:name="com.timenoteco.timenote.view.profileFlow.menuDirectory.ProfilePreview"
@@ -203,4 +230,13 @@
         android:id="@+id/contacts"
         android:name="com.timenoteco.timenote.view.profileFlow.menuDirectory.Contacts"
         android:label="Contacts" />
+    <fragment
+        android:id="@+id/detailedTimenote"
+        android:name="com.timenoteco.timenote.view.homeFlow.DetailedTimenote"
+        android:label="fragment_detailed_fragment"
+        tools:layout="@layout/fragment_detailed_fragment" >
+        <action
+            android:id="@+id/action_detailedTimenote_to_profile"
+            app:destination="@id/profile" />
+    </fragment>
 </navigation>

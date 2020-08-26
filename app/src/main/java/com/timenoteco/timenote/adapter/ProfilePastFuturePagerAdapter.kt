@@ -8,9 +8,9 @@ import com.timenoteco.timenote.view.profileFlow.ProfileFutureEvents
 import com.timenoteco.timenote.view.profileFlow.ProfilePastEvents
 
 
-class ProfilePastFuturePagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle,b: Boolean, fragment: Fragment): FragmentStateAdapter(fragmentManager, lifecycle) {
+class ProfilePastFuturePagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle,b: Boolean, fragment: Fragment, from: Int): FragmentStateAdapter(fragmentManager, lifecycle) {
 
-    private val profileFutureEvents: ProfileFutureEvents = ProfileFutureEvents.newInstance(b, fragment)
+    private val profileFutureEvents: ProfileFutureEvents = ProfileFutureEvents.newInstance(b, fragment, from)
     private val profilePastEvents: ProfilePastEvents = ProfilePastEvents.newIstance(b, fragment)
 
     override fun getItemCount(): Int = 2

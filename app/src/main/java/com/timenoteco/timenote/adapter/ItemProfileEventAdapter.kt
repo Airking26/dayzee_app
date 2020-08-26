@@ -4,7 +4,6 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.afollestad.materialdialogs.LayoutMode
@@ -15,6 +14,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.Utils
+import com.timenoteco.timenote.listeners.ItemProfileCardListener
 import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.Timenote
@@ -26,6 +26,7 @@ class ItemProfileEventAdapter(
     private var events: MutableList<Timenote>,
     private val timenoteOptionsListener: TimenoteOptionsListener,
     private val onRemoveFilterBarListener: OnRemoveFilterBarListener,
+    private val onCardClicked: ItemProfileCardListener,
     private var showHideFilterBar: Boolean
 ): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -47,7 +48,7 @@ class ItemProfileEventAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if(position == 0 && showHideFilterBar) (holder as TimenoteListHolder).showFilterBar(onRemoveFilterBarListener) else
-        (holder as TimenoteListHolder).bindListStyleItem(events[position], timenoteOptionsListener)
+        (holder as TimenoteListHolder).bindListStyleItem(events[position], timenoteOptionsListener, onCardClicked)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -55,7 +56,14 @@ class ItemProfileEventAdapter(
     }
 
     class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        fun bindListStyleItem(event: Timenote, timenoteOptionsListener: TimenoteOptionsListener) {
+        fun bindListStyleItem(
+            event: Timenote,
+            timenoteOptionsListener: TimenoteOptionsListener,
+            onCardClicked: ItemProfileCardListener
+        ) {
+
+            itemView.setOnClickListener { onCardClicked.onCardClicked() }
+
             itemView.profile_item_name_event.text = event.title
             itemView.profile_item_address_event.text = event.place
             itemView.profile_item_date_event.text = Utils().calculateDecountTime()

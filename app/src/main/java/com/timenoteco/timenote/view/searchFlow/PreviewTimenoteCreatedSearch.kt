@@ -1,4 +1,4 @@
-package com.timenoteco.timenote.view.createTimenoteFlow
+package com.timenoteco.timenote.view.searchFlow
 
 import android.content.Context
 import android.graphics.Color
@@ -20,13 +20,13 @@ import com.timenoteco.timenote.model.StatusTimenote
 import com.timenoteco.timenote.viewModel.CreationTimenoteViewModel
 import kotlinx.android.synthetic.main.fragment_preview_timenote_created.*
 
-class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
+class PreviewTimenoteCreatedSearch : Fragment(), View.OnClickListener {
 
     private lateinit var backToHomeListener: BackToHomeListener
     private lateinit var listener : ExitCreationTimenote
     private val creationTimenoteViewModel: CreationTimenoteViewModel by activityViewModels()
     private lateinit var screenSlideCreationTimenotePagerAdapter: ScreenSlideCreationTimenotePagerAdapter
-    private val args : PreviewTimenoteCreatedArgs by navArgs()
+    private val args : PreviewTimenoteCreatedSearchArgs by navArgs()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

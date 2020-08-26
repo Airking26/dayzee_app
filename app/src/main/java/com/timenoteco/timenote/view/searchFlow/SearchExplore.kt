@@ -37,6 +37,6 @@ class SearchExplore : Fragment(), SearchExploreCategoryAdapter.SearchSubCategory
     }
 
     override fun onCategorySelected() {
-        findNavController().navigate(R.id.action_global_searchExploreClicked)
+        findNavController().navigate(SearchDirections.actionSearchToSearchExploreClicked())
     }
 }

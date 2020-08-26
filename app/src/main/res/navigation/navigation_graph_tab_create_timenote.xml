@@ -86,10 +86,18 @@
         <action
             android:id="@+id/action_createTimenote_to_navigation"
             app:destination="@id/navigation" />
+        <argument
+            android:name="from"
+            app:argType="integer"
+            android:defaultValue="0" />
     </fragment>
     <fragment
         android:id="@+id/previewTimenoteCreated"
         android:name="com.timenoteco.timenote.view.createTimenoteFlow.PreviewTimenoteCreated"
         android:label="fragment_preview_timenote_created"
-        tools:layout="@layout/fragment_preview_timenote_created" />
+        tools:layout="@layout/fragment_preview_timenote_created" >
+        <argument
+            android:name="from"
+            app:argType="integer"/>
+    </fragment>
 </navigation>

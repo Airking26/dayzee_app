@@ -65,7 +65,7 @@
         android:layout_marginTop="4dp"
         app:layout_constraintTop_toBottomOf="@id/profile_menu_location"
         app:layout_constraintStart_toStartOf="@id/profile_menu_name"
-        android:id="@+id/guest_btn"
+        android:id="@+id/profile_menu_modify"
         fancy:fb_defaultColor="@android:color/transparent"
         fancy:fb_borderWidth="1dp"
         fancy:fb_borderColor="@color/colorText"
