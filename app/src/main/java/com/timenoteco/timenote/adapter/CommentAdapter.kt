@@ -12,11 +12,14 @@ import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.RoundedCornersTransformation
 import com.timenoteco.timenote.model.CommentModel
+import com.timenoteco.timenote.view.searchFlow.DetailedTimenoteSearch
 import kotlinx.android.synthetic.main.item_comment.view.*
-import kotlinx.android.synthetic.main.item_timenote.view.*
 
-class CommentAdapter(val comments : List<CommentModel>) : RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() {
+class CommentAdapter(val comments: List<CommentModel>, val commentPicUserListener: CommentPicUserListener) : RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() {
 
+    interface CommentPicUserListener{
+        fun onPicUserCommentClicked()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentViewHolder =
         CommentViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_comment, parent, false))
@@ -24,12 +27,15 @@ class CommentAdapter(val comments : List<CommentModel>) : RecyclerView.Adapter<C
     override fun getItemCount(): Int = comments.size
 
     override fun onBindViewHolder(holder: CommentViewHolder, position: Int) {
-        holder.bindComment(comments[position])
+        holder.bindComment(comments[position], commentPicUserListener)
     }
 
     class CommentViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
-        fun bindComment(commentModel: CommentModel) {
+        fun bindComment(
+            commentModel: CommentModel,
+            commentPicUserListener: CommentPicUserListener
+        ) {
             Glide
                 .with(itemView)
                 .load("https://wl-sympa.cf.tsp.li/resize/728x/jpg/f6e/ef6/b5b68253409b796f61f6ecd1f1.jpg")
@@ -51,7 +57,7 @@ class CommentAdapter(val comments : List<CommentModel>) : RecyclerView.Adapter<C
             itemView.comment_username_comment.text = i
             itemView.comment_time.text = commentModel.time
 
-
+            itemView.comment_user_pic_imageview.setOnClickListener { commentPicUserListener.onPicUserCommentClicked() }
         }
 
     }

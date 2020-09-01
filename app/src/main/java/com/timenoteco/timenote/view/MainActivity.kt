@@ -16,13 +16,12 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.get
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
-import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
+import com.amplifyframework.core.Amplify
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
@@ -38,8 +37,11 @@ import com.timenoteco.timenote.listeners.ExitCreationTimenote
 import com.timenoteco.timenote.listeners.ShowBarListener
 import com.timenoteco.timenote.view.homeFlow.Home
 import com.timenoteco.timenote.viewModel.LoginViewModel
+import io.branch.indexing.BranchUniversalObject
 import io.branch.referral.Branch
 import io.branch.referral.BranchError
+import io.branch.referral.util.BranchEvent
+import io.branch.referral.util.LinkProperties
 import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONObject
 
@@ -68,9 +70,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
         setContentView(R.layout.activity_main)
         setupController(true)
         Branch.getAutoInstance(this)
-        //val layoutParams = bottomNavView.layoutParams as CoordinatorLayout.LayoutParams
-        //layoutParams.behavior = BottomNavigationBehavior()
-
+        Amplify.configure(applicationContext)
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
     }
 
@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
     @SuppressLint("StringFormatInvalid")
     fun retrieveCurrentRegistrationToken(){
         FirebaseInstanceId.getInstance().instanceId
-            .addOnCompleteListener(OnCompleteListener{ task ->
+            .addOnCompleteListener(OnCompleteListener { task ->
                 if (!task.isSuccessful) {
                     return@OnCompleteListener
                 }
@@ -125,6 +125,8 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                 R.navigation.navigation_graph_tab_create_timenote
             )
 
+
+
         val controller = bottomNavView.setupWithNavController(
             navGraphIds = navGraphIds,
             fragmentManager = supportFragmentManager,
@@ -147,7 +149,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
             .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
             .load("https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792")
             .apply(RequestOptions.circleCropTransform())
-            .into(object: CustomTarget<Bitmap>(){
+            .into(object : CustomTarget<Bitmap>() {
                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                     bottomNavView.menu[4].icon = BitmapDrawable(resources, resource)
                 }
@@ -166,7 +168,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                         utils.showStatusBar(this)
                         bottomNavView.visibility = View.GONE
                     }
-                    R.id.preferenceSubCategory ->{
+                    R.id.preferenceSubCategory -> {
                         utils.showStatusBar(this)
                         bottomNavView.visibility = View.GONE
                     }
@@ -190,7 +192,37 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                         utils.showStatusBar(this)
                         bottomNavView.visibility = View.VISIBLE
                     }
+                    R.id.createTimenoteSearch ->{
+                        utils.showStatusBar(this)
+                        bottomNavView.visibility = View.GONE
+                    }
+                    R.id.detailedTimenoteSearch ->{
+                        utils.showStatusBar(this)
+                        bottomNavView.visibility = View.GONE
+                    }
+                    R.id.profileSearch -> {
+                        utils.showStatusBar(this)
+                        bottomNavView.visibility = View.VISIBLE
+                    }
+                    R.id.profileCalendarSearch -> {
+                        utils.hideStatusBar(this)
+                        bottomNavView.visibility = View.GONE
+                    }
                     R.id.profileCalendar -> {
+
+                        val linkProperties: LinkProperties = LinkProperties()
+                            .setChannel("sms")
+                            .setFeature("sharing")
+
+                        val br = BranchUniversalObject().apply {
+                            canonicalIdentifier = ("test/123")
+                            title = "hello"
+                            setContentDescription("its working")
+                        }
+                        Branch.showInstallPrompt(this@MainActivity, 123, br)
+                        br.generateShortUrl(this, linkProperties) { url, error ->
+                            BranchEvent("branch_url_created").logEvent(applicationContext)
+                        }
                         utils.hideStatusBar(this)
                         bottomNavView.visibility = View.GONE
                     }

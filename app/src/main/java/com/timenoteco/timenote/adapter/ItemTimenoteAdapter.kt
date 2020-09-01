@@ -28,7 +28,7 @@ import com.timenoteco.timenote.model.Timenote
 import kotlinx.android.synthetic.main.adapter_timenote_recent.view.*
 import kotlinx.android.synthetic.main.item_timenote.view.*
 import kotlinx.android.synthetic.main.item_timenote_recent.view.*
-import java.util.*
+import kotlinx.android.synthetic.main.item_timenote_root.view.*
 
 class ItemTimenoteAdapter(
     private val timenotes: List<Timenote>,
@@ -36,9 +36,8 @@ class ItemTimenoteAdapter(
     private val isHeterogeneous: Boolean,
     private val timenoteRecentClicked: TimenoteRecentClicked?,
     private val timenoteListenerListener: TimenoteOptionsListener,
-    private val fragment: Fragment
-)
-    : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+    private val fragment: Fragment,
+    private val isFromFuture: Boolean) : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     interface TimenoteRecentClicked{
         fun onTimenoteRecentClicked()
@@ -78,12 +77,18 @@ class ItemTimenoteAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if(isHeterogeneous){
             return if(position == 0) (holder as TimenoteToComeViewHolder).bindTimenoteTocome(timenotesToCome, timenoteRecentClicked)
-            else (holder as TimenoteViewHolder).bindTimenote(timenotes[position],timenoteListenerListener, fragment)
+            else (holder as TimenoteViewHolder).bindTimenote(
+                timenotes[position],
+                timenoteListenerListener,
+                fragment,
+                isFromFuture
+            )
         } else {
             (holder as TimenoteViewHolder).bindTimenote(
                 timenotes[position],
                 timenoteListenerListener,
-                fragment
+                fragment,
+                isFromFuture
             )
         }
 
@@ -101,9 +106,18 @@ class ItemTimenoteAdapter(
 
         private lateinit var timenote: Timenote
 
-        fun bindTimenote(timenote: Timenote, timenoteListenerListener: TimenoteOptionsListener, fragment: Fragment) {
+        fun bindTimenote(
+            timenote: Timenote,
+            timenoteListenerListener: TimenoteOptionsListener,
+            fragment: Fragment,
+            isFromFuture: Boolean
+        ) {
 
             this.timenote = timenote
+
+            if(isFromFuture) itemView.timenote_plus.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.ic_ajout_cal))
+            else itemView.timenote_plus.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.ic_like))
+
 
             Glide
                 .with(itemView)

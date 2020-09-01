@@ -29,14 +29,15 @@
         android:layout_height="wrap_content"/>
 
     <ImageView
-        android:visibility="gone"
+        android:visibility="visible"
         android:id="@+id/comment_like"
         android:layout_margin="8dp"
+        android:src="@drawable/ic_more_vert_black_profile_24dp"
         app:layout_constraintBottom_toBottomOf="@id/comment_user_pic_imageview"
         app:layout_constraintTop_toTopOf="@id/comment_user_pic_imageview"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_width="12dp"
-        android:layout_height="12dp"/>
+        android:layout_width="16dp"
+        android:layout_height="16dp"/>
 
     <TextView
         android:fontFamily="sans-serif-light"

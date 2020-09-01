@@ -10,6 +10,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.model.Timenote
 import kotlinx.android.synthetic.main.item_timenote.view.*
+import kotlinx.android.synthetic.main.item_timenote_root.view.*
 
 class ProfileFilterAdapter(
     private val timenotes: List<Timenote>,

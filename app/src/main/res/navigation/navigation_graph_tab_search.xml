@@ -92,16 +92,27 @@
     <fragment
         android:id="@+id/searchExploreClicked"
         android:name="com.timenoteco.timenote.view.searchFlow.SearchExploreClicked"
-        android:label="SearchExploreClicked" />
+        android:label="SearchExploreClicked" >
+        <action
+            android:id="@+id/action_searchExploreClicked_to_profileSearch"
+            app:destination="@id/profileSearch" />
+    </fragment>
     <fragment
         android:id="@+id/searchTop"
         android:name="com.timenoteco.timenote.view.searchFlow.SearchTop"
         android:label="SearchTop" />
     <fragment
-        android:id="@+id/detailedTimenote"
-        android:name="com.timenoteco.timenote.view.homeFlow.DetailedTimenote"
-        android:label="fragment_detailed_fragment"
-        tools:layout="@layout/fragment_detailed_fragment" />
+        android:id="@+id/detailedTimenoteSearch"
+        android:name="com.timenoteco.timenote.view.searchFlow.DetailedTimenoteSearch"
+        android:label="detailedTimenoteSearch"
+        tools:layout="@layout/fragment_detailed_fragment" >
+        <action
+            android:id="@+id/action_detailedTimenote_to_createTimenoteSearch"
+            app:destination="@id/createTimenoteSearch" />
+        <action
+            android:id="@+id/action_detailedTimenoteSearch_to_profileSearch"
+            app:destination="@id/profileSearch" />
+    </fragment>
     <fragment
         android:id="@+id/profileSearch"
         android:name="com.timenoteco.timenote.view.searchFlow.ProfileSearch"
@@ -153,10 +164,6 @@
             android:name="from"
             app:argType="integer" />
     </fragment>
-    <fragment
-        android:id="@+id/detailedTimenoteSearch"
-        android:name="com.timenoteco.timenote.view.searchFlow.DetailedTimenoteSearch"
-        android:label="DetailedTimenoteSearch" />
     <fragment
         android:id="@+id/profileCalendarSearch"
         android:name="com.timenoteco.timenote.view.searchFlow.ProfileCalendarSearch"

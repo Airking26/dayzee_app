@@ -28,7 +28,6 @@
                 <TextView
                     android:id="@+id/profile_name_toolbar"
                     style="@style/AppTheme.Toolbar.Title"
-                    android:layout_marginTop="8dp"
                     android:text="Ronny"
                     app:layout_constraintBottom_toTopOf="@id/profile_location"
                     app:layout_constraintEnd_toStartOf="@id/profile_settings_btn"
@@ -53,6 +52,7 @@
                     android:drawableStart="@drawable/ic_toolbar_location"
                     android:fontFamily="sans-serif-light"
                     android:text=" Israel"
+                    android:visibility="visible"
                     android:textColor="@color/colorText"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"

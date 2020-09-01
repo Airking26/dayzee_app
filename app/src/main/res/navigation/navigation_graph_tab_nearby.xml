@@ -98,6 +98,15 @@
         android:name="com.timenoteco.timenote.view.homeFlow.DetailedTimenote"
         android:label="fragment_detailed_fragment"
         tools:layout="@layout/fragment_detailed_fragment" >
+        <argument
+            android:name="from"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_detailedTimenote_to_profile"
+            app:destination="@id/profile" />
+        <action
+            android:id="@+id/action_detailedTimenote_to_createTimenote"
+            app:destination="@id/createTimenote" />
     </fragment>
     <fragment
         android:id="@+id/profile"

@@ -12,8 +12,7 @@ class LoginViewModel: ViewModel() {
 
     enum class AuthenticationState {
         UNAUTHENTICATED,
-        AUTHENTICATED  ,
-        INVALID_AUTHENTICATION,
+        AUTHENTICATED,
         GUEST
     }
 
@@ -21,8 +20,6 @@ class LoginViewModel: ViewModel() {
     private val authenticationState = MutableLiveData<AuthenticationState>()
 
     fun getAuthenticationState() : LiveData<AuthenticationState> = authenticationState
-
-    init { authenticationState.value = AuthenticationState.AUTHENTICATED }
 
     fun refuseAuthentication() = authenticationState.postValue(AuthenticationState.UNAUTHENTICATED)
 
@@ -68,6 +65,5 @@ class LoginViewModel: ViewModel() {
     fun markAsGuest() = authenticationState.postValue(AuthenticationState.GUEST)
     fun markAsAuthenticated() = authenticationState.postValue(AuthenticationState.AUTHENTICATED)
     fun markAsUnauthenticated() = authenticationState.postValue(AuthenticationState.UNAUTHENTICATED)
-    fun markAsInvalidAuthentication() = authenticationState.postValue(AuthenticationState.INVALID_AUTHENTICATION)
 
 }

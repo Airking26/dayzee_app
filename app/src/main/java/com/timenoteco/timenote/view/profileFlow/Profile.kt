@@ -1,13 +1,17 @@
 package com.timenoteco.timenote.view.profileFlow
 
+import android.content.ActivityNotFoundException
 import android.content.ContentValues.TAG
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -41,6 +45,8 @@ import java.util.*
 
 class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarListener {
 
+    private var stateSwitchUrl: String? = null
+    private var stateSwitch: Int? = null
     private var profilePastFuturePagerAdapter: ProfilePastFuturePagerAdapter? = null
     private lateinit var profileModifyData: ProfileModifyData
     private val loginViewModel : LoginViewModel by activityViewModels()
@@ -87,13 +93,40 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
         prefs.stringLiveData("profile", Gson().toJson(profileModifyData.loadProfileModifyModel())).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             val type: Type = object : TypeToken<ProfilModifyModel?>() {}.type
             val profilModifyModel : ProfilModifyModel? = Gson().fromJson<ProfilModifyModel>(prefs.getString("profile", ""), type)
+            stateSwitch = profilModifyModel?.stateSwitch
             when(profilModifyModel?.stateSwitch){
-                0 -> if(!profilModifyModel.youtubeLink.isNullOrBlank()) profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_youtube_colored))
-                1 -> if(!profilModifyModel.facebookLink.isNullOrBlank()) profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_facebook_colored))
-                2 -> if(!profilModifyModel.instaLink.isNullOrBlank()) profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_insta_colored))
-                3 -> if(!profilModifyModel.whatsappLink.isNullOrBlank()) profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_whatsapp))
-                4 -> if(!profilModifyModel.linkedinLink.isNullOrBlank()) profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_linkedin_colored))
-                else profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_icons8_contacts))
+                0 -> {
+                    if(!profilModifyModel.youtubeLink.isNullOrBlank()) {
+                        profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_youtube_colored))
+                        stateSwitchUrl = profilModifyModel.youtubeLink
+                    }
+                }
+                1 -> {
+                    if(!profilModifyModel.facebookLink.isNullOrBlank()){
+                        profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_facebook_colored))
+                        stateSwitchUrl = profilModifyModel.facebookLink
+                    }
+                }
+                2 -> {
+                    if(!profilModifyModel.instaLink.isNullOrBlank()){
+                        profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_insta_colored))
+                        stateSwitchUrl = profilModifyModel.instaLink
+                    }
+                }
+                3 -> {
+                    if(!profilModifyModel.whatsappLink.isNullOrBlank()) {
+                        profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_whatsapp))
+                        stateSwitchUrl = profilModifyModel.whatsappLink
+                    }
+                }
+                4 -> {
+                    if(!profilModifyModel.linkedinLink.isNullOrBlank()) {
+                        profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_linkedin_colored))
+                        stateSwitchUrl = profilModifyModel.linkedinLink
+                    }
+                }
+                else -> profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_icons8_contacts))
+
             }
         })
 
@@ -392,8 +425,6 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
 
         TabLayoutMediator(profile_tablayout, profile_vp){ tab, position -> }.attach()
 
-
-
         profile_modify_btn.setOnClickListener(this)
         profile_calendar_btn.setOnClickListener(this)
         profile_settings_btn.setOnClickListener(this)
@@ -424,7 +455,22 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
             profile_following_label -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage())
             profile_nbr_followers -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage())
             profile_nbr_following -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage())
-            profile_infos -> findNavController().navigate(ProfileDirections.actionProfileToProfilModify())
+            profile_infos -> {
+                if(stateSwitch == null) findNavController().navigate(ProfileDirections.actionProfileToProfilModify())
+                else {
+                    val intent = Intent(Intent.ACTION_VIEW)
+                    intent.data = Uri.parse(stateSwitchUrl)
+                    try {
+                        startActivity(intent)
+                    } catch (e: ActivityNotFoundException){
+                        Toast.makeText(
+                            requireContext(),
+                            "No app found to handle the url",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
             profile_follow_btn -> {
                 profile_follow_btn.apply {
                     setBorderColor(resources.getColor(android.R.color.darker_gray))

@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.view.searchFlow
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -12,6 +13,7 @@ import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.fragment.findNavController
+import androidx.preference.PreferenceManager
 import com.google.android.material.tabs.TabLayoutMediator
 import com.mancj.materialsearchbar.MaterialSearchBar
 import com.timenoteco.timenote.R
@@ -29,9 +31,14 @@ class Search : BaseThroughFragment() {
     private lateinit var viewTopExplorePagerAdapter: SearchViewTopExplorePagerAdapter
     private lateinit var viewPeopleTagPagerAdapter: SearchViewPeopleTagPagerAdapter
     private val loginViewModel : LoginViewModel by activityViewModels()
+    private lateinit var prefs: SharedPreferences
+    val TOKEN: String = "TOKEN"
+    private var tokenId : String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        tokenId = prefs.getString(TOKEN, null)
         loginViewModel.getAuthenticationState().observe(requireActivity(), androidx.lifecycle.Observer {
             when (it) {
                 LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(SearchDirections.actionSearchToNavigation())

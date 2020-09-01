@@ -5,19 +5,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.SuggestionAdapter
 import com.timenoteco.timenote.adapter.SuggestionItemAdapter
 import com.timenoteco.timenote.model.UserSuggested
+import com.timenoteco.timenote.viewModel.FollowViewModel
 import kotlinx.android.synthetic.main.fragment_search_explore_clicked.*
+import me.samlss.broccoli.Broccoli
 
 class SearchExploreClicked: Fragment(), SuggestionAdapter.SuggestionItemListener,
     SuggestionAdapter.SuggestionItemPicListener {
 
+    private val broccoli = Broccoli()
     private var suggestions: List<UserSuggested> = listOf()
     private lateinit var suggestionItemAdapter: SuggestionItemAdapter
+    private val followViewModel : FollowViewModel by activityViewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_search_explore_clicked, container, false)
@@ -37,7 +43,7 @@ class SearchExploreClicked: Fragment(), SuggestionAdapter.SuggestionItemListener
                 "Ligue 1",
                 false))
 
-        suggestionItemAdapter = SuggestionItemAdapter(suggestions, this, this)
+        suggestionItemAdapter = SuggestionItemAdapter(suggestions, this, this, broccoli)
         search_explore_clicked_rv.apply {
             layoutManager = LinearLayoutManager(view.context)
             adapter = suggestionItemAdapter
@@ -45,9 +51,12 @@ class SearchExploreClicked: Fragment(), SuggestionAdapter.SuggestionItemListener
     }
 
     override fun onItemSelected() {
+        followViewModel.followPublicUser("", 0).observe(viewLifecycleOwner, Observer {
 
+        })
     }
 
     override fun onPicClicked() {
+        findNavController().navigate(SearchExploreClickedDirections.actionSearchExploreClickedToProfileSearch())
     }
 }

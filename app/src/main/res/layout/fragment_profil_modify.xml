@@ -12,7 +12,8 @@
 
     <LinearLayout
         android:id="@+id/profile_modify_ll"
-        style="@style/AppTheme.Toolbar.LinearLayout">
+        style="@style/AppTheme.Toolbar.LinearLayout"
+        tools:ignore="MissingConstraints">
 
         <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
 
@@ -114,7 +115,8 @@
 
             <TextView
                 app:layout_constraintTop_toBottomOf="@id/profile_modify_name_appearance"
-                style="@style/AppTheme.Divider.Toolbar"/>
+                style="@style/AppTheme.Divider.Toolbar"
+                tools:ignore="MissingConstraints" />
 
 
             <TextView
@@ -134,7 +136,8 @@
                 android:layout_height="wrap_content"/>
             <TextView
                 app:layout_constraintTop_toBottomOf="@id/profile_modify_name"
-                style="@style/AppTheme.Divider.Toolbar"/>
+                style="@style/AppTheme.Divider.Toolbar"
+                tools:ignore="MissingConstraints" />
 
             <TextView
                 android:fontFamily="sans-serif-light"
@@ -154,7 +157,8 @@
 
             <TextView
                 app:layout_constraintTop_toBottomOf="@id/profile_modify_from"
-                style="@style/AppTheme.Divider.Toolbar"/>
+                style="@style/AppTheme.Divider.Toolbar"
+                tools:ignore="MissingConstraints" />
 
             <TextView
                 android:fontFamily="sans-serif-light"
@@ -175,7 +179,8 @@
 
             <TextView
                 app:layout_constraintTop_toBottomOf="@id/profile_modify_birthday"
-                style="@style/AppTheme.Divider.Toolbar"/>
+                style="@style/AppTheme.Divider.Toolbar"
+                tools:ignore="MissingConstraints" />
 
             <TextView
                 android:fontFamily="sans-serif-light"
@@ -195,7 +200,8 @@
 
             <TextView
                 app:layout_constraintTop_toBottomOf="@id/profile_modify_gender"
-                style="@style/AppTheme.Divider.Toolbar"/>
+                style="@style/AppTheme.Divider.Toolbar"
+                tools:ignore="MissingConstraints" />
 
             <TextView
                 android:fontFamily="sans-serif-light"
@@ -215,7 +221,8 @@
 
             <TextView
                 app:layout_constraintTop_toBottomOf="@id/profile_modify_account_status"
-                style="@style/AppTheme.Divider.Toolbar"/>
+                style="@style/AppTheme.Divider.Toolbar"
+                tools:ignore="MissingConstraints" />
 
             <TextView
                 android:fontFamily="sans-serif-light"
@@ -235,7 +242,8 @@
 
             <TextView
                 app:layout_constraintTop_toBottomOf="@id/profile_modify_format_timenote"
-                style="@style/AppTheme.Divider.Toolbar"/>
+                style="@style/AppTheme.Divider.Toolbar"
+                tools:ignore="MissingConstraints" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/youtube_cl"
@@ -271,7 +279,8 @@
 
                 <TextView
                     app:layout_constraintTop_toBottomOf="@id/profile_modify_youtube_channel"
-                    style="@style/AppTheme.Divider.Toolbar"/>
+                    style="@style/AppTheme.Divider.Toolbar"
+                    tools:ignore="MissingConstraints" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -309,7 +318,8 @@
 
                 <TextView
                     app:layout_constraintTop_toBottomOf="@id/profile_modify_facebook"
-                    style="@style/AppTheme.Divider.Toolbar"/>
+                    style="@style/AppTheme.Divider.Toolbar"
+                    tools:ignore="MissingConstraints" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -347,7 +357,8 @@
 
                 <TextView
                     app:layout_constraintTop_toBottomOf="@id/profile_modify_instagram"
-                    style="@style/AppTheme.Divider.Toolbar"/>
+                    style="@style/AppTheme.Divider.Toolbar"
+                    tools:ignore="MissingConstraints" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -385,7 +396,8 @@
 
                 <TextView
                     app:layout_constraintTop_toBottomOf="@id/profile_modify_whatsapp"
-                    style="@style/AppTheme.Divider.Toolbar"/>
+                    style="@style/AppTheme.Divider.Toolbar"
+                    tools:ignore="MissingConstraints" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -423,7 +435,8 @@
 
                 <TextView
                     app:layout_constraintTop_toBottomOf="@id/profile_modify_linkedin"
-                    style="@style/AppTheme.Divider.Toolbar"/>
+                    style="@style/AppTheme.Divider.Toolbar"
+                    tools:ignore="MissingConstraints" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -446,7 +459,8 @@
 
             <TextView
                 app:layout_constraintTop_toBottomOf="@id/profile_modify_description"
-                style="@style/AppTheme.Divider.Toolbar"/>
+                style="@style/AppTheme.Divider.Toolbar"
+                tools:ignore="MissingConstraints" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

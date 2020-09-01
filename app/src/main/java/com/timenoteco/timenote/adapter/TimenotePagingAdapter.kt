@@ -10,7 +10,7 @@ import com.timenoteco.timenote.model.TimenoteModel
 
 class TimenotePagingAdapter(diffCallbacks: DiffUtil.ItemCallback<TimenoteModel>,
                             private val timenoteListenerListener: TimenoteOptionsListener,
-                            val fragment: Fragment)
+                            val fragment: Fragment, private val isFromFuture: Boolean)
     : PagingDataAdapter<TimenoteModel, ItemTimenoteAdapter.TimenoteViewHolder>(diffCallbacks){
 
 
@@ -19,7 +19,12 @@ class TimenotePagingAdapter(diffCallbacks: DiffUtil.ItemCallback<TimenoteModel>,
         ItemTimenoteAdapter.TimenoteViewHolder(parent)
 
     override fun onBindViewHolder(holder: ItemTimenoteAdapter.TimenoteViewHolder, position: Int) =
-        holder.bindTimenote(getItem(position) as Timenote, timenoteListenerListener, fragment)
+        holder.bindTimenote(
+            getItem(position) as Timenote,
+            timenoteListenerListener,
+            fragment,
+            isFromFuture
+        )
 
 }
 

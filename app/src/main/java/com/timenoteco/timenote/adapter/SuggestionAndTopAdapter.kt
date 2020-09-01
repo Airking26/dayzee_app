@@ -3,6 +3,7 @@ package com.timenoteco.timenote.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -10,9 +11,11 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.model.UserSuggested
 import kotlinx.android.synthetic.main.adapter_suggestion_card.view.*
 import kotlinx.android.synthetic.main.item_suggestion.view.*
+import me.samlss.broccoli.Broccoli
 
 class SuggestionAdapter(private var suggestions: Map<String, List<UserSuggested>>,
-                        private val listener: SuggestionItemListener, private val picClicked: SuggestionItemPicListener):
+                        private val listener: SuggestionItemListener,
+                        private val picClicked: SuggestionItemPicListener, private val broccoli: Broccoli):
     RecyclerView.Adapter<SuggestionAdapter.CardViewHolder>() {
 
     interface SuggestionItemListener{
@@ -30,7 +33,7 @@ class SuggestionAdapter(private var suggestions: Map<String, List<UserSuggested>
     override fun getItemCount(): Int = suggestions.size
 
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
-        holder.bindSuggestions(suggestions, position, listener, picClicked)
+        holder.bindSuggestions(suggestions, position, listener, picClicked, broccoli)
     }
 
     class CardViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
@@ -39,14 +42,15 @@ class SuggestionAdapter(private var suggestions: Map<String, List<UserSuggested>
             suggestions: Map<String, List<UserSuggested>>,
             position: Int,
             listener: SuggestionItemListener,
-            picClicked: SuggestionItemPicListener
+            picClicked: SuggestionItemPicListener,
+            broccoli: Broccoli
         ) {
             itemView.suggestion_title_category.text = suggestions.keys.elementAt(position)
 
             itemView.suggestion_rv.apply {
                 layoutManager = LinearLayoutManager(itemView.context)
                 isNestedScrollingEnabled = false
-                adapter = SuggestionItemAdapter(suggestions.values.elementAt(position), listener, picClicked)
+                adapter = SuggestionItemAdapter(suggestions.values.elementAt(position), listener, picClicked, broccoli)
             }
         }
 
@@ -57,7 +61,8 @@ class SuggestionAdapter(private var suggestions: Map<String, List<UserSuggested>
 class SuggestionItemAdapter(
     private val suggestions: List<UserSuggested>,
     private val listener: SuggestionAdapter.SuggestionItemListener,
-    private val picClicked: SuggestionAdapter.SuggestionItemPicListener
+    private val picClicked: SuggestionAdapter.SuggestionItemPicListener,
+    private val broccoli: Broccoli
 ):
     RecyclerView.Adapter<SuggestionItemAdapter.ItemViewHolder>(){
 
@@ -67,7 +72,7 @@ class SuggestionItemAdapter(
     override fun getItemCount(): Int = suggestions.size
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        holder.bindItemSuggestion(suggestions, position, listener, picClicked)
+        holder.bindItemSuggestion(suggestions, position, listener, picClicked, broccoli)
     }
 
     class ItemViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
@@ -76,7 +81,8 @@ class SuggestionItemAdapter(
             suggestions: List<UserSuggested>,
             position: Int,
             listener: SuggestionAdapter.SuggestionItemListener,
-            picClicked: SuggestionAdapter.SuggestionItemPicListener
+            picClicked: SuggestionAdapter.SuggestionItemPicListener,
+            broccoli: Broccoli
         ) {
             itemView.suggestion_name_user.text = suggestions[position].name
             Glide
@@ -88,6 +94,7 @@ class SuggestionItemAdapter(
             itemView.suggestion_imageview.setOnClickListener { picClicked.onPicClicked() }
 
             itemView.suggestion_follow_btn.setOnClickListener {
+                itemView.suggestion_follow_btn.setImageDrawable(itemView.resources.getDrawable(R.drawable.ic_baseline_remove_circle_outline_24))
                 listener.onItemSelected()
             }
         }

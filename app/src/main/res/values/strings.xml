@@ -47,7 +47,7 @@
     <string name="push_notifications">Push notifications</string>
     <string name="certified_push_notifications">Certified\' push notifications</string>
     <string name="default_settings">DEFAULT SETTINGS</string>
-    <string name="timenote_visibility_format">Timenote visibility format</string>
+    <string name="timenote_visibility_format">Timenote visibility</string>
     <string name="timenote_visibility">Timenote visibility</string>
     <string name="others">OTHERS</string>
     <string name="confidentiality_politic">Confidentiality politic</string>
@@ -240,4 +240,8 @@
     <string name="not_username_valid_form">Username can\'t contains @</string>
     <string name="accept">Accept</string>
     <string name="decline">Decline</string>
+    <string name="default_settings_at_creation">default settings at creation time</string>
+    <string name="date">Date</string>
+    <string name="countdown">Countdown</string>
+    <string name="only_me">Only me</string>
 </resources>

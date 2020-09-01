@@ -67,7 +67,6 @@ import kotlinx.android.synthetic.main.fragment_near_by.*
 import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import okhttp3.internal.Util
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
@@ -412,7 +411,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
                 1
             )
         )
-        timenoteAdapter = ItemTimenoteAdapter(timenotes, timenotes, false, null, this, this as Fragment)
+        timenoteAdapter = ItemTimenoteAdapter(timenotes, timenotes, false, null, this, this as Fragment, true)
 
         nearby_rv.apply {
             layoutManager = LinearLayoutManager(context)
@@ -516,7 +515,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     }
 
     override fun onCommentClicked() {
-        findNavController().navigate(NearByDirections.actionNearByToDetailedTimenote())
+        findNavController().navigate(NearByDirections.actionNearByToDetailedTimenote(3))
     }
 
     override fun onPlusClicked() {
@@ -545,7 +544,6 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     }
 
     override fun onMaskThisUser() {
-        loginViewModel.markAsAuthenticated()
     }
 
     override fun onDoubleClick() {
@@ -572,7 +570,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     }
 
     override fun onSeeMoreClicked() {
-        findNavController().navigate(NearByDirections.actionNearByToDetailedTimenote())
+        findNavController().navigate(NearByDirections.actionNearByToDetailedTimenote(3))
     }
 
     override fun onReportClicked() {

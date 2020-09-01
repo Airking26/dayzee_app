@@ -406,7 +406,7 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
 
     override fun onCardClicked() {
         if(from == 2)findNavController().navigate(ProfileSearchDirections.actionProfileSearchToDetailedTimenoteSearch())
-        else findNavController().navigate(ProfileDirections.actionProfileToDetailedTimenote())
+        else findNavController().navigate(ProfileDirections.actionProfileToDetailedTimenote(from!!))
     }
 
 }

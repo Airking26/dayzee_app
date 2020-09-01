@@ -3,6 +3,7 @@ package com.timenoteco.timenote.view.homeFlow
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -33,6 +34,8 @@ import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.ProfileViewModel
 import com.timenoteco.timenote.viewModel.TimenoteViewModel
+import io.branch.indexing.BranchUniversalObject
+import io.branch.referral.Branch
 import kotlinx.android.synthetic.main.fragment_detailed_fragment.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.users_participating.view.*
@@ -60,7 +63,7 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         tokenId = prefs.getString(TOKEN, null)
-        //if(!prefs.getString(TOKEN, "").isNullOrBlank()) loginViewModel.markAsAuthenticated()
+        if(!prefs.getString(TOKEN, "").isNullOrBlank()) loginViewModel.markAsAuthenticated() else loginViewModel.markAsUnauthenticated()
         loginViewModel.getAuthenticationState().observe(requireActivity(), Observer {
             when (it) {
                 LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(HomeDirections.actionHomeToNavigation())
@@ -337,6 +340,7 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
             )
         )
 
+        home_swipe_refresh.isRefreshing = true
         home_swipe_refresh.setColorSchemeResources(R.color.colorStartGradient, R.color.colorEndGradient)
         home_swipe_refresh.setOnRefreshListener {
             home_swipe_refresh.isRefreshing = false
@@ -350,10 +354,14 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
             }
         }*/
 
-        timenoteAdapter = ItemTimenoteAdapter(timenotes, timenotes, true, this, this, this as Fragment)
+        timenoteAdapter = ItemTimenoteAdapter(timenotes, timenotes, true, this, this, this as Fragment, true)
         home_rv.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = timenoteAdapter
+            Handler().postDelayed({
+                adapter = timenoteAdapter
+                home_swipe_refresh?.isRefreshing = false
+            }, 2000)
+
         }
 
         home_past_timeline.setOnClickListener(this)
@@ -368,6 +376,9 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
                     home_recent_rv.visibility = View.GONE
                     home_past_timeline.setImageDrawable(resources.getDrawable(R.drawable.ic_passe_plein_grad_ok))
                     home_future_timeline.setImageDrawable(resources.getDrawable(R.drawable.ic_futur_ok))
+                    timenoteAdapter = ItemTimenoteAdapter(timenotes, timenotes, false, this, this, this as Fragment, false)
+                    home_rv.adapter = timenoteAdapter
+                    timenoteAdapter.notifyDataSetChanged()
                 }
             }
             home_future_timeline ->{
@@ -375,13 +386,16 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
                     home_recent_rv.visibility = View.VISIBLE
                     home_future_timeline.setImageDrawable(resources.getDrawable(R.drawable.ic_futur_plein_grad))
                     home_past_timeline.setImageDrawable(resources.getDrawable(R.drawable.ic_passe_ok))
+                    timenoteAdapter = ItemTimenoteAdapter(timenotes, timenotes, true, this, this, this as Fragment, true)
+                    timenoteAdapter.notifyDataSetChanged()
+                    home_rv.adapter = timenoteAdapter
                 }
             }
         }
     }
 
     override fun onCommentClicked() {
-        findNavController().navigate(HomeDirections.actionHomeToDetailedTimenote())
+        findNavController().navigate(HomeDirections.actionHomeToDetailedTimenote(1))
     }
 
 
@@ -425,11 +439,11 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
     }
 
     override fun onTimenoteRecentClicked() {
-        findNavController().navigate(HomeDirections.actionHomeToDetailedTimenote())
+        findNavController().navigate(HomeDirections.actionHomeToDetailedTimenote(1))
     }
 
     override fun onSeeMoreClicked() {
-        findNavController().navigate(HomeDirections.actionHomeToDetailedTimenote())
+        findNavController().navigate(HomeDirections.actionHomeToDetailedTimenote(1))
     }
 
     override fun onReportClicked() {

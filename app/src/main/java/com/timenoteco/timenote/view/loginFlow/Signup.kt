@@ -166,7 +166,6 @@ class Signup: Fragment(), View.OnClickListener {
                                 prefs.edit().putString(TOKEN, it.body()?.token).apply()
                             }
                             else -> {
-                                viewModel.markAsInvalidAuthentication()
                                 Toast.makeText(requireContext(), "Invalid Authentication", Toast.LENGTH_SHORT).show()
                             }
                         }
@@ -216,11 +215,9 @@ class Signup: Fragment(), View.OnClickListener {
                                     prefs.edit().putString(TOKEN, it.body()?.token).apply()
                                 }
                                 409 -> {
-                                    viewModel.markAsInvalidAuthentication()
                                     Toast.makeText(requireContext(), "Invalid Authentication", Toast.LENGTH_SHORT).show()
                                 }
                                 400 -> {
-                                    viewModel.markAsInvalidAuthentication()
                                     Toast.makeText(requireContext(), "Invalid Authentication", Toast.LENGTH_SHORT).show()
                                 }
                             }
