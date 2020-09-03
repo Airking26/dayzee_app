@@ -22,7 +22,7 @@
         android:textSize="13sp"
         android:textColor="@color/colorText"
         tools:text="Ronny Dahan"
-        app:layout_constraintEnd_toStartOf="@id/comment_like"
+        app:layout_constraintEnd_toStartOf="@id/comment_more"
         app:layout_constraintStart_toEndOf="@id/comment_user_pic_imageview"
         app:layout_constraintTop_toTopOf="@id/comment_user_pic_imageview"
         android:layout_width="0dp"
@@ -30,7 +30,7 @@
 
     <ImageView
         android:visibility="visible"
-        android:id="@+id/comment_like"
+        android:id="@+id/comment_more"
         android:layout_margin="8dp"
         android:src="@drawable/ic_more_vert_black_profile_24dp"
         app:layout_constraintBottom_toBottomOf="@id/comment_user_pic_imageview"

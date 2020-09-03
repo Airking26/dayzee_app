@@ -21,7 +21,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.preference.PreferenceManager
-import com.amplifyframework.core.Amplify
+import com.amazonaws.auth.BasicAWSCredentials
+import com.amazonaws.auth.BasicSessionCredentials
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
@@ -70,7 +71,6 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
         setContentView(R.layout.activity_main)
         setupController(true)
         Branch.getAutoInstance(this)
-        Amplify.configure(applicationContext)
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
     }
 

@@ -63,7 +63,7 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         tokenId = prefs.getString(TOKEN, null)
-        if(!prefs.getString(TOKEN, "").isNullOrBlank()) loginViewModel.markAsAuthenticated() else loginViewModel.markAsUnauthenticated()
+        //if(!prefs.getString(TOKEN, "").isNullOrBlank()) loginViewModel.markAsAuthenticated() else loginViewModel.markAsUnauthenticated()
         loginViewModel.getAuthenticationState().observe(requireActivity(), Observer {
             when (it) {
                 LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(HomeDirections.actionHomeToNavigation())
@@ -357,10 +357,10 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
         timenoteAdapter = ItemTimenoteAdapter(timenotes, timenotes, true, this, this, this as Fragment, true)
         home_rv.apply {
             layoutManager = LinearLayoutManager(context)
-            Handler().postDelayed({
+            /*Handler().postDelayed({
                 adapter = timenoteAdapter
                 home_swipe_refresh?.isRefreshing = false
-            }, 2000)
+            }, 2000)*/
 
         }
 

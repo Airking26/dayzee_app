@@ -33,7 +33,7 @@ class CreationTimenoteViewModel: ViewModel() {
     fun setPrice(price: Long) = timenoteLiveData.postValue(createTimenoteData.setPrice(price))
     fun setUrl(url: String) = timenoteLiveData.postValue(createTimenoteData.setUrl(url))
     fun setDescription(description: String) = timenoteLiveData.postValue(createTimenoteData.setDescription(description))
-    fun setPicUser(pic: MutableList<Bitmap>) = timenoteLiveData.postValue(createTimenoteData.setPic(pic))
+    fun setPicUser(pic: MutableList<AWSFile>) = timenoteLiveData.postValue(createTimenoteData.setPic(pic))
     fun setLocation(location: String) = timenoteLiveData.postValue(createTimenoteData.setPlace(location))
     fun setYear(year: Long) = timenoteLiveData.postValue(createTimenoteData.setYear(formatDate(YEAR, year)))
     fun setCategory(category: String) = timenoteLiveData.postValue(createTimenoteData.setCategory(category))

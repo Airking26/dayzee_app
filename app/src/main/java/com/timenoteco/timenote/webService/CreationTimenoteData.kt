@@ -13,7 +13,7 @@ class CreationTimenoteData {
         return timenoteModel
     }
 
-    fun setPic(pic: MutableList<Bitmap>): CreateTimenoteModel {
+    fun setPic(pic: MutableList<AWSFile>): CreateTimenoteModel {
         timenoteModel.pic = pic
         return timenoteModel
     }

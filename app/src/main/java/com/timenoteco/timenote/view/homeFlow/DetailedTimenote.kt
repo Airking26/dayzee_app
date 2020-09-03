@@ -39,7 +39,8 @@ import kotlinx.android.synthetic.main.fragment_detailed_fragment.*
 import kotlinx.android.synthetic.main.item_timenote_root.*
 
 
-class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.CommentPicUserListener {
+class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.CommentPicUserListener,
+    CommentAdapter.CommentMoreListener {
 
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
     private lateinit var prefs: SharedPreferences
@@ -83,7 +84,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
 
         )
 
-        commentAdapter = CommentAdapter(comments, this)
+        commentAdapter = CommentAdapter(comments, this, this)
 
         detailed_timenote_comments_rv.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -188,6 +189,13 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
 
     override fun onPicUserCommentClicked() {
         findNavController().navigate(DetailedTimenoteDirections.actionDetailedTimenoteToProfile().setWhereFrom(true).setFrom(args.from))
+    }
+
+    override fun onCommentMoreClicked() {
+        MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            listItems (items = listOf(getString(R.string.report), getString(R.string.delete))){ dialog, index, text ->  }
+            lifecycleOwner(this@DetailedTimenote)
+        }
     }
 
 }

@@ -244,4 +244,5 @@
     <string name="date">Date</string>
     <string name="countdown">Countdown</string>
     <string name="only_me">Only me</string>
+    <string name="trim">Trim</string>
 </resources>

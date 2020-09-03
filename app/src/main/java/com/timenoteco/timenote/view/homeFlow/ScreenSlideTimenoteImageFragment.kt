@@ -55,12 +55,10 @@ class ScreenSlideTimenoteImageFragment : Fragment() {
 
         })
         if (hideIcons!!) {
-            timenote_change_pic.visibility = View.GONE
             timenote_crop_pic.visibility = View.GONE
             timenote_add_pic.visibility = View.GONE
             timenote_delete_pic.visibility = View.GONE
         } else {
-            timenote_change_pic.visibility = View.VISIBLE
             timenote_crop_pic.visibility = View.VISIBLE
             timenote_add_pic.visibility = View.VISIBLE
             timenote_delete_pic.visibility = View.VISIBLE

@@ -1,11 +1,9 @@
 package com.timenoteco.timenote.listeners
 
-import android.graphics.Bitmap
-import android.net.Uri
+import com.timenoteco.timenote.model.AWSFile
 
 interface TimenoteCreationPicListeners {
-    fun onChangePicClicked(position: Int)
-    fun onCropPicClicked(bitmap: Bitmap, position: Int)
+    fun onCropPicClicked(awsFile: AWSFile?)
     fun onAddClicked()
-    fun onDeleteClicked(position: Int)
+    fun onDeleteClicked(position: AWSFile?)
 }

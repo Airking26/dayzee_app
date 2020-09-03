@@ -49,6 +49,7 @@ import com.timenoteco.timenote.adapter.AutoSuggestAdapter
 import com.timenoteco.timenote.adapter.WebSearchAdapter
 import com.timenoteco.timenote.androidView.input
 import com.timenoteco.timenote.listeners.PlacePickerListener
+import com.timenoteco.timenote.model.AWSFile
 import com.timenoteco.timenote.model.DetailedPlace
 import com.timenoteco.timenote.model.Location
 import com.timenoteco.timenote.viewModel.WebSearchViewModel
@@ -117,7 +118,7 @@ class Utils {
         })
     }
 
-    fun picturePicker(context: Context, resources: Resources, view: View, view1: View, fragment: Fragment, webSearchViewModel: WebSearchViewModel) {
+    fun picturePickerTimenote(context: Context, resources: Resources, view: View, view1: View, fragment: Fragment, webSearchViewModel: WebSearchViewModel) {
         val PERMISSIONS_STORAGE = arrayOf(
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -141,7 +142,7 @@ class Utils {
         }
     }
 
-    private fun createWebSearchDialog(context: Context, webSearchViewModel: WebSearchViewModel, fragment: Fragment, view: View, view1: View) {
+    fun createWebSearchDialog(context: Context, webSearchViewModel: WebSearchViewModel, fragment: Fragment, view: View?, view1: View?) {
         var recyclerView : RecyclerView?
         var webSearchAdapter : WebSearchAdapter? = null
         var progressDialog: Dialog = progressDialog(context)
@@ -152,8 +153,8 @@ class Utils {
                 webSearchViewModel.getListResults().removeObservers(fragment.viewLifecycleOwner)
                 webSearchViewModel.getListResults().observe(fragment.viewLifecycleOwner, Observer {
                     if (!it.isNullOrEmpty()) {
-                        view.visibility = View.GONE
-                        view1.visibility = View.VISIBLE
+                        view?.visibility = View.GONE
+                        view1?.visibility = View.VISIBLE
                         if (it.size <= 10) {
                             val dialog =
                                 MaterialDialog(context, BottomSheet(LayoutMode.MATCH_PARENT)).show {
@@ -193,8 +194,8 @@ class Utils {
             }
             onDismiss {
                 if (webSearchAdapter != null && webSearchAdapter?.images.isNullOrEmpty()) {
-                    view.visibility = View.VISIBLE
-                    view1.visibility = View.GONE
+                    view?.visibility = View.VISIBLE
+                    view1?.visibility = View.GONE
                 } else {
                     webSearchAdapter?.clear()
                 }
@@ -202,10 +203,6 @@ class Utils {
             positiveButton(R.string.search_on_web)
             lifecycleOwner(fragment.viewLifecycleOwner)
         }
-    }
-
-    fun showPicSelected(bitmap: Bitmap, position:Int?, croper: (Bitmap?, Int?) -> Unit){
-        croper(bitmap, position)
     }
 
     fun createPictureSingleBS(childFragmentManager: FragmentManager, tag: String){

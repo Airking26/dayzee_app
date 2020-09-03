@@ -422,7 +422,10 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
             val nearbyModifyModel : NearbyFilterModel? = Gson().fromJson<NearbyFilterModel>(prefs.getString("nearby", null),
                 object : TypeToken<NearbyFilterModel?>() {}.type)
             nearby_place.text = nearbyModifyModel?.where?.address?.address
-            nearby_time.text = nearbyModifyModel?.whenn
+            if(nearbyModifyModel?.whenn == null || nearbyModifyModel?.whenn?.isBlank()!!)
+                nearby_time.text = dateFormat.format(System.currentTimeMillis())
+            else
+                nearby_time.text = nearbyModifyModel.whenn
             if(nearbyToCompare != Gson().toJson(nearbyFilterData.loadNearbyFilter())){
                /* timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this)
                 nearby_rv.adapter = timenotePagingAdapter

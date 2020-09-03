@@ -68,6 +68,10 @@
             </intent-filter>
         </service>
 
+        <service
+            android:name="com.amazonaws.mobileconnectors.s3.transferutility.TransferService"
+            android:enabled="true" />
+
         <!-- Branch init -->
         <meta-data android:name="io.branch.sdk.BranchKey" android:value="key_live_ddP6u3tNWB2zC5rRnctFKnhfAsof8nj3" />
         <!-- Branch testing (TestMode "true" to simulate fresh installs on dev environment) -->

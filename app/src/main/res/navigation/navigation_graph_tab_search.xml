@@ -107,11 +107,11 @@
         android:label="detailedTimenoteSearch"
         tools:layout="@layout/fragment_detailed_fragment" >
         <action
-            android:id="@+id/action_detailedTimenote_to_createTimenoteSearch"
-            app:destination="@id/createTimenoteSearch" />
-        <action
             android:id="@+id/action_detailedTimenoteSearch_to_profileSearch"
             app:destination="@id/profileSearch" />
+        <action
+            android:id="@+id/action_detailedTimenoteSearch_to_createTimenoteSearch"
+            app:destination="@id/createTimenoteSearch" />
     </fragment>
     <fragment
         android:id="@+id/profileSearch"
@@ -121,22 +121,34 @@
             android:id="@+id/action_profileSearch_to_followPageSearch"
             app:destination="@id/followPageSearch" />
         <action
-            android:id="@+id/action_profileSearch_to_createTimenoteSearch"
-            app:destination="@id/createTimenoteSearch" />
-        <action
             android:id="@+id/action_profileSearch_to_detailedTimenoteSearch"
             app:destination="@id/detailedTimenoteSearch" />
         <action
             android:id="@+id/action_profileSearch_to_profileCalendarSearch"
             app:destination="@id/profileCalendarSearch" />
+        <action
+            android:id="@+id/action_profileSearch_to_createTimenoteSearch"
+            app:destination="@id/createTimenoteSearch" />
     </fragment>
     <fragment
         android:id="@+id/followPageSearch"
         android:name="com.timenoteco.timenote.view.searchFlow.FollowPageSearch"
         android:label="FollowPageSearch" />
     <fragment
+        android:id="@+id/previewTimenoteCreatedSearch"
+        android:name="com.timenoteco.timenote.view.searchFlow.PreviewTimenoteCreatedSearch"
+        android:label="PreviewTimenoteCreatedSearch">
+        <argument
+            android:name="from"
+            app:argType="integer" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileCalendarSearch"
+        android:name="com.timenoteco.timenote.view.searchFlow.ProfileCalendarSearch"
+        android:label="ProfileCalendarSearch" />
+    <fragment
         android:id="@+id/createTimenoteSearch"
-        android:name="com.timenoteco.timenote.view.searchFlow.CreateTimenoteSearch"
+        android:name="com.timenoteco.timenote.view.createTimenoteSearchFlow.CreateTimenoteSearch"
         android:label="CreateTimenoteSearch" >
         <action
             android:id="@+id/action_createTimenoteSearch_to_previewTimenoteCreatedSearch"
@@ -154,18 +166,6 @@
             app:nullable="true" />
         <argument
             android:name="from"
-            app:argType="integer"/>
-    </fragment>
-    <fragment
-        android:id="@+id/previewTimenoteCreatedSearch"
-        android:name="com.timenoteco.timenote.view.searchFlow.PreviewTimenoteCreatedSearch"
-        android:label="PreviewTimenoteCreatedSearch">
-        <argument
-            android:name="from"
             app:argType="integer" />
     </fragment>
-    <fragment
-        android:id="@+id/profileCalendarSearch"
-        android:name="com.timenoteco.timenote.view.searchFlow.ProfileCalendarSearch"
-        android:label="ProfileCalendarSearch" />
 </navigation>

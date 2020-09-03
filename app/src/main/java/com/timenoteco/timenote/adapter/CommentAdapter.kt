@@ -12,13 +12,17 @@ import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.RoundedCornersTransformation
 import com.timenoteco.timenote.model.CommentModel
-import com.timenoteco.timenote.view.searchFlow.DetailedTimenoteSearch
 import kotlinx.android.synthetic.main.item_comment.view.*
 
-class CommentAdapter(val comments: List<CommentModel>, val commentPicUserListener: CommentPicUserListener) : RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() {
+class CommentAdapter(val comments: List<CommentModel>, val commentPicUserListener: CommentPicUserListener, val commentMoreListener: CommentMoreListener) :
+    RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() {
 
     interface CommentPicUserListener{
         fun onPicUserCommentClicked()
+    }
+
+    interface CommentMoreListener{
+        fun onCommentMoreClicked()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentViewHolder =
@@ -27,14 +31,15 @@ class CommentAdapter(val comments: List<CommentModel>, val commentPicUserListene
     override fun getItemCount(): Int = comments.size
 
     override fun onBindViewHolder(holder: CommentViewHolder, position: Int) {
-        holder.bindComment(comments[position], commentPicUserListener)
+        holder.bindComment(comments[position], commentPicUserListener, commentMoreListener)
     }
 
     class CommentViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
         fun bindComment(
             commentModel: CommentModel,
-            commentPicUserListener: CommentPicUserListener
+            commentPicUserListener: CommentPicUserListener,
+            commentMoreListener: CommentMoreListener
         ) {
             Glide
                 .with(itemView)
@@ -57,6 +62,7 @@ class CommentAdapter(val comments: List<CommentModel>, val commentPicUserListene
             itemView.comment_username_comment.text = i
             itemView.comment_time.text = commentModel.time
 
+            itemView.comment_more.setOnClickListener{commentMoreListener.onCommentMoreClicked()}
             itemView.comment_user_pic_imageview.setOnClickListener { commentPicUserListener.onPicUserCommentClicked() }
         }
 

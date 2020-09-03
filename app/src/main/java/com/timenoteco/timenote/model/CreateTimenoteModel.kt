@@ -7,7 +7,7 @@ enum class StatusTimenote{
 }
 
 data class CreateTimenoteModel (
-    var pic: MutableList<Bitmap>?,
+    var pic: MutableList<AWSFile>?,
     var place: String?,
     var title: String?,
     var desc: String?,

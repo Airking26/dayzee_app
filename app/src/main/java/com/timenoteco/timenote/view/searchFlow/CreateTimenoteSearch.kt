@@ -1,4 +1,4 @@
-package com.timenoteco.timenote.view.searchFlow
+package com.timenoteco.timenote.view.createTimenoteSearchFlow
 
 import android.app.Activity
 import android.app.Dialog
@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Rect
@@ -42,6 +43,15 @@ import com.afollestad.materialdialogs.datetime.dateTimePicker
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
 import com.afollestad.materialdialogs.list.listItemsMultiChoice
+import com.amazonaws.auth.BasicAWSCredentials
+import com.amazonaws.mobile.client.AWSMobileClient
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
+import com.amazonaws.regions.Region
+import com.amazonaws.regions.Regions
+import com.amazonaws.services.s3.AmazonS3Client
+import com.amazonaws.services.s3.model.CannedAccessControlList
 import com.asksira.bsimagepicker.BSImagePicker
 import com.bumptech.glide.Glide
 import com.google.android.libraries.places.api.Places
@@ -50,7 +60,6 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.AutocompleteActivity
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
-import com.google.android.play.core.splitinstall.f
 import com.theartofdev.edmodo.cropper.CropImageView
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ScreenSlideCreationTimenotePagerAdapter
@@ -59,11 +68,10 @@ import com.timenoteco.timenote.androidView.input
 import com.timenoteco.timenote.common.HashTagHelper
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.BackToHomeListener
-import com.timenoteco.timenote.listeners.ExitCreationTimenote
 import com.timenoteco.timenote.listeners.TimenoteCreationPicListeners
+import com.timenoteco.timenote.model.AWSFile
 import com.timenoteco.timenote.model.CreateTimenoteModel
 import com.timenoteco.timenote.model.StatusTimenote
-import com.timenoteco.timenote.view.searchFlow.SearchDirections
 import com.timenoteco.timenote.viewModel.CreationTimenoteViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.TimenoteViewModel
@@ -72,9 +80,6 @@ import kotlinx.android.synthetic.main.cropview.view.*
 import kotlinx.android.synthetic.main.fragment_create_timenote.*
 import kotlinx.android.synthetic.main.friends_search.view.*
 import mehdi.sakout.fancybuttons.FancyButton
-import okhttp3.MediaType
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
@@ -88,6 +93,12 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
     TimenoteCreationPicListeners, WebSearchAdapter.ImageChoosedListener, WebSearchAdapter.MoreImagesClicked,
     HashTagHelper.OnHashTagClickListener{
 
+    val amazonClient = AmazonS3Client(
+        BasicAWSCredentials(
+            "AKIA5JWTNYVYJQIE5GWS",
+            "pVf9Wxd/rK4r81FsOsNDaaOJIKE5AGbq96Lh4RB9"
+        )
+    )
     private val args : CreateTimenoteSearchArgs by navArgs()
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
     private val AUTOCOMPLETE_REQUEST_CODE: Int = 11
@@ -103,7 +114,7 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
     private lateinit var noAnswer: TextView
     private lateinit var vp: ViewPager2
     private lateinit var screenSlideCreationTimenotePagerAdapter: ScreenSlideCreationTimenotePagerAdapter
-    private var images: MutableList<Bitmap>? = mutableListOf()
+    private var images: MutableList<AWSFile>? = mutableListOf()
     private lateinit var titleInput: String
     private var endDate: Long? = null
     private var formCompleted: Boolean = true
@@ -128,16 +139,22 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
     private val DATE_FORMAT_DAY_AND_TIME = "EEE, d MMM yyyy hh:mm aaa"
     private val DATE_FORMAT_ONLY_DAY = "EEE, d MMM yyyy"
     private lateinit var dateFormatDateAndTime: SimpleDateFormat
-    private var placesList: List<Place.Field> = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS)
+    private var placesList: List<Place.Field> = listOf(
+        Place.Field.ID,
+        Place.Field.NAME,
+        Place.Field.ADDRESS
+    )
     private lateinit var placesClient: PlacesClient
     private val loginViewModel: LoginViewModel by activityViewModels()
     private lateinit var backToHomeListener: BackToHomeListener
     private lateinit var prefs: SharedPreferences
     val TOKEN: String = "TOKEN"
     private var tokenId: String? = null
+    private var imagesUrl: MutableList<String> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AWSMobileClient.getInstance().initialize(requireContext()).execute();
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         tokenId = prefs.getString(TOKEN, null)
         Places.initialize(requireContext(), "AIzaSyBhM9HQo1fzDlwkIVqobfmrRmEMCWTU1CA")
@@ -156,18 +173,69 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
         backToHomeListener = context as BackToHomeListener
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+    fun pushPic(file: File, bitmap: Bitmap){
+        amazonClient.setRegion(Region.getRegion(Regions.EU_WEST_3))
+        val transferUtiliy = TransferUtility(amazonClient, requireContext())
+        compressFile(file, bitmap)
+        val key = "timenote/${UUID.randomUUID().mostSignificantBits}"
+        val transferObserver = transferUtiliy.upload(
+            "timenote-dev-images", key,
+            file, CannedAccessControlList.Private
+        )
+        transferObserver.setTransferListener(object : TransferListener {
+            override fun onStateChanged(id: Int, state: TransferState?) {
+                Log.d(TAG, "onStateChanged: ${state?.name}")
+                if (state == TransferState.COMPLETED) {
+                    imagesUrl.add(
+                        amazonClient.getResourceUrl("timenote-dev-images", key).toString()
+                    )
+                    if(images?.size == imagesUrl.size) {
+                        progressDialog.hide()
+                        findNavController().navigate(CreateTimenoteSearchDirections.actionCreateTimenoteSearchToPreviewTimenoteCreatedSearch(2))
+                    }
+
+                }
+
+            }
+
+            override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {
+                Log.d(TAG, "onProgressChanged: ")
+            }
+
+            override fun onError(id: Int, ex: java.lang.Exception?) {
+                Log.d(TAG, "onError: ${ex?.message}")
+                Toast.makeText(requireContext(), ex?.message, Toast.LENGTH_LONG).show()
+            }
+
+        })
+
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? =
         inflater.inflate(R.layout.fragment_create_timenote, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setUp()
-        if(!args.modify)creationTimenoteViewModel.getCreateTimeNoteLiveData().observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            populateModel(it)
-        }) else timenoteViewModel.modifySpecificTimenote(tokenId!!, args.id!!, args.timenoteBody!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            /*val createTimenoteModel = CreateTimenoteModel(it.body()?.pictures, it.body()?.location?.address?.address, it.body()?.title, it.body()?.description,
+        if(!args.modify)creationTimenoteViewModel.getCreateTimeNoteLiveData().observe(
+            viewLifecycleOwner,
+            androidx.lifecycle.Observer {
+                populateModel(it)
+            }) else timenoteViewModel.modifySpecificTimenote(
+            tokenId!!,
+            args.id!!,
+            args.timenoteBody!!
+        ).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            /*val createTimenoteSearch
+           Model = CreateTimenoteSearch
+           Model(it.body()?.pictures, it.body()?.location?.address?.address, it.body()?.title, it.body()?.description,
             "", it?.body()?.startingAt, it.body()?.endingAt, it.body()?.category?.subcategory, it.body()?.colorHex, it.body()?.startingAt, it.body()?.endingAt,
             it.body()?.price?.toLong(), it.body()?.url, it.body()?.status.toInt())
-            populateModel(createTimenoteModel)
+            populateModel(createTimenoteSearch
+           Model)
              */
         })
     }
@@ -294,7 +362,11 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
         picCl = pic_cl
         vp = vp_pic
         vp_pic.apply {
-            screenSlideCreationTimenotePagerAdapter = ScreenSlideCreationTimenotePagerAdapter(this@CreateTimenoteSearch, images, false)
+            screenSlideCreationTimenotePagerAdapter = ScreenSlideCreationTimenotePagerAdapter(
+                this@CreateTimenoteSearch,
+                images,
+                false
+            )
             adapter = screenSlideCreationTimenotePagerAdapter
         }
         indicator.setViewPager(vp_pic)
@@ -328,10 +400,12 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
                 Activity.RESULT_OK -> {
                     data?.let {
                         val place = Autocomplete.getPlaceFromIntent(data)
-                        creationTimenoteViewModel.fetchLocation(place.id!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-                            //creationTimenoteViewModel.setLocationObject(it.body()!!)
-                            creationTimenoteViewModel.setLocation(place.address!!)
-                        })
+                        creationTimenoteViewModel.fetchLocation(place.id!!).observe(
+                            viewLifecycleOwner,
+                            androidx.lifecycle.Observer {
+                                //creationTimenoteViewModel.setLocationObject(it.body()!!)
+                                creationTimenoteViewModel.setLocation(place.address!!)
+                            })
                     }
                 }
                 AutocompleteActivity.RESULT_ERROR -> {
@@ -349,17 +423,31 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         if (requestCode == 2) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                utils.picturePicker(requireContext(), resources, takeAddPicTv, progressBar, this, webSearchViewModel)
+                utils.picturePickerTimenote(
+                    requireContext(),
+                    resources,
+                    takeAddPicTv,
+                    progressBar,
+                    this,
+                    webSearchViewModel
+                )
             }
         }
     }
 
     override fun onClick(v: View?) {
         when (v) {
-            when_cardview -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            when_cardview -> MaterialDialog(
+                requireContext(),
+                BottomSheet(LayoutMode.WRAP_CONTENT)
+            ).show {
                 dateTimePicker { _, datetime ->
                     fixedDate.visibility = View.VISIBLE
                     toLabel.visibility = View.GONE
@@ -381,7 +469,10 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
                     addEndDateTv.visibility = View.VISIBLE
                 }
             }
-            addEndDateTv -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            addEndDateTv -> MaterialDialog(
+                requireContext(),
+                BottomSheet(LayoutMode.WRAP_CONTENT)
+            ).show {
                 dateTimePicker { _, datetime ->
                     fixedDate.visibility = View.GONE
                     addEndDateTv.visibility = View.GONE
@@ -398,10 +489,19 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
                 }
             }
             create_timenote_next_btn -> {
-                //if(checkFormCompleted())
-                findNavController().navigate(CreateTimenoteSearchDirections.actionCreateTimenoteSearchToPreviewTimenoteCreatedSearch(args.from))
+                if (checkFormCompleted()) {
+                    if (!images?.isNullOrEmpty()!!) {
+                        progressDialog.show()
+                        for (awsFile in images!!) {
+                            pushPic(File(getPath(awsFile.uri)!!), MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, awsFile.uri))
+                        }
+                    } else findNavController().navigate(CreateTimenoteSearchDirections.actionCreateTimenoteSearchToPreviewTimenoteCreatedSearch(2))
+                }
             }
-            from_label -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show{
+            from_label -> MaterialDialog(
+                requireContext(),
+                BottomSheet(LayoutMode.WRAP_CONTENT)
+            ).show {
                 dateTimePicker { _, datetime ->
                     startDate = datetime.time.time
                     fromTv.text = dateFormatDateAndTime.format(startDate)
@@ -414,7 +514,10 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
                 }
                 lifecycleOwner(this@CreateTimenoteSearch)
             }
-            to_label -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            to_label -> MaterialDialog(
+                requireContext(),
+                BottomSheet(LayoutMode.WRAP_CONTENT)
+            ).show {
                 dateTimePicker { dialog, datetime ->
                     endDate = datetime.time.time
                     toTv.text = dateFormatDateAndTime.format(endDate)
@@ -426,9 +529,17 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
                 }
                 lifecycleOwner(this@CreateTimenoteSearch)
             }
-            where_cardview -> startActivityForResult(Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, placesList).build(requireContext()), AUTOCOMPLETE_REQUEST_CODE)
+            where_cardview -> startActivityForResult(
+                Autocomplete.IntentBuilder(
+                    AutocompleteActivityMode.OVERLAY,
+                    placesList
+                ).build(requireContext()), AUTOCOMPLETE_REQUEST_CODE
+            )
             share_with_cardview -> shareWith()
-            category_cardview -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            category_cardview -> MaterialDialog(
+                requireContext(),
+                BottomSheet(LayoutMode.WRAP_CONTENT)
+            ).show {
                 title(R.string.category)
                 listItems(
                     items = listOf(
@@ -457,7 +568,10 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
                 }
                 lifecycleOwner(this@CreateTimenoteSearch)
             }
-            title_cardview -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            title_cardview -> MaterialDialog(
+                requireContext(),
+                BottomSheet(LayoutMode.WRAP_CONTENT)
+            ).show {
                 title(R.string.title)
                 input(
                     inputType = InputType.TYPE_CLASS_TEXT,
@@ -483,18 +597,28 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
                     prefill = creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.desc
                 ) { materialDialog, charSequence ->
                     descTv.text = charSequence.toString()
-                    val hashTagHelper = HashTagHelper.Creator.create(R.color.colorAccentCustom, this@CreateTimenoteSearch, null)
+                    val hashTagHelper = HashTagHelper.Creator.create(
+                        R.color.colorAccentCustom,
+                        this@CreateTimenoteSearch,
+                        null
+                    )
                     hashTagHelper.handle(descTv)
                     val hashtagList = hashTagHelper.getAllHashTags(true)
                     var descWithoutHashtag = descTv.text.toString()
-                    for(hashtag in hashtagList){
+                    for (hashtag in hashtagList) {
                         descWithoutHashtag = descWithoutHashtag.replace(hashtag, "")
                     }
-                    var descWithoutHashtagFormated = descWithoutHashtag.replace("\\s+".toRegex(), " ").trim().capitalize()
+                    var descWithoutHashtagFormated = descWithoutHashtag.replace(
+                        "\\s+".toRegex(),
+                        " "
+                    ).trim().capitalize()
                     creationTimenoteViewModel.setDescription(charSequence.toString())
                 }
             }
-            create_timenote_fifth_color -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            create_timenote_fifth_color -> MaterialDialog(
+                requireContext(),
+                BottomSheet(LayoutMode.WRAP_CONTENT)
+            ).show {
                 title(R.string.colors)
                 colorChooser(
                     colors = ColorPalette.Primary,
@@ -558,23 +682,44 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
             }
             create_timenote_take_add_pic -> {
                 images?.clear()
-                utils.picturePicker(requireContext(), resources, takeAddPicTv, progressBar, this, webSearchViewModel)
+                utils.picturePickerTimenote(
+                    requireContext(),
+                    resources,
+                    takeAddPicTv,
+                    progressBar,
+                    this,
+                    webSearchViewModel
+                )
             }
-            paid_timenote_cardview -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            paid_timenote_cardview -> MaterialDialog(
+                requireContext(),
+                BottomSheet(LayoutMode.WRAP_CONTENT)
+            ).show {
                 title(R.string.paid_timenote)
-                listItems(items = listOf(getString(R.string.free), getString(R.string.paid),getString(R.string.no_answer))){
-                        _, index, text ->
-                    when(index){
+                listItems(
+                    items = listOf(
+                        getString(R.string.free), getString(R.string.paid), getString(
+                            R.string.no_answer
+                        )
+                    )
+                ) { _, index, text ->
+                    when (index) {
                         0 -> {
                             noAnswer.text = text.toString()
                             creationTimenoteViewModel.setStatus(StatusTimenote.FREE)
-                            creationTimenoteViewModel.setPrice(0L) }
+                            creationTimenoteViewModel.setPrice(0L)
+                        }
                         1 -> {
                             noAnswer.text = text.toString()
-                            MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                            MaterialDialog(
+                                requireContext(),
+                                BottomSheet(LayoutMode.WRAP_CONTENT)
+                            ).show {
                                 title(R.string.price)
                                 input(inputType = InputType.TYPE_CLASS_NUMBER) { _, charSequence ->
-                                    creationTimenoteViewModel.setPrice(charSequence.toString().toLong())
+                                    creationTimenoteViewModel.setPrice(
+                                        charSequence.toString().toLong()
+                                    )
                                     creationTimenoteViewModel.setStatus(StatusTimenote.PAID)
                                     lifecycleOwner(this@CreateTimenoteSearch)
                                 }
@@ -587,15 +732,21 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
                     }
                 }
             }
-            url_cardview -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            url_cardview -> MaterialDialog(
+                requireContext(),
+                BottomSheet(LayoutMode.WRAP_CONTENT)
+            ).show {
                 title(R.string.link)
-                input(inputType = InputType.TYPE_TEXT_VARIATION_URI, prefill = creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.url) { _, charSequence ->
+                input(
+                    inputType = InputType.TYPE_TEXT_VARIATION_URI,
+                    prefill = creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.url
+                ) { _, charSequence ->
                     creationTimenoteViewModel.setUrl(charSequence.toString())
                 }
                 lifecycleOwner(this@CreateTimenoteSearch)
             }
             create_timenote_btn_back -> {
-                if(args.from == 0) backToHomeListener.onBackHome()
+                if (args.from == 0) backToHomeListener.onBackHome()
                 else findNavController().popBackStack()
             }
 
@@ -606,7 +757,8 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
         MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             title(R.string.share_with)
             listItems(
-                items = listOf("All", "Only me", "Groups", "Friends", "Create a new group" )) { _, _, text ->
+                items = listOf("All", "Only me", "Groups", "Friends", "Create a new group")
+            ) { _, _, text ->
                 when (text) {
                     "Groups" -> MaterialDialog(
                         requireContext(),
@@ -639,10 +791,19 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
                         lifecycleOwner(this@CreateTimenoteSearch)
                     }
                     "Create a new group" ->
-                        MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                        MaterialDialog(
+                            requireContext(),
+                            BottomSheet(LayoutMode.WRAP_CONTENT)
+                        ).show {
                             title(R.string.name_group)
-                            input(inputType = InputType.TYPE_CLASS_TEXT, maxLength = 20) { materialDialog, charSequence ->
-                                val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                            input(
+                                inputType = InputType.TYPE_CLASS_TEXT,
+                                maxLength = 20
+                            ) { materialDialog, charSequence ->
+                                val dial = MaterialDialog(
+                                    requireContext(),
+                                    BottomSheet(LayoutMode.WRAP_CONTENT)
+                                ).show {
                                     customView(R.layout.friends_search)
                                     lifecycleOwner(this@CreateTimenoteSearch)
                                 }
@@ -659,7 +820,7 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
         }
     }
 
-    private fun cropView(bitmap: Bitmap?, position: Int?) {
+    private fun cropView(awsFile: AWSFile?) {
         var cropView: CropImageView? = null
         val dialog = MaterialDialog(requireContext()).show {
             customView(R.layout.cropview)
@@ -668,8 +829,10 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
                 progressBar.visibility = View.GONE
                 takeAddPicTv.visibility = View.GONE
                 picCl.visibility = View.VISIBLE
-                if(position == null)images?.add(cropView?.croppedImage!!)
-                else images?.set(position, cropView?.croppedImage!!)
+                if(awsFile == null)
+                    images?.add(AWSFile(Uri.parse(""), cropView?.croppedImage))
+                else
+                    awsFile.bitmap = cropView?.croppedImage!!
                 screenSlideCreationTimenotePagerAdapter.notifyDataSetChanged()
                 vp.adapter = screenSlideCreationTimenotePagerAdapter
                 creationTimenoteViewModel.setPicUser(images!!)
@@ -678,8 +841,8 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
         }
 
         cropView = dialog.getCustomView().crop_view as CropImageView
-        cropView.setImageBitmap(bitmap)
-        if(bitmap != null){
+        cropView.setImageBitmap(awsFile?.bitmap)
+        if(awsFile?.bitmap != null){
             hideChooseBackground()
         }
     }
@@ -708,23 +871,23 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
         if (success) {
             val imageFile = File(storageDir, imageFileName)
             savedImagePath = imageFile.absolutePath
-            try {
-                val fOut: OutputStream = FileOutputStream(imageFile)
-                image.compress(Bitmap.CompressFormat.JPEG, 100, fOut)
-                fOut.close()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            compressFile(imageFile, image)
 
             galleryAddPic(savedImagePath, dialog)
-
-            //val reqFile: RequestBody = RequestBody.create(MediaType.parse("image/*"), imageFile)
-            //val body: MultipartBody.Part = MultipartBody.Part.createFormData("upload", imageFileName, reqFile)
-
         }
 
 
         return savedImagePath
+    }
+
+    private fun compressFile(imageFile: File, image: Bitmap) {
+        try {
+            val fOut: OutputStream = FileOutputStream(imageFile)
+            image.compress(Bitmap.CompressFormat.JPEG, 100, fOut)
+            fOut.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun galleryAddPic(imagePath: String?, dialog: MaterialDialog) {
@@ -738,7 +901,13 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
         utils.createPictureMultipleBS(childFragmentManager, "multiple")
     }
 
-    private fun colorChoosedUI(fancyButton1: FancyButton, fancyButton2: FancyButton, fancyButton3: FancyButton, fancyButton4: FancyButton, fancyButton5: FancyButton) {
+    private fun colorChoosedUI(
+        fancyButton1: FancyButton,
+        fancyButton2: FancyButton,
+        fancyButton3: FancyButton,
+        fancyButton4: FancyButton,
+        fancyButton5: FancyButton
+    ) {
         fancyButton1.setBorderWidth(24)
         fancyButton1.setBorderColor(android.R.color.black)
         fancyButton2.setBorderWidth(24)
@@ -752,12 +921,10 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
 
     fun checkFormCompleted(): Boolean {
         val values = creationTimenoteViewModel.getCreateTimeNoteLiveData().value
-        if (values?.pic == null) formCompleted = false
-        if (values?.endDate.isNullOrBlank()) formCompleted = false
-        if (values?.startDate.isNullOrBlank()) formCompleted = false
-        if (values?.place.isNullOrBlank()) formCompleted = false
-        if (values?.title.isNullOrBlank()) formCompleted = false
-        if (values?.category.isNullOrBlank()) formCompleted = false
+        //if (values?.endDate.isNullOrBlank()) formCompleted = false
+        //if (values?.startDate.isNullOrBlank()) formCompleted = false
+        //if (values?.place.isNullOrBlank()) formCompleted = false
+        //if (values?.title.isNullOrBlank()) formCompleted = false
         if (!formCompleted) Toast.makeText(
             requireContext(),
             getString(R.string.error_message_filling),
@@ -767,19 +934,32 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
     }
 
     override fun onSingleImageSelected(uri: Uri?, tag: String?) {
-        if(tag != "single") {
-            utils.showPicSelected(MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri), tag?.toInt(),  this::cropView)
-        } else {
-            utils.showPicSelected(MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri), null, this::cropView)
-        }
+        images?.add(AWSFile(uri, MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri)))
+        creationTimenoteViewModel.setPicUser(images!!)
+        screenSlideCreationTimenotePagerAdapter.notifyDataSetChanged()
+        indicator.setViewPager(vp_pic)
+        pic_cl.visibility = View.VISIBLE
+        progressBar.visibility = View.GONE
+        takeAddPicTv.visibility = View.GONE
+        hideChooseBackground()
+    }
+
+    fun getPath(uri: Uri?): String? {
+        val projection = arrayOf(MediaStore.Images.Media.DATA)
+        val cursor: Cursor = requireActivity().managedQuery(uri, projection, null, null, null)
+        requireActivity().startManagingCursor(cursor)
+        val column_index: Int = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+        cursor.moveToFirst()
+        return cursor.getString(column_index)
     }
 
     override fun onMultiImageSelected(uriList: MutableList<Uri>?, tag: String?) {
         for(image in uriList!!){
-            images?.add(MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, image))
+            images?.add(AWSFile(image, MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, image)))
         }
         creationTimenoteViewModel.setPicUser(images!!)
         screenSlideCreationTimenotePagerAdapter.notifyDataSetChanged()
+        indicator.setViewPager(vp_pic)
         pic_cl.visibility = View.VISIBLE
         progressBar.visibility = View.GONE
         takeAddPicTv.visibility = View.GONE
@@ -800,21 +980,33 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
         }
     }
 
-    override fun onChangePicClicked(position: Int) {
-        utils.createPictureSingleBS(childFragmentManager, position.toString())
-    }
-
-    override fun onCropPicClicked(bitmap: Bitmap, position: Int) {
-        cropView(bitmap, position)
+    override fun onCropPicClicked(awsFile: AWSFile?) {
+        cropView(awsFile)
     }
 
     override fun onAddClicked() {
-        utils.picturePicker(requireContext(), resources, takeAddPicTv, progressBar, this, webSearchViewModel)
+        utils.picturePickerTimenote(
+            requireContext(),
+            resources,
+            takeAddPicTv,
+            progressBar,
+            this,
+            webSearchViewModel
+        )
     }
 
-    override fun onDeleteClicked(position: Int) {
-        images?.removeAt(position)
-        screenSlideCreationTimenotePagerAdapter.notifyDataSetChanged()
+    override fun onDeleteClicked(awsFile: AWSFile?) {
+        images?.remove(awsFile)
+        creationTimenoteViewModel.setPicUser(images!!)
+        vp_pic.apply {
+            screenSlideCreationTimenotePagerAdapter = ScreenSlideCreationTimenotePagerAdapter(
+                this@CreateTimenoteSearch,
+                images,
+                false
+            )
+            adapter = screenSlideCreationTimenotePagerAdapter
+        }
+        indicator.setViewPager(vp_pic)
         if(images?.size == 0){
             picCl.visibility = View.GONE
             takeAddPicTv.visibility = View.VISIBLE
@@ -834,7 +1026,7 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
         webSearchViewModel.getBitmap().removeObservers(viewLifecycleOwner)
         webSearchViewModel.decodeSampledBitmapFromResource(URL(bitmap), Rect(), 100, 100)
         webSearchViewModel.getBitmap().observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            if(it != null) {
+            if (it != null) {
                 saveImage(it, dialog)
                 webSearchViewModel.clearBitmap()
                 webSearchViewModel.getBitmap().removeObservers(viewLifecycleOwner)
@@ -848,4 +1040,6 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
 
     override fun onHashTagClicked(hashTag: String?) {
     }
+
+
 }

@@ -40,7 +40,7 @@ import kotlinx.android.synthetic.main.item_timenote_root.*
 
 
 class DetailedTimenoteSearch : Fragment(), View.OnClickListener,
-    CommentAdapter.CommentPicUserListener {
+    CommentAdapter.CommentPicUserListener, CommentAdapter.CommentMoreListener {
 
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
     private lateinit var prefs: SharedPreferences
@@ -82,7 +82,7 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener,
 
         )
 
-        commentAdapter = CommentAdapter(comments, this)
+        commentAdapter = CommentAdapter(comments, this, this)
 
         detailed_timenote_comments_rv.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -152,7 +152,7 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener,
             title(R.string.posted_false)
             listItems (items = listItems){ dialog, index, text ->
                 when(text.toString()){
-                    context.getString(R.string.duplicate) -> findNavController().navigate(DetailedTimenoteSearchDirections.actionDetailedTimenoteToCreateTimenoteSearch(true, "",
+                    context.getString(R.string.duplicate) -> findNavController().navigate(DetailedTimenoteSearchDirections.actionDetailedTimenoteSearchToCreateTimenoteSearch(true, "",
                         TimenoteBody("", CreatedBy("", "", "", "", "", "", ""),
                             "", "", listOf(), "", Location(0.0, 0.0, Address("", "", "", "")),
                             Category("",""), "", "", listOf(), "", 0, ""), 2))
@@ -187,6 +187,13 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener,
 
     override fun onPicUserCommentClicked() {
         findNavController().navigate(DetailedTimenoteSearchDirections.actionDetailedTimenoteSearchToProfileSearch())
+    }
+
+    override fun onCommentMoreClicked() {
+        MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            listItems (items = listOf(getString(R.string.report), getString(R.string.delete))){ dialog, index, text ->  }
+            lifecycleOwner(this@DetailedTimenoteSearch)
+        }
     }
 
 }
