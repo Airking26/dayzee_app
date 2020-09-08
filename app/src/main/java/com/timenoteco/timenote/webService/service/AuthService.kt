@@ -16,7 +16,7 @@ interface AuthService {
     suspend fun signInEmail(@Body userEmailSignInBody: UserEmailSignInBody): Response<RootUserResponse>
 
     @POST("auth/signIn/userName")
-    suspend fun signInUsername(@Body userUserNameSignInBody: UserUserNameSignInBody): Response<RootUserResponse>
+    suspend fun signInUsername(@Body userNameSignInBody: UserNameSignInBody): Response<RootUserResponse>
 
     @GET("auth/availability/email/{email}")
     suspend fun checkEmailAvailability(@Path("email") email: String): Response<IsAvailable>

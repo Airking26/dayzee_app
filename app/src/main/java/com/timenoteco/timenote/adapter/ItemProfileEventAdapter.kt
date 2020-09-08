@@ -17,13 +17,13 @@ import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.ItemProfileCardListener
 import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
-import com.timenoteco.timenote.model.Timenote
+import com.timenoteco.timenote.model.TimenoteInfoDTO
 import kotlinx.android.synthetic.main.fragment_filter.view.*
 import kotlinx.android.synthetic.main.item_profile_timenote_list_style.view.*
 
 
 class ItemProfileEventAdapter(
-    private var events: MutableList<Timenote>,
+    private var events: MutableList<TimenoteInfoDTO>,
     private val timenoteOptionsListener: TimenoteOptionsListener,
     private val onRemoveFilterBarListener: OnRemoveFilterBarListener,
     private val onCardClicked: ItemProfileCardListener,
@@ -57,7 +57,7 @@ class ItemProfileEventAdapter(
 
     class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         fun bindListStyleItem(
-            event: Timenote,
+            event: TimenoteInfoDTO,
             timenoteOptionsListener: TimenoteOptionsListener,
             onCardClicked: ItemProfileCardListener
         ) {
@@ -65,17 +65,17 @@ class ItemProfileEventAdapter(
             itemView.setOnClickListener { onCardClicked.onCardClicked() }
 
             itemView.profile_item_name_event.text = event.title
-            itemView.profile_item_address_event.text = event.place
+            itemView.profile_item_address_event.text = event.location.address.address
             itemView.profile_item_date_event.text = Utils().calculateDecountTime()
             itemView.profile_item_options.setOnClickListener { createOptionsOnTimenote(itemView.context, true, timenoteOptionsListener) }
             Glide
                 .with(itemView)
-                .load(event.pic!![0])
+                .load(event.pictures[0])
                 .into(itemView.profile_item_pic_event_imageview)
 
             Glide
                 .with(itemView)
-                .load(event.pic_user)
+                .load(event.createdBy.pictureURL)
                 .apply(RequestOptions.circleCropTransform())
                 .into(itemView.profile_item_pic_profile_imageview)
         }

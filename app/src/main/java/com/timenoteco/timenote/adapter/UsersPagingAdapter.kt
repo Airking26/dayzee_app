@@ -9,14 +9,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
-import com.timenoteco.timenote.model.UserResponse
-import kotlinx.android.synthetic.main.item_timenote.view.*
+import com.timenoteco.timenote.model.UserInfoDTO
 import kotlinx.android.synthetic.main.item_user.view.*
 
-class UsersPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserResponse>): PagingDataAdapter<UserResponse, UsersPagingAdapter.UserViewHolder>(diffCallback){
+class UsersPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>): PagingDataAdapter<UserInfoDTO, UsersPagingAdapter.UserViewHolder>(diffCallback){
 
     class UserViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        fun bindUser(item: UserResponse?) {
+        fun bindUser(item: UserInfoDTO?) {
             Glide
                 .with(itemView)
                 .load(item?.email)
@@ -35,12 +34,12 @@ class UsersPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserResponse>): Pag
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder =
         UserViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_user, parent, false))
 
-    object UserComparator: DiffUtil.ItemCallback<UserResponse>(){
-        override fun areItemsTheSame(oldItem: UserResponse, newItem: UserResponse): Boolean {
+    object UserComparator: DiffUtil.ItemCallback<UserInfoDTO>(){
+        override fun areItemsTheSame(oldItem: UserInfoDTO, newItem: UserInfoDTO): Boolean {
             return oldItem.createdAt == newItem.createdAt
         }
 
-        override fun areContentsTheSame(oldItem: UserResponse, newItem: UserResponse): Boolean {
+        override fun areContentsTheSame(oldItem: UserInfoDTO, newItem: UserInfoDTO): Boolean {
             return oldItem == newItem
         }
 

@@ -1,30 +1,35 @@
 package com.timenoteco.timenote.webService
 
+import com.timenoteco.timenote.model.SocialMedias
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.timenoteco.timenote.model.ProfilModifyModel
+import com.timenoteco.timenote.model.*
 import java.lang.reflect.Type
 
 class ProfileModifyData(context: Context) {
 
     private val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-    private val type: Type = object : TypeToken<ProfilModifyModel?>() {}.type
+    private val type: Type = object : TypeToken<UpdateUserInfoDTO?>() {}.type
 
-    private var profilModifyModel: ProfilModifyModel? = Gson().fromJson<ProfilModifyModel>(
+    private var profilModifyModel: UpdateUserInfoDTO? = Gson().fromJson<UpdateUserInfoDTO>(
         prefs.getString("profile",
-        Gson().toJson(ProfilModifyModel(null, null, null,
-            null, null, null, null, null,
-            null, null, null, null, null, null))), type)
+        Gson().toJson(UpdateUserInfoDTO(status = "public", dateFormat = "first", socialMedias =
+        SocialMedias(
+            Youtube("", false),
+            Facebook("", false),
+            Instagram("", false),
+            WhatsApp("", false), LinkedIn("", false))
+        ))), type)
 
-    fun loadProfileModifyModel(): ProfilModifyModel? {
+    fun loadProfileModifyModel(): UpdateUserInfoDTO? {
         return profilModifyModel
     }
 
-    fun setNameAppearance(nameAppearance: String) {
-        profilModifyModel?.nameAppearance = nameAppearance
+    fun setPicture(url: String){
+        profilModifyModel?.picture = url
         notifyProfileDataChanged()
     }
 
@@ -33,12 +38,12 @@ class ProfileModifyData(context: Context) {
     }
 
     fun setName(name: String){
-        profilModifyModel?.name = name
+        profilModifyModel?.givenName = name
         notifyProfileDataChanged()
     }
 
     fun setLocation(location: String) {
-        profilModifyModel?.location = location
+        profilModifyModel?.location?.address?.address = location
         notifyProfileDataChanged()
     }
 
@@ -47,43 +52,43 @@ class ProfileModifyData(context: Context) {
         notifyProfileDataChanged()
     }
 
-    fun setGender(gender: Int) {
+    fun setGender(gender: String) {
         profilModifyModel?.gender = gender
         notifyProfileDataChanged()
     }
 
-    fun setStatusAccount(statusAccount: Int) {
-        profilModifyModel?.statusAccount = statusAccount
+    fun setStatusAccount(statusAccount: String) {
+        profilModifyModel?.status = statusAccount
         notifyProfileDataChanged()
     }
 
-    fun setFormatTimenote(formatTimenote: Int) {
-        profilModifyModel?.formatTimenote = formatTimenote
+    fun setFormatTimenote(formatTimenote: String) {
+        profilModifyModel?.dateFormat = formatTimenote
         notifyProfileDataChanged()
     }
 
     fun setYoutubeLink(link: String) {
-        profilModifyModel?.youtubeLink = link
+        profilModifyModel?.socialMedias?.youtube?.url = link
         notifyProfileDataChanged()
     }
 
     fun setFacebookLink(link: String){
-        profilModifyModel?.facebookLink = link
+        profilModifyModel?.socialMedias?.facebook?.url = link
         notifyProfileDataChanged()
     }
 
     fun setInstaLink(link: String){
-        profilModifyModel?.instaLink = link
+        profilModifyModel?.socialMedias?.instagram?.url = link
         profilModifyModel
     }
 
     fun setWhatsappLink(link: String){
-        profilModifyModel?.whatsappLink = link
+        profilModifyModel?.socialMedias?.whatsApp?.url = link
         notifyProfileDataChanged()
     }
 
     fun setLinkedinLink(link: String){
-        profilModifyModel?.linkedinLink = link
+        profilModifyModel?.socialMedias?.linkedIn?.url = link
         notifyProfileDataChanged()
     }
 
@@ -93,8 +98,43 @@ class ProfileModifyData(context: Context) {
     }
 
     fun setStateSwitch(state: Int){
-        profilModifyModel?.stateSwitch = state
+        when(state){
+            0 -> {
+                profilModifyModel?.socialMedias?.youtube?.enabled = true
+                profilModifyModel?.socialMedias?.facebook?.enabled = false
+                profilModifyModel?.socialMedias?.instagram?.enabled = false
+                profilModifyModel?.socialMedias?.whatsApp?.enabled = false
+                profilModifyModel?.socialMedias?.linkedIn?.enabled = false
+            }
+            1 -> {
+                profilModifyModel?.socialMedias?.youtube?.enabled = false
+                profilModifyModel?.socialMedias?.facebook?.enabled = true
+                profilModifyModel?.socialMedias?.instagram?.enabled = false
+                profilModifyModel?.socialMedias?.whatsApp?.enabled = false
+                profilModifyModel?.socialMedias?.linkedIn?.enabled = false
+            }
+            2 ->{
+                profilModifyModel?.socialMedias?.youtube?.enabled = false
+                profilModifyModel?.socialMedias?.facebook?.enabled = false
+                profilModifyModel?.socialMedias?.instagram?.enabled = true
+                profilModifyModel?.socialMedias?.whatsApp?.enabled = false
+                profilModifyModel?.socialMedias?.linkedIn?.enabled = false
+            }
+            3 -> {
+                profilModifyModel?.socialMedias?.youtube?.enabled = false
+                profilModifyModel?.socialMedias?.facebook?.enabled = false
+                profilModifyModel?.socialMedias?.instagram?.enabled = false
+                profilModifyModel?.socialMedias?.whatsApp?.enabled = true
+                profilModifyModel?.socialMedias?.linkedIn?.enabled = false
+            }
+            4 -> {
+                profilModifyModel?.socialMedias?.youtube?.enabled = false
+                profilModifyModel?.socialMedias?.facebook?.enabled = false
+                profilModifyModel?.socialMedias?.instagram?.enabled = false
+                profilModifyModel?.socialMedias?.whatsApp?.enabled = false
+                profilModifyModel?.socialMedias?.linkedIn?.enabled = true
+            }
+        }
         notifyProfileDataChanged()
     }
-
 }

@@ -1,12 +1,17 @@
 package com.timenoteco.timenote.model
 
 import com.google.gson.annotations.SerializedName
+import com.timenoteco.timenote.model.Category
+import com.timenoteco.timenote.model.CreatedBy
+import com.timenoteco.timenote.model.Location
 
 
-data class TimenoteModel (
+data class TimenoteInfoDTO (
 
+	@SerializedName("id") val id : String,
 	@SerializedName("createdAt") val createdAt : String,
 	@SerializedName("createdBy") val createdBy : CreatedBy,
+	@SerializedName("organizers") val organizers : List<UserInfoDTO>,
 	@SerializedName("title") val title : String,
 	@SerializedName("description") val description : String,
 	@SerializedName("pictures") val pictures : List<String>,
@@ -18,7 +23,6 @@ data class TimenoteModel (
 	@SerializedName("hashtags") val hashtags : List<String>,
 	@SerializedName("url") val url : String,
 	@SerializedName("price") val price : Int,
-	@SerializedName("status") val status : String,
-	@SerializedName("likedBy") val likedBy : List<String>,
-	@SerializedName("joinedBy") val joinedBy : List<String>
+	@SerializedName("likedBy") val likedBy : Int,
+	@SerializedName("joinedBy") val joinedBy : JoinedBy
 )

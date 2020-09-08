@@ -8,7 +8,6 @@ import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.model.Category
 import com.timenoteco.timenote.model.Location
 import com.timenoteco.timenote.model.NearbyFilterModel
-import com.timenoteco.timenote.model.ProfilModifyModel
 import java.lang.reflect.Type
 
 class NearbyFilterData(context: Context) {

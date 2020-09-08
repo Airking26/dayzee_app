@@ -1,25 +1,25 @@
 package com.timenoteco.timenote.webService.service
 
-import com.timenoteco.timenote.model.RootUserResponse
-import com.timenoteco.timenote.model.UserResponse
+import com.timenoteco.timenote.model.UpdateUserInfoDTO
+import com.timenoteco.timenote.model.UserInfoDTO
 import retrofit2.Response
-import retrofit2.http.DELETE
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.PATCH
+import retrofit2.http.*
 
 interface MeService{
 
     @GET("users/me")
-    suspend fun getMyInfos(@Header("Authorization") token: String) : Response<UserResponse>
+    suspend fun getMyInfos(@Header("Authorization") token: String) : Response<UserInfoDTO>
 
     @PATCH("users/me")
-    suspend fun modifyMyInfos(@Header("Authorization") token: String) : Response<UserResponse>
+    suspend fun modifyMyInfos(
+        @Header("Authorization") token: String,
+        @Body updateUserInfo: UpdateUserInfoDTO
+    ) : Response<UserInfoDTO>
 
     @DELETE("users/me")
-    suspend fun deleteMe(@Header("Authorization") token: String) : Response<UserResponse>
+    suspend fun deleteMe(@Header("Authorization") token: String) : Response<UserInfoDTO>
 
     @GET("users/all")
-    suspend fun getAllUsers(@Header("Authorization") token: String) : Response<List<UserResponse>>
+    suspend fun getAllUsers(@Header("Authorization") token: String) : Response<List<UserInfoDTO>>
 
 }

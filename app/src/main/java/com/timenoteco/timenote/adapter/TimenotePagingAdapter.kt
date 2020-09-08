@@ -5,13 +5,12 @@ import androidx.fragment.app.Fragment
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
-import com.timenoteco.timenote.model.Timenote
-import com.timenoteco.timenote.model.TimenoteModel
+import com.timenoteco.timenote.model.TimenoteInfoDTO
 
-class TimenotePagingAdapter(diffCallbacks: DiffUtil.ItemCallback<TimenoteModel>,
+class TimenotePagingAdapter(diffCallbacks: DiffUtil.ItemCallback<TimenoteInfoDTO>,
                             private val timenoteListenerListener: TimenoteOptionsListener,
                             val fragment: Fragment, private val isFromFuture: Boolean)
-    : PagingDataAdapter<TimenoteModel, ItemTimenoteAdapter.TimenoteViewHolder>(diffCallbacks){
+    : PagingDataAdapter<TimenoteInfoDTO, ItemTimenoteAdapter.TimenoteViewHolder>(diffCallbacks){
 
 
 
@@ -20,7 +19,7 @@ class TimenotePagingAdapter(diffCallbacks: DiffUtil.ItemCallback<TimenoteModel>,
 
     override fun onBindViewHolder(holder: ItemTimenoteAdapter.TimenoteViewHolder, position: Int) =
         holder.bindTimenote(
-            getItem(position) as Timenote,
+            getItem(position) as TimenoteInfoDTO,
             timenoteListenerListener,
             fragment,
             isFromFuture
@@ -28,13 +27,13 @@ class TimenotePagingAdapter(diffCallbacks: DiffUtil.ItemCallback<TimenoteModel>,
 
 }
 
-object TimenoteComparator : DiffUtil.ItemCallback<TimenoteModel>(){
+object TimenoteComparator : DiffUtil.ItemCallback<TimenoteInfoDTO>(){
 
-    override fun areItemsTheSame(oldItem: TimenoteModel, newItem: TimenoteModel): Boolean {
+    override fun areItemsTheSame(oldItem: TimenoteInfoDTO, newItem: TimenoteInfoDTO): Boolean {
         return oldItem.createdBy == newItem.createdBy
     }
 
-    override fun areContentsTheSame(oldItem: TimenoteModel, newItem: TimenoteModel): Boolean {
+    override fun areContentsTheSame(oldItem: TimenoteInfoDTO, newItem: TimenoteInfoDTO): Boolean {
         return oldItem == newItem
     }
 

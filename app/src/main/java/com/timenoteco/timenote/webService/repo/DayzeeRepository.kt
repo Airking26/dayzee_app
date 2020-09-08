@@ -35,7 +35,7 @@ class DayzeeRepository {
         return service.create(PreferencesService::class.java)
     }
 
-    fun getProfileModifyService(): ProfileModifyService{
-        return service.create(ProfileModifyService::class.java)
+    fun getMeService(): MeService{
+        return service.create(MeService::class.java)
     }
 }

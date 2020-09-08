@@ -5,7 +5,7 @@
     android:id="@+id/cl"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/colorBackground">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:background="@color/colorBackground"
@@ -61,13 +61,16 @@
                     app:layout_constraintTop_toBottomOf="@id/profile_name_toolbar" />
 
                 <ImageView
+                    android:paddingVertical="8dp"
+                    android:paddingEnd="8dp"
                     android:id="@+id/profile_notif_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_back_thin"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="RtlSymmetry" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -86,7 +89,7 @@
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/white"
+        android:background="@color/colorBackground"
         android:fitsSystemWindows="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -293,6 +296,20 @@
 
             </com.timenoteco.timenote.androidView.CollapsibleToolbar>
         </com.google.android.material.appbar.AppBarLayout>
+
+        <TextView
+            android:layout_marginTop="100dp"
+            android:id="@+id/profile_account_private"
+            android:visibility="gone"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:padding="24dp"
+            android:textColor="@color/colorText"
+            android:gravity="center"
+            android:fontFamily="sans-serif-light"
+            android:text="This account is private"
+            android:drawableTop="@drawable/ic_baseline_lock_24"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
         <androidx.core.widget.NestedScrollView
             android:background="@color/colorBackground"

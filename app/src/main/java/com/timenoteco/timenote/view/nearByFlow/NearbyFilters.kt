@@ -42,7 +42,6 @@ import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.stringLiveData
 import com.timenoteco.timenote.model.Category
 import com.timenoteco.timenote.model.NearbyFilterModel
-import com.timenoteco.timenote.model.ProfilModifyModel
 import com.timenoteco.timenote.viewModel.NearbyViewModel
 import com.timenoteco.timenote.webService.NearbyFilterData
 import com.warkiz.widget.IndicatorSeekBar

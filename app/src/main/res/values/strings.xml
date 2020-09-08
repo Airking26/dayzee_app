@@ -177,9 +177,9 @@
     <string name="choose_from_gallery">Multiple selections</string>
     <string name="resize">Resize</string>
     <string name="picture_successfully_added">PICTURE SUCCESSFULLY ADDED</string>
-    <string name="man">Man</string>
+    <string name="man">male</string>
     <string name="woman">Woman</string>
-    <string name="public_label">Public</string>
+    <string name="public_label">public</string>
     <string name="private_label">Private</string>
     <string name="sorting">Sorting</string>
     <string name="error_message_filling">Please fill in all the fields</string>
@@ -241,8 +241,12 @@
     <string name="accept">Accept</string>
     <string name="decline">Decline</string>
     <string name="default_settings_at_creation">default settings at creation time</string>
-    <string name="date">Date</string>
+    <string name="date">date</string>
     <string name="countdown">Countdown</string>
     <string name="only_me">Only me</string>
     <string name="trim">Trim</string>
+    <string name="actual_password">Actual password</string>
+    <string name="new_password">New password</string>
+    <string name="new_password_again">Retype new password</string>
+    <string name="other">Other</string>
 </resources>

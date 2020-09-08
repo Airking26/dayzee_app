@@ -34,11 +34,14 @@
                     android:text="@string/done"/>
 
                 <TextView
+                    android:paddingVertical="8dp"
+                    android:paddingEnd="8dp"
                     android:fontFamily="sans-serif-light"
                     android:drawableStart="@drawable/ic_back_thin"
                     android:id="@+id/pref_sub_category_btn_back"
                     style="@style/AppTheme.Toolbar.TextRight"
-                    android:text="" />
+                    android:text=""
+                    tools:ignore="RtlSymmetry" />
 
             </androidx.appcompat.widget.Toolbar>
 

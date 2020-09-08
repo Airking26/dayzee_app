@@ -70,8 +70,8 @@ import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.BackToHomeListener
 import com.timenoteco.timenote.listeners.TimenoteCreationPicListeners
 import com.timenoteco.timenote.model.AWSFile
-import com.timenoteco.timenote.model.CreateTimenoteModel
-import com.timenoteco.timenote.model.StatusTimenote
+import com.timenoteco.timenote.model.Category
+import com.timenoteco.timenote.model.CreationTimenoteDTO
 import com.timenoteco.timenote.viewModel.CreationTimenoteViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.TimenoteViewModel
@@ -207,8 +207,12 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                         amazonClient.getResourceUrl("timenote-dev-images", key).toString()
                     )
                     if(images?.size == imagesUrl.size) {
+                        creationTimenoteViewModel.setPicUser(imagesUrl)
                         progressDialog.hide()
-                        findNavController().navigate(CreateTimenoteDirections.actionCreateTimenoteToPreviewTimenoteCreated(args.from))
+                        timenoteViewModel.createTimenote(tokenId!!, creationTimenoteViewModel.getCreateTimeNoteLiveData().value!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                            if(it.isSuccessful)
+                                findNavController().navigate(CreateTimenoteDirections.actionCreateTimenoteToPreviewTimenoteCreated(args.from))
+                        })
                     }
 
                 }
@@ -254,24 +258,23 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
         })
     }
 
-    private fun populateModel(it: CreateTimenoteModel) {
-        when (it.status) {
-            StatusTimenote.FREE -> {
+    private fun populateModel(it: CreationTimenoteDTO) {
+        when (it.price) {
+            0 -> {
                 if (it.url.isNullOrBlank()) {
                     noAnswer.text = getString(R.string.free)
+                } else {
+                    noAnswer.text = getString(R.string.no_answer)
                 }
             }
-            StatusTimenote.PAID -> {
+            in 1 .. Int.MAX_VALUE -> {
                 noAnswer.text = it.price.toString() + "$"
-            }
-            StatusTimenote.NOANSWER -> {
-                noAnswer.text = getString(R.string.no_answer)
             }
             else -> noAnswer.text = getString(R.string.no_answer)
         }
         if(it.url.isNullOrBlank()) create_timenote_url_btn.hint = getString(R.string.add_an_url) else create_timenote_url_btn.text = it.url
-        if (it.category.isNullOrBlank()) create_timenote_category.text = getString(R.string.none) else create_timenote_category.text = it.category
-        if (it.pic == null) {
+        if (it.category == null) create_timenote_category.text = getString(R.string.none) else create_timenote_category.text = it.category!!.subcategory
+        if (it.pictures == null) {
             takeAddPicTv.visibility = View.VISIBLE
             progressBar.visibility = View.GONE
             picCl.visibility = View.GONE
@@ -281,29 +284,29 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
             progressBar.visibility = View.GONE
             picCl.visibility = View.VISIBLE
         }
-        if (it.title.isNullOrBlank()) titleTv.text = getString(R.string.title) else titleTv.text =
+        if (it.title.isBlank()) titleTv.text = getString(R.string.title) else titleTv.text =
             it.title
-        if (it.place.isNullOrBlank()) create_timenote_where_btn.text =
-            getString(R.string.where) else create_timenote_where_btn.text = it.place
-        if (!it.startDate.isNullOrBlank() && !it.endDate.isNullOrBlank()) {
+        if (it.location.address.address.isBlank()) create_timenote_where_btn.text =
+            getString(R.string.where) else create_timenote_where_btn.text = it.location.address.address
+        if (!it.startingAt.isBlank() && !it.endingAt.isBlank()) {
             fixedDate.visibility = View.GONE
             toLabel.visibility = View.VISIBLE
             fromLabel.visibility = View.VISIBLE
             toTv.visibility = View.VISIBLE
             fromTv.visibility = View.VISIBLE
-            fromTv.text = it.startDate
-            toTv.text = it.endDate
+            fromTv.text = it.startingAt
+            toTv.text = it.endingAt
         } else {
             fixedDate.visibility = View.VISIBLE
             toLabel.visibility = View.GONE
             fromLabel.visibility = View.GONE
             toTv.visibility = View.GONE
             fromTv.visibility = View.GONE
-            fixedDate.text = it.startDate
+            fixedDate.text = it.startingAt
         }
-        if (it.endDate.isNullOrBlank()) toTv.text = "" else toTv.text = it.endDate
-        if (!it.color.isNullOrBlank()) {
-            when (it.color) {
+        if (it.endingAt.isBlank()) toTv.text = "" else toTv.text = it.endingAt
+        if (!it.colorHex.isNullOrBlank()) {
+            when (it.colorHex) {
                 "#ffff8800" -> colorChoosedUI(
                     secondColorTv,
                     thirdColorTv,
@@ -340,7 +343,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                         fourthColorTv,
                         moreColorTv
                     )
-                    moreColorTv.setBackgroundColor(Color.parseColor(it.color))
+                    moreColorTv.setBackgroundColor(Color.parseColor(it.colorHex))
                 }
 
             }
@@ -417,8 +420,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                         creationTimenoteViewModel.fetchLocation(place.id!!).observe(
                             viewLifecycleOwner,
                             androidx.lifecycle.Observer {
-                                //creationTimenoteViewModel.setLocationObject(it.body()!!)
-                                creationTimenoteViewModel.setLocation(place.address!!)
+                                creationTimenoteViewModel.setLocation(utils.setLocation(it.body()!!))
                             })
                     }
                 }
@@ -469,7 +471,6 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                     toTv.visibility = View.GONE
                     fromTv.visibility = View.GONE
                     fixedDate.text = dateFormatDateAndTime.format(datetime.time.time)
-                    creationTimenoteViewModel.setYear(datetime.time.time)
                     creationTimenoteViewModel.setStartDate(
                         datetime.time.time,
                         DATE_FORMAT_DAY_AND_TIME
@@ -495,7 +496,6 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                     toTv.visibility = View.VISIBLE
                     fromTv.visibility = View.VISIBLE
                     fixedDate.text = dateFormatDateAndTime.format(datetime.time.time)
-                    creationTimenoteViewModel.setYear(datetime.time.time)
                     creationTimenoteViewModel.setEndDate(datetime.time.time)
                     creationTimenoteViewModel.setFormatedStartDate(startDate!!, datetime.time.time)
                     fromTv.text = dateFormatDateAndTime.format(startDate)
@@ -519,7 +519,6 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                 dateTimePicker { _, datetime ->
                     startDate = datetime.time.time
                     fromTv.text = dateFormatDateAndTime.format(startDate)
-                    creationTimenoteViewModel.setYear(startDate!!)
                     creationTimenoteViewModel.setStartDate(startDate!!, DATE_FORMAT_DAY_AND_TIME)
                     if (endDate != null) creationTimenoteViewModel.setFormatedStartDate(
                         startDate!!,
@@ -578,7 +577,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                     )
                 ) { _, index, text ->
                     categoryTv.text = text
-                    creationTimenoteViewModel.setCategory(text.toString())
+                    creationTimenoteViewModel.setCategory(Category("", text.toString()))
                 }
                 lifecycleOwner(this@CreateTimenote)
             }
@@ -608,7 +607,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                 input(
                     inputType = InputType.TYPE_CLASS_TEXT,
                     maxLength = 100,
-                    prefill = creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.desc
+                    prefill = creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.description
                 ) { materialDialog, charSequence ->
                     descTv.text = charSequence.toString()
                     val hashTagHelper = HashTagHelper.Creator.create(
@@ -720,8 +719,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                     when (index) {
                         0 -> {
                             noAnswer.text = text.toString()
-                            creationTimenoteViewModel.setStatus(StatusTimenote.FREE)
-                            creationTimenoteViewModel.setPrice(0L)
+                            creationTimenoteViewModel.setPrice(0)
                         }
                         1 -> {
                             noAnswer.text = text.toString()
@@ -732,16 +730,14 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                                 title(R.string.price)
                                 input(inputType = InputType.TYPE_CLASS_NUMBER) { _, charSequence ->
                                     creationTimenoteViewModel.setPrice(
-                                        charSequence.toString().toLong()
+                                        charSequence.toString().toInt()
                                     )
-                                    creationTimenoteViewModel.setStatus(StatusTimenote.PAID)
                                     lifecycleOwner(this@CreateTimenote)
                                 }
                             }
                         }
                         2 -> {
                             noAnswer.text = text.toString()
-                            creationTimenoteViewModel.setStatus(StatusTimenote.NOANSWER)
                         }
                     }
                 }
@@ -849,7 +845,6 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                     awsFile.bitmap = cropView?.croppedImage!!
                 screenSlideCreationTimenotePagerAdapter.notifyDataSetChanged()
                 vp.adapter = screenSlideCreationTimenotePagerAdapter
-                creationTimenoteViewModel.setPicUser(images!!)
             }
             lifecycleOwner(this@CreateTimenote)
         }
@@ -949,7 +944,6 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
 
     override fun onSingleImageSelected(uri: Uri?, tag: String?) {
         images?.add(AWSFile(uri, MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri)))
-        creationTimenoteViewModel.setPicUser(images!!)
         screenSlideCreationTimenotePagerAdapter.notifyDataSetChanged()
         indicator.setViewPager(vp_pic)
         pic_cl.visibility = View.VISIBLE
@@ -971,7 +965,6 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
         for(image in uriList!!){
             images?.add(AWSFile(image, MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, image)))
         }
-        creationTimenoteViewModel.setPicUser(images!!)
         screenSlideCreationTimenotePagerAdapter.notifyDataSetChanged()
         indicator.setViewPager(vp_pic)
         pic_cl.visibility = View.VISIBLE
@@ -1011,7 +1004,6 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
 
     override fun onDeleteClicked(awsFile: AWSFile?) {
         images?.remove(awsFile)
-        creationTimenoteViewModel.setPicUser(images!!)
         vp_pic.apply {
             screenSlideCreationTimenotePagerAdapter = ScreenSlideCreationTimenotePagerAdapter(
                 this@CreateTimenote,

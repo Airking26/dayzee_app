@@ -36,8 +36,6 @@ class ProfilePastFuturePagerAdapter(fragmentManager: FragmentManager, lifecycle:
             if(position == 0) profilePastEvents.setShowFilterBar(b)
             else profileFutureEvents.setShowFilterBar(b)
         }
-
     }
-
 
 }

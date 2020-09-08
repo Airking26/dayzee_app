@@ -20,7 +20,7 @@ class FollowViewModel: ViewModel() {
     fun declineFollowingRequest(token: String, id: Int) = flow { emit(followService.declineFollowingRequest("Bearer $token", id))}.asLiveData(viewModelScope.coroutineContext)
     fun unfollowUser(token: String, id: Int) = flow { emit(followService.unfollowUser("Bearer $token", id))}.asLiveData(viewModelScope.coroutineContext)
     fun removeUserFromFollower(token: String, id: Int) = flow { emit(followService.removeUserFromFollowers("Bearer $token", id))}.asLiveData(viewModelScope.coroutineContext)
-    fun getUsersWaitingFroApproval(token: String) = Pager(PagingConfig(pageSize = 12)){FollowPagingSource(token, followService, true)}.flow.cachedIn(viewModelScope)
+    fun getUsersWaitingForApproval(token: String) = Pager(PagingConfig(pageSize = 12)){FollowPagingSource(token, followService, true)}.flow.cachedIn(viewModelScope)
     fun getUsersAskedToFollow(token: String) = Pager(PagingConfig(pageSize = 12)){FollowPagingSource(token, followService, false)}.flow.cachedIn(viewModelScope)
 
 }

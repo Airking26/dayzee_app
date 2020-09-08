@@ -280,7 +280,7 @@
                     android:layout_height="wrap_content"/>
 
                 <TextView
-                    android:text="@string/date"
+                    android:id="@+id/profile_setting_date_format_tv"
                     android:textColor="@color/colorText"
                     android:fontFamily="sans-serif-light"
                     android:padding="16dp"
@@ -329,7 +329,7 @@
                         android:layout_height="wrap_content"/>
 
                     <TextView
-                        android:text="Only me"
+                        android:id="@+id/profile_settings_default_settings_at_creation_time"
                         android:textColor="@color/colorText"
                         android:fontFamily="sans-serif-light"
                         android:padding="16dp"

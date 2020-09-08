@@ -7,7 +7,7 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class Location(
 
-    @SerializedName("longitude") val longitude: Double,
-    @SerializedName("latitude") val latitude: Double,
-    @SerializedName("address") val address: Address
+    @SerializedName("longitude") var longitude: Double,
+    @SerializedName("latitude") var latitude: Double,
+    @SerializedName("address") var address: Address
 ): Parcelable

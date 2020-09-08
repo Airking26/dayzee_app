@@ -53,7 +53,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        tokenId = prefs.getString(TOKEN, null)
+        //tokenId = prefs.getString(TOKEN, null)
 
     }
 
@@ -63,7 +63,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         timenote_see_more.visibility = View.GONE
-        timenoteViewModel.getSpecificTimenote(tokenId!!, "").observe(viewLifecycleOwner, Observer {})
+        //timenoteViewModel.getSpecificTimenote(tokenId!!, "").observe(viewLifecycleOwner, Observer {})
 
         comments_edittext.requestFocus()
 

@@ -44,7 +44,7 @@ import kotlinx.coroutines.launch
 
 class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, TimenoteOptionsListener, View.OnClickListener {
 
-    private var timenotes: List<Timenote> = mutableListOf()
+    private var timenotes: List<TimenoteInfoDTO> = mutableListOf()
     private lateinit var timenoteAdapter: ItemTimenoteAdapter
     private val loginViewModel: LoginViewModel by activityViewModels()
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
@@ -63,7 +63,7 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         tokenId = prefs.getString(TOKEN, null)
-        //if(!prefs.getString(TOKEN, "").isNullOrBlank()) loginViewModel.markAsAuthenticated() else loginViewModel.markAsUnauthenticated()
+        if(!prefs.getString(TOKEN, "").isNullOrBlank()) loginViewModel.markAsAuthenticated() else loginViewModel.markAsUnauthenticated()
         loginViewModel.getAuthenticationState().observe(requireActivity(), Observer {
             when (it) {
                 LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(HomeDirections.actionHomeToNavigation())
@@ -96,249 +96,6 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        timenotes = mutableListOf(
-            Timenote(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),
-                "Samuel",
-                "23 Herzl Street",
-                "34 Likes",
-            "See 63 comments",
-                "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
-                true,
-                "2020",
-                "23\nSep.",
-                "15:30\nPM",
-                "Beach Party",
-                "In 23 days",
-                12L,
-                "www.google.com",
-                StatusTimenote.FREE,
-                0
-            ), Timenote(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),
-                "Samuel",
-                "23 Herzl Street",
-                "34 Likes",
-            "See 63 comments",
-                "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
-                true,
-                "2020",
-                "10 Aug.\n15:45",
-                "11 Sep.\n12:30",
-                "Beach Party",
-                "In 23 days",
-                12L,
-                "www.google.com",
-                StatusTimenote.PAID,
-                1
-            ),            Timenote(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),
-                "Samuel",
-                "23 Herzl Street",
-                "34 Likes",
-            "See 63 comments",
-                "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
-                true,
-                "2020",
-                "24\nAug.",
-                "15:30\nPM",
-                "Beach Party",
-                "In 23 days",
-                12L,
-                "www.google.com",
-                StatusTimenote.FREE,
-                0
-            ), Timenote(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),
-                "Samuel",
-                "23 Herzl Street",
-                "34 Likes",
-            "See 63 comments",
-                "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
-                true,
-                "2020",
-                "10Aug.\n15:45",
-                "11Aug.\n12:30",
-                "Beach Party",
-                "In 23 days",
-                12L,
-                "www.google.com",
-                StatusTimenote.PAID,
-                1
-            ),            Timenote(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),
-                "Samuel",
-                "23 Herzl Street",
-                "34 Likes",
-            "See 63 comments",
-                "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
-                true,
-                "2020",
-                "29\nFeb.",
-                "15:30 PM",
-                "Beach Party",
-                "In 23 days",
-                12L,
-                "www.google.com",
-                StatusTimenote.FREE,
-                0
-            ), Timenote(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),
-                "Samuel",
-                "23 Herzl Street",
-                "34 Likes",
-            "See 63 comments",
-                "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
-                true,
-                "2020",
-                "10Aug.\n15:45",
-                "11Aug.\n12:30",
-                "Beach Party",
-                "In 23 days",
-                12L,
-                "www.google.com",
-                StatusTimenote.PAID,
-                1
-            ),            Timenote(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),
-                "Samuel",
-                "23 Herzl Street",
-                "34 Likes",
-            "See 63 comments",
-                "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
-                true,
-                "2020",
-                "10\nAug",
-                "15:30 PM",
-                "Beach Party",
-                "In 23 days",
-                12L,
-                "www.google.com",
-                StatusTimenote.FREE,
-                0
-            ), Timenote(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),
-                "Samuel",
-                "23 Herzl Street",
-                "34 Likes",
-            "See 63 comments",
-                "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
-                true,
-                "2020",
-                "10Aug.\n15:45",
-                "11Aug.\n12:30",
-                "Beach Party",
-                "In 23 days",
-                12L,
-                "www.google.com",
-                StatusTimenote.PAID,
-                1
-            ),            Timenote(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),
-                "Samuel",
-                "23 Herzl Street",
-                "34 Likes",
-            "See 63 comments",
-                "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
-                true,
-                "2020",
-                "10\nAug",
-                "15:30 PM",
-                "Beach Party",
-                "In 23 days",
-                12L,
-                "www.google.com",
-                StatusTimenote.FREE,
-                0
-            ), Timenote(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),
-                "Samuel",
-                "23 Herzl Street",
-                "34 Likes",
-            "See 63 comments",
-                "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
-                true,
-                "2020",
-                "10Aug.\n15:45",
-                "11Aug.\n12:30",
-                "Beach Party",
-                "In 23 days",
-                12L,
-                "www.google.com",
-                StatusTimenote.PAID,
-                1
-            ),            Timenote(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),
-                "Samuel",
-                "23 Herzl Street",
-                "34 Likes",
-            "See 63 comments",
-                "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
-                true,
-                "2020",
-                "10\nAug",
-                "15:30 PM",
-                "Beach Party",
-                "In 23 days",
-                12L,
-                "www.google.com",
-                StatusTimenote.FREE,
-                0
-            ), Timenote(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),
-                "Samuel",
-                "23 Herzl Street",
-                "34 Likes",
-            "See 63 comments",
-                "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
-                true,
-                "2020",
-                "10Aug.\n15:45",
-                "11Aug.\n12:30",
-                "Beach Party",
-                "In 23 days",
-                12L,
-                "www.google.com",
-                StatusTimenote.PAID,
-                1
-            )
-        )
 
         home_swipe_refresh.isRefreshing = true
         home_swipe_refresh.setColorSchemeResources(R.color.colorStartGradient, R.color.colorEndGradient)
@@ -357,10 +114,10 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
         timenoteAdapter = ItemTimenoteAdapter(timenotes, timenotes, true, this, this, this as Fragment, true)
         home_rv.apply {
             layoutManager = LinearLayoutManager(context)
-            /*Handler().postDelayed({
+            Handler().postDelayed({
                 adapter = timenoteAdapter
                 home_swipe_refresh?.isRefreshing = false
-            }, 2000)*/
+            }, 2000)
 
         }
 
@@ -416,8 +173,8 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
 
     override fun onDoubleClick() {
         timenoteViewModel.getSpecificTimenote(tokenId!!, "").observe(viewLifecycleOwner, Observer {
-            if(it.body()?.joinedBy?.contains("")!!) timenoteViewModel.joinTimenote(tokenId!!, "")
-            else timenoteViewModel.leaveTimenote(tokenId!!, "")
+            /*if(it.body()?.joinedBy?.users?.contains("")!!) timenoteViewModel.joinTimenote(tokenId!!, "")
+            else timenoteViewModel.leaveTimenote(tokenId!!, "")*/
 
         })
     }

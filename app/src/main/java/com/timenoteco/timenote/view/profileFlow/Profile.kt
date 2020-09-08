@@ -31,10 +31,8 @@ import com.timenoteco.timenote.adapter.ProfilePastFuturePagerAdapter
 import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.common.stringLiveData
 import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
-import com.timenoteco.timenote.model.ProfilModifyModel
-import com.timenoteco.timenote.model.StatusTimenote
-import com.timenoteco.timenote.model.Timenote
-import com.timenoteco.timenote.view.profileFlow.ProfileDirections
+import com.timenoteco.timenote.model.UpdateUserInfoDTO
+import com.timenoteco.timenote.model.UserInfoDTO
 import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.webService.ProfileModifyData
@@ -45,6 +43,7 @@ import java.util.*
 
 class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarListener {
 
+    private var userInfoDTO: UserInfoDTO? = null
     private var stateSwitchUrl: String? = null
     private var stateSwitch: Int? = null
     private var profilePastFuturePagerAdapter: ProfilePastFuturePagerAdapter? = null
@@ -53,7 +52,6 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
     private val followViewModel: FollowViewModel by activityViewModels()
     private var showFilterBar: Boolean = false
     private val args : ProfileArgs by navArgs()
-    private var timenotes: MutableList<Timenote> = mutableListOf()
     private lateinit var prefs: SharedPreferences
     val TOKEN: String = "TOKEN"
     private var tokenId : String? = null
@@ -83,6 +81,8 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val type: Type = object : TypeToken<UserInfoDTO?>() {}.type
+        userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), type)
         val simpleDateFormatDayName= SimpleDateFormat("EEE.", Locale.getDefault())
         val simpleDateFormatDayNumber = SimpleDateFormat("dd", Locale.getDefault())
 
@@ -91,288 +91,43 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
 
         profileModifyData = ProfileModifyData(requireContext())
         prefs.stringLiveData("profile", Gson().toJson(profileModifyData.loadProfileModifyModel())).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            val type: Type = object : TypeToken<ProfilModifyModel?>() {}.type
-            val profilModifyModel : ProfilModifyModel? = Gson().fromJson<ProfilModifyModel>(prefs.getString("profile", ""), type)
-            stateSwitch = profilModifyModel?.stateSwitch
-            when(profilModifyModel?.stateSwitch){
-                0 -> {
-                    if(!profilModifyModel.youtubeLink.isNullOrBlank()) {
-                        profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_youtube_colored))
-                        stateSwitchUrl = profilModifyModel.youtubeLink
-                    }
-                }
-                1 -> {
-                    if(!profilModifyModel.facebookLink.isNullOrBlank()){
-                        profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_facebook_colored))
-                        stateSwitchUrl = profilModifyModel.facebookLink
-                    }
-                }
-                2 -> {
-                    if(!profilModifyModel.instaLink.isNullOrBlank()){
-                        profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_insta_colored))
-                        stateSwitchUrl = profilModifyModel.instaLink
-                    }
-                }
-                3 -> {
-                    if(!profilModifyModel.whatsappLink.isNullOrBlank()) {
-                        profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_whatsapp))
-                        stateSwitchUrl = profilModifyModel.whatsappLink
-                    }
-                }
-                4 -> {
-                    if(!profilModifyModel.linkedinLink.isNullOrBlank()) {
-                        profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_linkedin_colored))
-                        stateSwitchUrl = profilModifyModel.linkedinLink
-                    }
-                }
-                else -> profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_icons8_contacts))
+            val type: Type = object : TypeToken<UpdateUserInfoDTO?>() {}.type
+            val profilModifyModel : UpdateUserInfoDTO? = Gson().fromJson<UpdateUserInfoDTO>(it, type)
 
+            if(profilModifyModel?.socialMedias?.youtube?.enabled!!) {
+                if(!profilModifyModel.socialMedias.youtube.url.isBlank()){
+                    profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_youtube_colored))
+                    stateSwitchUrl = profilModifyModel.socialMedias.youtube.url
+                }
+            }
+            else if(profilModifyModel.socialMedias.facebook.enabled) {
+                if(!profilModifyModel.socialMedias.facebook.url.isBlank()){
+                    profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_facebook_colored))
+                    stateSwitchUrl = profilModifyModel.socialMedias.facebook.url
+                }
+            }
+            else if(profilModifyModel.socialMedias.instagram.enabled) {
+                if(!profilModifyModel.socialMedias.instagram.url.isBlank()){
+                    profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_insta_colored))
+                    stateSwitchUrl = profilModifyModel.socialMedias.instagram.url
+                }
+            }
+            else if(profilModifyModel.socialMedias.whatsApp.enabled) {
+                if(!profilModifyModel.socialMedias.whatsApp.url.isBlank()){
+                    profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_whatsapp))
+                    stateSwitchUrl = profilModifyModel.socialMedias.whatsApp.url
+                }
+            }
+            else if(profilModifyModel.socialMedias.linkedIn.enabled){
+                if(!profilModifyModel.socialMedias.linkedIn.url.isBlank()){
+                    profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_linkedin_colored))
+                    stateSwitchUrl = profilModifyModel.socialMedias.linkedIn.url
+                }
+            }
+            else {
+                profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_icons8_contacts))
             }
         })
-
-        timenotes = mutableListOf(
-            Timenote(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),
-                "Samuel",
-                "23 Herzl Street",
-                "34 Likes",
-                "See 63 comments",
-                "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
-                true,
-                "2020",
-                "10\nAug",
-                "15:30 PM",
-                "Beach Party",
-                "In 23 days",
-                12L,
-                "www.google.com",
-                StatusTimenote.FREE,
-                0
-            ), Timenote(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),
-                "Samuel",
-                "23 Herzl Street",
-                "34 Likes",
-                "See 63 comments",
-                "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
-                true,
-                "2020",
-                "10Aug.\n15:45",
-                "11Aug.\n12:30",
-                "Beach Party",
-                "In 23 days",
-                12L,
-                "www.google.com",
-                StatusTimenote.PAID,
-                1
-            ),            Timenote(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),
-                "Samuel",
-                "23 Herzl Street",
-                "34 Likes",
-                "See 63 comments",
-                "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
-                true,
-                "2020",
-                "10\nAug",
-                "15:30 PM",
-                "Beach Party",
-                "In 23 days",
-                12L,
-                "www.google.com",
-                StatusTimenote.FREE,
-                0
-            ), Timenote(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),
-                "Samuel",
-                "23 Herzl Street",
-                "34 Likes",
-                "See 63 comments",
-                "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
-                true,
-                "2020",
-                "10Aug.\n15:45",
-                "11Aug.\n12:30",
-                "Beach Party",
-                "In 23 days",
-                12L,
-                "www.google.com",
-                StatusTimenote.PAID,
-                1
-            ),            Timenote(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),
-                "Samuel",
-                "23 Herzl Street",
-                "34 Likes",
-                "See 63 comments",
-                "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
-                true,
-                "2020",
-                "10\nAug",
-                "15:30 PM",
-                "Beach Party",
-                "In 23 days",
-                12L,
-                "www.google.com",
-                StatusTimenote.FREE,
-                0
-            ), Timenote(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),
-                "Samuel",
-                "23 Herzl Street",
-                "34 Likes",
-                "See 63 comments",
-                "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
-                true,
-                "2020",
-                "10Aug.\n15:45",
-                "11Aug.\n12:30",
-                "Beach Party",
-                "In 23 days",
-                12L,
-                "www.google.com",
-                StatusTimenote.PAID,
-                1
-            ),            Timenote(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),
-                "Samuel",
-                "23 Herzl Street",
-                "34 Likes",
-                "See 63 comments",
-                "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
-                true,
-                "2020",
-                "10\nAug",
-                "15:30 PM",
-                "Beach Party",
-                "In 23 days",
-                12L,
-                "www.google.com",
-                StatusTimenote.FREE,
-                0
-            ), Timenote(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),
-                "Samuel",
-                "23 Herzl Street",
-                "34 Likes",
-                "See 63 comments",
-                "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
-                true,
-                "2020",
-                "10Aug.\n15:45",
-                "11Aug.\n12:30",
-                "Beach Party",
-                "In 23 days",
-                12L,
-                "www.google.com",
-                StatusTimenote.PAID,
-                1
-            ),            Timenote(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),
-                "Samuel",
-                "23 Herzl Street",
-                "34 Likes",
-                "See 63 comments",
-                "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
-                true,
-                "2020",
-                "10\nAug",
-                "15:30 PM",
-                "Beach Party",
-                "In 23 days",
-                12L,
-                "www.google.com",
-                StatusTimenote.FREE,
-                0
-            ), Timenote(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),
-                "Samuel",
-                "23 Herzl Street",
-                "34 Likes",
-                "See 63 comments",
-                "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
-                true,
-                "2020",
-                "10Aug.\n15:45",
-                "11Aug.\n12:30",
-                "Beach Party",
-                "In 23 days",
-                12L,
-                "www.google.com",
-                StatusTimenote.PAID,
-                1
-            ),            Timenote(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),
-                "Samuel",
-                "23 Herzl Street",
-                "34 Likes",
-                "See 63 comments",
-                "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
-                true,
-                "2020",
-                "10\nAug",
-                "15:30 PM",
-                "Beach Party",
-                "In 23 days",
-                12L,
-                "www.google.com",
-                StatusTimenote.FREE,
-                0
-            ), Timenote(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                    "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"),
-                "Samuel",
-                "23 Herzl Street",
-                "34 Likes",
-                "See 63 comments",
-                "#Beach#Sunset#Love A very good place to be also known for his cold drinks a good music open all day and night come join us we are waiting for you",
-                true,
-                "2020",
-                "10Aug.\n15:45",
-                "11Aug.\n12:30",
-                "Beach Party",
-                "In 23 days",
-                12L,
-                "www.google.com",
-                StatusTimenote.PAID,
-                1
-            )
-        )
 
         if(args.whereFrom){
             profile_modify_btn.visibility = View.INVISIBLE
@@ -384,9 +139,13 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
 
         Glide
             .with(this)
-            .load("https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792")
+            .load(userInfoDTO?.picture)
             .apply(RequestOptions.circleCropTransform())
             .into(profile_pic_imageview)
+
+        profile_name_toolbar.text = userInfoDTO?.userName
+        profile_nbr_followers.text = userInfoDTO?.followers.toString()
+        profile_nbr_following.text = userInfoDTO?.following.toString()
 
         profilePastFuturePagerAdapter = ProfilePastFuturePagerAdapter(childFragmentManager, lifecycle, showFilterBar, this, args.from)
         profile_vp?.apply {

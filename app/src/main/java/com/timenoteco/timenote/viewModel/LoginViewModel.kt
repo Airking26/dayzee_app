@@ -20,7 +20,7 @@ class LoginViewModel: ViewModel() {
     private val authenticationState = MutableLiveData<AuthenticationState>()
 
     init {
-        markAsAuthenticated()
+        //markAsAuthenticated()
     }
 
     fun getAuthenticationState() : LiveData<AuthenticationState> = authenticationState
@@ -34,7 +34,7 @@ class LoginViewModel: ViewModel() {
             }.asLiveData(viewModelScope.coroutineContext)
         } else {
             flow {
-                emit(authService.signInUsername(UserUserNameSignInBody(username, password)))
+                emit(authService.signInUsername(UserNameSignInBody(username, password)))
             }.asLiveData(viewModelScope.coroutineContext)
         }
     }

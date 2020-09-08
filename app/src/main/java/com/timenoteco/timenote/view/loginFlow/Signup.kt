@@ -15,6 +15,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
+import com.google.gson.Gson
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.model.UserSignUpBody
 import com.timenoteco.timenote.viewModel.LoginViewModel
@@ -48,35 +49,37 @@ class Signup: Fragment(), View.OnClickListener {
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
 
 
-        handlerMailUsername = Handler(Handler.Callback {
-            if(it.what == TRIGGER_AUTO_COMPLETE){
-                if(!TextUtils.isEmpty(signin_mail_username.text)){
-                    if(signin_mail_username.text.toString().contains('@')){
-                        if(!viewModel.isValidEmail(signin_mail_username.text.toString()))
+        handlerMailUsername = Handler {
+            if (it.what == TRIGGER_AUTO_COMPLETE) {
+                if (!TextUtils.isEmpty(signin_mail_username.text)) {
+                    if (signin_mail_username.text.toString().contains('@')) {
+                        if (!viewModel.isValidEmail(signin_mail_username.text.toString()))
                             signin_mail_username.error = getString(R.string.not_valid_mail_form)
                     }
                 }
 
             }
             false
-        })
+        }
 
-        handlerMail = Handler(Handler.Callback { msg ->
+        handlerMail = Handler { msg ->
             if (msg.what == TRIGGER_AUTO_COMPLETE) {
                 if (!TextUtils.isEmpty(signup_mail.text)) {
-                    if(viewModel.isValidEmail(signup_mail.text.toString())){
-                        viewModel.checkIfEmailAvailable(signup_mail.text.toString()).observe(viewLifecycleOwner, Observer {
-                            if(it.code() == 200) availableMail = it.body()?.isAvailable!!
-                            if(!availableMail!! && !isOnLogin) signup_mail.error = getString(R.string.email_already_exists)
-                            else emailValidForm = true
-                        })
+                    if (viewModel.isValidEmail(signup_mail.text.toString())) {
+                        viewModel.checkIfEmailAvailable(signup_mail.text.toString())
+                            .observe(viewLifecycleOwner, Observer {
+                                if (it.code() == 200) availableMail = it.body()?.isAvailable!!
+                                if (!availableMail!! && !isOnLogin) signup_mail.error =
+                                    getString(R.string.email_already_exists)
+                                else emailValidForm = true
+                            })
                     } else {
                         signup_mail.error = getString(R.string.not_valid_mail_form)
                     }
                 }
             }
             false
-        })
+        }
 
 
         handlerIdentifiant = Handler(Handler.Callback { msg ->
@@ -159,11 +162,12 @@ class Signup: Fragment(), View.OnClickListener {
                 email_label.text = getString(R.string.username_email)
 
                 if(isOnLogin && !signin_mail_username.text.toString().isBlank() && !signin_password.text.toString().isBlank()){
-                    viewModel.login(signup_mail.text.toString(), signup_password.text.toString(), viewModel.isValidEmail(signup_mail.text.toString())).observe(viewLifecycleOwner, Observer {
+                    viewModel.login(signin_mail_username.text.toString(), signin_password.text.toString(), viewModel.isValidEmail(signin_mail_username.text.toString())).observe(viewLifecycleOwner, Observer {
                         when(it.code()){
                             200 -> {
                                 viewModel.markAsAuthenticated()
                                 prefs.edit().putString(TOKEN, it.body()?.token).apply()
+                                prefs.edit().putString("UserInfoDTO", Gson().toJson(it.body()?.user)).apply()
                             }
                             else -> {
                                 Toast.makeText(requireContext(), "Invalid Authentication", Toast.LENGTH_SHORT).show()

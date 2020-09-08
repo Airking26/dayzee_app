@@ -7,8 +7,8 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class Address (
 
-	@SerializedName("address") val address : String,
-	@SerializedName("zipCode") val zipCode : String,
-	@SerializedName("city") val city : String,
-	@SerializedName("country") val country : String
+	@SerializedName("address") var address : String,
+	@SerializedName("zipCode") var zipCode : String,
+	@SerializedName("city") var city : String,
+	@SerializedName("country") var country : String
 ) : Parcelable

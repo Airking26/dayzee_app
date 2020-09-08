@@ -3,11 +3,9 @@ package com.timenoteco.timenote.view.profileFlow
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.ContentValues
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.content.res.Resources
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.Rect
@@ -61,13 +59,10 @@ import com.timenoteco.timenote.adapter.WebSearchAdapter
 import com.timenoteco.timenote.androidView.input
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.stringLiveData
-import com.timenoteco.timenote.model.AWSFile
-import com.timenoteco.timenote.model.ProfilModifyModel
-import com.timenoteco.timenote.view.createTimenoteFlow.CreateTimenoteDirections
+import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.viewModel.ProfileModifyViewModel
 import com.timenoteco.timenote.viewModel.WebSearchViewModel
 import com.timenoteco.timenote.webService.ProfileModifyData
-import kotlinx.android.synthetic.main.cropview.view.*
 import kotlinx.android.synthetic.main.cropview_circle.view.*
 import kotlinx.android.synthetic.main.fragment_profil_modify.*
 import java.io.File
@@ -77,6 +72,9 @@ import java.lang.reflect.Type
 import java.net.URL
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 
@@ -116,7 +114,11 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
         prefs.edit().putString("pmtc", "").apply()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? =
             inflater.inflate(R.layout.fragment_profil_modify, container, false)
 
     @SuppressLint("RestrictedApi")
@@ -156,90 +158,148 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun setProfilModifyViewModel() {
         profileModifyData = ProfileModifyData(requireContext())
-        prefs.stringLiveData("profile", Gson().toJson(profileModifyData.loadProfileModifyModel())).observe(viewLifecycleOwner, Observer {
-            val type: Type = object : TypeToken<ProfilModifyModel?>() {}.type
-            val profilModifyModel : ProfilModifyModel? = Gson().fromJson<ProfilModifyModel>(prefs.getString("profile", ""), type)
-            if (profilModifyModel?.nameAppearance.isNullOrBlank()) profile_modify_name_appearance.hint =
-                getString(R.string.name_you_want_to_appear) else profile_modify_name_appearance.text =
-                profilModifyModel?.nameAppearance
-            if (profilModifyModel?.name.isNullOrBlank()) profile_modify_name.hint =
-                getString(R.string.your_name) else profile_modify_name.text = profilModifyModel?.name
-            if (profilModifyModel?.location.isNullOrBlank()) profile_modify_from.hint =
-                getString(R.string.from) else profile_modify_from.text = profilModifyModel?.location
-            if (profilModifyModel?.birthday.isNullOrBlank()) profile_modify_birthday.hint =
-                getString(R.string.birthday) else profile_modify_birthday.text = profilModifyModel?.birthday
-            when (profilModifyModel?.gender) {
-                0 -> profile_modify_gender.text = getString(R.string.man)
-                1 -> profile_modify_gender.text = getString(R.string.woman)
-                2 -> profile_modify_gender.text = getString(R.string.others)
-                null -> profile_modify_gender.hint = getString(R.string.gender)
-            }
-            when (profilModifyModel?.statusAccount) {
-                0 -> profile_modify_account_status.text = getString(R.string.public_label)
-                1 -> profile_modify_account_status.text = getString(R.string.private_label)
-                null -> profile_modify_account_status.hint = getString(R.string.account_status)
-            }
-            when (profilModifyModel?.formatTimenote) {
-                0 -> profile_modify_format_timenote.text = getString(R.string.date)
-                1 -> profile_modify_format_timenote.text = getString(R.string.countdown)
-                null -> profile_modify_format_timenote.hint =
-                    getString(R.string.timenote_date_format)
-            }
-            if (profilModifyModel?.youtubeLink.isNullOrBlank()) profile_modify_youtube_channel.hint =
-                getString(R.string.youtube_channel) else profile_modify_youtube_channel.text = profilModifyModel?.youtubeLink
+        prefs.stringLiveData("profile", Gson().toJson(profileModifyData.loadProfileModifyModel())).observe(
+            viewLifecycleOwner,
+            Observer {
+                val type: Type = object : TypeToken<UpdateUserInfoDTO?>() {}.type
+                val profilModifyModel: UpdateUserInfoDTO? = Gson().fromJson<UpdateUserInfoDTO>(it, type)
+                if (profilModifyModel?.givenName.isNullOrBlank()) profile_modify_name.hint =
+                    getString(R.string.your_name) else profile_modify_name.text =
+                    profilModifyModel?.givenName
+                if (profilModifyModel?.location?.address?.address.isNullOrBlank()) profile_modify_from.hint =
+                    getString(R.string.from) else profile_modify_from.text =
+                    profilModifyModel?.location?.address?.address
+                if (profilModifyModel?.birthday.isNullOrBlank()) profile_modify_birthday.hint =
+                    getString(R.string.birthday) else profile_modify_birthday.text =
+                    profilModifyModel?.birthday
+                when (profilModifyModel?.gender) {
+                    getString(R.string.man) -> profile_modify_gender.text = getString(R.string.man)
+                    getString(R.string.woman) -> profile_modify_gender.text =
+                        getString(R.string.woman)
+                    getString(R.string.other) -> profile_modify_gender.text =
+                        getString(R.string.other)
+                    null -> profile_modify_gender.hint = getString(R.string.gender)
+                }
+                when (profilModifyModel?.status) {
+                    getString(R.string.public_label) -> profile_modify_account_status.text =
+                        getString(R.string.public_label)
+                    getString(R.string.private_label) -> profile_modify_account_status.text =
+                        getString(
+                            R.string.private_label
+                        )
+                    null -> profile_modify_account_status.hint = getString(R.string.account_status)
+                }
+                when (profilModifyModel?.dateFormat) {
+                    getString(R.string.date) -> profile_modify_format_timenote.text =
+                        getString(R.string.date)
+                    getString(R.string.countdown) -> profile_modify_format_timenote.text =
+                        getString(R.string.countdown)
+                    null -> profile_modify_format_timenote.hint =
+                        getString(R.string.timenote_date_format)
+                }
+                if (profilModifyModel?.socialMedias?.youtube?.url.isNullOrBlank()) profile_modify_youtube_channel.hint =
+                    getString(R.string.youtube_channel) else profile_modify_youtube_channel.text =
+                    profilModifyModel?.socialMedias?.youtube?.url
 
-            if(profilModifyModel?.facebookLink.isNullOrBlank()) profile_modify_facebook.hint = getString(R.string.facebook)
-            else profile_modify_facebook.text = profilModifyModel?.facebookLink
+                if (profilModifyModel?.socialMedias?.facebook?.url.isNullOrBlank()) profile_modify_facebook.hint =
+                    getString(
+                        R.string.facebook
+                    )
+                else profile_modify_facebook.text = profilModifyModel?.socialMedias?.facebook?.url
 
-            if(profilModifyModel?.whatsappLink.isNullOrBlank()) profile_modify_whatsapp.hint = getString(R.string.whatsapp)
-            else profile_modify_whatsapp.text = profilModifyModel?.whatsappLink
+                if (profilModifyModel?.socialMedias?.whatsApp?.url.isNullOrBlank()) profile_modify_whatsapp.hint =
+                    getString(
+                        R.string.whatsapp
+                    )
+                else profile_modify_whatsapp.text = profilModifyModel?.socialMedias?.whatsApp?.url
 
-            if(profilModifyModel?.instaLink.isNullOrBlank()) profile_modify_instagram.hint = getString(R.string.instagram)
-            else profile_modify_instagram.text = profilModifyModel?.instaLink
+                if (profilModifyModel?.socialMedias?.instagram?.url.isNullOrBlank()) profile_modify_instagram.hint =
+                    getString(
+                        R.string.instagram
+                    )
+                else profile_modify_instagram.text = profilModifyModel?.socialMedias?.instagram?.url
 
-            if(profilModifyModel?.linkedinLink.isNullOrBlank()) profile_modify_linkedin.hint = getString(R.string.linkedin)
-            else profile_modify_linkedin.text = profilModifyModel?.linkedinLink
+                if (profilModifyModel?.socialMedias?.linkedIn?.url.isNullOrBlank()) profile_modify_linkedin.hint =
+                    getString(
+                        R.string.linkedin
+                    )
+                else profile_modify_linkedin.text = profilModifyModel?.socialMedias?.linkedIn?.url
 
-            when(profilModifyModel?.stateSwitch){
-                0 -> setStateSwitch(profile_modify_youtube_switch, profile_modify_facebook_switch, profile_modify_insta_switch, profile_modify_whatsapp_switch, profile_modify_linkedin_switch)
-                1 -> setStateSwitch( profile_modify_facebook_switch, profile_modify_youtube_switch, profile_modify_insta_switch, profile_modify_whatsapp_switch, profile_modify_linkedin_switch)
-                2 -> setStateSwitch( profile_modify_insta_switch, profile_modify_facebook_switch, profile_modify_youtube_switch, profile_modify_whatsapp_switch, profile_modify_linkedin_switch)
-                3 -> setStateSwitch( profile_modify_whatsapp_switch, profile_modify_insta_switch, profile_modify_facebook_switch, profile_modify_youtube_switch, profile_modify_linkedin_switch)
-                4 -> setStateSwitch(profile_modify_linkedin_switch, profile_modify_whatsapp_switch, profile_modify_insta_switch, profile_modify_facebook_switch, profile_modify_youtube_switch)
-                else -> {
+                if (profilModifyModel?.socialMedias?.youtube?.enabled!!)
+                    setStateSwitch(
+                        profile_modify_youtube_switch,
+                        profile_modify_facebook_switch,
+                        profile_modify_insta_switch,
+                        profile_modify_whatsapp_switch,
+                        profile_modify_linkedin_switch
+                    )
+                else if (profilModifyModel.socialMedias.facebook.enabled)
+                    setStateSwitch(
+                        profile_modify_facebook_switch,
+                        profile_modify_youtube_switch,
+                        profile_modify_insta_switch,
+                        profile_modify_whatsapp_switch,
+                        profile_modify_linkedin_switch
+                    )
+                else if (profilModifyModel.socialMedias.instagram.enabled)
+                    setStateSwitch(
+                        profile_modify_insta_switch,
+                        profile_modify_facebook_switch,
+                        profile_modify_youtube_switch,
+                        profile_modify_whatsapp_switch,
+                        profile_modify_linkedin_switch
+                    )
+                else if (profilModifyModel.socialMedias.whatsApp.enabled)
+                    setStateSwitch(
+                        profile_modify_whatsapp_switch,
+                        profile_modify_insta_switch,
+                        profile_modify_facebook_switch,
+                        profile_modify_youtube_switch,
+                        profile_modify_linkedin_switch
+                    )
+                else if (profilModifyModel.socialMedias.linkedIn.enabled)
+                    setStateSwitch(
+                        profile_modify_linkedin_switch,
+                        profile_modify_whatsapp_switch,
+                        profile_modify_insta_switch,
+                        profile_modify_facebook_switch,
+                        profile_modify_youtube_switch
+                    )
+                else {
                     profile_modify_youtube_switch.isChecked = false
                     profile_modify_facebook_switch.isChecked = false
                     profile_modify_insta_switch.isChecked = false
                     profile_modify_whatsapp_switch.isChecked = false
                     profile_modify_linkedin_switch.isChecked = false
                 }
-            }
+
+                if (profilModifyModel.description.isNullOrBlank()) profile_modify_description.hint =
+                    getString(R.string.describe_yourself) else profile_modify_description.text =
+                    profilModifyModel.description
+
+                if (profilModifyModel.picture.isNullOrBlank()) {
+
+                } else {
+                    Glide
+                        .with(this)
+                        .load(profilModifyModel.picture)
+                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(profile_modify_pic_imageview)
+                }
 
 
-            if (profilModifyModel?.description.isNullOrBlank()) profile_modify_description.hint =
-                getString(R.string.describe_yourself) else profile_modify_description.text =
-                profilModifyModel?.description
+                if (prefs.getString("pmtc", "") != Gson().toJson(profileModifyData.loadProfileModifyModel())) {
+                    profileModVieModel.modifyProfile(tokenId!!, profilModifyModel).observe(viewLifecycleOwner, Observer { usr ->
+                            prefs.edit().putString("UserInfoDTO", Gson().toJson(usr.body())).apply()
+                        })
+                }
 
-
-            if(prefs.getString("pmtc", "") != Gson().toJson(profileModifyData.loadProfileModifyModel())){
-                profileModVieModel.modifyProfile(tokenId!!, profileModifyData.loadProfileModifyModel()!!).observe(viewLifecycleOwner, Observer {
-
-                })
-            }
-
-            prefs.edit().putString("pmtc", Gson().toJson(profileModifyData.loadProfileModifyModel())).apply()
-        })
-    }
-
-    private fun setPicProfile(bitmap: Bitmap) {
-        Glide
-            .with(this)
-            .load(bitmap)
-            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-            .apply(RequestOptions.circleCropTransform())
-            .into(profile_modify_pic_imageview)
+                prefs.edit().putString("pmtc", Gson().toJson(profileModifyData.loadProfileModifyModel())).apply()
+            })
     }
 
     private fun setListeners() {
@@ -262,109 +322,169 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
 
     override fun onClick(v: View?) {
         when(v){
-            profile_modify_gender -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            profile_modify_gender -> MaterialDialog(
+                requireContext(),
+                BottomSheet(LayoutMode.WRAP_CONTENT)
+            ).show {
                 title(R.string.gender)
-                listItems(null, listOf(getString(R.string.man), getString(R.string.woman), getString(R.string.others) )) { dialog, index, text ->
-                    profileModifyData.setGender(index)
+                listItems(
+                    null, listOf(
+                        getString(R.string.man), getString(R.string.woman), getString(
+                            R.string.other
+                        )
+                    )
+                ) { dialog, index, text ->
+                    profileModifyData.setGender(text.toString())
                 }
                 lifecycleOwner(this@ProfilModify)
             }
-            profile_modify_birthday -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            profile_modify_birthday -> MaterialDialog(
+                requireContext(),
+                BottomSheet(LayoutMode.WRAP_CONTENT)
+            ).show {
                 datePicker() { dialog, datetime ->
                     profileModifyData.setBirthday(dateFormat.format(datetime.time.time))
                 }
             }
-            profile_modify_account_status -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            profile_modify_account_status -> MaterialDialog(
+                requireContext(),
+                BottomSheet(LayoutMode.WRAP_CONTENT)
+            ).show {
                 title(R.string.account_status)
-                listItems(null, listOf(getString(R.string.public_label), getString(R.string.private_label))) { dialog, index, text ->
-                    profileModifyData.setStatusAccount(index)
+                listItems(
+                    null, listOf(
+                        getString(R.string.public_label),
+                        getString(R.string.private_label)
+                    )
+                ) { dialog, index, text ->
+                    profileModifyData.setStatusAccount(text.toString())
                 }
                 lifecycleOwner(this@ProfilModify)
             }
-            profile_modify_format_timenote -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            profile_modify_format_timenote -> MaterialDialog(
+                requireContext(), BottomSheet(
+                    LayoutMode.WRAP_CONTENT
+                )
+            ).show {
                 title(R.string.timenote_date_format)
-                listItems(null, listOf("X", "Y")) { dialog, index, text ->
-                    profileModifyData.setFormatTimenote(index)
+                listItems(
+                    null,
+                    listOf(getString(R.string.date), getString(R.string.countdown))
+                ) { dialog, index, text ->
+                    profileModifyData.setFormatTimenote(text.toString())
                 }
                 lifecycleOwner(this@ProfilModify)
             }
-            profile_modify_name_appearance -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                title(R.string.name_you_want_to_appear)
-                input(inputType = InputType.TYPE_CLASS_TEXT, prefill = profileModifyData.loadProfileModifyModel()?.nameAppearance){ _, text ->
-                    profileModifyData.setNameAppearance(text.toString())
-                }
-                positiveButton(R.string.done)
-                lifecycleOwner(this@ProfilModify)
-            }
-            profile_modify_name -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            profile_modify_name -> MaterialDialog(
+                requireContext(),
+                BottomSheet(LayoutMode.WRAP_CONTENT)
+            ).show {
                 title(R.string.your_name)
-                input(inputType = InputType.TYPE_CLASS_TEXT, prefill = profileModifyData.loadProfileModifyModel()?.name
-                ){ _, text ->
+                input(
+                    inputType = InputType.TYPE_CLASS_TEXT,
+                    prefill = profileModifyData.loadProfileModifyModel()?.givenName
+                ) { _, text ->
                     profileModifyData.setName(text.toString())
                 }
                 positiveButton(R.string.done)
                 lifecycleOwner(this@ProfilModify)
             }
-            profile_modify_from -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            profile_modify_from -> MaterialDialog(
+                requireContext(),
+                BottomSheet(LayoutMode.WRAP_CONTENT)
+            ).show {
                 title(R.string.from)
-                input(inputType = InputType.TYPE_CLASS_TEXT, prefill = profileModifyData.loadProfileModifyModel()?.location
-                ){ _, text ->
+                input(
+                    inputType = InputType.TYPE_CLASS_TEXT,
+                    prefill = profileModifyData.loadProfileModifyModel()?.location?.address?.address
+                ) { _, text ->
                     prefs
                     profileModifyData.setLocation(text.toString())
                 }
                 positiveButton(R.string.done)
                 lifecycleOwner(this@ProfilModify)
             }
-            profile_modify_youtube_channel -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            profile_modify_youtube_channel -> MaterialDialog(
+                requireContext(), BottomSheet(
+                    LayoutMode.WRAP_CONTENT
+                )
+            ).show {
                 title(R.string.youtube_channel)
-                input(inputType = InputType.TYPE_CLASS_TEXT, prefill = profileModifyData.loadProfileModifyModel()?.youtubeLink
-                ){ _, text ->
+                input(
+                    inputType = InputType.TYPE_CLASS_TEXT,
+                    prefill = profileModifyData.loadProfileModifyModel()?.socialMedias?.youtube?.url
+                ) { _, text ->
                     profileModifyData.setYoutubeLink(text.toString())
                 }
                 positiveButton(R.string.done)
                 lifecycleOwner(this@ProfilModify)
             }
-            profile_modify_facebook -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            profile_modify_facebook -> MaterialDialog(
+                requireContext(),
+                BottomSheet(LayoutMode.WRAP_CONTENT)
+            ).show {
                 title(R.string.facebook)
-            input(inputType = InputType.TYPE_CLASS_TEXT, prefill = profileModifyData.loadProfileModifyModel()?.facebookLink
-            ){ _, text ->
-                profileModifyData.setFacebookLink(text.toString())
+                input(
+                    inputType = InputType.TYPE_CLASS_TEXT,
+                    prefill = profileModifyData.loadProfileModifyModel()?.socialMedias?.facebook?.url
+                ) { _, text ->
+                    profileModifyData.setFacebookLink(text.toString())
+                }
+                positiveButton(R.string.done)
+                lifecycleOwner(this@ProfilModify)
             }
-                    positiveButton(R.string.done)
-                    lifecycleOwner(this@ProfilModify)
-            }
-            profile_modify_instagram -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            profile_modify_instagram -> MaterialDialog(
+                requireContext(),
+                BottomSheet(LayoutMode.WRAP_CONTENT)
+            ).show {
                 title(R.string.instagram)
-            input(inputType = InputType.TYPE_CLASS_TEXT, prefill = profileModifyData.loadProfileModifyModel()?.instaLink
-            ){ _, text ->
-                profileModifyData.setInstaLink(text.toString())
+                input(
+                    inputType = InputType.TYPE_CLASS_TEXT,
+                    prefill = profileModifyData.loadProfileModifyModel()?.socialMedias?.instagram?.url
+                ) { _, text ->
+                    profileModifyData.setInstaLink(text.toString())
+                }
+                positiveButton(R.string.done)
+                lifecycleOwner(this@ProfilModify)
             }
-                    positiveButton(R.string.done)
-                    lifecycleOwner(this@ProfilModify)
-        }
-            profile_modify_whatsapp -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            profile_modify_whatsapp -> MaterialDialog(
+                requireContext(),
+                BottomSheet(LayoutMode.WRAP_CONTENT)
+            ).show {
                 title(R.string.whatsapp)
-            input(inputType = InputType.TYPE_CLASS_TEXT, prefill = profileModifyData.loadProfileModifyModel()?.whatsappLink
-            ){ _, text ->
-                profileModifyData.setWhatsappLink(text.toString())
+                input(
+                    inputType = InputType.TYPE_CLASS_TEXT,
+                    prefill = profileModifyData.loadProfileModifyModel()?.socialMedias?.whatsApp?.url
+                ) { _, text ->
+                    profileModifyData.setWhatsappLink(text.toString())
+                }
+                positiveButton(R.string.done)
+                lifecycleOwner(this@ProfilModify)
             }
-                    positiveButton(R.string.done)
-                    lifecycleOwner(this@ProfilModify)
-        }
-            profile_modify_linkedin -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            profile_modify_linkedin -> MaterialDialog(
+                requireContext(),
+                BottomSheet(LayoutMode.WRAP_CONTENT)
+            ).show {
                 title(R.string.linkedin)
-            input(inputType = InputType.TYPE_CLASS_TEXT, prefill = profileModifyData.loadProfileModifyModel()?.linkedinLink
-            ){ _, text ->
-                profileModifyData.setLinkedinLink(text.toString())
+                input(
+                    inputType = InputType.TYPE_CLASS_TEXT,
+                    prefill = profileModifyData.loadProfileModifyModel()?.socialMedias?.linkedIn?.url
+                ) { _, text ->
+                    profileModifyData.setLinkedinLink(text.toString())
+                }
+                positiveButton(R.string.done)
+                lifecycleOwner(this@ProfilModify)
             }
-                    positiveButton(R.string.done)
-                    lifecycleOwner(this@ProfilModify)
-        }
 
-            profile_modify_description -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            profile_modify_description -> MaterialDialog(
+                requireContext(),
+                BottomSheet(LayoutMode.WRAP_CONTENT)
+            ).show {
                 title(R.string.describe_yourself)
-                input(inputType = InputType.TYPE_CLASS_TEXT, prefill = profileModifyData.loadProfileModifyModel()?.description
-                ){ _, text ->
+                input(
+                    inputType = InputType.TYPE_CLASS_TEXT,
+                    prefill = profileModifyData.loadProfileModifyModel()?.description
+                ) { _, text ->
                     profileModifyData.setDescription(text.toString())
                 }
                 positiveButton(R.string.done)
@@ -377,7 +497,11 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         if(requestCode == 2){
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                 picturePickerUser()
@@ -403,7 +527,7 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
                 Log.d(ContentValues.TAG, "onStateChanged: ${state?.name}")
                 if (state == TransferState.COMPLETED) {
                     imagesUrl = amazonClient.getResourceUrl("timenote-dev-images", key).toString()
-
+                    profileModifyData.setPicture(imagesUrl)
                 }
 
             }
@@ -431,7 +555,13 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
         }
     }
 
-    private fun setStateSwitch(switchActive: Switch, switchInactive1: Switch, switchInactive2: Switch, switchInactive3: Switch, switchInactive4: Switch){
+    private fun setStateSwitch(
+        switchActive: Switch,
+        switchInactive1: Switch,
+        switchInactive2: Switch,
+        switchInactive3: Switch,
+        switchInactive4: Switch
+    ){
         switchActive.isChecked = true
         switchInactive1.isChecked = false
         switchInactive2.isChecked = false
@@ -447,12 +577,30 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
 
         MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             title(R.string.take_add_a_picture)
-            listItems(items = listOf(getString(R.string.take_a_photo), getString(R.string.search_on_web), getString(R.string.trim), getString(R.string.delete))) { _, index, text ->
-                if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-                    && ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            listItems(
+                items = listOf(
+                    getString(R.string.take_a_photo), getString(R.string.search_on_web), getString(
+                        R.string.trim
+                    ), getString(R.string.delete)
+                )
+            ) { _, index, text ->
+                if (ContextCompat.checkSelfPermission(
+                        requireContext(),
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                    ) == PackageManager.PERMISSION_GRANTED
+                    && ContextCompat.checkSelfPermission(
+                        requireContext(),
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    ) == PackageManager.PERMISSION_GRANTED) {
                     when (index) {
                         0 -> utils.createPictureSingleBS(childFragmentManager, "single")
-                        1 -> utils.createWebSearchDialog(requireContext(), webSearchViewModel, this@ProfilModify, null, null)
+                        1 -> utils.createWebSearchDialog(
+                            requireContext(),
+                            webSearchViewModel,
+                            this@ProfilModify,
+                            null,
+                            null
+                        )
                         2 -> cropImage(images)
                         3 -> {
                             images = null
@@ -466,7 +614,6 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
     }
 
     private fun cropImage(awsFile: AWSFile?) {
-        val a = awsFile
         var cropView: CropImageView? = null
         val dialog = MaterialDialog(requireContext()).show {
             customView(R.layout.cropview_circle)
@@ -474,9 +621,12 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
             positiveButton(R.string.done) {
                 profileModifyPb.visibility = View.GONE
                 profileModifyPicIv.visibility = View.VISIBLE
-                setPicProfile(cropView?.croppedImage!!)
-                awsFile?.bitmap = cropView?.croppedImage
+                if(awsFile == null)
+                    images = AWSFile(Uri.parse(""), cropView?.croppedImage)
+                else
+                    awsFile.bitmap = cropView?.croppedImage!!
             }
+            pushPic(File(getPath(awsFile?.uri)!!), awsFile?.bitmap!!)
             lifecycleOwner(this@ProfilModify)
         }
         cropView = dialog.getCustomView().crop_view_circle as CropImageView
@@ -517,8 +667,18 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
     }
 
     override fun onSingleImageSelected(uri: Uri?, tag: String?) {
-        images = AWSFile(uri, MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri))
-        setPicProfile(MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri))
+        images = AWSFile(
+            uri, MediaStore.Images.Media.getBitmap(
+                requireActivity().contentResolver,
+                uri
+            )
+        )
+        pushPic(
+            File(getPath(uri)!!), MediaStore.Images.Media.getBitmap(
+                requireActivity().contentResolver,
+                uri
+            )
+        )
     }
 
     fun getPath(uri: Uri?): String? {

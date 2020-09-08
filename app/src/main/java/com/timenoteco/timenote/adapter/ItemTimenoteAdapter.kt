@@ -23,16 +23,15 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.RoundedCornersTransformation
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
-import com.timenoteco.timenote.model.StatusTimenote
-import com.timenoteco.timenote.model.Timenote
+import com.timenoteco.timenote.model.TimenoteInfoDTO
 import kotlinx.android.synthetic.main.adapter_timenote_recent.view.*
 import kotlinx.android.synthetic.main.item_timenote.view.*
 import kotlinx.android.synthetic.main.item_timenote_recent.view.*
 import kotlinx.android.synthetic.main.item_timenote_root.view.*
 
 class ItemTimenoteAdapter(
-    private val timenotes: List<Timenote>,
-    private val timenotesToCome: List<Timenote>,
+    private val timenotes: List<TimenoteInfoDTO>,
+    private val timenotesToCome: List<TimenoteInfoDTO>,
     private val isHeterogeneous: Boolean,
     private val timenoteRecentClicked: TimenoteRecentClicked?,
     private val timenoteListenerListener: TimenoteOptionsListener,
@@ -104,16 +103,14 @@ class ItemTimenoteAdapter(
 
     class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
 
-        private lateinit var timenote: Timenote
 
         fun bindTimenote(
-            timenote: Timenote,
+            timenote: TimenoteInfoDTO,
             timenoteListenerListener: TimenoteOptionsListener,
             fragment: Fragment,
             isFromFuture: Boolean
         ) {
 
-            this.timenote = timenote
 
             if(isFromFuture) itemView.timenote_plus.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.ic_ajout_cal))
             else itemView.timenote_plus.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.ic_like))
@@ -121,13 +118,13 @@ class ItemTimenoteAdapter(
 
             Glide
                 .with(itemView)
-                .load(timenote.pic_user)
+                .load(timenote.createdBy.pictureURL)
                 .apply(RequestOptions.circleCropTransform())
                 .into(itemView.timenote_pic_user_imageview)
 
             Glide
                 .with(itemView)
-                .load(timenote.pic_user)
+                .load(timenote.joinedBy.users[0].picture)
                 .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(itemView.context, 90, 0, itemView.context.resources.getString(0 + R.color.colorBackground), 4)))
                 .into(itemView.timenote_pic_participant_one)
 
@@ -144,11 +141,11 @@ class ItemTimenoteAdapter(
                 .into(itemView.timenote_pic_participant_three)
 
 
-            val screenSlideCreationTimenotePagerAdapter =  ScreenSlideTimenotePagerAdapter(fragment, timenote.pic, true){ i: Int, i1: Int ->
+            val screenSlideCreationTimenotePagerAdapter =  ScreenSlideTimenotePagerAdapter(fragment, timenote.pictures, true){ i: Int, i1: Int ->
                 if(i1 == 0) {
-                    if (timenote.status == StatusTimenote.PAID || (timenote.status == StatusTimenote.FREE && !timenote.url.isNullOrBlank())) {
+                    if (timenote.price!! >= 0 || (timenote.price!! >= 0 && !timenote.url.isNullOrBlank())) {
                         itemView.timenote_buy.visibility = View.VISIBLE
-                        if (timenote.status == StatusTimenote.PAID) itemView.timenote_buy.text = timenote.price.toString() + "$"
+                        if (timenote.price!! > 0) itemView.timenote_buy.text = "${timenote.price.toString()}$"
                     }
                 } else {
                     timenoteListenerListener.onDoubleClick()
@@ -163,10 +160,10 @@ class ItemTimenoteAdapter(
 
             itemView.timenote_vp.adapter = screenSlideCreationTimenotePagerAdapter
             itemView.timenote_indicator.setViewPager(itemView.timenote_vp)
-            if(timenote.pic?.size == 1) itemView.timenote_indicator.visibility = View.GONE
+            if(timenote.pictures.size == 1) itemView.timenote_indicator.visibility = View.GONE
             screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(itemView.timenote_indicator.adapterDataObserver)
-            itemView.timenote_username.text = timenote.username
-            itemView.timenote_place.text = timenote.place
+            itemView.timenote_username.text = timenote.createdBy.givenName
+            itemView.timenote_place.text = timenote.location.address.address
             val test = "Saved by Ronny Dahan and thousands of other people"
 
             val p = Typeface.create("sans-serif-light", Typeface.NORMAL)
@@ -180,14 +177,14 @@ class ItemTimenoteAdapter(
 
             itemView.timenote_added_by.text = t
 
-            val h = SpannableStringBuilder(timenote.desc)
+            val h = SpannableStringBuilder(timenote.description)
             h.setSpan(k, 0, 17, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
-            h.setSpan(o, 18, timenote.desc?.length!!, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+            h.setSpan(o, 18, timenote.description.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
             itemView.timenote_username_desc.text = h
             itemView.timenote_title.text = timenote.title
-            itemView.timenote_year.text = timenote.year
-            itemView.timenote_day_month.text = timenote.month
-            itemView.timenote_time.text = timenote.date
+            //itemView.timenote_year.text = timenote.year
+            //itemView.timenote_day_month.text = timenote.month
+            //itemView.timenote_time.text = timenote.date
 
             itemView.timenote_day_month.setOnClickListener {
                 itemView.separator_1.visibility = View.INVISIBLE
@@ -245,14 +242,14 @@ class ItemTimenoteAdapter(
 
     class TimenoteToComeViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
 
-        fun bindTimenoteTocome(timenote: List<Timenote>, timenoteRecentClicked: TimenoteRecentClicked?){
+        fun bindTimenoteTocome(timenote: List<TimenoteInfoDTO>, timenoteRecentClicked: TimenoteRecentClicked?){
             itemView.home_recent_rv.layoutManager = LinearLayoutManager(itemView.context, LinearLayoutManager.HORIZONTAL, false)
             itemView.home_recent_rv.adapter = ItemTimenoteToComeAdapter(timenote, timenoteRecentClicked)
         }
     }
 }
 
-class ItemTimenoteToComeAdapter(private val timenotesToCome: List<Timenote>, private val timenoteClicked: ItemTimenoteAdapter.TimenoteRecentClicked?): RecyclerView.Adapter<ItemTimenoteToComeAdapter.ItemAdapter>(){
+class ItemTimenoteToComeAdapter(private val timenotesToCome: List<TimenoteInfoDTO>, private val timenoteClicked: ItemTimenoteAdapter.TimenoteRecentClicked?): RecyclerView.Adapter<ItemTimenoteToComeAdapter.ItemAdapter>(){
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemAdapter {
@@ -269,21 +266,21 @@ class ItemTimenoteToComeAdapter(private val timenotesToCome: List<Timenote>, pri
 
 
     class ItemAdapter(itemView: View): RecyclerView.ViewHolder(itemView) {
-        fun bindItem(timenote: Timenote, timenoteClicked: ItemTimenoteAdapter.TimenoteRecentClicked?){
+        fun bindItem(timenote: TimenoteInfoDTO, timenoteClicked: ItemTimenoteAdapter.TimenoteRecentClicked?){
             Glide
                 .with(itemView)
-                .load(timenote.pic!![0])
+                .load(timenote.pictures[0])
                 .centerCrop()
                 .into(itemView.timenote_recent_pic_imageview)
 
             Glide
                 .with(itemView)
-                .load(timenote.pic_user)
+                .load(timenote.createdBy.pictureURL)
                 .apply(RequestOptions.circleCropTransform())
                 .into(itemView.timenote_recent_pic_user_imageview)
 
             itemView.timenote_recent_title.text = timenote.title
-            itemView.timenote_recent_date.text = timenote.dateIn
+            itemView.timenote_recent_date.text = timenote.startingAt
             itemView.setOnClickListener { timenoteClicked?.onTimenoteRecentClicked() }
         }
     }

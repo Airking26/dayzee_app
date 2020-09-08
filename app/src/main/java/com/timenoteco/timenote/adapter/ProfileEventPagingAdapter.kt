@@ -9,13 +9,12 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.listeners.ItemProfileCardListener
 import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
-import com.timenoteco.timenote.model.Timenote
-import com.timenoteco.timenote.model.TimenoteModel
+import com.timenoteco.timenote.model.TimenoteInfoDTO
 
-class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<TimenoteModel>,
+class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<TimenoteInfoDTO>,
                                 var showHideFilterBar: Boolean, private val timenoteOptionsListener: TimenoteOptionsListener,
                                 private val onRemoveFilterBarListener: OnRemoveFilterBarListener, private val onCardClicked: ItemProfileCardListener)
-    : PagingDataAdapter<TimenoteModel, RecyclerView.ViewHolder>(diffUtilCallback) {
+    : PagingDataAdapter<TimenoteInfoDTO, RecyclerView.ViewHolder>(diffUtilCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if(viewType == R.layout.item_profile_timenote_list_style)
@@ -32,7 +31,7 @@ class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<Timenote
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if(position == 0 && showHideFilterBar) (holder as ItemProfileEventAdapter.TimenoteListHolder).showFilterBar(onRemoveFilterBarListener) else
             (holder as ItemProfileEventAdapter.TimenoteListHolder).bindListStyleItem(
-                getItem(position) as Timenote,
+                getItem(position) as TimenoteInfoDTO,
                 timenoteOptionsListener,
                 onCardClicked
             )
@@ -45,13 +44,13 @@ class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<Timenote
 
 }
 
-object ProfileEventComparator : DiffUtil.ItemCallback<TimenoteModel>(){
+object ProfileEventComparator : DiffUtil.ItemCallback<TimenoteInfoDTO>(){
 
-    override fun areItemsTheSame(oldItem: TimenoteModel, newItem: TimenoteModel): Boolean {
+    override fun areItemsTheSame(oldItem: TimenoteInfoDTO, newItem: TimenoteInfoDTO): Boolean {
         return oldItem.createdAt == newItem.createdAt
     }
 
-    override fun areContentsTheSame(oldItem: TimenoteModel, newItem: TimenoteModel): Boolean {
+    override fun areContentsTheSame(oldItem: TimenoteInfoDTO, newItem: TimenoteInfoDTO): Boolean {
         return oldItem == newItem
     }
 
