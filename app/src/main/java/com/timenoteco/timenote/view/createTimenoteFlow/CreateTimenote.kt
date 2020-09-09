@@ -60,6 +60,8 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.AutocompleteActivity
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.theartofdev.edmodo.cropper.CropImageView
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ScreenSlideCreationTimenotePagerAdapter
@@ -72,6 +74,7 @@ import com.timenoteco.timenote.listeners.TimenoteCreationPicListeners
 import com.timenoteco.timenote.model.AWSFile
 import com.timenoteco.timenote.model.Category
 import com.timenoteco.timenote.model.CreationTimenoteDTO
+import com.timenoteco.timenote.model.UserInfoDTO
 import com.timenoteco.timenote.viewModel.CreationTimenoteViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.TimenoteViewModel
@@ -83,6 +86,7 @@ import mehdi.sakout.fancybuttons.FancyButton
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
+import java.lang.reflect.Type
 import java.net.URL
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
@@ -99,12 +103,12 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
             "pVf9Wxd/rK4r81FsOsNDaaOJIKE5AGbq96Lh4RB9"
         )
     )
+    private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     private val args : CreateTimenoteArgs by navArgs()
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
     private val AUTOCOMPLETE_REQUEST_CODE: Int = 11
     private lateinit var progressDialog: Dialog
     private lateinit var utils: Utils
-    private lateinit var dateFormatDate: SimpleDateFormat
     private lateinit var fromLabel: TextView
     private lateinit var toLabel : TextView
     private lateinit var addEndDateTv: TextView
@@ -210,6 +214,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                         creationTimenoteViewModel.setPicUser(imagesUrl)
                         progressDialog.hide()
                         timenoteViewModel.createTimenote(tokenId!!, creationTimenoteViewModel.getCreateTimeNoteLiveData().value!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                            val o = it.errorBody()?.string()
                             if(it.isSuccessful)
                                 findNavController().navigate(CreateTimenoteDirections.actionCreateTimenoteToPreviewTimenoteCreated(args.from))
                         })
@@ -241,6 +246,9 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setUp()
+        val type: Type = object : TypeToken<UserInfoDTO?>() {}.type
+        val userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", "89844773948484933"), type)
+        creationTimenoteViewModel.setCreatedBy(userInfoDTO.id)
         if(!args.modify)creationTimenoteViewModel.getCreateTimeNoteLiveData().observe(
             viewLifecycleOwner,
             androidx.lifecycle.Observer {
@@ -355,7 +363,6 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
         utils = Utils()
         progressDialog = utils.progressDialog(requireContext())
         dateFormatDateAndTime = SimpleDateFormat(DATE_FORMAT_DAY_AND_TIME, Locale.getDefault())
-        dateFormatDate = SimpleDateFormat(DATE_FORMAT_ONLY_DAY, Locale.getDefault())
         addEndDateTv = profile_add_end_date
         fromLabel = from_label
         toLabel = to_label
@@ -473,7 +480,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                     fixedDate.text = dateFormatDateAndTime.format(datetime.time.time)
                     creationTimenoteViewModel.setStartDate(
                         datetime.time.time,
-                        DATE_FORMAT_DAY_AND_TIME
+                        ISO
                     )
                     startDate = datetime.time.time
                     creationTimenoteViewModel.setEndDate(0L)
@@ -519,7 +526,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                 dateTimePicker { _, datetime ->
                     startDate = datetime.time.time
                     fromTv.text = dateFormatDateAndTime.format(startDate)
-                    creationTimenoteViewModel.setStartDate(startDate!!, DATE_FORMAT_DAY_AND_TIME)
+                    creationTimenoteViewModel.setStartDate(startDate!!, ISO)
                     if (endDate != null) creationTimenoteViewModel.setFormatedStartDate(
                         startDate!!,
                         endDate!!

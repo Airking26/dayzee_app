@@ -16,6 +16,7 @@ class CreationTimenoteViewModel: ViewModel() {
     private val DATE_FORMAT_SAME_DAY_SAME_TIME = "EEE, d MMM yyyy hh:mm aaa"
     private val DATE_FORMAT_DAY = "d MMM yyyy"
     private val DATE_FORMAT_TIME = "hh:mm aaa"
+    private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     private val DATE_FORMAT_TIME_FORMATED = "d\nMMM"
     private val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = "d MMM.\nhh:mm"
     private val YEAR = "yyyy"
@@ -37,8 +38,9 @@ class CreationTimenoteViewModel: ViewModel() {
     fun setLocation(location: Location) = timenoteLiveData.postValue(createTimenoteData.setPlace(location))
     fun setCategory(category: Category) = timenoteLiveData.postValue(createTimenoteData.setCategory(category))
     fun setStartDate(startDate: Long, format: String) = timenoteLiveData.postValue(createTimenoteData.setStartDate(formatDate(format, startDate)))
-    fun setEndDate(endDate: Long) = timenoteLiveData.postValue(createTimenoteData.setEndDate(formatDate(DATE_FORMAT_SAME_DAY_SAME_TIME, endDate)))
+    fun setEndDate(endDate: Long) = timenoteLiveData.postValue(createTimenoteData.setEndDate(formatDate(ISO, endDate)))
     fun setColor(color: String) = timenoteLiveData.postValue(createTimenoteData.setColor(color))
+    fun setCreatedBy(id: String) = timenoteLiveData.postValue(createTimenoteData.setCreatedBy(id))
     fun fetchLocation(id : String): LiveData<Response<DetailedPlace>> {
         return flow {
             emit(placeService.getDetailedPlace(id, "AIzaSyBhM9HQo1fzDlwkIVqobfmrRmEMCWTU1CA"))

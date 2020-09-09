@@ -2,15 +2,15 @@ package com.timenoteco.timenote.paging
 
 import androidx.paging.PagingSource
 import com.timenoteco.timenote.model.TimenoteInfoDTO
-import com.timenoteco.timenote.webService.service.ProfileService
+import com.timenoteco.timenote.model.UserInfoDTO
+import com.timenoteco.timenote.webService.service.SearchService
 
-class ProfileEventPagingSource(val token : String, val profileService: ProfileService, val future: Boolean): PagingSource<Int, TimenoteInfoDTO>() {
+class SearchTagPagingSource(val token: String, val search: String, val searchService: SearchService) : PagingSource<Int, TimenoteInfoDTO>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, TimenoteInfoDTO> {
         return try {
             val nextPageNumber = params.key ?: 0
-            val response = if(future) profileService.getFutureTimenotes("Bearer $token", nextPageNumber)
-            else profileService.getPastTimenotes("Bearer $token", nextPageNumber)
+            val response = searchService.searchTag("Bearer $token", search, nextPageNumber)
             LoadResult.Page(
                 data = response.body()!!,
                 prevKey = null,
@@ -21,4 +21,3 @@ class ProfileEventPagingSource(val token : String, val profileService: ProfileSe
         }
     }
 }
-

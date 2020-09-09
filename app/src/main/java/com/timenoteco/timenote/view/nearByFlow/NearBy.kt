@@ -176,14 +176,21 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         }
 
         prefs.stringLiveData("nearby", Gson().toJson(nearbyFilterData.loadNearbyFilter())).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            val nearbyModifyModel : NearbyFilterModel? = Gson().fromJson<NearbyFilterModel>(prefs.getString("nearby", null),
-                object : TypeToken<NearbyFilterModel?>() {}.type)
-            nearby_place.text = nearbyModifyModel?.where?.address?.address
-            if(nearbyModifyModel?.whenn == null || nearbyModifyModel?.whenn?.isBlank()!!)
+            val nearbyModifyModel : NearbyRequestBody? = Gson().fromJson<NearbyRequestBody>(prefs.getString("nearby", null),
+                object : TypeToken<NearbyRequestBody?>() {}.type)
+            nearby_place.text = nearbyModifyModel?.location?.address?.address
+            if(nearbyModifyModel?.date == null || nearbyModifyModel.date.isBlank())
                 nearby_time.text = dateFormat.format(System.currentTimeMillis())
             else
-                nearby_time.text = nearbyModifyModel.whenn
+                nearby_time.text = nearbyModifyModel.date
             if(nearbyToCompare != Gson().toJson(nearbyFilterData.loadNearbyFilter())){
+                lifecycleScope.launch {
+                    nearbyViewModel.getNearbyResults(tokenId!!, nearbyModifyModel!!).collectLatest {
+                        val i = it
+                        i.toString()
+                    }
+                }
+
                /* timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this)
                 nearby_rv.adapter = timenotePagingAdapter
                 lifecycleScope.launch {

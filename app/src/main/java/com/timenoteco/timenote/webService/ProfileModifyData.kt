@@ -42,8 +42,8 @@ class ProfileModifyData(context: Context) {
         notifyProfileDataChanged()
     }
 
-    fun setLocation(location: String) {
-        profilModifyModel?.location?.address?.address = location
+    fun setLocation(location: Location) {
+        profilModifyModel?.location = location
         notifyProfileDataChanged()
     }
 

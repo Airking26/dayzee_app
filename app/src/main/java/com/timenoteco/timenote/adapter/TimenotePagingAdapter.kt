@@ -19,7 +19,7 @@ class TimenotePagingAdapter(diffCallbacks: DiffUtil.ItemCallback<TimenoteInfoDTO
 
     override fun onBindViewHolder(holder: ItemTimenoteAdapter.TimenoteViewHolder, position: Int) =
         holder.bindTimenote(
-            getItem(position) as TimenoteInfoDTO,
+            getItem(position)!!,
             timenoteListenerListener,
             fragment,
             isFromFuture

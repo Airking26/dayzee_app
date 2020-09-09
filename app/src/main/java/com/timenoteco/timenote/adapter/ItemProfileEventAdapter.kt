@@ -23,7 +23,7 @@ import kotlinx.android.synthetic.main.item_profile_timenote_list_style.view.*
 
 
 class ItemProfileEventAdapter(
-    private var events: MutableList<TimenoteInfoDTO>,
+    private var events: List<TimenoteInfoDTO>,
     private val timenoteOptionsListener: TimenoteOptionsListener,
     private val onRemoveFilterBarListener: OnRemoveFilterBarListener,
     private val onCardClicked: ItemProfileCardListener,
@@ -77,6 +77,7 @@ class ItemProfileEventAdapter(
                 .with(itemView)
                 .load(event.createdBy.pictureURL)
                 .apply(RequestOptions.circleCropTransform())
+                .placeholder(R.drawable.circle_pic)
                 .into(itemView.profile_item_pic_profile_imageview)
         }
         private fun createOptionsOnTimenote(context: Context, isMine: Boolean, timenoteListenerListener: TimenoteOptionsListener){

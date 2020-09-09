@@ -38,4 +38,8 @@ class DayzeeRepository {
     fun getMeService(): MeService{
         return service.create(MeService::class.java)
     }
+
+    fun getSearchService(): SearchService{
+        return service.create(SearchService::class.java)
+    }
 }

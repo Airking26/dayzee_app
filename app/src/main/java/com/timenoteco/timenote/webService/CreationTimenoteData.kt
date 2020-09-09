@@ -9,7 +9,13 @@ private var timenoteModel: CreationTimenoteDTO =
 
 class CreationTimenoteData {
 
+
     fun loadCreateTimenoteData(): CreationTimenoteDTO? {
+        return timenoteModel
+    }
+
+    fun setCreatedBy(id: String): CreationTimenoteDTO{
+        timenoteModel.createdBy = id
         return timenoteModel
     }
 

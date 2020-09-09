@@ -241,7 +241,7 @@
     <string name="accept">Accept</string>
     <string name="decline">Decline</string>
     <string name="default_settings_at_creation">default settings at creation time</string>
-    <string name="date">date</string>
+    <string name="date">Date</string>
     <string name="countdown">Countdown</string>
     <string name="only_me">Only me</string>
     <string name="trim">Trim</string>
@@ -249,4 +249,8 @@
     <string name="new_password">New password</string>
     <string name="new_password_again">Retype new password</string>
     <string name="other">Other</string>
+    <string name="max_price">Price max</string>
+    <string name="all">All</string>
+    <string name="first">first</string>
+    <string name="second">second</string>
 </resources>

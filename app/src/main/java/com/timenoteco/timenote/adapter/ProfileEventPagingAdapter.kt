@@ -11,8 +11,7 @@ import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.TimenoteInfoDTO
 
-class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<TimenoteInfoDTO>,
-                                var showHideFilterBar: Boolean, private val timenoteOptionsListener: TimenoteOptionsListener,
+class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<TimenoteInfoDTO>, var showHideFilterBar: Boolean, private val timenoteOptionsListener: TimenoteOptionsListener,
                                 private val onRemoveFilterBarListener: OnRemoveFilterBarListener, private val onCardClicked: ItemProfileCardListener)
     : PagingDataAdapter<TimenoteInfoDTO, RecyclerView.ViewHolder>(diffUtilCallback) {
 

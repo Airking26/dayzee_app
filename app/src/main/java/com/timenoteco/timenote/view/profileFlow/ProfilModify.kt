@@ -2,6 +2,7 @@ package com.timenoteco.timenote.view.profileFlow
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
 import android.content.SharedPreferences
@@ -51,6 +52,15 @@ import com.asksira.bsimagepicker.BSImagePicker
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.android.libraries.places.widget.Autocomplete
+import com.google.android.libraries.places.widget.AutocompleteActivity
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.theartofdev.edmodo.cropper.CropImageView
@@ -89,20 +99,24 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
         )
     )
     private lateinit var prefs : SharedPreferences
+    private val AUTOCOMPLETE_REQUEST_CODE: Int = 12
     private lateinit var profileModifyPicIv : ImageView
     private lateinit var profileModifyPb: ProgressBar
     private lateinit var profileModifyData: ProfileModifyData
     private val DATE_FORMAT = "dd MMMM yyyy"
     private var dateFormat : SimpleDateFormat
+    private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     private val webSearchViewModel : WebSearchViewModel by activityViewModels()
     val TOKEN: String = "TOKEN"
     private var images: AWSFile? = null
     private var tokenId: String? = null
     private lateinit var utils: Utils
     private val profileModVieModel: ProfileModifyViewModel by activityViewModels()
+    private var placesList: List<Place.Field> = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
+    private lateinit var placesClient: PlacesClient
 
     init {
-        dateFormat = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
+        dateFormat = SimpleDateFormat(ISO, Locale.getDefault())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -112,6 +126,8 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
         tokenId = prefs.getString(TOKEN, null)
         if(prefs.getString("pmtc", "") == "")
         prefs.edit().putString("pmtc", "").apply()
+        Places.initialize(requireContext(), "AIzaSyBhM9HQo1fzDlwkIVqobfmrRmEMCWTU1CA")
+        placesClient = Places.createClient(requireContext())
     }
 
     override fun onCreateView(
@@ -127,12 +143,7 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
         utils = Utils()
         profileModifyPb = profile_modify_pb
         profileModifyPicIv = profile_modify_pic_imageview
-        Glide
-            .with(this)
-            .load("https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792")
-            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-            .apply(RequestOptions.circleCropTransform())
-            .into(profile_modify_pic_imageview)
+
 
         setListeners()
         setProfilModifyViewModel()
@@ -166,12 +177,20 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
             Observer {
                 val type: Type = object : TypeToken<UpdateUserInfoDTO?>() {}.type
                 val profilModifyModel: UpdateUserInfoDTO? = Gson().fromJson<UpdateUserInfoDTO>(it, type)
+
+                Glide
+                    .with(this)
+                    .load(profilModifyModel?.picture)
+                    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                    .apply(RequestOptions.circleCropTransform())
+                    .placeholder(R.drawable.circle_pic)
+                    .into(profile_modify_pic_imageview)
+
                 if (profilModifyModel?.givenName.isNullOrBlank()) profile_modify_name.hint =
                     getString(R.string.your_name) else profile_modify_name.text =
                     profilModifyModel?.givenName
                 if (profilModifyModel?.location?.address?.address.isNullOrBlank()) profile_modify_from.hint =
-                    getString(R.string.from) else profile_modify_from.text =
-                    profilModifyModel?.location?.address?.address
+                    getString(R.string.from) else profile_modify_from.text = profilModifyModel?.location?.address?.address
                 if (profilModifyModel?.birthday.isNullOrBlank()) profile_modify_birthday.hint =
                     getString(R.string.birthday) else profile_modify_birthday.text =
                     profilModifyModel?.birthday
@@ -193,9 +212,9 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
                     null -> profile_modify_account_status.hint = getString(R.string.account_status)
                 }
                 when (profilModifyModel?.dateFormat) {
-                    getString(R.string.date) -> profile_modify_format_timenote.text =
+                    getString(R.string.first) -> profile_modify_format_timenote.text =
                         getString(R.string.date)
-                    getString(R.string.countdown) -> profile_modify_format_timenote.text =
+                    getString(R.string.second) -> profile_modify_format_timenote.text =
                         getString(R.string.countdown)
                     null -> profile_modify_format_timenote.hint =
                         getString(R.string.timenote_date_format)
@@ -294,6 +313,7 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
 
                 if (prefs.getString("pmtc", "") != Gson().toJson(profileModifyData.loadProfileModifyModel())) {
                     profileModVieModel.modifyProfile(tokenId!!, profilModifyModel).observe(viewLifecycleOwner, Observer { usr ->
+                        val f = usr.errorBody()?.string()
                             prefs.edit().putString("UserInfoDTO", Gson().toJson(usr.body())).apply()
                         })
                 }
@@ -371,7 +391,11 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
                     null,
                     listOf(getString(R.string.date), getString(R.string.countdown))
                 ) { dialog, index, text ->
-                    profileModifyData.setFormatTimenote(text.toString())
+                    when(index){
+                        0 -> profileModifyData.setFormatTimenote(getString(R.string.first))
+                        1 -> profileModifyData.setFormatTimenote(getString(R.string.second))
+                    }
+
                 }
                 lifecycleOwner(this@ProfilModify)
             }
@@ -389,21 +413,9 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
                 positiveButton(R.string.done)
                 lifecycleOwner(this@ProfilModify)
             }
-            profile_modify_from -> MaterialDialog(
-                requireContext(),
-                BottomSheet(LayoutMode.WRAP_CONTENT)
-            ).show {
-                title(R.string.from)
-                input(
-                    inputType = InputType.TYPE_CLASS_TEXT,
-                    prefill = profileModifyData.loadProfileModifyModel()?.location?.address?.address
-                ) { _, text ->
-                    prefs
-                    profileModifyData.setLocation(text.toString())
-                }
-                positiveButton(R.string.done)
-                lifecycleOwner(this@ProfilModify)
-            }
+            profile_modify_from -> startActivityForResult(
+                Autocomplete.IntentBuilder(
+                    AutocompleteActivityMode.OVERLAY, placesList).build(requireContext()), AUTOCOMPLETE_REQUEST_CODE)
             profile_modify_youtube_channel -> MaterialDialog(
                 requireContext(), BottomSheet(
                     LayoutMode.WRAP_CONTENT
@@ -507,10 +519,6 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
                 picturePickerUser()
             }
         }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        picturePickerUser()
     }
 
     fun pushPic(file: File, bitmap: Bitmap){
@@ -711,5 +719,36 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
     }
 
     override fun onCancelled(isMultiSelecting: Boolean, tag: String?) {
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            when (resultCode) {
+                Activity.RESULT_OK -> {
+                    data?.let {
+                        val place = Autocomplete.getPlaceFromIntent(data)
+                        profileModVieModel.fetchLocation(place.id!!).observe(viewLifecycleOwner, Observer {
+                            val location = Utils().setLocation(it.body()!!)
+                            profileModifyData.setLocation(location)
+                        })
+                    }
+                }
+                AutocompleteActivity.RESULT_ERROR -> {
+                    data?.let {
+                        val status = Autocomplete.getStatusFromIntent(data)
+                        Log.i(ContentValues.TAG, status.statusMessage!!)
+                    }
+                }
+                Activity.RESULT_CANCELED -> {
+                    // The user canceled the operation.
+                }
+            }
+            return
+        } else if(requestCode == 2){
+            if (resultCode == Activity.RESULT_OK){
+                picturePickerUser()
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 }

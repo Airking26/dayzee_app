@@ -5,55 +5,55 @@ import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.timenoteco.timenote.model.Category
-import com.timenoteco.timenote.model.Location
-import com.timenoteco.timenote.model.NearbyFilterModel
+import com.timenoteco.timenote.model.*
 import java.lang.reflect.Type
 
 class NearbyFilterData(context: Context) {
 
     private val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-    private val type: Type = object : TypeToken<NearbyFilterModel?>() {}.type
+    private val type: Type = object : TypeToken<NearbyRequestBody?>() {}.type
 
-    private var nearbyFilterModel: NearbyFilterModel? = Gson().fromJson<NearbyFilterModel>(
+    private var nearbyFilterModel: NearbyRequestBody? = Gson().fromJson<NearbyRequestBody>(
         prefs.getString("nearby",
-            Gson().toJson(NearbyFilterModel(null, null, null, null, null, null))), type)
+            Gson().toJson(
+                NearbyRequestBody(Location(0.0, 0.0, Address("","", "","")),
+                10, Categories("", ""), "", 0, ""))), type)
 
     private fun notifyNearbyFilterChanged(){
         prefs.edit().putString("nearby", Gson().toJson(nearbyFilterModel)).apply()
     }
 
-    fun loadNearbyFilter(): NearbyFilterModel? {
+    fun loadNearbyFilter(): NearbyRequestBody? {
         return nearbyFilterModel
     }
 
-    fun setCategories(categories: List<Category>){
+    fun setCategories(categories: Categories){
         nearbyFilterModel?.categories = categories
         notifyNearbyFilterChanged()
     }
 
-    fun setFrom(from: Int){
-        nearbyFilterModel?.from = from
+    fun setFrom(from: String){
+        nearbyFilterModel?.type = from
         notifyNearbyFilterChanged()
     }
 
     fun setPaidTimenote(paidTimenote: Int){
-        nearbyFilterModel?.paidTimenote = paidTimenote
+        nearbyFilterModel?.price = paidTimenote
         notifyNearbyFilterChanged()
     }
 
     fun setDistance(distance: Int){
-        nearbyFilterModel?.distance = distance
+        nearbyFilterModel?.maxDistance = distance
         notifyNearbyFilterChanged()
     }
 
     fun setWhen(whenn: String){
-        nearbyFilterModel?.whenn = whenn
+        nearbyFilterModel?.date = whenn
         notifyNearbyFilterChanged()
     }
 
     fun setWhere(where: Location){
-        nearbyFilterModel?.where = where
+        nearbyFilterModel?.location = where
         notifyNearbyFilterChanged()
     }
 

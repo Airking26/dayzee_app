@@ -1,12 +1,15 @@
 package com.timenoteco.timenote.model
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class NearbyRequestBody (
-    @SerializedName("location") val location : Location,
-    @SerializedName("maxDistance") val maxDistance : Int,
-    @SerializedName("categories") val categories : Categories,
-    @SerializedName("date") val date : String,
-    @SerializedName("price") val price : Int,
-    @SerializedName("type") val type : String
-)
+    @SerializedName("location") var location : Location,
+    @SerializedName("maxDistance") var maxDistance : Int,
+    @SerializedName("categories") var categories : Categories,
+    @SerializedName("date") var date : String,
+    @SerializedName("price") var price : Int,
+    @SerializedName("type") var type : String
+) : Parcelable

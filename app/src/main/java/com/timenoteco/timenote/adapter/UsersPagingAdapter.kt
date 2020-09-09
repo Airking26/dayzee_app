@@ -16,13 +16,15 @@ class UsersPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>): Pagi
 
     class UserViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         fun bindUser(item: UserInfoDTO?) {
-            Glide
-                .with(itemView)
-                .load(item?.email)
-                .apply(RequestOptions.circleCropTransform())
-                .into(itemView.user_imageview)
 
-            itemView.name_user.text = item?.givenName
+                Glide
+                    .with(itemView)
+                    .load(item?.picture)
+                    .apply(RequestOptions.circleCropTransform())
+                    .placeholder(R.drawable.circle_pic)
+                    .into(itemView.user_imageview)
+
+            itemView.name_user.text = item?.email
         }
 
     }

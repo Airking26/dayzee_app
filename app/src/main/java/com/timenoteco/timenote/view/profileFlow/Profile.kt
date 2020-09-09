@@ -141,6 +141,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
             .with(this)
             .load(userInfoDTO?.picture)
             .apply(RequestOptions.circleCropTransform())
+            .placeholder(R.drawable.circle_pic)
             .into(profile_pic_imageview)
 
         profile_name_toolbar.text = userInfoDTO?.userName

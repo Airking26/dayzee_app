@@ -2,7 +2,9 @@ package com.timenoteco.timenote.view.searchFlow
 
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.Handler
 import android.text.Editable
+import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -12,7 +14,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.map
 import androidx.preference.PreferenceManager
 import com.google.android.material.tabs.TabLayoutMediator
 import com.mancj.materialsearchbar.MaterialSearchBar
@@ -22,10 +26,17 @@ import com.timenoteco.timenote.adapter.SearchViewPeopleTagPagerAdapter
 import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.view.profileFlow.ProfileDirections
 import com.timenoteco.timenote.viewModel.LoginViewModel
+import com.timenoteco.timenote.viewModel.SearchViewModel
 import kotlinx.android.synthetic.main.fragment_search.*
+import kotlinx.android.synthetic.main.fragment_signup.*
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class Search : BaseThroughFragment() {
 
+    private lateinit var handler: Handler
+    private val TRIGGER_AUTO_COMPLETE = 200
+    private val AUTO_COMPLETE_DELAY: Long = 200
     private var tabText0 : String = "Top"
     private var tabText1 : String = "Explore"
     private lateinit var viewTopExplorePagerAdapter: SearchViewTopExplorePagerAdapter
@@ -33,6 +44,7 @@ class Search : BaseThroughFragment() {
     private val loginViewModel : LoginViewModel by activityViewModels()
     private lateinit var prefs: SharedPreferences
     val TOKEN: String = "TOKEN"
+    private val searchViewModel : SearchViewModel by activityViewModels()
     private var tokenId : String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,6 +89,19 @@ class Search : BaseThroughFragment() {
             }
         }.attach()
 
+        handler = Handler { msg ->
+            if (msg.what == TRIGGER_AUTO_COMPLETE) {
+                if (!TextUtils.isEmpty(searchBar.text)) {
+                    searchViewModel.searchChanged(tokenId!!, searchBar.text)
+                    lifecycleScope.launch {
+                        searchViewModel.searchUser(tokenId!!, searchBar.text)
+                    }
+
+                }
+            }
+            false
+        }
+
         searchBar.addTextChangeListener(object: TextWatcher{
             override fun afterTextChanged(s: Editable?) {
             }
@@ -85,6 +110,8 @@ class Search : BaseThroughFragment() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                handler.removeMessages(TRIGGER_AUTO_COMPLETE)
+                handler.sendEmptyMessageDelayed(TRIGGER_AUTO_COMPLETE, AUTO_COMPLETE_DELAY)
             }
 
         })
