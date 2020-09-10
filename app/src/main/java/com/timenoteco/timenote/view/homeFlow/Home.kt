@@ -42,7 +42,8 @@ import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, TimenoteOptionsListener, View.OnClickListener {
+class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, TimenoteOptionsListener, View.OnClickListener,
+    UsersPagingAdapter.SearchPeopleListener {
 
     private var timenotes: List<TimenoteInfoDTO> = mutableListOf()
     private lateinit var timenoteAdapter: ItemTimenoteAdapter
@@ -186,7 +187,7 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
         }
 
         val recyclerview = dial.getCustomView().users_participating_rv
-        val adapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator)
+        val adapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, this)
         recyclerview.adapter = adapter
         lifecycleScope.launch{
             profileViewModel.getUsers(tokenId!!, followers = true, useTimenoteService = true, id =  null).collectLatest {
@@ -236,4 +237,10 @@ class Home : BaseThroughFragment(), ItemTimenoteAdapter.TimenoteRecentClicked, T
     override fun onAddressClicked() {
         findNavController().navigate(HomeDirections.actionHomeToTimenoteAddress())
     }
+
+    override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
+
+    }
+
+
 }

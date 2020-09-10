@@ -152,18 +152,12 @@ class ItemTimenoteAdapter(
                 }
             }
 
-            /*if(timenote.format == 0){
-                itemView.timenote_time_ll.setPadding(((itemView.context.resources.displayMetrics.density * 38) + 0.5f).toInt(), 0, 0, ((itemView.context.resources.displayMetrics.density * 8) + 0.5f).toInt())
-            } else {
-                itemView.timenote_time_ll.setPadding(((itemView.context.resources.displayMetrics.density * 17) + 0.5f).toInt(), 0, 0, ((itemView.context.resources.displayMetrics.density * 8) + 0.5f).toInt())
-            }*/
-
             itemView.timenote_vp.adapter = screenSlideCreationTimenotePagerAdapter
             itemView.timenote_indicator.setViewPager(itemView.timenote_vp)
             if(timenote.pictures.size == 1) itemView.timenote_indicator.visibility = View.GONE
             screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(itemView.timenote_indicator.adapterDataObserver)
             itemView.timenote_username.text = timenote.createdBy.givenName
-            itemView.timenote_place.text = timenote.location.address.address
+            if(timenote.location != null) itemView.timenote_place.text = timenote.location.address.address
             val test = "Saved by Ronny Dahan and thousands of other people"
 
             val p = Typeface.create("sans-serif-light", Typeface.NORMAL)

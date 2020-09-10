@@ -9,16 +9,18 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.UsersPagingAdapter
+import com.timenoteco.timenote.model.UserInfoDTO
 import com.timenoteco.timenote.viewModel.SearchViewModel
 import kotlinx.android.synthetic.main.fragment_search_people.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class SearchPeople: Fragment() {
+class SearchPeople: Fragment(), UsersPagingAdapter.SearchPeopleListener {
 
     private val searchViewModel : SearchViewModel by activityViewModels()
 
@@ -26,7 +28,7 @@ class SearchPeople: Fragment() {
         inflater.inflate(R.layout.fragment_search_people, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val userAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator)
+        val userAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, this)
         search_people_rv.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = userAdapter
@@ -38,5 +40,9 @@ class SearchPeople: Fragment() {
                     }
                 }
             })
+    }
+
+    override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
+        findNavController().navigate(SearchDirections.actionSearchToProfileSearch().setUserInfoDTO(userInfoDTO))
     }
 }

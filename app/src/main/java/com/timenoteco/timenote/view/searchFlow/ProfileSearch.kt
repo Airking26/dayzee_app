@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
@@ -41,12 +42,11 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
 
     private var stateSwitchUrl: String? = null
     private var profilePastFuturePagerAdapter: ProfilePastFuturePagerAdapter? = null
-    private lateinit var profileModifyData: ProfileModifyData
     private var isPrivate = false
+    private val args : ProfileSearchArgs by navArgs()
     private val loginViewModel : LoginViewModel by activityViewModels()
-    private val followViewModel: FollowViewModel by activityViewModels()
+    private val followViewModel : FollowViewModel by activityViewModels()
     private var showFilterBar: Boolean = false
-    private var timenotes: MutableList<TimenoteInfoDTO> = mutableListOf()
     private lateinit var prefs: SharedPreferences
     val TOKEN: String = "TOKEN"
     private var tokenId : String? = null
@@ -54,14 +54,7 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        //tokenId = prefs.getString(TOKEN, null)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        when(loginViewModel.getAuthenticationState().value){
-            LoginViewModel.AuthenticationState.GUEST -> loginViewModel.markAsUnauthenticated()
-        }
+        tokenId = prefs.getString(TOKEN, null)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -75,56 +68,56 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
         profile_day_name_calendar.text = simpleDateFormatDayName.format(System.currentTimeMillis())
         profile_day_number_calendar.text = simpleDateFormatDayNumber.format(System.currentTimeMillis())
 
-        profileModifyData = ProfileModifyData(requireContext())
-        prefs.stringLiveData("profile", Gson().toJson(profileModifyData.loadProfileModifyModel())).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            val type: Type = object : TypeToken<UpdateUserInfoDTO?>() {}.type
-            val profilModifyModel : UpdateUserInfoDTO? = Gson().fromJson<UpdateUserInfoDTO>(it, type)
-
-            if(profilModifyModel?.socialMedias?.youtube?.enabled!!) {
-                if(!profilModifyModel.socialMedias.youtube.url.isBlank()){
+            if(args.userInfoDTO?.socialMedias?.youtube?.enabled!!) {
+                if(!args.userInfoDTO?.socialMedias?.youtube?.url?.isBlank()!!){
                     profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_youtube_colored))
-                    stateSwitchUrl = profilModifyModel.socialMedias.youtube.url
+                    stateSwitchUrl = args.userInfoDTO?.socialMedias?.youtube?.url
                 }
             }
-            else if(profilModifyModel.socialMedias.facebook.enabled) {
-                if(!profilModifyModel.socialMedias.facebook.url.isBlank()){
+            else if(args.userInfoDTO?.socialMedias?.facebook?.enabled!!) {
+                if(!args.userInfoDTO?.socialMedias?.facebook?.url?.isBlank()!!){
                     profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_facebook_colored))
-                    stateSwitchUrl = profilModifyModel.socialMedias.facebook.url
+                    stateSwitchUrl = args.userInfoDTO?.socialMedias?.facebook?.url
                 }
             }
-            else if(profilModifyModel.socialMedias.instagram.enabled) {
-                if(!profilModifyModel.socialMedias.instagram.url.isBlank()){
+            else if(args.userInfoDTO?.socialMedias?.instagram?.enabled!!) {
+                if(!args.userInfoDTO?.socialMedias?.instagram?.url?.isBlank()!!){
                     profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_insta_colored))
-                    stateSwitchUrl = profilModifyModel.socialMedias.instagram.url
+                    stateSwitchUrl = args.userInfoDTO?.socialMedias?.instagram?.url
                 }
             }
-            else if(profilModifyModel.socialMedias.whatsApp.enabled) {
-                if(!profilModifyModel.socialMedias.whatsApp.url.isBlank()){
+            else if(args.userInfoDTO?.socialMedias?.whatsApp?.enabled!!) {
+                if(!args.userInfoDTO?.socialMedias?.whatsApp?.url?.isBlank()!!){
                     profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_whatsapp))
-                    stateSwitchUrl = profilModifyModel.socialMedias.whatsApp.url
+                    stateSwitchUrl = args.userInfoDTO?.socialMedias?.whatsApp?.url
                 }
             }
-            else if(profilModifyModel.socialMedias.linkedIn.enabled){
-                if(!profilModifyModel.socialMedias.linkedIn.url.isBlank()){
+            else if(args.userInfoDTO?.socialMedias?.linkedIn?.enabled!!){
+                if(!args.userInfoDTO?.socialMedias?.linkedIn?.url?.isBlank()!!){
                     profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_linkedin_colored))
-                    stateSwitchUrl = profilModifyModel.socialMedias.linkedIn.url
+                    stateSwitchUrl = args.userInfoDTO?.socialMedias?.linkedIn?.url
                 }
             }
             else {
                 profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_icons8_contacts))
             }
-        })
 
-            profile_modify_btn.visibility = View.INVISIBLE
-            profile_follow_btn.visibility = View.VISIBLE
-            profile_settings_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_more_vert_black_profile_24dp))
-            profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_back_thin))
-            profile_follow_btn.setOnClickListener(this)
+        profile_modify_btn.visibility = View.INVISIBLE
+        profile_follow_btn.visibility = View.VISIBLE
+        profile_settings_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_more_vert_black_profile_24dp))
+        profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_back_thin))
+        profile_follow_btn.setOnClickListener(this)
+
+        profile_name_toolbar.text = args.userInfoDTO?.userName
+        profile_nbr_followers.text = args.userInfoDTO?.followers.toString()
+        profile_nbr_following.text = args.userInfoDTO?.following.toString()
+
 
         Glide
             .with(this)
-            .load("https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792")
+            .load(args.userInfoDTO?.picture)
             .apply(RequestOptions.circleCropTransform())
+            .placeholder(R.drawable.circle_pic)
             .into(profile_pic_imageview)
 
         profilePastFuturePagerAdapter = ProfilePastFuturePagerAdapter(childFragmentManager, lifecycle, showFilterBar, this, 2)
@@ -192,13 +185,18 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
             profile_nbr_followers -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToFollowPageSearch())
             profile_nbr_following -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToFollowPageSearch())
             profile_follow_btn -> {
-                profile_follow_btn.apply {
-                    setBorderColor(resources.getColor(android.R.color.darker_gray))
-                    setBorderWidth(1)
-                    setText(resources.getString(R.string.unfollow))
-                    setBackgroundColor(resources.getColor(android.R.color.transparent))
-                    setTextColor(resources.getColor(android.R.color.darker_gray))
-                }
+                followViewModel.followPublicUser(tokenId!!, args.userInfoDTO?.id!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                    if(it.isSuccessful) {
+                        profile_follow_btn.apply {
+                            setBorderColor(resources.getColor(android.R.color.darker_gray))
+                            setBorderWidth(1)
+                            setText(resources.getString(R.string.unfollow))
+                            setBackgroundColor(resources.getColor(android.R.color.transparent))
+                            setTextColor(resources.getColor(android.R.color.darker_gray))
+                        }
+                    }
+                })
+
             }
             profile_location -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.location)
@@ -210,7 +208,6 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
                 }
             }
             profile_infos -> {
-                //if(stateSwitch == null) findNavController().navigate(ProfileSearchDirections.ac())
                 if (true){
                     val intent = Intent(Intent.ACTION_VIEW)
                     intent.data = Uri.parse(stateSwitchUrl)

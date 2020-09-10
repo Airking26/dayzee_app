@@ -51,12 +51,10 @@ class SearchExploreClicked: Fragment(), SuggestionAdapter.SuggestionItemListener
     }
 
     override fun onItemSelected() {
-        followViewModel.followPublicUser("", 0).observe(viewLifecycleOwner, Observer {
-
-        })
+        //followViewModel.followPublicUser("", 0).observe(viewLifecycleOwner, Observer {})
     }
 
     override fun onPicClicked() {
-        findNavController().navigate(SearchExploreClickedDirections.actionSearchExploreClickedToProfileSearch())
+        //findNavController().navigate(SearchExploreClickedDirections.actionSearchExploreClickedToProfileSearch())
     }
 }

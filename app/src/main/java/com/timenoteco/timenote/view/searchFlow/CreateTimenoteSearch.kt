@@ -268,8 +268,8 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
         }
         if (it.title.isBlank()) titleTv.text = getString(R.string.title) else titleTv.text =
             it.title
-        if (it.location.address.address.isBlank()) create_timenote_where_btn.text =
-            getString(R.string.where) else create_timenote_where_btn.text = it.location.address.address
+        if (it.location?.address?.address?.isNullOrBlank()!!) create_timenote_where_btn.text =
+            getString(R.string.where) else create_timenote_where_btn.text = it.location?.address?.address
         if (!it.startingAt.isBlank() && !it.endingAt.isBlank()) {
             fixedDate.visibility = View.GONE
             toLabel.visibility = View.VISIBLE
@@ -459,10 +459,7 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
                     )
                     startDate = datetime.time.time
                     creationTimenoteViewModel.setEndDate(0L)
-                    creationTimenoteViewModel.setFormatedStartDate(
-                        datetime.time.time,
-                        datetime.time.time
-                    )
+
                     addEndDateTv.visibility = View.VISIBLE
                 }
             }
@@ -479,7 +476,6 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
                     fromTv.visibility = View.VISIBLE
                     fixedDate.text = dateFormatDateAndTime.format(datetime.time.time)
                     creationTimenoteViewModel.setEndDate(datetime.time.time)
-                    creationTimenoteViewModel.setFormatedStartDate(startDate!!, datetime.time.time)
                     fromTv.text = dateFormatDateAndTime.format(startDate)
                     toTv.text = dateFormatDateAndTime.format(datetime.time.time)
                 }
@@ -502,10 +498,7 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
                     startDate = datetime.time.time
                     fromTv.text = dateFormatDateAndTime.format(startDate)
                     creationTimenoteViewModel.setStartDate(startDate!!, DATE_FORMAT_DAY_AND_TIME)
-                    if (endDate != null) creationTimenoteViewModel.setFormatedStartDate(
-                        startDate!!,
-                        endDate!!
-                    )
+
                 }
                 lifecycleOwner(this@CreateTimenoteSearch)
             }
@@ -517,10 +510,7 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
                     endDate = datetime.time.time
                     toTv.text = dateFormatDateAndTime.format(endDate)
                     creationTimenoteViewModel.setEndDate(endDate!!)
-                    if (startDate != null) creationTimenoteViewModel.setFormatedStartDate(
-                        startDate!!,
-                        endDate!!
-                    )
+
                 }
                 lifecycleOwner(this@CreateTimenoteSearch)
             }

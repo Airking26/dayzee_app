@@ -16,7 +16,7 @@ data class TimenoteInfoDTO (
 	@SerializedName("description") val description : String,
 	@SerializedName("pictures") val pictures : List<String>,
 	@SerializedName("colorHex") val colorHex : String,
-	@SerializedName("location") val location : Location,
+	@SerializedName("location") val location : Location?,
 	@SerializedName("category") val category : Category,
 	@SerializedName("startingAt") val startingAt : String,
 	@SerializedName("endingAt") val endingAt : String,

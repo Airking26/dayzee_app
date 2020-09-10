@@ -1,6 +1,7 @@
 package com.timenoteco.timenote.adapter
 
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -65,13 +66,17 @@ class ItemProfileEventAdapter(
             itemView.setOnClickListener { onCardClicked.onCardClicked() }
 
             itemView.profile_item_name_event.text = event.title
+            if(event.location != null)
             itemView.profile_item_address_event.text = event.location.address.address
+            itemView.profile_item_name_owner.text = event.createdBy.userName
             itemView.profile_item_date_event.text = Utils().calculateDecountTime()
             itemView.profile_item_options.setOnClickListener { createOptionsOnTimenote(itemView.context, true, timenoteOptionsListener) }
-            Glide
-                .with(itemView)
-                .load(event.pictures[0])
-                .into(itemView.profile_item_pic_event_imageview)
+            if(!event.pictures.isNullOrEmpty()) {
+                Glide
+                    .with(itemView)
+                    .load(event.pictures[0])
+                    .into(itemView.profile_item_pic_event_imageview)
+            } else itemView.profile_item_pic_event_imageview.setBackgroundColor(Color.parseColor(event.colorHex))
 
             Glide
                 .with(itemView)

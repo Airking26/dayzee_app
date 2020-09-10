@@ -12,10 +12,14 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.model.UserInfoDTO
 import kotlinx.android.synthetic.main.item_user.view.*
 
-class UsersPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>): PagingDataAdapter<UserInfoDTO, UsersPagingAdapter.UserViewHolder>(diffCallback){
+class UsersPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>, val searchPeopleListener: SearchPeopleListener): PagingDataAdapter<UserInfoDTO, UsersPagingAdapter.UserViewHolder>(diffCallback){
+
+    interface SearchPeopleListener{
+        fun onSearchClicked(userInfoDTO: UserInfoDTO)
+    }
 
     class UserViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        fun bindUser(item: UserInfoDTO?) {
+        fun bindUser(item: UserInfoDTO?, searchPeopleListener: SearchPeopleListener) {
 
                 Glide
                     .with(itemView)
@@ -24,13 +28,14 @@ class UsersPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>): Pagi
                     .placeholder(R.drawable.circle_pic)
                     .into(itemView.user_imageview)
 
-            itemView.name_user.text = item?.email
+            itemView.name_user.text = item?.userName
+            itemView.setOnClickListener { searchPeopleListener.onSearchClicked(item!!) }
         }
 
     }
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-        holder.bindUser(getItem(position))
+        holder.bindUser(getItem(position), searchPeopleListener)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder =

@@ -10,7 +10,7 @@ data class CreationTimenoteDTO (
 	@SerializedName("description") var description : String? = null,
 	@SerializedName("pictures") var pictures : List<String>? = null,
 	@SerializedName("colorHex") var colorHex : String? = null,
-	@SerializedName("location") var location : Location,
+	@SerializedName("location") var location : Location? = null,
 	@SerializedName("category") var category : Category? = null,
 	@SerializedName("startingAt") var startingAt : String,
 	@SerializedName("endingAt") var endingAt : String,

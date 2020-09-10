@@ -40,8 +40,9 @@ class ScreenSlideCreationTimenoteImageFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         Glide.with(view)
-            .load(param2?.bitmap)
+            .load(param2?.uri)
             .into(create_timenote_pic)
+
         if(param3!!){
             timenote_crop_pic.visibility = View.GONE
             timenote_add_pic.visibility = View.GONE

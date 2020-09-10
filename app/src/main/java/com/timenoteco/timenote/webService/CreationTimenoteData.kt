@@ -4,8 +4,7 @@ import android.graphics.Bitmap
 import com.timenoteco.timenote.model.*
 
 private var timenoteModel: CreationTimenoteDTO =
-    CreationTimenoteDTO(createdBy = "", title = "", location = Location(0.0, 0.0, Address("", "", "", ""))
-        , startingAt = "", endingAt = "", price = 0)
+    CreationTimenoteDTO(createdBy = "", title = "", startingAt = "", endingAt = "", price = 0)
 
 class CreationTimenoteData {
 
@@ -65,8 +64,7 @@ class CreationTimenoteData {
     }
 
     fun clear(): CreationTimenoteDTO {
-        CreationTimenoteDTO(createdBy = "", title = "", location = Location(0.0, 0.0, Address("", "", "", ""))
-            , startingAt = "", endingAt = "", price = 0)
+        timenoteModel = CreationTimenoteDTO(createdBy = "", title = "", startingAt = "", endingAt = "", price = 0)
         return timenoteModel
     }
 

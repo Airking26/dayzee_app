@@ -14,13 +14,13 @@ class FollowViewModel: ViewModel() {
 
     private val followService = DayzeeRepository().getFollowService()
 
-    fun followPublicUser(token: String, id: Int) = flow { emit(followService.followPublicUser("Bearer $token", id)) }.asLiveData(viewModelScope.coroutineContext)
-    fun followPrivateUser(token: String, id: Int) = flow { emit(followService.followPrivateUser("Bearer $token", id))}.asLiveData(viewModelScope.coroutineContext)
-    fun acceptFollowingRequest(token: String, id: Int) = flow { emit(followService.acceptFollowingRequest("Bearer $token", id))}.asLiveData(viewModelScope.coroutineContext)
-    fun declineFollowingRequest(token: String, id: Int) = flow { emit(followService.declineFollowingRequest("Bearer $token", id))}.asLiveData(viewModelScope.coroutineContext)
-    fun unfollowUser(token: String, id: Int) = flow { emit(followService.unfollowUser("Bearer $token", id))}.asLiveData(viewModelScope.coroutineContext)
-    fun removeUserFromFollower(token: String, id: Int) = flow { emit(followService.removeUserFromFollowers("Bearer $token", id))}.asLiveData(viewModelScope.coroutineContext)
-    fun getUsersWaitingForApproval(token: String) = Pager(PagingConfig(pageSize = 12)){FollowPagingSource(token, followService, true)}.flow.cachedIn(viewModelScope)
-    fun getUsersAskedToFollow(token: String) = Pager(PagingConfig(pageSize = 12)){FollowPagingSource(token, followService, false)}.flow.cachedIn(viewModelScope)
+    fun followPublicUser(token: String, id: String) = flow { emit(followService.followPublicUser("Bearer $token", id)) }.asLiveData(viewModelScope.coroutineContext)
+    fun followPrivateUser(token: String, id: String) = flow { emit(followService.followPrivateUser("Bearer $token", id))}.asLiveData(viewModelScope.coroutineContext)
+    fun acceptFollowingRequest(token: String, id: String) = flow { emit(followService.acceptFollowingRequest("Bearer $token", id))}.asLiveData(viewModelScope.coroutineContext)
+    fun declineFollowingRequest(token: String, id: String) = flow { emit(followService.declineFollowingRequest("Bearer $token", id))}.asLiveData(viewModelScope.coroutineContext)
+    fun unfollowUser(token: String, id: String) = flow { emit(followService.unfollowUser("Bearer $token", id))}.asLiveData(viewModelScope.coroutineContext)
+    fun removeUserFromFollower(token: String, id: String) = flow { emit(followService.removeUserFromFollowers("Bearer $token", id))}.asLiveData(viewModelScope.coroutineContext)
+    fun getUsersWaitingForApproval(token: String) = Pager(PagingConfig(pageSize = 1)){FollowPagingSource(token, followService, true)}.flow.cachedIn(viewModelScope)
+    fun getUsersAskedToFollow(token: String) = Pager(PagingConfig(pageSize = 1)){FollowPagingSource(token, followService, false)}.flow.cachedIn(viewModelScope)
 
 }

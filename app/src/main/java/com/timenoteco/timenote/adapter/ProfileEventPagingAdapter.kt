@@ -30,7 +30,7 @@ class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<Timenote
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if(position == 0 && showHideFilterBar) (holder as ItemProfileEventAdapter.TimenoteListHolder).showFilterBar(onRemoveFilterBarListener) else
             (holder as ItemProfileEventAdapter.TimenoteListHolder).bindListStyleItem(
-                getItem(position) as TimenoteInfoDTO,
+                getItem(position)!!,
                 timenoteOptionsListener,
                 onCardClicked
             )

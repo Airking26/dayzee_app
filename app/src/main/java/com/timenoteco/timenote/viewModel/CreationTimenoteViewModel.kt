@@ -13,13 +13,7 @@ import java.util.*
 
 class CreationTimenoteViewModel: ViewModel() {
 
-    private val DATE_FORMAT_SAME_DAY_SAME_TIME = "EEE, d MMM yyyy hh:mm aaa"
-    private val DATE_FORMAT_DAY = "d MMM yyyy"
-    private val DATE_FORMAT_TIME = "hh:mm aaa"
     private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
-    private val DATE_FORMAT_TIME_FORMATED = "d\nMMM"
-    private val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = "d MMM.\nhh:mm"
-    private val YEAR = "yyyy"
 
     private val timenoteLiveData = MutableLiveData<CreationTimenoteDTO>()
     private val createTimenoteData: CreationTimenoteData = CreationTimenoteData()
@@ -45,21 +39,6 @@ class CreationTimenoteViewModel: ViewModel() {
         return flow {
             emit(placeService.getDetailedPlace(id, "AIzaSyBhM9HQo1fzDlwkIVqobfmrRmEMCWTU1CA"))
         }.asLiveData(viewModelScope.coroutineContext)
-    }
-
-    fun setFormatedStartDate(startDate: Long, endDate: Long){
-        if(formatDate(DATE_FORMAT_DAY, startDate) == formatDate(DATE_FORMAT_DAY, endDate)){
-            if(formatDate(DATE_FORMAT_TIME, startDate) == formatDate(DATE_FORMAT_TIME, endDate)){
-                //timenoteLiveData.postValue(createTimenoteData.setFormatedStartDate(formatDate(DATE_FORMAT_TIME_FORMATED, startDate)))
-                //timenoteLiveData.postValue(createTimenoteData.setFormatedEndDate(formatDate(DATE_FORMAT_TIME, startDate)))
-            } else {
-                //timenoteLiveData.postValue(createTimenoteData.setFormatedStartDate(formatDate(DATE_FORMAT_TIME_FORMATED, startDate)))
-                //timenoteLiveData.postValue(createTimenoteData.setFormatedEndDate(formatDate(DATE_FORMAT_TIME, startDate) + "\n" + formatDate(DATE_FORMAT_TIME, endDate)))
-            }
-        } else {
-            //timenoteLiveData.postValue(createTimenoteData.setFormatedStartDate(formatDate(DATE_FORMAT_SAME_DAY_DIFFERENT_TIME, startDate)))
-            //timenoteLiveData.postValue(createTimenoteData.setFormatedEndDate(formatDate(DATE_FORMAT_SAME_DAY_DIFFERENT_TIME, endDate)))
-        }
     }
 
     fun clear() = timenoteLiveData.postValue(createTimenoteData.clear())

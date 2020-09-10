@@ -56,6 +56,7 @@ import com.timenoteco.timenote.viewModel.WebSearchViewModel
 import kotlinx.android.synthetic.main.autocomplete_search_address.view.*
 import kotlinx.android.synthetic.main.web_search_rv.view.*
 import org.apache.http.impl.cookie.DateUtils.formatDate
+import java.text.SimpleDateFormat
 import java.util.*
 
 class Utils {
@@ -254,6 +255,75 @@ class Utils {
         dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         return dialog
     }
+
+
+    private fun formatDate(format: String, timestamp: Long): String {
+        val dateFormat = SimpleDateFormat(format, Locale.getDefault())
+        return if(timestamp == 0L) ""
+        else dateFormat.format(timestamp)
+    }
+
+    fun setFormatedStartDate(startDate: String, endDate: String) : String{
+        val DATE_FORMAT_DAY = "d MMM yyyy"
+        val DATE_FORMAT_TIME = "hh:mm aaa"
+        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+        val DATE_FORMAT_TIME_FORMATED = "d\nMMM"
+        val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = "d MMM.\nhh:mm"
+
+        var formatedStartDate = ""
+
+        val startingAt = SimpleDateFormat(ISO, Locale.getDefault()).parse(startDate).time
+        val endingAt = SimpleDateFormat(ISO, Locale.getDefault()).parse(endDate).time
+
+        if(formatDate(DATE_FORMAT_DAY, startingAt) == formatDate(DATE_FORMAT_DAY, endingAt)){
+            if(formatDate(DATE_FORMAT_TIME, startingAt) == formatDate(DATE_FORMAT_TIME, endingAt)){
+                formatedStartDate = formatDate(DATE_FORMAT_TIME_FORMATED, startingAt)
+            } else {
+                formatedStartDate = formatDate(DATE_FORMAT_TIME_FORMATED, startingAt)
+            }
+        } else {
+            formatedStartDate = formatDate(DATE_FORMAT_SAME_DAY_DIFFERENT_TIME, startingAt)
+        }
+
+        return formatedStartDate
+    }
+
+    fun setFormatedEndDate(startDate: String, endDate: String): String{
+        val DATE_FORMAT_DAY = "d MMM yyyy"
+        val DATE_FORMAT_TIME = "hh:mm aaa"
+        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+        val DATE_FORMAT_TIME_FORMATED = "d\nMMM"
+        val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = "d MMM.\nhh:mm"
+
+
+        var formatedEndDate = ""
+
+        val startingAt = SimpleDateFormat(ISO, Locale.getDefault()).parse(startDate).time
+        val endingAt = SimpleDateFormat(ISO, Locale.getDefault()).parse(endDate).time
+
+        if(formatDate(DATE_FORMAT_DAY, startingAt) == formatDate(DATE_FORMAT_DAY, endingAt)){
+            if(formatDate(DATE_FORMAT_TIME, startingAt) == formatDate(DATE_FORMAT_TIME, endingAt)){
+                formatedEndDate = formatDate(DATE_FORMAT_TIME, startingAt)
+            } else {
+                formatedEndDate = formatDate(DATE_FORMAT_TIME, startingAt) + "\n" + formatDate(DATE_FORMAT_TIME, endingAt)
+            }
+        } else {
+            formatedEndDate = formatDate(DATE_FORMAT_SAME_DAY_DIFFERENT_TIME, endingAt)
+        }
+
+        return formatedEndDate
+    }
+
+    fun setYear(startDate: String): String {
+        val YEAR = "yyyy"
+        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+
+        val startingAt = SimpleDateFormat(ISO, Locale.getDefault()).parse(startDate).time
+
+        return formatDate(YEAR, startingAt)
+
+    }
+
 
     fun calculateDecountTime(): String {
         val o = 1627243200000

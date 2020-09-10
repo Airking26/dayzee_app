@@ -43,7 +43,7 @@ class Settings : Fragment(), View.OnClickListener {
         prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         tokenId = prefs.getString(TOKEN, null)
         if(prefs.getString("pmtc", "") == "") prefs.edit().putString("pmtc", "").apply()
-        if(prefs.getInt("default_settings_at_creation_time", -1) == -1) prefs.edit().putInt("default_settings_at_creation_time", -1).apply()
+        if(prefs.getInt("default_settings_at_creation_time", -1) == -1) prefs.edit().putInt("default_settings_at_creation_time", 0).apply()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
@@ -54,7 +54,6 @@ class Settings : Fragment(), View.OnClickListener {
         dsactv = profile_settings_default_settings_at_creation_time
 
         when(prefs.getInt("default_settings_at_creation_time", -1)){
-            -1 -> profile_settings_default_settings_at_creation_time.text = getString(R.string.only_me)
             0 -> profile_settings_default_settings_at_creation_time.text = getString(R.string.only_me)
             1 -> profile_settings_default_settings_at_creation_time.text = getString(R.string.public_label)
         }

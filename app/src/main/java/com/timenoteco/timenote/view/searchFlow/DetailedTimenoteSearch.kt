@@ -186,7 +186,7 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener,
     }
 
     override fun onPicUserCommentClicked() {
-        findNavController().navigate(DetailedTimenoteSearchDirections.actionDetailedTimenoteSearchToProfileSearch())
+        //findNavController().navigate(DetailedTimenoteSearchDirections.actionDetailedTimenoteSearchToProfileSearch())
     }
 
     override fun onCommentMoreClicked() {

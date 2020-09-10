@@ -71,7 +71,8 @@ import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
 
-class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListener{
+class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListener,
+    UsersPagingAdapter.SearchPeopleListener {
 
     private lateinit var makeBarVisibleListener: ShowBarListener
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
@@ -327,7 +328,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         }
 
         val recyclerview = dial.getCustomView().users_participating_rv
-        val adapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator)
+        val adapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, this)
         recyclerview.adapter = adapter
         lifecycleScope.launch{
             profileViewModel.getUsers(tokenId!!, followers = true, useTimenoteService = true, id =  null).collectLatest {
@@ -369,6 +370,10 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
 
     override fun onAddressClicked() {
         findNavController().navigate(NearByDirections.actionNearByToTimenoteAddress())
+    }
+
+    override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
+
     }
 
 }

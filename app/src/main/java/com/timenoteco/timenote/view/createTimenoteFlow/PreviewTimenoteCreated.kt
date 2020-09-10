@@ -14,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ScreenSlideCreationTimenotePagerAdapter
+import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.BackToHomeListener
 import com.timenoteco.timenote.listeners.ExitCreationTimenote
 import com.timenoteco.timenote.model.AWSFile
@@ -22,17 +23,16 @@ import kotlinx.android.synthetic.main.fragment_preview_timenote_created.*
 
 class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
 
-    private lateinit var backToHomeListener: BackToHomeListener
     private lateinit var listener : ExitCreationTimenote
     private val creationTimenoteViewModel: CreationTimenoteViewModel by activityViewModels()
     private lateinit var screenSlideCreationTimenotePagerAdapter: ScreenSlideCreationTimenotePagerAdapter
     private var mutableList : MutableList<AWSFile> = mutableListOf()
     private val args : PreviewTimenoteCreatedArgs by navArgs()
+    private val utils: Utils = Utils()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
          listener = context as ExitCreationTimenote
-        //backToHomeListener = context as BackToHomeListener
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
@@ -66,9 +66,10 @@ class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
             }
 
             preview_created_timenote_title.text = it.title
-            //preview_created_timenote_day_month.text = it.formatedStartDate
-            //preview_created_timenote_time.text = it.formatedEndDate
-           //preview_created_timenote_place.text = it.place
+           if(!it.startingAt.isBlank()) preview_created_timenote_year.text = utils.setYear(it.startingAt)
+            if(!it.startingAt.isBlank() && !it.endingAt.isBlank()) preview_created_timenote_day_month.text = utils.setFormatedStartDate(it.startingAt, it.endingAt)
+            if(!it.startingAt.isBlank() && !it.endingAt.isBlank())preview_created_timenote_time.text = utils.setFormatedEndDate(it.startingAt, it.endingAt)
+           if(it.location != null) preview_created_timenote_place.text = it.location?.address?.address
         })
     }
 
@@ -84,7 +85,6 @@ class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
         creationTimenoteViewModel.clear()
         findNavController().popBackStack()
         listener.onDone(args.from)
-        //backToHomeListener.onBackHome()
     }
 
 
