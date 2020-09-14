@@ -6,7 +6,6 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class TimenoteBody (
-
     @SerializedName("createdAt") val createdAt : String,
     @SerializedName("createdBy") val createdBy : CreatedBy,
     @SerializedName("title") val title : String,

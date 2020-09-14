@@ -1,7 +1,10 @@
 package com.timenoteco.timenote.model
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class CreationTimenoteDTO (
 
 	@SerializedName("createdBy") var createdBy : String,
@@ -16,6 +19,6 @@ data class CreationTimenoteDTO (
 	@SerializedName("endingAt") var endingAt : String,
 	@SerializedName("hashtags") var hashtags : List<String>? = null,
 	@SerializedName("url") var url : String? = null,
-	@SerializedName("price") var price : Int,
+	@SerializedName("price") var price : Price,
 	@SerializedName("sharedWith") var sharedWith : List<String>? = null
-)
+) : Parcelable

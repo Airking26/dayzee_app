@@ -140,7 +140,7 @@
             app:nullable="true" />
         <argument
             android:name="timenoteBody"
-            app:argType="com.timenoteco.timenote.model.TimenoteBody"
+            app:argType="com.timenoteco.timenote.model.CreationTimenoteDTO"
             app:nullable="true" />
         <argument
             android:name="from"

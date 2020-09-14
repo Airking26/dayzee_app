@@ -19,10 +19,6 @@ class LoginViewModel: ViewModel() {
     private val authService = DayzeeRepository().getAuthService()
     private val authenticationState = MutableLiveData<AuthenticationState>()
 
-    init {
-        //markAsAuthenticated()
-    }
-
     fun getAuthenticationState() : LiveData<AuthenticationState> = authenticationState
 
     fun refuseAuthentication() = authenticationState.postValue(AuthenticationState.UNAUTHENTICATED)
@@ -55,7 +51,6 @@ class LoginViewModel: ViewModel() {
 
     fun checkIfEmailAvailable(email: String): LiveData<Response<IsAvailable>> {
         return flow{
-            val o = authService.checkEmailAvailability(email)
             emit(authService.checkEmailAvailability(email))
         }.asLiveData(viewModelScope.coroutineContext)
     }

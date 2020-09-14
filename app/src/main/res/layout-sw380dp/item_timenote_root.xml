@@ -205,13 +205,13 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="@id/timenote_comment"
         app:layout_constraintEnd_toEndOf="@id/timenote_plus"
         app:layout_constraintTop_toBottomOf="@id/timenote_comment">
 
         <ImageView
+            android:layout_gravity="center"
             android:id="@+id/timenote_pic_participant_one"
             android:layout_width="24dp"
             android:layout_height="24dp"
@@ -219,6 +219,7 @@
             android:src="@drawable/beach" />
 
         <ImageView
+            android:layout_gravity="center"
             android:id="@+id/timenote_pic_participant_two"
             android:layout_width="24dp"
             android:layout_height="24dp"
@@ -226,6 +227,7 @@
             android:src="@drawable/beach" />
 
         <ImageView
+            android:layout_gravity="center"
             android:id="@+id/timenote_pic_participant_three"
             android:layout_width="24dp"
             android:layout_height="24dp"

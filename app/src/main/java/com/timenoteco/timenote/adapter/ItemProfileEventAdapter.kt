@@ -69,8 +69,8 @@ class ItemProfileEventAdapter(
             if(event.location != null)
             itemView.profile_item_address_event.text = event.location.address.address
             itemView.profile_item_name_owner.text = event.createdBy.userName
-            itemView.profile_item_date_event.text = Utils().calculateDecountTime()
-            itemView.profile_item_options.setOnClickListener { createOptionsOnTimenote(itemView.context, true, timenoteOptionsListener) }
+            itemView.profile_item_date_event.text = Utils().calculateDecountTime(event.startingAt)
+            itemView.profile_item_options.setOnClickListener { createOptionsOnTimenote(itemView.context, true, timenoteOptionsListener, event) }
             if(!event.pictures.isNullOrEmpty()) {
                 Glide
                     .with(itemView)
@@ -85,7 +85,12 @@ class ItemProfileEventAdapter(
                 .placeholder(R.drawable.circle_pic)
                 .into(itemView.profile_item_pic_profile_imageview)
         }
-        private fun createOptionsOnTimenote(context: Context, isMine: Boolean, timenoteListenerListener: TimenoteOptionsListener){
+        private fun createOptionsOnTimenote(
+            context: Context,
+            isMine: Boolean,
+            timenoteListenerListener: TimenoteOptionsListener,
+            event: TimenoteInfoDTO
+        ){
             var listItems = mutableListOf<String>()
             if(isMine) listItems = mutableListOf(context.getString(R.string.duplicate), context.getString(
                 R.string.edit), context.getString(R.string.delete), context.getString(R.string.alarm))
@@ -95,7 +100,7 @@ class ItemProfileEventAdapter(
                 title(R.string.posted_false)
                 listItems (items = listItems){ dialog, index, text ->
                     when(text.toString()){
-                        context.getString(R.string.duplicate) -> timenoteListenerListener.onDuplicateClicked()
+                        context.getString(R.string.duplicate) -> timenoteListenerListener.onDuplicateClicked(event)
                         context.getString(R.string.edit) -> timenoteListenerListener.onEditClicked()
                         context.getString(R.string.report) -> timenoteListenerListener.onReportClicked()
                         context.getString(R.string.alarm) -> timenoteListenerListener.onAlarmClicked()

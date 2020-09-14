@@ -1,28 +1,33 @@
 package com.timenoteco.timenote.adapter
 
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
+import com.timenoteco.timenote.R
+import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.TimenoteInfoDTO
 
 class TimenotePagingAdapter(diffCallbacks: DiffUtil.ItemCallback<TimenoteInfoDTO>,
                             private val timenoteListenerListener: TimenoteOptionsListener,
-                            val fragment: Fragment, private val isFromFuture: Boolean)
+                            val fragment: Fragment, private val isFromFuture: Boolean, private val utils: Utils
+)
     : PagingDataAdapter<TimenoteInfoDTO, ItemTimenoteAdapter.TimenoteViewHolder>(diffCallbacks){
 
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemTimenoteAdapter.TimenoteViewHolder =
-        ItemTimenoteAdapter.TimenoteViewHolder(parent)
+        ItemTimenoteAdapter.TimenoteViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_timenote, parent, false))
 
     override fun onBindViewHolder(holder: ItemTimenoteAdapter.TimenoteViewHolder, position: Int) =
         holder.bindTimenote(
             getItem(position)!!,
             timenoteListenerListener,
             fragment,
-            isFromFuture
+            isFromFuture,
+            utils
         )
 
 }
@@ -30,7 +35,19 @@ class TimenotePagingAdapter(diffCallbacks: DiffUtil.ItemCallback<TimenoteInfoDTO
 object TimenoteComparator : DiffUtil.ItemCallback<TimenoteInfoDTO>(){
 
     override fun areItemsTheSame(oldItem: TimenoteInfoDTO, newItem: TimenoteInfoDTO): Boolean {
-        return oldItem.createdBy == newItem.createdBy
+        return oldItem.startingAt == newItem.startingAt
+    }
+
+    override fun areContentsTheSame(oldItem: TimenoteInfoDTO, newItem: TimenoteInfoDTO): Boolean {
+        return oldItem == newItem
+    }
+
+}
+
+object TimenoteRecentComparator : DiffUtil.ItemCallback<TimenoteInfoDTO>(){
+
+    override fun areItemsTheSame(oldItem: TimenoteInfoDTO, newItem: TimenoteInfoDTO): Boolean {
+        return oldItem.createdAt == newItem.createdAt
     }
 
     override fun areContentsTheSame(oldItem: TimenoteInfoDTO, newItem: TimenoteInfoDTO): Boolean {

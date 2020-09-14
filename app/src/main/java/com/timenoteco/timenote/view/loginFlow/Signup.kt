@@ -164,7 +164,7 @@ class Signup: Fragment(), View.OnClickListener {
                 if(isOnLogin && !signin_mail_username.text.toString().isBlank() && !signin_password.text.toString().isBlank()){
                     viewModel.login(signin_mail_username.text.toString(), signin_password.text.toString(), viewModel.isValidEmail(signin_mail_username.text.toString())).observe(viewLifecycleOwner, Observer {
                         when(it.code()){
-                            200 -> {
+                            201 -> {
                                 viewModel.markAsAuthenticated()
                                 prefs.edit().putString(TOKEN, it.body()?.token).apply()
                                 prefs.edit().putString("UserInfoDTO", Gson().toJson(it.body()?.user)).apply()

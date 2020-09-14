@@ -54,7 +54,10 @@ class Search : BaseThroughFragment() {
         loginViewModel.getAuthenticationState().observe(requireActivity(), androidx.lifecycle.Observer {
             when (it) {
                 LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(SearchDirections.actionSearchToNavigation())
-                LoginViewModel.AuthenticationState.AUTHENTICATED -> findNavController().popBackStack(R.id.search, false)
+                LoginViewModel.AuthenticationState.AUTHENTICATED -> {
+                    tokenId = prefs.getString(TOKEN, null)
+                    findNavController().popBackStack(R.id.search, false)
+                }
                 LoginViewModel.AuthenticationState.GUEST -> findNavController().popBackStack(R.id.search, false)
             }
         })
@@ -73,56 +76,64 @@ class Search : BaseThroughFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        viewTopExplorePagerAdapter = SearchViewTopExplorePagerAdapter(childFragmentManager, lifecycle)
-        viewPeopleTagPagerAdapter = SearchViewPeopleTagPagerAdapter(childFragmentManager, lifecycle)
-        search_viewpager.apply {
-            adapter = viewTopExplorePagerAdapter
-            isUserInputEnabled = false
-            isSaveEnabled = false
-        }
-
-        search_tablayout.setSelectedTabIndicatorColor(resources.getColor(android.R.color.darker_gray))
-        TabLayoutMediator(search_tablayout, search_viewpager){ tab, position ->
-            when(position){
-                0 -> tab.text = tabText0
-                1 -> tab.text = tabText1
+        if(!tokenId.isNullOrBlank()) {
+            viewTopExplorePagerAdapter =
+                SearchViewTopExplorePagerAdapter(childFragmentManager, lifecycle)
+            viewPeopleTagPagerAdapter =
+                SearchViewPeopleTagPagerAdapter(childFragmentManager, lifecycle)
+            search_viewpager.apply {
+                adapter = viewTopExplorePagerAdapter
+                isUserInputEnabled = false
+                isSaveEnabled = false
             }
-        }.attach()
 
-        handler = Handler { msg ->
-            if (msg.what == TRIGGER_AUTO_COMPLETE) {
-                if (!TextUtils.isEmpty(searchBar.text)) {
-                    searchViewModel.searchChanged(tokenId!!, searchBar.text)
-                    lifecycleScope.launch {
-                        searchViewModel.searchUser(tokenId!!, searchBar.text)
-                    }
-
+            search_tablayout.setSelectedTabIndicatorColor(resources.getColor(android.R.color.darker_gray))
+            TabLayoutMediator(search_tablayout, search_viewpager) { tab, position ->
+                when (position) {
+                    0 -> tab.text = tabText0
+                    1 -> tab.text = tabText1
                 }
-            }
-            false
-        }
+            }.attach()
 
-        searchBar.addTextChangeListener(object: TextWatcher{
-            override fun afterTextChanged(s: Editable?) {
+            handler = Handler { msg ->
+                if (msg.what == TRIGGER_AUTO_COMPLETE) {
+                    if (!TextUtils.isEmpty(searchBar.text)) {
+                        searchViewModel.searchChanged(tokenId!!, searchBar.text)
+                        lifecycleScope.launch {
+                            searchViewModel.searchUser(tokenId!!, searchBar.text)
+                        }
+
+                    }
+                }
+                false
             }
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
+            searchBar.addTextChangeListener(object : TextWatcher {
+                override fun afterTextChanged(s: Editable?) {
+                }
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                handler.removeMessages(TRIGGER_AUTO_COMPLETE)
-                handler.sendEmptyMessageDelayed(TRIGGER_AUTO_COMPLETE, AUTO_COMPLETE_DELAY)
-            }
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
 
-        })
-        searchBar.setCardViewElevation(0)
-        searchBar.setOnSearchActionListener(object: MaterialSearchBar.OnSearchActionListener{
-            override fun onButtonClicked(buttonCode: Int) {
-                Toast.makeText(context, "onButtonClicked", Toast.LENGTH_SHORT).show()
-            }
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    handler.removeMessages(TRIGGER_AUTO_COMPLETE)
+                    handler.sendEmptyMessageDelayed(TRIGGER_AUTO_COMPLETE, AUTO_COMPLETE_DELAY)
+                }
+
+            })
+            searchBar.setCardViewElevation(0)
+            searchBar.setOnSearchActionListener(object : MaterialSearchBar.OnSearchActionListener {
+                override fun onButtonClicked(buttonCode: Int) {
+                    Toast.makeText(context, "onButtonClicked", Toast.LENGTH_SHORT).show()
+                }
 
                 override fun onSearchStateChanged(enabled: Boolean) {
-                    if(enabled) {
+                    if (enabled) {
                         search_tablayout.getTabAt(0)?.text = "People"
                         search_tablayout.getTabAt(1)?.text = "Tags"
                         search_viewpager.adapter = viewPeopleTagPagerAdapter
@@ -131,13 +142,14 @@ class Search : BaseThroughFragment() {
                         search_tablayout.getTabAt(1)?.text = "Explore"
                         search_viewpager.adapter = viewTopExplorePagerAdapter
                     }
-            }
+                }
 
-            override fun onSearchConfirmed(text: CharSequence?) {
-                Toast.makeText(context, "onSearchConfirmed", Toast.LENGTH_SHORT).show()
-            }
+                override fun onSearchConfirmed(text: CharSequence?) {
+                    Toast.makeText(context, "onSearchConfirmed", Toast.LENGTH_SHORT).show()
+                }
 
-        })
+            })
+        }
     }
 
 }

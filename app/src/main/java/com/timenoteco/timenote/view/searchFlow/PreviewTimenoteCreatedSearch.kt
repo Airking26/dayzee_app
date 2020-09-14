@@ -41,12 +41,12 @@ class PreviewTimenoteCreatedSearch : Fragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         preview_created_timenote_done_btn.setOnClickListener(this)
         creationTimenoteViewModel.getCreateTimeNoteLiveData().observe(viewLifecycleOwner, Observer {
-            if(it.price == 0){
+            if(it.price.price == 0){
                 if(it.url.isNullOrBlank()) preview_created_timenote_buy.visibility = View.GONE
                 else {
                     preview_created_timenote_buy.visibility =View.VISIBLE
                 }
-            } else if(it.price > 0){
+            } else if(it.price.price > 0){
                 preview_created_timenote_buy.visibility = View.VISIBLE
                 preview_created_timenote_buy.text = """${it.price.toString()}$"""
             } else {

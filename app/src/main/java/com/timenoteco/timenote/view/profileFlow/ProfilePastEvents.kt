@@ -66,7 +66,7 @@ class ProfilePastEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBar
     override fun onDeleteClicked() {
     }
 
-    override fun onDuplicateClicked() {
+    override fun onDuplicateClicked(timenoteInfoDTO: TimenoteInfoDTO) {
     }
 
     override fun onAddressClicked() {

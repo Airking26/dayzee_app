@@ -8,12 +8,12 @@ class TimenoteRemotePagingSource(val token: String?, val timenoteService: Timeno
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, TimenoteInfoDTO> {
         return try {
-            val nextPageNumber = params.key ?: 1
+            val nextPageNumber = params.key ?: 0
             val response = timenoteService.getAllTimenotes("Bearer $token", nextPageNumber)
             LoadResult.Page(
                 data = response.body()!!,
                 prevKey = null,
-                nextKey = nextPageNumber + 1
+                nextKey = if(response.body()!!.isNotEmpty()) nextPageNumber + 1 else null
             )
         } catch (e: Exception){
             LoadResult.Error(e)

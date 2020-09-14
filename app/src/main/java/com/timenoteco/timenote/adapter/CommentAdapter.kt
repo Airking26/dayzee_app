@@ -49,8 +49,8 @@ class CommentAdapter(val comments: List<CommentModel>, val commentPicUserListene
 
             val m = Typeface.create("sans-serif", Typeface.NORMAL)
             val p = Typeface.create("sans-serif-light", Typeface.NORMAL)
-            val o = ItemTimenoteToComeAdapter.CustomTypefaceSpan(p)
-            val k = ItemTimenoteToComeAdapter.CustomTypefaceSpan(m)
+            val o = ItemTimenoteRecentAdapter.CustomTypefaceSpan(p)
+            val k = ItemTimenoteRecentAdapter.CustomTypefaceSpan(m)
 
             val sizeName = commentModel.name.length
             val nameAndComment = commentModel.name + " " + commentModel.comment

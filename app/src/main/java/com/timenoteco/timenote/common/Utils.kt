@@ -293,7 +293,7 @@ class Utils {
         val DATE_FORMAT_TIME = "hh:mm aaa"
         val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
         val DATE_FORMAT_TIME_FORMATED = "d\nMMM"
-        val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = "d MMM.\nhh:mm"
+        val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = "d MMM\nhh:mm"
 
 
         var formatedEndDate = ""
@@ -301,15 +301,16 @@ class Utils {
         val startingAt = SimpleDateFormat(ISO, Locale.getDefault()).parse(startDate).time
         val endingAt = SimpleDateFormat(ISO, Locale.getDefault()).parse(endDate).time
 
-        if(formatDate(DATE_FORMAT_DAY, startingAt) == formatDate(DATE_FORMAT_DAY, endingAt)){
-            if(formatDate(DATE_FORMAT_TIME, startingAt) == formatDate(DATE_FORMAT_TIME, endingAt)){
-                formatedEndDate = formatDate(DATE_FORMAT_TIME, startingAt)
+        formatedEndDate =
+            if(formatDate(DATE_FORMAT_DAY, startingAt) == formatDate(DATE_FORMAT_DAY, endingAt)){
+                if(formatDate(DATE_FORMAT_TIME, startingAt) == formatDate(DATE_FORMAT_TIME, endingAt)){
+                    formatDate(DATE_FORMAT_TIME, startingAt)
+                } else {
+                    formatDate(DATE_FORMAT_TIME, startingAt) + "\n" + formatDate(DATE_FORMAT_TIME, endingAt)
+                }
             } else {
-                formatedEndDate = formatDate(DATE_FORMAT_TIME, startingAt) + "\n" + formatDate(DATE_FORMAT_TIME, endingAt)
+                formatDate(DATE_FORMAT_SAME_DAY_DIFFERENT_TIME, endingAt)
             }
-        } else {
-            formatedEndDate = formatDate(DATE_FORMAT_SAME_DAY_DIFFERENT_TIME, endingAt)
-        }
 
         return formatedEndDate
     }
@@ -325,10 +326,11 @@ class Utils {
     }
 
 
-    fun calculateDecountTime(): String {
-        val o = 1627243200000
-        val t = System.currentTimeMillis()
-        val time = o - t
+    fun calculateDecountTime(startDate: String): String {
+        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+        val startingAt = SimpleDateFormat(ISO, Locale.getDefault()).parse(startDate).time
+        val now = System.currentTimeMillis()
+        val time = startingAt - System.currentTimeMillis()
         val c: Calendar = Calendar.getInstance(TimeZone.getTimeZone("fr"))
         c.timeInMillis = time
         val mYear: Int = c.get(Calendar.YEAR) - 1970
@@ -336,7 +338,6 @@ class Utils {
         val mDay: Int = c.get(Calendar.DAY_OF_MONTH) - 1
         val mHours: Int = c.get(Calendar.HOUR)
         val mMin : Int = c.get(Calendar.MINUTE)
-        val mWeek: Int = (c.get(Calendar.DAY_OF_MONTH) - 1) / 7
 
         var decountTime = ""
         if(mYear == 0){
@@ -348,13 +349,22 @@ class Utils {
                         } else {
                             decountTime = "In $mHours hours and $mMin minute"
                         }
+                    } else {
+                        if(mMin > 1){
+                            decountTime = "In $mHours hour and $mMin minutes"
+                        } else {
+                            decountTime = "In $mHours hour and $mMin minute"
+                        }
                     }
                 } else {
-                    if(mMin > 1){
-                        decountTime = "In $mHours hour and $mMin minutes"
+                    if(mDay > 1){
+                        if(mHours > 1) decountTime = "In $mDay days and $mHours hours"
+                        else decountTime = "In $mDay days and $mHours hour"
                     } else {
-                        decountTime = "In $mHours hour and $mMin minute"
+                        if(mHours > 1) decountTime = "In $mDay day and $mHours hours"
+                        else decountTime = "In $mDay day and $mHours hour"
                     }
+
                 }
             } else {
                 if(mMonth > 1){

@@ -72,6 +72,7 @@ import com.timenoteco.timenote.listeners.TimenoteCreationPicListeners
 import com.timenoteco.timenote.model.AWSFile
 import com.timenoteco.timenote.model.Category
 import com.timenoteco.timenote.model.CreationTimenoteDTO
+import com.timenoteco.timenote.model.Price
 import com.timenoteco.timenote.viewModel.CreationTimenoteViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.TimenoteViewModel
@@ -224,24 +225,20 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
             viewLifecycleOwner,
             androidx.lifecycle.Observer {
                 populateModel(it)
-            }) else timenoteViewModel.modifySpecificTimenote(
-            tokenId!!,
-            args.id!!,
-            args.timenoteBody!!
-        ).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            /*val createTimenoteSearch
+            })/* else timenoteViewModel.modifySpecificTimenote(tokenId!!, args.id!!, args.timenoteBody!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            val createTimenoteSearch
            Model = CreateTimenoteSearch
            Model(it.body()?.pictures, it.body()?.location?.address?.address, it.body()?.title, it.body()?.description,
             "", it?.body()?.startingAt, it.body()?.endingAt, it.body()?.category?.subcategory, it.body()?.colorHex, it.body()?.startingAt, it.body()?.endingAt,
             it.body()?.price?.toLong(), it.body()?.url, it.body()?.status.toInt())
             populateModel(createTimenoteSearch
            Model)
-             */
-        })
+
+        })*/
     }
 
     private fun populateModel(it: CreationTimenoteDTO) {
-        when (it.price) {
+        when (it.price.price) {
             0 -> {
                 if (it.url.isNullOrBlank()) {
                     noAnswer.text = getString(R.string.free)
@@ -691,7 +688,7 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
                     when (index) {
                         0 -> {
                             noAnswer.text = text.toString()
-                            creationTimenoteViewModel.setPrice(0)
+                            creationTimenoteViewModel.setPrice(Price(0,""))
                         }
                         1 -> {
                             noAnswer.text = text.toString()
@@ -702,7 +699,8 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
                                 title(R.string.price)
                                 input(inputType = InputType.TYPE_CLASS_NUMBER) { _, charSequence ->
                                     creationTimenoteViewModel.setPrice(
-                                        charSequence.toString().toInt()
+                                        Price(
+                                        charSequence.toString().toInt(), "")
                                     )
                                     lifecycleOwner(this@CreateTimenoteSearch)
                                 }

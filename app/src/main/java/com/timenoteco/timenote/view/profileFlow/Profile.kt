@@ -64,7 +64,10 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
             findNavController().popBackStack(R.id.profile, false)
             when (it) {
                 LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(ProfileDirections.actionProfileToNavigation())
-                LoginViewModel.AuthenticationState.AUTHENTICATED -> findNavController().popBackStack(R.id.profile, false)
+                LoginViewModel.AuthenticationState.AUTHENTICATED -> {
+                    tokenId = prefs.getString(TOKEN, null)
+                    findNavController().popBackStack(R.id.profile, false)
+                }
             }
         })
     }
@@ -81,120 +84,145 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val type: Type = object : TypeToken<UserInfoDTO?>() {}.type
-        userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), type)
-        val simpleDateFormatDayName= SimpleDateFormat("EEE.", Locale.getDefault())
-        val simpleDateFormatDayNumber = SimpleDateFormat("dd", Locale.getDefault())
+        if(!tokenId.isNullOrBlank()) {
+            val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
+            userInfoDTO =
+                Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
+            val simpleDateFormatDayName = SimpleDateFormat("EEE.", Locale.getDefault())
+            val simpleDateFormatDayNumber = SimpleDateFormat("dd", Locale.getDefault())
 
-        profile_day_name_calendar.text = simpleDateFormatDayName.format(System.currentTimeMillis())
-        profile_day_number_calendar.text = simpleDateFormatDayNumber.format(System.currentTimeMillis())
+            profile_day_name_calendar.text =
+                simpleDateFormatDayName.format(System.currentTimeMillis())
+            profile_day_number_calendar.text =
+                simpleDateFormatDayNumber.format(System.currentTimeMillis())
 
-        profileModifyData = ProfileModifyData(requireContext())
-        prefs.stringLiveData("profile", Gson().toJson(profileModifyData.loadProfileModifyModel())).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            val type: Type = object : TypeToken<UpdateUserInfoDTO?>() {}.type
-            val profilModifyModel : UpdateUserInfoDTO? = Gson().fromJson<UpdateUserInfoDTO>(it, type)
+            profileModifyData = ProfileModifyData(requireContext())
+            prefs.stringLiveData(
+                "profile",
+                Gson().toJson(profileModifyData.loadProfileModifyModel())
+            ).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                val type: Type = object : TypeToken<UpdateUserInfoDTO?>() {}.type
+                val profilModifyModel: UpdateUserInfoDTO? =
+                    Gson().fromJson<UpdateUserInfoDTO>(it, type)
 
-            if(profilModifyModel?.socialMedias?.youtube?.enabled!!) {
-                if(!profilModifyModel.socialMedias.youtube.url.isBlank()){
-                    profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_youtube_colored))
-                    stateSwitchUrl = profilModifyModel.socialMedias.youtube.url
-                }
-            }
-            else if(profilModifyModel.socialMedias.facebook.enabled) {
-                if(!profilModifyModel.socialMedias.facebook.url.isBlank()){
-                    profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_facebook_colored))
-                    stateSwitchUrl = profilModifyModel.socialMedias.facebook.url
-                }
-            }
-            else if(profilModifyModel.socialMedias.instagram.enabled) {
-                if(!profilModifyModel.socialMedias.instagram.url.isBlank()){
-                    profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_insta_colored))
-                    stateSwitchUrl = profilModifyModel.socialMedias.instagram.url
-                }
-            }
-            else if(profilModifyModel.socialMedias.whatsApp.enabled) {
-                if(!profilModifyModel.socialMedias.whatsApp.url.isBlank()){
-                    profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_whatsapp))
-                    stateSwitchUrl = profilModifyModel.socialMedias.whatsApp.url
-                }
-            }
-            else if(profilModifyModel.socialMedias.linkedIn.enabled){
-                if(!profilModifyModel.socialMedias.linkedIn.url.isBlank()){
-                    profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_linkedin_colored))
-                    stateSwitchUrl = profilModifyModel.socialMedias.linkedIn.url
-                }
-            }
-            else {
-                profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_icons8_contacts))
-            }
-        })
-
-        if(args.whereFrom){
-            profile_modify_btn.visibility = View.INVISIBLE
-            profile_follow_btn.visibility = View.VISIBLE
-            profile_settings_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_more_vert_black_profile_24dp))
-            profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_back_thin))
-            profile_follow_btn.setOnClickListener(this)
-        }
-
-        Glide
-            .with(this)
-            .load(userInfoDTO?.picture)
-            .apply(RequestOptions.circleCropTransform())
-            .placeholder(R.drawable.circle_pic)
-            .into(profile_pic_imageview)
-
-        profile_name_toolbar.text = userInfoDTO?.userName
-        profile_nbr_followers.text = userInfoDTO?.followers.toString()
-        profile_nbr_following.text = userInfoDTO?.following.toString()
-
-        profilePastFuturePagerAdapter = ProfilePastFuturePagerAdapter(childFragmentManager, lifecycle, showFilterBar, this, args.from)
-        profile_vp?.apply {
-            adapter = profilePastFuturePagerAdapter
-            isUserInputEnabled = false
-            isSaveEnabled = false
-            post {
-                profile_vp?.currentItem = 1
-            }
-        }
-
-        profile_tablayout.setSelectedTabIndicatorColor(resources.getColor(android.R.color.darker_gray))
-        profile_tablayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
-            override fun onTabReselected(tab: TabLayout.Tab?) {
-                profilePastFuturePagerAdapter?.setShowFilterBar(true, tab?.position!!, true)
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-                profilePastFuturePagerAdapter?.setShowFilterBar(true, tab?.position!!, false)
-            }
-
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                when(tab?.position){
-                    0 -> {
-                        profile_tablayout.getTabAt(1)?.icon = resources.getDrawable(R.drawable.ic_futur_ok)
-                        profile_tablayout.getTabAt(0)?.icon = resources.getDrawable(R.drawable.ic_passe_plein_grad_ok)
+                if (profilModifyModel?.socialMedias?.youtube?.enabled!!) {
+                    if (!profilModifyModel.socialMedias.youtube.url.isBlank()) {
+                        profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_youtube_colored))
+                        stateSwitchUrl = profilModifyModel.socialMedias.youtube.url
                     }
-                    1 -> {
-                        profile_tablayout.getTabAt(1)?.icon = resources.getDrawable(R.drawable.ic_futur_plein_grad)
-                        profile_tablayout.getTabAt(0)?.icon = resources.getDrawable(R.drawable.ic_passe_ok)
+                } else if (profilModifyModel.socialMedias.facebook.enabled) {
+                    if (!profilModifyModel.socialMedias.facebook.url.isBlank()) {
+                        profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_facebook_colored))
+                        stateSwitchUrl = profilModifyModel.socialMedias.facebook.url
                     }
+                } else if (profilModifyModel.socialMedias.instagram.enabled) {
+                    if (!profilModifyModel.socialMedias.instagram.url.isBlank()) {
+                        profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_insta_colored))
+                        stateSwitchUrl = profilModifyModel.socialMedias.instagram.url
+                    }
+                } else if (profilModifyModel.socialMedias.whatsApp.enabled) {
+                    if (!profilModifyModel.socialMedias.whatsApp.url.isBlank()) {
+                        profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_whatsapp))
+                        stateSwitchUrl = profilModifyModel.socialMedias.whatsApp.url
+                    }
+                } else if (profilModifyModel.socialMedias.linkedIn.enabled) {
+                    if (!profilModifyModel.socialMedias.linkedIn.url.isBlank()) {
+                        profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_linkedin_colored))
+                        stateSwitchUrl = profilModifyModel.socialMedias.linkedIn.url
+                    }
+                } else {
+                    profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_icons8_contacts))
+                }
+            })
+
+            if (args.whereFrom) {
+                profile_modify_btn.visibility = View.INVISIBLE
+                profile_follow_btn.visibility = View.VISIBLE
+                profile_settings_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_more_vert_black_profile_24dp))
+                profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_back_thin))
+                profile_follow_btn.setOnClickListener(this)
+            }
+
+            Glide
+                .with(this)
+                .load(userInfoDTO?.picture)
+                .apply(RequestOptions.circleCropTransform())
+                .placeholder(R.drawable.circle_pic)
+                .into(profile_pic_imageview)
+
+            profile_name_toolbar.text = userInfoDTO?.userName
+            profile_nbr_followers.text = userInfoDTO?.followers.toString()
+            profile_nbr_following.text = userInfoDTO?.following.toString()
+            if (userInfoDTO?.isInFollowing!!) {
+                profile_modify_btn.visibility = View.INVISIBLE
+                profile_follow_btn.apply {
+                    setBorderColor(resources.getColor(android.R.color.darker_gray))
+                    setBorderWidth(1)
+                    setText(resources.getString(R.string.unfollow))
+                    setBackgroundColor(resources.getColor(android.R.color.transparent))
+                    setTextColor(resources.getColor(android.R.color.darker_gray))
                 }
             }
 
-        })
+            profilePastFuturePagerAdapter = ProfilePastFuturePagerAdapter(
+                childFragmentManager,
+                lifecycle,
+                showFilterBar,
+                this,
+                args.from,
+                userInfoDTO?.id!!
+            )
+            profile_vp?.apply {
+                adapter = profilePastFuturePagerAdapter
+                isUserInputEnabled = false
+                isSaveEnabled = false
+                post {
+                    profile_vp?.currentItem = 1
+                }
+            }
 
-        TabLayoutMediator(profile_tablayout, profile_vp){ tab, position -> }.attach()
+            profile_tablayout.setSelectedTabIndicatorColor(resources.getColor(android.R.color.darker_gray))
+            profile_tablayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                override fun onTabReselected(tab: TabLayout.Tab?) {
+                    profilePastFuturePagerAdapter?.setShowFilterBar(true, tab?.position!!, true)
+                }
 
-        profile_modify_btn.setOnClickListener(this)
-        profile_calendar_btn.setOnClickListener(this)
-        profile_settings_btn.setOnClickListener(this)
-        profile_notif_btn.setOnClickListener(this)
-        profile_location.setOnClickListener(this)
-        profile_followers_label.setOnClickListener(this)
-        profile_nbr_followers.setOnClickListener(this)
-        profile_nbr_following.setOnClickListener(this)
-        profile_following_label.setOnClickListener(this)
-        profile_infos.setOnClickListener(this)
+                override fun onTabUnselected(tab: TabLayout.Tab?) {
+                    profilePastFuturePagerAdapter?.setShowFilterBar(true, tab?.position!!, false)
+                }
+
+                override fun onTabSelected(tab: TabLayout.Tab?) {
+                    when (tab?.position) {
+                        0 -> {
+                            profile_tablayout.getTabAt(1)?.icon =
+                                resources.getDrawable(R.drawable.ic_futur_ok)
+                            profile_tablayout.getTabAt(0)?.icon =
+                                resources.getDrawable(R.drawable.ic_passe_plein_grad_ok)
+                        }
+                        1 -> {
+                            profile_tablayout.getTabAt(1)?.icon =
+                                resources.getDrawable(R.drawable.ic_futur_plein_grad)
+                            profile_tablayout.getTabAt(0)?.icon =
+                                resources.getDrawable(R.drawable.ic_passe_ok)
+                        }
+                    }
+                }
+
+            })
+
+            TabLayoutMediator(profile_tablayout, profile_vp) { tab, position -> }.attach()
+
+            profile_modify_btn.setOnClickListener(this)
+            profile_calendar_btn.setOnClickListener(this)
+            profile_settings_btn.setOnClickListener(this)
+            profile_notif_btn.setOnClickListener(this)
+            profile_location.setOnClickListener(this)
+            profile_followers_label.setOnClickListener(this)
+            profile_nbr_followers.setOnClickListener(this)
+            profile_nbr_following.setOnClickListener(this)
+            profile_following_label.setOnClickListener(this)
+            profile_infos.setOnClickListener(this)
+        }
 
     }
 
@@ -232,12 +260,24 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 }
             }
             profile_follow_btn -> {
-                profile_follow_btn.apply {
-                    setBorderColor(resources.getColor(android.R.color.darker_gray))
-                    setBorderWidth(1)
-                    setText(resources.getString(R.string.unfollow))
-                    setBackgroundColor(resources.getColor(android.R.color.transparent))
-                    setTextColor(resources.getColor(android.R.color.darker_gray))
+                if (userInfoDTO?.status == "public") {
+                    followViewModel.followPublicUser(tokenId!!, userInfoDTO?.id!!).observe(
+                        viewLifecycleOwner,
+                        androidx.lifecycle.Observer {
+                            if (it.isSuccessful) Toast.makeText(
+                                requireContext(),
+                                "Followed",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        })
+                } else if (userInfoDTO?.status == "private") {
+                    followViewModel.followPrivateUser(tokenId!!, userInfoDTO?.id!!)
+                        .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                            if (it.isSuccessful)
+                                Toast.makeText(requireContext(),
+                                    "Ask sent", Toast.LENGTH_SHORT)
+                                    .show()
+                        })
                 }
             }
             profile_location -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {

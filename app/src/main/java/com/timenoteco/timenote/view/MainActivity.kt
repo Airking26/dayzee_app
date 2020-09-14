@@ -51,7 +51,6 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
     private var currentNavController: LiveData<NavController>? = null
     private val utils = Utils()
     private lateinit var prefs : SharedPreferences
-    private val loginViewModel : LoginViewModel by viewModels()
 
     object BranchListener : Branch.BranchReferralInitListener {
         override fun onInitFinished(referringParams: JSONObject?, error: BranchError?) {

@@ -31,6 +31,8 @@ data class UserInfoDTO (
     @SerializedName("dateFormat") var dateFormat : String,
     @SerializedName("followers") var followers : Int,
     @SerializedName("following") var following : Int,
+    @SerializedName("isInFollowing") var isInFollowing: Boolean,
+    @SerializedName("isInFollowers") var isInFollowers: Boolean,
     @SerializedName("socialMedias") var socialMedias : SocialMedias,
     @SerializedName("createdAt") var createdAt : String
 ) : Parcelable

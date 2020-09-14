@@ -97,6 +97,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     val TOKEN: String = "TOKEN"
     private var tokenId: String? = null
     private var nearbyToCompare: String = ""
+    private val utils = Utils()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,7 +106,10 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         loginViewModel.getAuthenticationState().observe(requireActivity(), androidx.lifecycle.Observer {
             when (it) {
                 //LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(NearByDirections.actionNearByToNavigation())
-                LoginViewModel.AuthenticationState.AUTHENTICATED -> findNavController().popBackStack(R.id.nearBy, false)
+                LoginViewModel.AuthenticationState.AUTHENTICATED -> {
+                    tokenId = prefs.getString(TOKEN, null)
+                    findNavController().popBackStack(R.id.nearBy, false)
+                }
                 LoginViewModel.AuthenticationState.GUEST -> findNavController().popBackStack(R.id.nearBy, false)
             }
         })
@@ -169,7 +173,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
             }
         }
 
-        timenoteAdapter = ItemTimenoteAdapter(timenotes, timenotes, false, null, this, this as Fragment, true)
+        timenoteAdapter = ItemTimenoteAdapter(timenotes,this, this, true, utils)
 
         nearby_rv.apply {
             layoutManager = LinearLayoutManager(context)
@@ -184,7 +188,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
                 nearby_time.text = dateFormat.format(System.currentTimeMillis())
             else
                 nearby_time.text = nearbyModifyModel.date
-            if(nearbyToCompare != Gson().toJson(nearbyFilterData.loadNearbyFilter())){
+            if(nearbyToCompare != Gson().toJson(nearbyFilterData.loadNearbyFilter()) && !tokenId.isNullOrBlank()){
                 lifecycleScope.launch {
                     nearbyViewModel.getNearbyResults(tokenId!!, nearbyModifyModel!!).collectLatest {
                         val i = it
@@ -346,11 +350,6 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     }
 
     override fun onEditClicked() {
-        findNavController().navigate(NearByDirections.actionNearByToCreateTimenote(true, "",
-            TimenoteBody("", CreatedBy("", "", "", "", "", "", ""),
-                "", "", listOf(), "", com.timenoteco.timenote.model.Location(0.0, 0.0, com.timenoteco.timenote.model.Address("", "", "", "")),
-                Category("",""), "", "", listOf(), "", 0, ""), 3
-        ))
     }
 
     override fun onAlarmClicked() {
@@ -360,12 +359,8 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         timenoteViewModel.deleteTimenote(tokenId!!, "")
     }
 
-    override fun onDuplicateClicked() {
-        findNavController().navigate(NearByDirections.actionNearByToCreateTimenote(true, "",
-            TimenoteBody("", CreatedBy("", "", "", "", "", "", ""),
-                "", "", listOf(), "", com.timenoteco.timenote.model.Location(0.0, 0.0, com.timenoteco.timenote.model.Address("", "", "", "")),
-                Category("",""), "", "", listOf(), "", 0, ""), 3
-        ))
+    override fun onDuplicateClicked(timenoteInfoDTO: TimenoteInfoDTO) {
+        //findNavController().navigate(NearByDirections.actionNearByToCreateTimenote(true, "", CreationTimenoteDTO(), 3))
     }
 
     override fun onAddressClicked() {

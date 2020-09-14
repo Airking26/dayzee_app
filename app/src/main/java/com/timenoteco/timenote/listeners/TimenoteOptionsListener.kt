@@ -1,11 +1,13 @@
 package com.timenoteco.timenote.listeners
 
+import com.timenoteco.timenote.model.TimenoteInfoDTO
+
 interface TimenoteOptionsListener {
     fun onReportClicked()
     fun onEditClicked()
     fun onAlarmClicked()
     fun onDeleteClicked()
-    fun onDuplicateClicked()
+    fun onDuplicateClicked(timenoteInfoDTO: TimenoteInfoDTO)
     fun onAddressClicked()
     fun onSeeMoreClicked()
     fun onCommentClicked()

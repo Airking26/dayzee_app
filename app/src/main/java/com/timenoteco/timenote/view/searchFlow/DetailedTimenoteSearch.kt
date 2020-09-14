@@ -12,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -29,10 +28,9 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.CommentAdapter
-import com.timenoteco.timenote.adapter.ItemTimenoteToComeAdapter
+import com.timenoteco.timenote.adapter.ItemTimenoteRecentAdapter
 import com.timenoteco.timenote.adapter.ScreenSlideTimenotePagerAdapter
 import com.timenoteco.timenote.common.RoundedCornersTransformation
-import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.viewModel.TimenoteViewModel
 import kotlinx.android.synthetic.main.fragment_detailed_fragment.*
@@ -102,8 +100,8 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener,
 
         val p = Typeface.create("sans-serif-light", Typeface.NORMAL)
         val m = Typeface.create("sans-serif", Typeface.NORMAL)
-        val o = ItemTimenoteToComeAdapter.CustomTypefaceSpan(p)
-        val k = ItemTimenoteToComeAdapter.CustomTypefaceSpan(m)
+        val o = ItemTimenoteRecentAdapter.CustomTypefaceSpan(p)
+        val k = ItemTimenoteRecentAdapter.CustomTypefaceSpan(m)
 
         val t = SpannableStringBuilder(test)
         t.setSpan(o, 0, 8, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
@@ -152,10 +150,7 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener,
             title(R.string.posted_false)
             listItems (items = listItems){ dialog, index, text ->
                 when(text.toString()){
-                    context.getString(R.string.duplicate) -> findNavController().navigate(DetailedTimenoteSearchDirections.actionDetailedTimenoteSearchToCreateTimenoteSearch(true, "",
-                        TimenoteBody("", CreatedBy("", "", "", "", "", "", ""),
-                            "", "", listOf(), "", Location(0.0, 0.0, Address("", "", "", "")),
-                            Category("",""), "", "", listOf(), "", 0, ""), 2))
+                    //context.getString(R.string.duplicate) -> findNavController().navigate(DetailedTimenoteSearchDirections.actionDetailedTimenoteSearchToCreateTimenoteSearch(true, "", CreationTimenoteDTO(), 2))
                     context.getString(R.string.report) -> Toast.makeText(
                         requireContext(),
                         "Reported, thank you",

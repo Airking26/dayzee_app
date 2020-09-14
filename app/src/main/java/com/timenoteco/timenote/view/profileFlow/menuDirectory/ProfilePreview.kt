@@ -39,7 +39,7 @@ class ProfilePreview: Fragment(), OnRemoveFilterBarListener {
         scrollable.visibility = View.GONE
         profile_account_private.visibility = View.VISIBLE
 
-        profilePastFuturePagerAdapter = ProfilePastFuturePagerAdapter(childFragmentManager, lifecycle, false, this, 4)
+       // profilePastFuturePagerAdapter = ProfilePastFuturePagerAdapter(childFragmentManager, lifecycle, false, this, 4)
         profile_vp?.apply {
             adapter = profilePastFuturePagerAdapter
             isUserInputEnabled = false

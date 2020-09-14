@@ -19,7 +19,7 @@ interface TimenoteService {
     suspend fun getTimenoteId(@Header("Authorization") token: String, @Path("id") id: String) : Response<TimenoteInfoDTO>
 
     @PATCH("timenote/{id}")
-    suspend fun modifyTimenote(@Header("Authorization") token: String, @Path("id") id: String, @Body timenote: TimenoteBody) : Response<TimenoteInfoDTO>
+    suspend fun modifyTimenote(@Header("Authorization") token: String, @Path("id") id: String, @Body timenote: CreationTimenoteDTO) : Response<TimenoteInfoDTO>
 
     @DELETE("timenote/{id}")
     suspend fun deleteTimenote(@Header("Authorization") token: String, @Path("id") id: String) : Response<Any>

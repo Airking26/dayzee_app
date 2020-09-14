@@ -31,7 +31,7 @@ class EventProfilePagingAdapter (diffCallback: DiffUtil.ItemCallback<TimenoteInf
             event: TimenoteInfoDTO
         ) {
             itemView.profile_item_name_event.text = event.title
-            itemView.profile_item_date_event.text = Utils().calculateDecountTime()
+            itemView.profile_item_date_event.text = Utils().calculateDecountTime(event.startingAt)
             Glide
                 .with(itemView)
                 .load(event.pictures[0])

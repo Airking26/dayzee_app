@@ -22,7 +22,8 @@ data class TimenoteInfoDTO (
 	@SerializedName("endingAt") val endingAt : String,
 	@SerializedName("hashtags") val hashtags : List<String>,
 	@SerializedName("url") val url : String,
-	@SerializedName("price") val price : Int,
+	@SerializedName("price") val price : Price,
 	@SerializedName("likedBy") val likedBy : Int,
-	@SerializedName("joinedBy") val joinedBy : JoinedBy
+	@SerializedName("joinedBy") val joinedBy : JoinedBy,
+	@SerializedName("comments") val commentAccount: Int
 )

@@ -30,6 +30,7 @@ import com.timenoteco.timenote.common.stringLiveData
 import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import com.timenoteco.timenote.model.TimenoteInfoDTO
 import com.timenoteco.timenote.model.UpdateUserInfoDTO
+import com.timenoteco.timenote.model.UserInfoDTO
 import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.webService.ProfileModifyData
@@ -42,7 +43,7 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
 
     private var stateSwitchUrl: String? = null
     private var profilePastFuturePagerAdapter: ProfilePastFuturePagerAdapter? = null
-    private var isPrivate = false
+    private var isFollowed = false
     private val args : ProfileSearchArgs by navArgs()
     private val loginViewModel : LoginViewModel by activityViewModels()
     private val followViewModel : FollowViewModel by activityViewModels()
@@ -107,6 +108,17 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
         profile_settings_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_more_vert_black_profile_24dp))
         profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_back_thin))
         profile_follow_btn.setOnClickListener(this)
+        isFollowed = args.userInfoDTO?.isInFollowers!!
+        if(args.userInfoDTO?.isInFollowers!!) {
+            profile_modify_btn.visibility = View.INVISIBLE
+            profile_follow_btn.apply {
+                setBorderColor(resources.getColor(android.R.color.darker_gray))
+                setBorderWidth(1)
+                setText(resources.getString(R.string.unfollow))
+                setBackgroundColor(resources.getColor(android.R.color.transparent))
+                setTextColor(resources.getColor(android.R.color.darker_gray))
+            }
+        }
 
         profile_name_toolbar.text = args.userInfoDTO?.userName
         profile_nbr_followers.text = args.userInfoDTO?.followers.toString()
@@ -120,7 +132,7 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
             .placeholder(R.drawable.circle_pic)
             .into(profile_pic_imageview)
 
-        profilePastFuturePagerAdapter = ProfilePastFuturePagerAdapter(childFragmentManager, lifecycle, showFilterBar, this, 2)
+        profilePastFuturePagerAdapter = ProfilePastFuturePagerAdapter(childFragmentManager, lifecycle, showFilterBar, this, 2, args.userInfoDTO?.id!!)
         profile_vp?.apply {
             adapter = profilePastFuturePagerAdapter
             isUserInputEnabled = false
@@ -185,17 +197,71 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
             profile_nbr_followers -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToFollowPageSearch())
             profile_nbr_following -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToFollowPageSearch())
             profile_follow_btn -> {
-                followViewModel.followPublicUser(tokenId!!, args.userInfoDTO?.id!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-                    if(it.isSuccessful) {
-                        profile_follow_btn.apply {
-                            setBorderColor(resources.getColor(android.R.color.darker_gray))
-                            setBorderWidth(1)
-                            setText(resources.getString(R.string.unfollow))
-                            setBackgroundColor(resources.getColor(android.R.color.transparent))
-                            setTextColor(resources.getColor(android.R.color.darker_gray))
-                        }
+                if (!args.userInfoDTO?.isInFollowers!! || !isFollowed) {
+                    if (args.userInfoDTO?.status == "0" || args.userInfoDTO?.status == "public") {
+                        followViewModel.followPublicUser(tokenId!!, args.userInfoDTO?.id!!).observe(
+                            viewLifecycleOwner,
+                            androidx.lifecycle.Observer {
+                                if (it.isSuccessful) Toast.makeText(
+                                    requireContext(),
+                                    "Followed",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+
+                                profile_follow_btn.apply {
+                                    setBorderColor(resources.getColor(android.R.color.darker_gray))
+                                    setBorderWidth(1)
+                                    setText(resources.getString(R.string.unfollow))
+                                    setBackgroundColor(resources.getColor(android.R.color.transparent))
+                                    setTextColor(resources.getColor(android.R.color.darker_gray))
+                                }
+
+                                isFollowed = true
+
+                            })
+                    } else if (args.userInfoDTO?.status == "1" || args.userInfoDTO?.status == "private") {
+                        followViewModel.followPrivateUser(tokenId!!, args.userInfoDTO?.id!!)
+                            .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                                if (it.isSuccessful)
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Ask sent", Toast.LENGTH_SHORT
+                                    )
+                                        .show()
+
+                                profile_follow_btn.apply {
+                                    setBorderColor(resources.getColor(android.R.color.darker_gray))
+                                    setBorderWidth(1)
+                                    setText(resources.getString(R.string.unfollow))
+                                    setBackgroundColor(resources.getColor(android.R.color.transparent))
+                                    setTextColor(resources.getColor(android.R.color.darker_gray))
+                                }
+
+                                isFollowed = true
+
+                            })
                     }
-                })
+                } else if(args.userInfoDTO?.isInFollowers!! || isFollowed){
+                    followViewModel.unfollowUser(tokenId!!, args.userInfoDTO?.id!!).observe(
+                        viewLifecycleOwner,
+                        androidx.lifecycle.Observer {
+                            if (it.isSuccessful) Toast.makeText(
+                                requireContext(),
+                                "Unfollowed",
+                                Toast.LENGTH_SHORT
+                            ).show()
+
+                            profile_follow_btn.apply {
+                                setBorderColor(resources.getColor(android.R.color.transparent))
+                                setBorderWidth(0)
+                                setText(resources.getString(R.string.follow))
+                                setBackgroundColor(resources.getColor(R.color.colorYellow))
+                                setTextColor(resources.getColor(R.color.colorBackground))
+                            }
+
+                            isFollowed = false
+                        })
+                }
 
             }
             profile_location -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {

@@ -13,7 +13,9 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.TimenoteComparator
 import com.timenoteco.timenote.adapter.TimenotePagingAdapter
 import com.timenoteco.timenote.adapter.UsersPagingAdapter
+import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
+import com.timenoteco.timenote.model.TimenoteInfoDTO
 import com.timenoteco.timenote.viewModel.SearchViewModel
 import kotlinx.android.synthetic.main.fragment_search_people.*
 import kotlinx.android.synthetic.main.fragment_search_tag.*
@@ -23,13 +25,14 @@ import kotlinx.coroutines.launch
 class SearchTag : Fragment(), TimenoteOptionsListener {
 
     private val searchViewModel : SearchViewModel by activityViewModels()
+    private val utils = Utils()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_search_tag, container, false)
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            val userAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true)
+            val userAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils)
             search_tag_rv.apply {
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = userAdapter
@@ -56,7 +59,7 @@ class SearchTag : Fragment(), TimenoteOptionsListener {
     override fun onDeleteClicked() {
     }
 
-    override fun onDuplicateClicked() {
+    override fun onDuplicateClicked(timenoteInfoDTO: TimenoteInfoDTO) {
     }
 
     override fun onAddressClicked() {

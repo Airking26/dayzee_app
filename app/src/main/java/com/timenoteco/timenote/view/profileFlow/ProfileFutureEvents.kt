@@ -30,6 +30,7 @@ import kotlinx.coroutines.launch
 
 private const val ARG_PARAM1 = "showHideFilterBar"
 private const val ARG_PARAM2 = "from"
+private const val ARG_PARAM3 = "id"
 
 class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarListener,
     ItemProfileCardListener {
@@ -39,8 +40,7 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
     private var tokenId: String? = null
     private var showHideFilterBar: Boolean? = null
     private var from: Int? = null
-    private var eventAdapter: ItemProfileEventAdapter? = null
-    private var timenotes: MutableList<TimenoteInfoDTO> = mutableListOf()
+    private lateinit var id: String
     private lateinit var onRemoveFilterBarListener: OnRemoveFilterBarListener
     private val profileViewModel : ProfileViewModel by activityViewModels()
     private lateinit var profileEventPagingAdapter : ProfileEventPagingAdapter
@@ -52,6 +52,7 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
         arguments?.let {
             showHideFilterBar = it.getBoolean(ARG_PARAM1)
             from = it.getInt(ARG_PARAM2)
+            id = it.getString(ARG_PARAM3)!!
         }
     }
 
@@ -63,7 +64,6 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
         inflater.inflate(R.layout.fragment_profile_future_events, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        //eventAdapter = ItemProfileEventAdapter(timenotes, this, this, this, showHideFilterBar!!)
 
         profileEventPagingAdapter = ProfileEventPagingAdapter(ProfileEventComparator, showHideFilterBar!!, this, this, this)
         profile_rv.apply {
@@ -72,7 +72,7 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
         }
 
         lifecycleScope.launch {
-            profileViewModel.getEventProfile(tokenId!!, true).collectLatest {
+            profileViewModel.getEventProfile(tokenId!!, id, true).collectLatest {
                 profileEventPagingAdapter.submitData(it)
             }
         }
@@ -83,10 +83,7 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
     }
 
     override fun onEditClicked() {
-        findNavController().navigate(ProfileDirections.actionProfileToCreateTimenote(true, "",
-            TimenoteBody("", CreatedBy("", "", "", "", "", "", ""),
-                "", "", listOf(), "", Location(0.0, 0.0, Address("", "", "", "")),
-                Category("",""), "", "", listOf(), "", 0, ""), from!!))
+        //findNavController().navigate(ProfileDirections.actionProfileToCreateTimenote(true, "", CreationTimenoteDTO(), from!!))
     }
 
     override fun onAlarmClicked() {
@@ -101,17 +98,11 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
     override fun onDeleteClicked() {
     }
 
-    override fun onDuplicateClicked() {
+    override fun onDuplicateClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         if(from == 2){
-            findNavController().navigate(ProfileSearchDirections.actionProfileSearchToCreateTimenoteSearch(true, "",
-                TimenoteBody("", CreatedBy("", "", "", "", "", "", ""),
-                    "", "", listOf(), "", Location(0.0, 0.0, Address("", "", "", "")),
-                    Category("",""), "", "", listOf(), "", 0, ""), from!!))
-        } else findNavController().navigate(ProfileDirections.actionProfileToCreateTimenote(true, "",
-            TimenoteBody("", CreatedBy("", "", "", "", "", "", ""),
-                "", "", listOf(), "", Location(0.0, 0.0, Address("", "", "", "")),
-                Category("",""), "", "", listOf(), "", 0, ""), from!!)
-        )
+        //    findNavController().navigate(ProfileSearchDirections.actionProfileSearchToCreateTimenoteSearch(true, "", CreationTimenoteDTO(), from!!))
+        }
+        //else findNavController().navigate(ProfileDirections.actionProfileToCreateTimenote(true, "", CreationTimenoteDTO(), from!!))
     }
 
     override fun onHideToOthersClicked() {
@@ -137,7 +128,6 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
     }
 
     fun setShowFilterBar(b: Boolean) {
-        eventAdapter?.showHideFilterBar(b)
     }
 
     override fun onAddressClicked() {
@@ -156,12 +146,14 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
         fun newInstance(
             showHideFilterBar: Boolean,
             context: Fragment,
-            from: Int
+            from: Int,
+            id: String
         ) =
             ProfileFutureEvents().apply {
                 arguments = Bundle().apply {
                     putBoolean(ARG_PARAM1, showHideFilterBar)
                     putInt(ARG_PARAM2, from)
+                    putString(ARG_PARAM3, id)
                     setListener(context as OnRemoveFilterBarListener)
                 }
             }

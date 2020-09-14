@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import com.timenoteco.timenote.model.*
 
 private var timenoteModel: CreationTimenoteDTO =
-    CreationTimenoteDTO(createdBy = "", title = "", startingAt = "", endingAt = "", price = 0)
+    CreationTimenoteDTO(createdBy = "", title = "", startingAt = "", endingAt = "", price = Price(0, ""))
 
 class CreationTimenoteData {
 
@@ -23,7 +23,7 @@ class CreationTimenoteData {
         return timenoteModel
     }
 
-    fun setPrice(price: Int): CreationTimenoteDTO{
+    fun setPrice(price: Price): CreationTimenoteDTO{
         timenoteModel.price = price
         return timenoteModel
     }
@@ -40,6 +40,11 @@ class CreationTimenoteData {
 
     fun setTtile(title: String): CreationTimenoteDTO{
         timenoteModel.title = title
+        return timenoteModel
+    }
+
+    fun setHashtags(hashtags: List<String>): CreationTimenoteDTO{
+        timenoteModel.hashtags = hashtags
         return timenoteModel
     }
 
@@ -64,7 +69,7 @@ class CreationTimenoteData {
     }
 
     fun clear(): CreationTimenoteDTO {
-        timenoteModel = CreationTimenoteDTO(createdBy = "", title = "", startingAt = "", endingAt = "", price = 0)
+        timenoteModel = CreationTimenoteDTO(createdBy = "", title = "", startingAt = "", endingAt = "", price = Price(0, ""))
         return timenoteModel
     }
 

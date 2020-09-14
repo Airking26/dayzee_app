@@ -79,9 +79,9 @@
             android:textSize="14sp"
             android:textColor="@android:color/white"
             android:gravity="center"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            tools:text="In 12 days"
+            android:paddingVertical="8dp"
+            android:paddingHorizontal="8dp"
+            tools:text="In 12 days and 8 hours"
             android:layout_width="0dp"
             android:layout_height="wrap_content"/>
 

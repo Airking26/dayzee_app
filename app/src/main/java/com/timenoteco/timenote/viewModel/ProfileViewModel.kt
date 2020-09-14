@@ -23,8 +23,8 @@ class ProfileViewModel: ViewModel() {
         return Pager(PagingConfig(pageSize = 8)){UserPagingSource(token, followService, followers, timenoteService, useTimenoteService, id)}.flow.cachedIn(viewModelScope)
     }
 
-    fun getEventProfile(token: String, future: Boolean): Flow<PagingData<TimenoteInfoDTO>> {
-        return Pager(PagingConfig(pageSize = 2)){ProfileEventPagingSource(token, profileService, future)}.flow.cachedIn(viewModelScope)
+    fun getEventProfile(token: String, id: String, future: Boolean): Flow<PagingData<TimenoteInfoDTO>> {
+        return Pager(PagingConfig(pageSize = 2)){ProfileEventPagingSource(token, id, profileService, future)}.flow.cachedIn(viewModelScope)
     }
 
 }
