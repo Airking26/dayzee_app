@@ -1,30 +1,30 @@
 package com.timenoteco.timenote.viewModel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.timenoteco.timenote.model.TimenoteInfoDTO
-import com.timenoteco.timenote.model.UserInfoDTO
+import com.timenoteco.timenote.model.*
+import com.timenoteco.timenote.paging.ProfileEventFilteredPagingSource
 import com.timenoteco.timenote.paging.ProfileEventPagingSource
 import com.timenoteco.timenote.paging.UserPagingSource
 import com.timenoteco.timenote.webService.repo.DayzeeRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class ProfileViewModel: ViewModel() {
 
     private val profileService = DayzeeRepository().getProfileService()
-    private val followService = DayzeeRepository().getFollowService()
-    private val timenoteService = DayzeeRepository().getTimenoteService()
 
-    fun getUsers(token: String, followers: Boolean, useTimenoteService: Boolean, id: String?): Flow<PagingData<UserInfoDTO>> {
-        return Pager(PagingConfig(pageSize = 8)){UserPagingSource(token, followService, followers, timenoteService, useTimenoteService, id)}.flow.cachedIn(viewModelScope)
-    }
-
-    fun getEventProfile(token: String, id: String, future: Boolean): Flow<PagingData<TimenoteInfoDTO>> {
-        return Pager(PagingConfig(pageSize = 2)){ProfileEventPagingSource(token, id, profileService, future)}.flow.cachedIn(viewModelScope)
-    }
+    fun getEventProfile(token: String, id: String, future: Boolean) = Pager(PagingConfig(pageSize = 1)){ProfileEventPagingSource(token, id, profileService, future)}.flow.cachedIn(viewModelScope)
+    fun createGroup(token: String, createGroupDTO: CreateGroupDTO) = flow { emit(profileService.createGroup("Bearer $token", createGroupDTO))}.asLiveData(viewModelScope.coroutineContext)
+    fun modifyGroup(token: String, id: String, createGroupDTO: CreateGroupDTO) = flow {emit(profileService.modifyGroup("Bearer $token", id, createGroupDTO))}.asLiveData(viewModelScope.coroutineContext)
+    fun deleteGroup(token: String, id: String) = flow { emit(profileService.deleteGroup("Bearer $token", id)) }.asLiveData(viewModelScope.coroutineContext)
+    fun getAllGroups(token: String) = flow { emit(profileService.getAllGroups("Bearer $token")) }.asLiveData(viewModelScope.coroutineContext)
+    fun getTimenotesByDate(token: String, timenoteDateFilteredDTO: TimenoteDateFilteredDTO) = flow { emit(profileService.getTimenoteByDate("Bearer $token", timenoteDateFilteredDTO))}.asLiveData(viewModelScope.coroutineContext)
+    fun getTimenotesFiltered(token: String, timenoteFilteredDTO: TimenoteFilteredDTO) = Pager(PagingConfig(pageSize = 1)){ProfileEventFilteredPagingSource(token, timenoteFilteredDTO, profileService)}.flow.cachedIn(viewModelScope)
 
 }

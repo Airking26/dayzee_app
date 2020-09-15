@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.webService.service
 
+import com.timenoteco.timenote.model.FCMDTO
 import com.timenoteco.timenote.model.UpdateUserInfoDTO
 import com.timenoteco.timenote.model.UserInfoDTO
 import retrofit2.Response
@@ -21,5 +22,8 @@ interface MeService{
 
     @GET("users/all")
     suspend fun getAllUsers(@Header("Authorization") token: String) : Response<List<UserInfoDTO>>
+
+    @PUT("users/me/fcm")
+    suspend fun putFCMToken(@Header("Authorization") token: String, @Body fcmToken : FCMDTO) : Response<UserInfoDTO>
 
 }

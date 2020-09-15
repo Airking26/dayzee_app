@@ -53,7 +53,7 @@ class SearchTag : Fragment(), TimenoteOptionsListener {
     override fun onEditClicked() {
     }
 
-    override fun onAlarmClicked() {
+    override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO) {
     }
 
     override fun onDeleteClicked() {
@@ -65,10 +65,10 @@ class SearchTag : Fragment(), TimenoteOptionsListener {
     override fun onAddressClicked() {
     }
 
-    override fun onSeeMoreClicked() {
+    override fun onSeeMoreClicked(event: TimenoteInfoDTO) {
     }
 
-    override fun onCommentClicked() {
+    override fun onCommentClicked(event: TimenoteInfoDTO) {
     }
 
     override fun onPlusClicked() {

@@ -8,10 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.UsersPagingAdapter
 import com.timenoteco.timenote.model.UserInfoDTO
+import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.ProfileViewModel
 import kotlinx.android.synthetic.main.fragment_follow_page.*
 import kotlinx.coroutines.flow.collectLatest
@@ -19,9 +22,10 @@ import kotlinx.coroutines.launch
 
 class FollowPage : Fragment(), UsersPagingAdapter.SearchPeopleListener {
 
-    private val profileViewModel : ProfileViewModel by activityViewModels()
+    private val followViewModel : FollowViewModel by activityViewModels()
     private lateinit var usersPagingAdapter: UsersPagingAdapter
     private lateinit var prefs: SharedPreferences
+    private val args : FollowPageArgs by navArgs()
     val TOKEN: String = "TOKEN"
     private var tokenId: String? = null
 
@@ -36,9 +40,10 @@ class FollowPage : Fragment(), UsersPagingAdapter.SearchPeopleListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         usersPagingAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, this)
+        users_rv.layoutManager = LinearLayoutManager(requireContext())
         users_rv.adapter = usersPagingAdapter
         lifecycleScope.launch{
-            profileViewModel.getUsers(tokenId!!, followers = true, useTimenoteService = false, id =  null).collectLatest {
+            followViewModel.getUsers(tokenId!!, followers = args.followers).collectLatest {
                 usersPagingAdapter.submitData(it)
             }
         }

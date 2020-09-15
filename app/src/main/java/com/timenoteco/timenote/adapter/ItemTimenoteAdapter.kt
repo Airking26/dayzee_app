@@ -63,6 +63,8 @@ class ItemTimenoteAdapter(
             if(isFromFuture) itemView.timenote_plus.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.ic_ajout_cal))
             else itemView.timenote_plus.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.ic_like))
 
+            itemView.timenote_title.text = timenote.title
+
             Glide
                 .with(itemView)
                 .load(timenote.createdBy.pictureURL)
@@ -213,9 +215,9 @@ class ItemTimenoteAdapter(
             }
 
             itemView.timenote_pic_user_imageview.setOnClickListener { timenoteListenerListener.onPictureClicked() }
-            itemView.timenote_comment.setOnClickListener { timenoteListenerListener.onCommentClicked() }
+            itemView.timenote_comment.setOnClickListener { timenoteListenerListener.onCommentClicked(timenote) }
             itemView.timenote_plus.setOnClickListener { timenoteListenerListener.onPlusClicked() }
-            itemView.timenote_see_more.setOnClickListener { timenoteListenerListener.onSeeMoreClicked() }
+            itemView.timenote_see_more.setOnClickListener { timenoteListenerListener.onSeeMoreClicked(timenote) }
             itemView.timenote_place.setOnClickListener{timenoteListenerListener.onAddressClicked()}
             itemView.timenote_fl.setOnClickListener{timenoteListenerListener.onSeeParticipants()}
         }
@@ -232,7 +234,7 @@ class ItemTimenoteAdapter(
                     when(text.toString()){
                         context.getString(R.string.duplicate) -> timenoteListenerListener.onDuplicateClicked(timenote)
                         context.getString(R.string.report) -> timenoteListenerListener.onReportClicked()
-                        context.getString(R.string.alarm) -> timenoteListenerListener.onAlarmClicked()
+                        context.getString(R.string.alarm) -> timenoteListenerListener.onAlarmClicked(timenote)
                     }
                 }
             }

@@ -26,6 +26,7 @@ import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.*
+import com.timenoteco.timenote.viewModel.AlarmViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.ProfileViewModel
 import com.timenoteco.timenote.viewModel.TimenoteViewModel
@@ -33,16 +34,19 @@ import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import kotlin.math.log
 
 class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListener,
     UsersPagingAdapter.SearchPeopleListener, ItemTimenoteRecentAdapter.TimenoteRecentClicked {
 
+    private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     private var timenotes: List<TimenoteInfoDTO> = mutableListOf()
     private lateinit var timenoteAdapter: ItemTimenoteAdapter
     private val loginViewModel: LoginViewModel by activityViewModels()
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
     private val profileViewModel: ProfileViewModel by activityViewModels()
+    private val alarmViewModel : AlarmViewModel by activityViewModels()
     private lateinit var timenotePagingAdapter: TimenotePagingAdapter
     private lateinit var timenoteRecentPagingAdapter: TimenoteRecentPagingAdapter
     private lateinit var onGoToNearby: OnGoToNearby
@@ -116,8 +120,8 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
             home_rv.layoutManager = LinearLayoutManager(requireContext())
             lifecycleScope.launch {
                 timenoteViewModel.getTimenotePagingFlow(tokenId!!).collectLatest {
-                    timenotePagingAdapter.submitData(it)
                     home_swipe_refresh.isRefreshing = false
+                    timenotePagingAdapter.submitData(it)
                 }
             }
         }
@@ -130,6 +134,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                 LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
             lifecycleScope.launch {
                 timenoteViewModel.getRecentTimenotePagingFlow(tokenId!!).collectLatest {
+                    home_posted_recently.visibility = View.VISIBLE
                     timenoteRecentPagingAdapter.submitData(it)
                 }
             }
@@ -176,8 +181,8 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         }
     }
 
-    override fun onCommentClicked() {
-        findNavController().navigate(HomeDirections.actionHomeToDetailedTimenote(1))
+    override fun onCommentClicked(event: TimenoteInfoDTO) {
+        findNavController().navigate(HomeDirections.actionHomeToDetailedTimenote(1, event))
     }
 
 
@@ -188,13 +193,9 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         findNavController().navigate(HomeDirections.actionHomeToProfile(true, 1))
     }
 
-    override fun onHideToOthersClicked() {
+    override fun onHideToOthersClicked() {}
 
-    }
-
-    override fun onMaskThisUser() {
-
-    }
+    override fun onMaskThisUser() {}
 
     override fun onDoubleClick() {}
 
@@ -208,18 +209,15 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         val adapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, this)
         recyclerview.adapter = adapter
         lifecycleScope.launch{
-            profileViewModel.getUsers(tokenId!!, followers = true, useTimenoteService = true, id =  null).collectLatest {
-                adapter.submitData(it)
-            }
         }
     }
 
-    override fun onTimenoteRecentClicked() {
-        findNavController().navigate(HomeDirections.actionHomeToDetailedTimenote(1))
+    override fun onTimenoteRecentClicked(event: TimenoteInfoDTO) {
+        findNavController().navigate(HomeDirections.actionHomeToDetailedTimenote(1, event))
     }
 
-    override fun onSeeMoreClicked() {
-        findNavController().navigate(HomeDirections.actionHomeToDetailedTimenote(1))
+    override fun onSeeMoreClicked(event: TimenoteInfoDTO) {
+        findNavController().navigate(HomeDirections.actionHomeToDetailedTimenote(1, event))
     }
 
     override fun onReportClicked() {
@@ -229,10 +227,12 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     override fun onEditClicked() {
     }
 
-    override fun onAlarmClicked() {
+    override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             dateTimePicker { dialog, datetime ->
-
+                alarmViewModel.createAlarm(tokenId!!, AlarmCreationDTO(timenoteInfoDTO.createdBy.id, timenoteInfoDTO.id, SimpleDateFormat(ISO).format(datetime.time.time))).observe(viewLifecycleOwner, Observer {
+                    if (it.isSuccessful) ""
+                })
             }
             lifecycleOwner(this@Home)
         }

@@ -63,7 +63,7 @@ class ItemProfileEventAdapter(
             onCardClicked: ItemProfileCardListener
         ) {
 
-            itemView.setOnClickListener { onCardClicked.onCardClicked() }
+            itemView.setOnClickListener { onCardClicked.onCardClicked(event) }
 
             itemView.profile_item_name_event.text = event.title
             if(event.location != null)
@@ -103,7 +103,7 @@ class ItemProfileEventAdapter(
                         context.getString(R.string.duplicate) -> timenoteListenerListener.onDuplicateClicked(event)
                         context.getString(R.string.edit) -> timenoteListenerListener.onEditClicked()
                         context.getString(R.string.report) -> timenoteListenerListener.onReportClicked()
-                        context.getString(R.string.alarm) -> timenoteListenerListener.onAlarmClicked()
+                        context.getString(R.string.alarm) -> timenoteListenerListener.onAlarmClicked(event)
                         context.getString(R.string.delete) -> timenoteListenerListener.onDeleteClicked()
                         context.getString(R.string.hide_to_others) -> timenoteListenerListener.onHideToOthersClicked()
                     }

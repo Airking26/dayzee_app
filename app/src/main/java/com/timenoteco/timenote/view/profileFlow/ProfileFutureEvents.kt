@@ -86,7 +86,7 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
         //findNavController().navigate(ProfileDirections.actionProfileToCreateTimenote(true, "", CreationTimenoteDTO(), from!!))
     }
 
-    override fun onAlarmClicked() {
+    override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             datePicker { dialog, datetime ->
 
@@ -132,13 +132,18 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
 
     override fun onAddressClicked() {
     }
-    override fun onSeeMoreClicked() {
+    override fun onSeeMoreClicked(event: TimenoteInfoDTO) {
     }
-    override fun onCommentClicked() {
+    override fun onCommentClicked(event: TimenoteInfoDTO) {
     }
     override fun onPlusClicked() {
     }
     override fun onPictureClicked() {
+    }
+
+    override fun onCardClicked(event: TimenoteInfoDTO) {
+        if(from == 2)findNavController().navigate(ProfileSearchDirections.actionProfileSearchToDetailedTimenoteSearch(event))
+        else findNavController().navigate(ProfileDirections.actionProfileToDetailedTimenote(from!!, event))
     }
 
     companion object{
@@ -159,9 +164,6 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
             }
     }
 
-    override fun onCardClicked() {
-        if(from == 2)findNavController().navigate(ProfileSearchDirections.actionProfileSearchToDetailedTimenoteSearch())
-        else findNavController().navigate(ProfileDirections.actionProfileToDetailedTimenote(from!!))
-    }
+
 
 }

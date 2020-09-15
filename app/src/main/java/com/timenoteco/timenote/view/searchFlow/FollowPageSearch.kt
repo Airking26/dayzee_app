@@ -12,6 +12,7 @@ import androidx.preference.PreferenceManager
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.UsersPagingAdapter
 import com.timenoteco.timenote.model.UserInfoDTO
+import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.ProfileViewModel
 import kotlinx.android.synthetic.main.fragment_follow_page.*
 import kotlinx.coroutines.flow.collectLatest
@@ -19,7 +20,7 @@ import kotlinx.coroutines.launch
 
 class FollowPageSearch : Fragment(), UsersPagingAdapter.SearchPeopleListener {
 
-    private val profileViewModel : ProfileViewModel by activityViewModels()
+    private val followViewModel : FollowViewModel by activityViewModels()
     private lateinit var usersPagingAdapter: UsersPagingAdapter
     private lateinit var prefs: SharedPreferences
     val TOKEN: String = "TOKEN"
@@ -38,7 +39,7 @@ class FollowPageSearch : Fragment(), UsersPagingAdapter.SearchPeopleListener {
         usersPagingAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, this)
         users_rv.adapter = usersPagingAdapter
         lifecycleScope.launch{
-            profileViewModel.getUsers(tokenId!!, followers = true, useTimenoteService = false, id =  null).collectLatest {
+            followViewModel.getUsers(tokenId!!, followers = true).collectLatest {
                 usersPagingAdapter.submitData(it)
             }
         }

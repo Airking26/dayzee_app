@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.preference.PreferenceManager
 import com.amazonaws.auth.BasicAWSCredentials
@@ -36,8 +37,10 @@ import com.timenoteco.timenote.common.setupWithNavController
 import com.timenoteco.timenote.listeners.BackToHomeListener
 import com.timenoteco.timenote.listeners.ExitCreationTimenote
 import com.timenoteco.timenote.listeners.ShowBarListener
+import com.timenoteco.timenote.model.FCMDTO
 import com.timenoteco.timenote.view.homeFlow.Home
 import com.timenoteco.timenote.viewModel.LoginViewModel
+import com.timenoteco.timenote.viewModel.MeViewModel
 import io.branch.indexing.BranchUniversalObject
 import io.branch.referral.Branch
 import io.branch.referral.BranchError
@@ -51,6 +54,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
     private var currentNavController: LiveData<NavController>? = null
     private val utils = Utils()
     private lateinit var prefs : SharedPreferences
+    private val meViewModel : MeViewModel by viewModels()
 
     object BranchListener : Branch.BranchReferralInitListener {
         override fun onInitFinished(referringParams: JSONObject?, error: BranchError?) {
@@ -90,13 +94,11 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
         FirebaseInstanceId.getInstance().instanceId
             .addOnCompleteListener(OnCompleteListener { task ->
                 if (!task.isSuccessful) {
+                    val token = task.result?.token
+                    if (prefs.getString("TOKEN", null) != null)
+                        meViewModel.putFCMToken(prefs.getString("TOKEN", null)!!, FCMDTO(token!!))
                     return@OnCompleteListener
                 }
-
-                val token = task.result?.token
-
-                val msg = getString(R.string.msg_token_fmt, token)
-                Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
             })
     }
 
@@ -108,7 +110,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun setupController(finished: Boolean) {
-        //retrieveCurrentRegistrationToken()
+        retrieveCurrentRegistrationToken()
         val view = this.currentFocus
         view?.let { v ->
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager

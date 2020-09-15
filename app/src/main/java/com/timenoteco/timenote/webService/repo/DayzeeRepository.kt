@@ -42,4 +42,12 @@ class DayzeeRepository {
     fun getSearchService(): SearchService{
         return service.create(SearchService::class.java)
     }
+
+    fun getCommentService(): CommentService{
+        return service.create(CommentService::class.java)
+    }
+
+    fun getAlarmService(): AlarmService{
+        return service.create(AlarmService::class.java)
+    }
 }

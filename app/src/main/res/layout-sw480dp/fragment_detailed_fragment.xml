@@ -154,6 +154,7 @@
                 android:layout_height="wrap_content"/>
 
             <ImageView
+                android:id="@+id/timenote_detailed_send_comment"
                 android:src="@drawable/ic_round_send_24"
                 android:layout_weight="1"
                 android:layout_width="0dp"

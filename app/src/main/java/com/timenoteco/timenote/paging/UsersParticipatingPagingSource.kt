@@ -2,26 +2,22 @@ package com.timenoteco.timenote.paging
 
 import androidx.paging.PagingSource
 import com.timenoteco.timenote.model.UserInfoDTO
-import com.timenoteco.timenote.webService.service.FollowService
 import com.timenoteco.timenote.webService.service.TimenoteService
+import java.lang.Error
 
-class UserPagingSource(val token: String, private val followService: FollowService, val followers: Boolean): PagingSource<Int, UserInfoDTO>() {
+class UsersParticipatingPagingSource(val token: String, val id: String, val timenoteService: TimenoteService): PagingSource<Int, UserInfoDTO>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, UserInfoDTO> {
         return try {
             val nextPageNumber = params.key ?: 0
-            val response =
-                    if(followers) followService.getFollowedUsers("Bearer $token",nextPageNumber)
-                    else followService.getFollowingUsers("Bearer $token",nextPageNumber)
-
+            val response = timenoteService.getUsersParticipatingTimenote("Bearer $token", id, nextPageNumber)
             LoadResult.Page(
                 data = response.body()!!,
                 prevKey = null,
                 nextKey = if(response.body()!!.isNotEmpty()) nextPageNumber + 1 else null
             )
-        } catch (e: Exception){
+        } catch (e: Error){
             LoadResult.Error(e)
         }
     }
-
 }

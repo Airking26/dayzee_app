@@ -76,7 +76,6 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
 
     private lateinit var makeBarVisibleListener: ShowBarListener
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
-    private val profileViewModel: ProfileViewModel by activityViewModels()
     private val AUTOCOMPLETE_REQUEST_CODE: Int = 12
     private lateinit var locationManager: LocationManager
     private lateinit var nearbyDateTv: TextView
@@ -286,8 +285,8 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         }
     }
 
-    override fun onCommentClicked() {
-        findNavController().navigate(NearByDirections.actionNearByToDetailedTimenote(3))
+    override fun onCommentClicked(event: TimenoteInfoDTO) {
+        findNavController().navigate(NearByDirections.actionNearByToDetailedTimenote(3, event))
     }
 
     override fun onPlusClicked() {
@@ -335,14 +334,11 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         val adapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, this)
         recyclerview.adapter = adapter
         lifecycleScope.launch{
-            profileViewModel.getUsers(tokenId!!, followers = true, useTimenoteService = true, id =  null).collectLatest {
-                adapter.submitData(it)
-            }
         }
     }
 
-    override fun onSeeMoreClicked() {
-        findNavController().navigate(NearByDirections.actionNearByToDetailedTimenote(3))
+    override fun onSeeMoreClicked(event: TimenoteInfoDTO) {
+        findNavController().navigate(NearByDirections.actionNearByToDetailedTimenote(3, event))
     }
 
     override fun onReportClicked() {
@@ -352,7 +348,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     override fun onEditClicked() {
     }
 
-    override fun onAlarmClicked() {
+    override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO) {
     }
 
     override fun onDeleteClicked() {

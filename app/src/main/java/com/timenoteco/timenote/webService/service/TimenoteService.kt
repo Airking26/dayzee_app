@@ -39,5 +39,6 @@ interface TimenoteService {
     @GET("timenote/{id}/users/{offset}")
     suspend fun getUsersParticipatingTimenote(@Header("Authorization") token: String, @Path("id") id: String, @Path("offset") offset: Int) : Response<List<UserInfoDTO>>
 
-
+    @POST("timenote/shareWith")
+    suspend fun shareWith(@Header("Authorization") token: String, @Body shareTimenoteDTO: ShareTimenoteDTO) : Response<Any>
 }

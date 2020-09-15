@@ -14,12 +14,13 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.model.TimenoteInfoDTO
 import kotlinx.android.synthetic.main.item_timenote_recent.view.*
+import java.sql.Time
 
 class ItemTimenoteRecentAdapter(private val timenotesToCome: List<TimenoteInfoDTO>, val timenoteRecentClicked: TimenoteRecentClicked):
     RecyclerView.Adapter<ItemTimenoteRecentAdapter.TimenoteToComeViewHolder>(){
 
     interface TimenoteRecentClicked{
-        fun onTimenoteRecentClicked()
+        fun onTimenoteRecentClicked(event: TimenoteInfoDTO)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimenoteToComeViewHolder {
@@ -57,7 +58,7 @@ class ItemTimenoteRecentAdapter(private val timenotesToCome: List<TimenoteInfoDT
 
             itemView.timenote_recent_title.text = timenote.title
             itemView.timenote_recent_date.text = Utils().calculateDecountTime(timenote.startingAt)
-            itemView.setOnClickListener { timenoteClicked.onTimenoteRecentClicked() }
+            itemView.setOnClickListener { timenoteClicked.onTimenoteRecentClicked(timenote) }
         }
     }
 

@@ -239,10 +239,10 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 if(args.whereFrom)findNavController().popBackStack()
                 else findNavController().navigate(ProfileDirections.actionProfileToNotifications())
             }
-            profile_followers_label -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage())
-            profile_following_label -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage())
-            profile_nbr_followers -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage())
-            profile_nbr_following -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage())
+            profile_followers_label -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage(true))
+            profile_following_label -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage(false))
+            profile_nbr_followers -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage(true))
+            profile_nbr_following -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage(false))
             profile_infos -> {
                 if(stateSwitch == null) findNavController().navigate(ProfileDirections.actionProfileToProfilModify())
                 else {

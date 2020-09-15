@@ -132,7 +132,11 @@
         android:id="@+id/followPage"
         android:name="com.timenoteco.timenote.view.profileFlow.FollowPage"
         android:label="fragment_follow_page"
-        tools:layout="@layout/fragment_follow_page" />
+        tools:layout="@layout/fragment_follow_page" >
+        <argument
+            android:name="followers"
+            app:argType="boolean" />
+    </fragment>
     <fragment
         android:name="com.timenoteco.timenote.view.profileFlow.menuDirectory.Menu"
         android:id="@+id/menu"
@@ -244,5 +248,9 @@
         <action
             android:id="@+id/action_detailedTimenote_to_createTimenote"
             app:destination="@id/createTimenote" />
+        <argument
+            android:name="event"
+            app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
+            app:nullable="true" />
     </fragment>
 </navigation>

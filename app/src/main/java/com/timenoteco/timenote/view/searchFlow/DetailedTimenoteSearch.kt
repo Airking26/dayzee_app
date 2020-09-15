@@ -59,28 +59,8 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        timenoteViewModel.getSpecificTimenote(tokenId!!, "").observe(viewLifecycleOwner, Observer {})
 
         comments_edittext.requestFocus()
-
-        comments = listOf(
-            CommentModel("", "Ronny Dahan", "Nice place, i love the food and the view, i would love to go back there", "2h"),
-            CommentModel("", "Ronny Dahan", "Nice place, i love the food and the view, i would love to go back there", "2h"),
-            CommentModel("", "Ronny Dahan", "Nice place, i love the food and the view, i would love to go back there", "2h"),
-            CommentModel("", "Ronny Dahan", "Nice place, i love the food and the view, i would love to go back there", "2h"),
-            CommentModel("", "Ronny Dahan", "Nice place, i love the food and the view, i would love to go back there", "2h Ago"),
-            CommentModel("", "Ronny Dahan", "Nice place, i love the food and the view, i would love to go back there", "2h Ago"),
-            CommentModel("", "Ronny Dahan", "Nice place, i love the food and the view, i would love to go back there", "2h Ago"),
-            CommentModel("", "Ronny Dahan", "Nice place, i love the food and the view, i would love to go back there", "2h Ago"),
-            CommentModel("", "Ronny Dahan", "Nice place, i love the food and the view, i would love to go back there", "2h Ago"),
-            CommentModel("", "Ronny Dahan", "Nice place, i love the food and the view, i would love to go back there", "2h Ago"),
-            CommentModel("", "Ronny Dahan", "Nice place, i love the food and the view, i would love to go back there", "2h Ago"),
-            CommentModel("", "Ronny Dahan", "Nice place, i love the food and the view, i would love to go back there", "2h Ago"),
-            CommentModel("", "Ronny Dahan", "Nice place, i love the food and the view, i would love to go back there", "2h Ago")
-
-        )
-
-        commentAdapter = CommentAdapter(comments, this, this)
 
         detailed_timenote_comments_rv.apply {
             layoutManager = LinearLayoutManager(requireContext())

@@ -326,10 +326,52 @@ class Utils {
     }
 
 
+    fun calculateTimeSinceComment(createdAt: String): String{
+        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+        val startingAt = SimpleDateFormat(ISO, Locale.getDefault()).parse(createdAt).time
+        val time = startingAt - System.currentTimeMillis()
+        val c: Calendar = Calendar.getInstance()
+        c.timeInMillis = time
+        val mYear: Int = c.get(Calendar.YEAR) - 1970
+        val mMonth: Int = c.get(Calendar.MONTH)
+        val mDay: Int = c.get(Calendar.DAY_OF_MONTH) - 1
+        val mHours: Int = c.get(Calendar.HOUR)
+        val mMin : Int = c.get(Calendar.MINUTE)
+
+        var timeSince = ""
+        if(mYear == 0){
+            if(mMonth == 0){
+                if(mDay ==0){
+                    if(mHours == 0){
+                        if(mMin == 0){
+                            timeSince = "few seconds ago"
+                        } else {
+                            if(mMin > 1) timeSince = "$mMin minutes"
+                            else timeSince = "$mMin minute"
+                        }
+                    } else {
+                        if(mHours > 1) timeSince = "$mHours hours"
+                        else timeSince = "$mHours hour"
+                    }
+                } else {
+                    if(mDay > 1) timeSince = "$mDay days"
+                    else timeSince = "$mDay day"
+                }
+            } else {
+                if(mMonth > 1) timeSince = "$mMonth months"
+                else timeSince = "$mMonth month"
+            }
+        } else {
+            if(mYear > 1) timeSince = "$mYear years"
+            else timeSince = "$mYear year"
+        }
+
+        return timeSince
+    }
+
     fun calculateDecountTime(startDate: String): String {
         val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
         val startingAt = SimpleDateFormat(ISO, Locale.getDefault()).parse(startDate).time
-        val now = System.currentTimeMillis()
         val time = startingAt - System.currentTimeMillis()
         val c: Calendar = Calendar.getInstance(TimeZone.getTimeZone("fr"))
         c.timeInMillis = time

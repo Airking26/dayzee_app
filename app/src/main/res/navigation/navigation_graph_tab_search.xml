@@ -112,6 +112,10 @@
         <action
             android:id="@+id/action_detailedTimenoteSearch_to_createTimenoteSearch"
             app:destination="@id/createTimenoteSearch" />
+        <argument
+            android:name="event"
+            app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/profileSearch"

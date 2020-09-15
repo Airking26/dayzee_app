@@ -60,7 +60,7 @@ class ProfilePastEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBar
     override fun onEditClicked() {
     }
 
-    override fun onAlarmClicked() {
+    override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO) {
     }
 
     override fun onDeleteClicked() {
@@ -72,10 +72,10 @@ class ProfilePastEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBar
     override fun onAddressClicked() {
     }
 
-    override fun onSeeMoreClicked() {
+    override fun onSeeMoreClicked(event: TimenoteInfoDTO) {
     }
 
-    override fun onCommentClicked() {
+    override fun onCommentClicked(event: TimenoteInfoDTO) {
     }
 
     override fun onPlusClicked() {
@@ -122,7 +122,7 @@ class ProfilePastEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBar
 
     }
 
-    override fun onCardClicked() {
+    override fun onCardClicked(event: TimenoteInfoDTO) {
 
     }
 
