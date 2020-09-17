@@ -29,6 +29,8 @@ import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.*
 import com.timenoteco.timenote.common.RoundedCornersTransformation
@@ -41,11 +43,13 @@ import kotlinx.android.synthetic.main.item_timenote_root.*
 import kotlinx.android.synthetic.main.item_timenote_root.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.lang.reflect.Type
 
 
 class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.CommentPicUserListener,
     CommentAdapter.CommentMoreListener {
 
+    private lateinit var userInfoDTO: UserInfoDTO
     private lateinit var prefs: SharedPreferences
     private lateinit var commentAdapter: CommentPagingAdapter
     val TOKEN: String = "TOKEN"
@@ -66,6 +70,10 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
          inflater.inflate(R.layout.fragment_detailed_fragment, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
+        userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
+
         timenote_see_more.visibility = View.GONE
         comments_edittext.requestFocus()
 
@@ -199,6 +207,8 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             .placeholder(R.drawable.circle_pic)
             .into(detailed_timenote_pic_user)
 
+        detailed_timenote_username.text = args.event?.createdBy?.userName
+
         timenote_comment.setOnClickListener(this)
         timenote_detailed_send_comment.setOnClickListener(this)
         detailed_timenote_btn_more.setOnClickListener(this)
@@ -212,11 +222,11 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                 val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
                 imm?.showSoftInput(comments_edittext, InputMethodManager.SHOW_IMPLICIT)
             }
-            detailed_timenote_btn_more -> createOptionsOnTimenote(requireContext(), true)
+            detailed_timenote_btn_more -> createOptionsOnTimenote(requireContext(), false)
             timenote_detailed_send_comment -> commentViewModel.postComment(
                 tokenId!!,
                 CommentCreationDTO(
-                    args.event?.createdBy?.id!!,
+                    userInfoDTO.id,
                     args.event?.id!!,
                     comments_edittext.text.toString(),
                     "#ok"
@@ -275,7 +285,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
 
     override fun onCommentMoreClicked() {
         MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-            listItems (items = listOf(getString(R.string.report), getString(R.string.delete))){ dialog, index, text ->  }
+            listItems (items = listOf(getString(R.string.report))){ dialog, index, text ->  }
             lifecycleOwner(this@DetailedTimenote)
         }
     }

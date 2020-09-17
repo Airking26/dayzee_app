@@ -11,10 +11,11 @@ interface TimenoteOptionsListener {
     fun onAddressClicked()
     fun onSeeMoreClicked(event: TimenoteInfoDTO)
     fun onCommentClicked(event: TimenoteInfoDTO)
-    fun onPlusClicked()
+    fun onPlusClicked(timenoteInfoDTO: TimenoteInfoDTO)
     fun onPictureClicked()
     fun onHideToOthersClicked()
     fun onMaskThisUser()
     fun onDoubleClick()
-    fun onSeeParticipants()
+    fun onSeeParticipants(timenoteInfoDTO: TimenoteInfoDTO)
+    fun onShareClicked(timenoteInfoDTO: TimenoteInfoDTO)
 }

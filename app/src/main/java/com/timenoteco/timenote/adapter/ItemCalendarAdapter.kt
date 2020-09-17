@@ -9,13 +9,14 @@ import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.androidView.calendar.data.Day
 import com.timenoteco.timenote.model.EventCalendar
+import com.timenoteco.timenote.model.TimenoteInfoDTO
 import kotlinx.android.synthetic.main.item_profile_calendar.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 
 class ItemCalendarAdapter(
-    private var events: MutableList<EventCalendar>,
-    private val allEvents: MutableList<EventCalendar>
+    private var events: MutableList<TimenoteInfoDTO>,
+    private val allEvents: MutableList<TimenoteInfoDTO>
 ): RecyclerView.Adapter<ItemCalendarAdapter.TimenoteListHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimenoteListHolder =
@@ -33,17 +34,15 @@ class ItemCalendarAdapter(
         val simpleDateFormatMonth = SimpleDateFormat("M", Locale.getDefault())
         val simpleDateFormatDay = SimpleDateFormat("d", Locale.getDefault())
 
-        val eventsOfDay: MutableList<EventCalendar> = mutableListOf()
+        val eventsOfDay: MutableList<TimenoteInfoDTO> = mutableListOf()
         for(e in allEvents){
-            val dayOfEvent = simpleDateFormatDay.format(e.date)
+            val dayOfEvent = simpleDateFormatDay.format(e.startingAt)
             val daySelected = day.day.toString()
-            val monthOfEvent = simpleDateFormatMonth.format(e.date)
+            val monthOfEvent = simpleDateFormatMonth.format(e.startingAt)
             val monthSelected = (day.month + 1).toString()
-            val yearOfEvent = simpleDateFormatYear.format(e.date)
+            val yearOfEvent = simpleDateFormatYear.format(e.startingAt)
             val yearSelected = day.year.toString()
-            if(daySelected == dayOfEvent && monthSelected == monthOfEvent && yearSelected == yearOfEvent){
-                eventsOfDay.add(e)
-            }
+            if(daySelected == dayOfEvent && monthSelected == monthOfEvent && yearSelected == yearOfEvent){ eventsOfDay.add(e) }
         }
         this.events = eventsOfDay
         notifyDataSetChanged()
@@ -51,13 +50,13 @@ class ItemCalendarAdapter(
 
     class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
-        fun bindListStyleItem(event: EventCalendar) {
-            itemView.profile_calendar_item_name_event.text = event.name
-            itemView.profile_calendar_item_address_event.text = event.address
+        fun bindListStyleItem(event: TimenoteInfoDTO) {
+            itemView.profile_calendar_item_name_event.text = event.title
+            //itemView.profile_calendar_item_address_event.text = event.
 
             Glide
                 .with(itemView)
-                .load(event.eventPic)
+                .load(event.pictures[0])
                 .apply(RequestOptions.circleCropTransform())
                 .into(itemView.profile_calendar_item_pic_event_imageview)
         }

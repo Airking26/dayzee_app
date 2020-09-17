@@ -93,6 +93,8 @@
         tools:listitem="@layout/item_timenote_recent"
         android:nestedScrollingEnabled="true"
         android:background="@color/colorBackground"
+        app:reverseLayout="true"
+        app:stackFromEnd="true"
         android:id="@+id/home_recent_rv"
         android:orientation="horizontal"
         android:layout_width="match_parent"

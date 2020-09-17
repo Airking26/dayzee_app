@@ -57,6 +57,8 @@ import kotlinx.android.synthetic.main.autocomplete_search_address.view.*
 import kotlinx.android.synthetic.main.web_search_rv.view.*
 import org.apache.http.impl.cookie.DateUtils.formatDate
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class Utils {
@@ -370,10 +372,13 @@ class Utils {
     }
 
     fun calculateDecountTime(startDate: String): String {
-        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
-        val startingAt = SimpleDateFormat(ISO, Locale.getDefault()).parse(startDate).time
-        val time = startingAt - System.currentTimeMillis()
-        val c: Calendar = Calendar.getInstance(TimeZone.getTimeZone("fr"))
+        val d = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Date.from(Instant.from(DateTimeFormatter.ISO_INSTANT.parse(startDate)))
+        } else {
+            TODO("VERSION.SDK_INT < O")
+        }
+        val time = d.time - System.currentTimeMillis()
+        val c: Calendar = Calendar.getInstance(Locale.getDefault())
         c.timeInMillis = time
         val mYear: Int = c.get(Calendar.YEAR) - 1970
         val mMonth: Int = c.get(Calendar.MONTH)
@@ -381,7 +386,7 @@ class Utils {
         val mHours: Int = c.get(Calendar.HOUR)
         val mMin : Int = c.get(Calendar.MINUTE)
 
-        var decountTime = ""
+        val decountTime: String
         if(mYear == 0){
             if(mMonth == 0){
                 if(mDay == 0){

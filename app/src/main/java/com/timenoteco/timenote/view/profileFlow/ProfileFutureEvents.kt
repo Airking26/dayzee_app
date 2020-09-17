@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
+import com.afollestad.materialdialogs.customview.customView
+import com.afollestad.materialdialogs.customview.getCustomView
 import com.afollestad.materialdialogs.datetime.datePicker
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.timenoteco.timenote.R
@@ -23,17 +25,21 @@ import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.view.searchFlow.ProfileSearchDirections
+import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.ProfileViewModel
+import com.timenoteco.timenote.viewModel.TimenoteViewModel
 import kotlinx.android.synthetic.main.fragment_profile_future_events.*
+import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 private const val ARG_PARAM1 = "showHideFilterBar"
 private const val ARG_PARAM2 = "from"
 private const val ARG_PARAM3 = "id"
+private const val ARG_PARAM4 = "is_future"
 
 class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarListener,
-    ItemProfileCardListener {
+    ItemProfileCardListener, UsersPagingAdapter.SearchPeopleListener {
 
     private lateinit var prefs: SharedPreferences
     val TOKEN: String = "TOKEN"
@@ -41,8 +47,11 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
     private var showHideFilterBar: Boolean? = null
     private var from: Int? = null
     private lateinit var id: String
+    private var isFuture = true
     private lateinit var onRemoveFilterBarListener: OnRemoveFilterBarListener
+    private val followViewModel: FollowViewModel by activityViewModels()
     private val profileViewModel : ProfileViewModel by activityViewModels()
+    private val timenoteViewModel: TimenoteViewModel by activityViewModels()
     private lateinit var profileEventPagingAdapter : ProfileEventPagingAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +62,7 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
             showHideFilterBar = it.getBoolean(ARG_PARAM1)
             from = it.getInt(ARG_PARAM2)
             id = it.getString(ARG_PARAM3)!!
+            isFuture = it.getBoolean(ARG_PARAM4)
         }
     }
 
@@ -72,7 +82,7 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
         }
 
         lifecycleScope.launch {
-            profileViewModel.getEventProfile(tokenId!!, id, true).collectLatest {
+            profileViewModel.getEventProfile(tokenId!!, id, isFuture).collectLatest {
                 profileEventPagingAdapter.submitData(it)
             }
         }
@@ -115,8 +125,38 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
 
     }
 
-    override fun onSeeParticipants() {
+    override fun onSeeParticipants(infoDTO: TimenoteInfoDTO) {
+        val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            customView(R.layout.users_participating)
+            lifecycleOwner(this@ProfileFutureEvents)
+        }
 
+        val recyclerview = dial.getCustomView().users_participating_rv
+        val userAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, infoDTO,this)
+        recyclerview.layoutManager = LinearLayoutManager(requireContext())
+        recyclerview.adapter = userAdapter
+        lifecycleScope.launch{
+            timenoteViewModel.getUsersParticipating(tokenId!!, infoDTO.id).collectLatest {
+                userAdapter.submitData(it)
+            }
+        }
+    }
+
+    override fun onShareClicked(infoDTO: TimenoteInfoDTO) {
+        val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            customView(R.layout.users_participating)
+            lifecycleOwner(this@ProfileFutureEvents)
+        }
+
+        val recyclerview = dial.getCustomView().users_participating_rv
+        val userAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, infoDTO,this)
+        recyclerview.layoutManager = LinearLayoutManager(requireContext())
+        recyclerview.adapter = userAdapter
+        lifecycleScope.launch{
+            followViewModel.getUsers(tokenId!!, false).collectLatest {
+                userAdapter.submitData(it)
+            }
+        }
     }
 
     override fun onHideFilterBarClicked(position: Int?) {
@@ -128,6 +168,7 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
     }
 
     fun setShowFilterBar(b: Boolean) {
+        profileEventPagingAdapter.showHideFilterBar(b)
     }
 
     override fun onAddressClicked() {
@@ -136,7 +177,7 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
     }
     override fun onCommentClicked(event: TimenoteInfoDTO) {
     }
-    override fun onPlusClicked() {
+    override fun onPlusClicked(timenoteInfoDTO: TimenoteInfoDTO) {
     }
     override fun onPictureClicked() {
     }
@@ -152,18 +193,22 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
             showHideFilterBar: Boolean,
             context: Fragment,
             from: Int,
-            id: String
+            id: String,
+            isFuture : Boolean
         ) =
             ProfileFutureEvents().apply {
                 arguments = Bundle().apply {
                     putBoolean(ARG_PARAM1, showHideFilterBar)
                     putInt(ARG_PARAM2, from)
                     putString(ARG_PARAM3, id)
+                    putBoolean(ARG_PARAM4, isFuture)
                     setListener(context as OnRemoveFilterBarListener)
                 }
             }
     }
 
+    override fun onSearchClicked(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+    }
 
 
 }

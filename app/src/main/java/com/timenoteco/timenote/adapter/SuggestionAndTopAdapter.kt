@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.model.UserSuggested
 import kotlinx.android.synthetic.main.adapter_suggestion_card.view.*
@@ -88,6 +89,7 @@ class SuggestionItemAdapter(
             Glide
                 .with(itemView)
                 .load(suggestions[position].picUrl)
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .circleCrop()
                 .into(itemView.suggestion_imageview)
 

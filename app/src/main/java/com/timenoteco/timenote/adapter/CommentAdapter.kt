@@ -99,7 +99,7 @@ class CommentAdapter(
             val mHours: Int = c.get(Calendar.HOUR)
             val mMin : Int = c.get(Calendar.MINUTE)
 
-            var timeSince = ""
+            val timeSince: String
             if(mYear <= 0){
                 if(mMonth <= 0){
                     if(mDay <=0){

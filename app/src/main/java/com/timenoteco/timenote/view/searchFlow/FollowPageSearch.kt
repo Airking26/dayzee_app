@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.UsersPagingAdapter
+import com.timenoteco.timenote.model.TimenoteInfoDTO
 import com.timenoteco.timenote.model.UserInfoDTO
 import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.ProfileViewModel
@@ -36,7 +37,7 @@ class FollowPageSearch : Fragment(), UsersPagingAdapter.SearchPeopleListener {
         inflater.inflate(R.layout.fragment_follow_page, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        usersPagingAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, this)
+        usersPagingAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, null, this)
         users_rv.adapter = usersPagingAdapter
         lifecycleScope.launch{
             followViewModel.getUsers(tokenId!!, followers = true).collectLatest {
@@ -45,7 +46,7 @@ class FollowPageSearch : Fragment(), UsersPagingAdapter.SearchPeopleListener {
         }
     }
 
-    override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
+    override fun onSearchClicked(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
 
     }
 }

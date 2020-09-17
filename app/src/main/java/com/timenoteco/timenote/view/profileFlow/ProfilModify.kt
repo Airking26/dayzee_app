@@ -148,6 +148,13 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
         setListeners()
         setProfilModifyViewModel()
 
+        profile_from_switch.isChecked = prefs.getInt("locaPref", -1) == 1 || prefs.getInt("locaPref", -1) == 2
+
+        profile_from_switch.setOnCheckedChangeListener{ _, isChecked ->
+            if(isChecked) prefs.edit().putInt("locaPref", 1).apply()
+            else prefs.edit().putInt("locaPref", 0).apply()
+        }
+
         profile_modify_youtube_switch.setOnCheckedChangeListener { _, isChecked ->
             if(isChecked) profileModifyData.setStateSwitch(0)
         }

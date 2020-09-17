@@ -15,6 +15,8 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.list.listItems
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.RoundedCornersTransformation
@@ -59,7 +61,6 @@ class ItemTimenoteAdapter(
             isFromFuture: Boolean,
             utils: Utils
         ) {
-
             if(isFromFuture) itemView.timenote_plus.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.ic_ajout_cal))
             else itemView.timenote_plus.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.ic_like))
 
@@ -68,6 +69,7 @@ class ItemTimenoteAdapter(
             Glide
                 .with(itemView)
                 .load(timenote.createdBy.pictureURL)
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .apply(RequestOptions.circleCropTransform())
                 .placeholder(R.drawable.circle_pic)
                 .into(itemView.timenote_pic_user_imageview)
@@ -86,57 +88,66 @@ class ItemTimenoteAdapter(
             }*/
 
             if(!timenote.joinedBy.users.isNullOrEmpty()){
+                when {
+                    timenote.joinedBy.count == 1 -> addedBy = "Saved by ${timenote.joinedBy.users[0].userName}"
+                    timenote.joinedBy.count in 1..20 -> addedBy = "Saved by ${timenote.joinedBy.users[0].userName} and ${timenote.joinedBy.count - 1} other people"
+                    timenote.joinedBy.count in 21..100 -> addedBy = "Saved by ${timenote.joinedBy.users[0].userName} and tens of other people"
+                    timenote.joinedBy.count in 101..2000 -> addedBy = "Saved by ${timenote.joinedBy.users[0].userName} and hundreds of other people"
+                    timenote.joinedBy.count in 2001..2000000 -> addedBy = "Saved by ${timenote.joinedBy.users[0].userName} and thousands of other people"
+                    timenote.joinedBy.count > 2000000 -> addedBy = "Saved by ${timenote.joinedBy.users[0].userName} and millions of other people"
+                }
+
                 val t = SpannableStringBuilder(addedBy)
                 t.setSpan(light, 0, 8, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
                 t.setSpan(bold, 9, addedBy.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
-
-                when {
-                    timenote.joinedBy.count < 100 -> addedBy = "Saved by ${timenote.joinedBy.users[0].userName} and tens of other people"
-                    timenote.joinedBy.count in 101..999 -> addedBy = "Saved by ${timenote.joinedBy.users[0].userName} and hundreds of other people"
-                    timenote.joinedBy.count in 1001..9999 -> addedBy = "Saved by ${timenote.joinedBy.users[0].userName} and thousands of other people"
-                    timenote.joinedBy.count > 1000000 -> addedBy = "Saved by ${timenote.joinedBy.users[0].userName} and millions of other people"
-                }
+                itemView.timenote_added_by.text = addedBy
 
                 when (timenote.joinedBy.users.size) {
                     1 -> {
                         Glide
                             .with(itemView)
                             .load(timenote.joinedBy.users[0].picture)
-                            .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(itemView.context, 90, 0, itemView.context.resources.getString(0 + R.color.colorBackground), 4)))
-                            .into(itemView.timenote_pic_participant_one)
+                            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                            .apply(RequestOptions.circleCropTransform())
+                            .into(itemView.timenote_pic_participant_three)
                         itemView.timenote_pic_participant_two.visibility = View.GONE
-                        itemView.timenote_pic_participant_three.visibility = View.GONE
+                        itemView.timenote_pic_participant_one.visibility = View.GONE
                     }
                     2 -> {
                         Glide
                             .with(itemView)
                             .load(timenote.joinedBy.users[0].picture)
+                            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                             .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(itemView.context, 90, 0, itemView.context.resources.getString(0 + R.color.colorBackground), 4)))
-                            .into(itemView.timenote_pic_participant_one)
+                            .into(itemView.timenote_pic_participant_two)
 
                         Glide
                             .with(itemView)
                             .load(timenote.joinedBy.users[1].picture)
+                            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                             .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(itemView.context, 90, 0, itemView.context.resources.getString(0 + R.color.colorBackground), 4)))
-                            .into(itemView.timenote_pic_participant_two)
-                        itemView.timenote_pic_participant_three.visibility = View.GONE
+                            .into(itemView.timenote_pic_participant_three)
+                        itemView.timenote_pic_participant_one.visibility = View.GONE
                     }
                     else -> {
                         Glide
                             .with(itemView)
                             .load(timenote.joinedBy.users[0].picture)
+                            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                             .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(itemView.context, 90, 0, itemView.context.resources.getString(0 + R.color.colorBackground), 4)))
                             .into(itemView.timenote_pic_participant_one)
 
                         Glide
                             .with(itemView)
                             .load(timenote.joinedBy.users[1].picture)
+                            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                             .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(itemView.context, 90, 0, itemView.context.resources.getString(0 + R.color.colorBackground), 4)))
                             .into(itemView.timenote_pic_participant_two)
 
                         Glide
                             .with(itemView)
                             .load(timenote.joinedBy.users[2].picture)
+                            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                             .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(itemView.context, 90, 0, itemView.context.resources.getString(0 + R.color.colorBackground), 4)))
                             .into(itemView.timenote_pic_participant_three)
                     }
@@ -164,10 +175,9 @@ class ItemTimenoteAdapter(
             itemView.timenote_indicator.setViewPager(itemView.timenote_vp)
             if(timenote.pictures.size == 1) itemView.timenote_indicator.visibility = View.GONE
             screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(itemView.timenote_indicator.adapterDataObserver)
-            itemView.timenote_username.text = timenote.createdBy.givenName
+            itemView.timenote_username.text = timenote.createdBy.userName
             if(timenote.location != null) itemView.timenote_place.text = timenote.location.address.address
 
-            itemView.timenote_added_by.text = addedBy
 
             if(timenote.hashtags.isNullOrEmpty() && timenote.description.isNullOrBlank()){
                 itemView.timenote_username_desc.visibility = View.GONE
@@ -214,12 +224,20 @@ class ItemTimenoteAdapter(
                 createOptionsOnTimenote(itemView.context,  timenoteListenerListener, timenote)
             }
 
+            itemView.timenote_share.setOnClickListener{timenoteListenerListener.onShareClicked(timenote)}
             itemView.timenote_pic_user_imageview.setOnClickListener { timenoteListenerListener.onPictureClicked() }
             itemView.timenote_comment.setOnClickListener { timenoteListenerListener.onCommentClicked(timenote) }
-            itemView.timenote_plus.setOnClickListener { timenoteListenerListener.onPlusClicked() }
+            itemView.timenote_plus.setOnClickListener {
+                if(false){
+                    itemView.timenote_plus.setImageDrawable(itemView.context.getDrawable(R.drawable.ic_ajout_cal))
+                } else {
+                    itemView.timenote_plus.setImageDrawable(itemView.context.getDrawable(R.drawable.ic_ajoute_cal_grad_ok))
+                }
+                timenoteListenerListener.onPlusClicked(timenote)
+            }
             itemView.timenote_see_more.setOnClickListener { timenoteListenerListener.onSeeMoreClicked(timenote) }
             itemView.timenote_place.setOnClickListener{timenoteListenerListener.onAddressClicked()}
-            itemView.timenote_fl.setOnClickListener{timenoteListenerListener.onSeeParticipants()}
+            itemView.timenote_fl.setOnClickListener{timenoteListenerListener.onSeeParticipants(timenote)}
         }
 
         private fun createOptionsOnTimenote(

@@ -55,7 +55,7 @@ class ProfileCalendarSearch: Fragment() {
                 "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
                 1597934152000)
         )
-        calendarAdapter = ItemCalendarAdapter(mutableListOf(), eventsCalendar)
+        //calendarAdapter = ItemCalendarAdapter(mutableListOf(), eventsCalendar)
 
         profile_calendar_rv.apply {
             layoutManager = LinearLayoutManager(view.context)

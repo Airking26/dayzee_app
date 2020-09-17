@@ -3,6 +3,7 @@ package com.timenoteco.timenote.adapter
 import android.content.Context
 import android.graphics.Color
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,9 +13,11 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.list.listItems
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.Utils
+import com.timenoteco.timenote.common.onItemClick
 import com.timenoteco.timenote.listeners.ItemProfileCardListener
 import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
@@ -57,11 +60,7 @@ class ItemProfileEventAdapter(
     }
 
     class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        fun bindListStyleItem(
-            event: TimenoteInfoDTO,
-            timenoteOptionsListener: TimenoteOptionsListener,
-            onCardClicked: ItemProfileCardListener
-        ) {
+        fun bindListStyleItem(event: TimenoteInfoDTO, timenoteOptionsListener: TimenoteOptionsListener, onCardClicked: ItemProfileCardListener) {
 
             itemView.setOnClickListener { onCardClicked.onCardClicked(event) }
 
@@ -75,6 +74,7 @@ class ItemProfileEventAdapter(
                 Glide
                     .with(itemView)
                     .load(event.pictures[0])
+                    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                     .into(itemView.profile_item_pic_event_imageview)
             } else itemView.profile_item_pic_event_imageview.setBackgroundColor(Color.parseColor(event.colorHex))
 
@@ -82,6 +82,7 @@ class ItemProfileEventAdapter(
                 .with(itemView)
                 .load(event.createdBy.pictureURL)
                 .apply(RequestOptions.circleCropTransform())
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .placeholder(R.drawable.circle_pic)
                 .into(itemView.profile_item_pic_profile_imageview)
         }
@@ -91,14 +92,14 @@ class ItemProfileEventAdapter(
             timenoteListenerListener: TimenoteOptionsListener,
             event: TimenoteInfoDTO
         ){
-            var listItems = mutableListOf<String>()
-            if(isMine) listItems = mutableListOf(context.getString(R.string.duplicate), context.getString(
+            val listItems: MutableList<String> =
+                if(isMine) mutableListOf(context.getString(R.string.duplicate), context.getString(
                 R.string.edit), context.getString(R.string.delete), context.getString(R.string.alarm))
-            else listItems = mutableListOf(context.getString(R.string.duplicate), context.getString(R.string.delete), context.getString(R.string.alarm), context.getString(R.string.report), context.getString(
+            else mutableListOf(context.getString(R.string.duplicate), context.getString(R.string.alarm), context.getString(R.string.report), context.getString(
                 R.string.hide_to_others))
             MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.posted_false)
-                listItems (items = listItems){ dialog, index, text ->
+                listItems (items = listItems){ _, index, text ->
                     when(text.toString()){
                         context.getString(R.string.duplicate) -> timenoteListenerListener.onDuplicateClicked(event)
                         context.getString(R.string.edit) -> timenoteListenerListener.onEditClicked()
@@ -112,11 +113,12 @@ class ItemProfileEventAdapter(
         }
 
         fun showFilterBar(onRemoveFilterBarListener: OnRemoveFilterBarListener) {
-            val chips = mutableListOf("With Alarm", "My Timenotes", "The Liked", "Tagged Ones", "With Note")
+            val chips = mutableListOf("My Timenotes", "The Joined", "With Alarm", "Group Related", "Other")
             val chipProfileFilterAdapter = ProfileFilterChipAdapter(chips, onRemoveFilterBarListener)
             itemView.profile_filter_rv_chips_in_rv.apply {
                 layoutManager = LinearLayoutManager(itemView.context, LinearLayoutManager.HORIZONTAL, false)
                 adapter = chipProfileFilterAdapter
+                //onItemClick { recyclerView, position, v -> }
             }
         }
     }

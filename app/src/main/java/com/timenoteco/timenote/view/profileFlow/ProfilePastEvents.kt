@@ -78,7 +78,7 @@ class ProfilePastEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBar
     override fun onCommentClicked(event: TimenoteInfoDTO) {
     }
 
-    override fun onPlusClicked() {
+    override fun onPlusClicked(timenoteInfoDTO: TimenoteInfoDTO) {
     }
 
     override fun onPictureClicked() {
@@ -93,7 +93,11 @@ class ProfilePastEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBar
     override fun onDoubleClick() {
     }
 
-    override fun onSeeParticipants() {
+    override fun onSeeParticipants(infoDTO: TimenoteInfoDTO) {
+
+    }
+
+    override fun onShareClicked(infoDTO: TimenoteInfoDTO) {
 
     }
 

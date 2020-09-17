@@ -30,7 +30,7 @@ interface ProfileService {
     @GET("profile/timenotes/filtered/{offset}")
     suspend fun getTimenotesFiltered(@Header("Authorization") token: String, @Path("offset") offset: Int, @Body timenoteFilteredDTO: TimenoteFilteredDTO) : Response<List<Any>>
 
-    @GET("profile/timenotes/date")
-    suspend fun getTimenoteByDate(@Header("Authorization") token: String, @Body timenoteDateFilteredDTO: TimenoteDateFilteredDTO) : Response<List<Any>>
+    @HTTP(method = "GET", path = "profile/timenotes/date", hasBody = true)
+    suspend fun getTimenoteByDate(@Header("Authorization") token: String, @Body timenoteDateFilteredDTO: TimenoteDateFilteredDTO) : Response<List<TimenoteInfoDTO>>
 
 }

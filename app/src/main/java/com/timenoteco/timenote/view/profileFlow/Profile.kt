@@ -29,6 +29,7 @@ import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ProfilePastFuturePagerAdapter
 import com.timenoteco.timenote.common.BaseThroughFragment
+import com.timenoteco.timenote.common.intLiveData
 import com.timenoteco.timenote.common.stringLiveData
 import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import com.timenoteco.timenote.model.UpdateUserInfoDTO
@@ -55,11 +56,13 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
     private lateinit var prefs: SharedPreferences
     val TOKEN: String = "TOKEN"
     private var tokenId : String? = null
+    private var locaPref: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         tokenId = prefs.getString(TOKEN, null)
+        locaPref = prefs.getInt("locaPref", -1)
         loginViewModel.getAuthenticationState().observe(requireActivity(), androidx.lifecycle.Observer {
             findNavController().popBackStack(R.id.profile, false)
             when (it) {
@@ -135,12 +138,27 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 }
             })
 
+            prefs.intLiveData("locaPref", -1).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                if(userInfoDTO?.location == null || it == -1 || it == 0) profile_location.visibility = View.GONE
+                else if(it == 1 && userInfoDTO?.location?.address?.city == null) profile_location.visibility = View.GONE
+                else if(it == 2 && userInfoDTO?.location?.address?.address == null) profile_location.visibility = View.GONE
+                else{
+                    profile_location.visibility = View.VISIBLE
+                    if(it == 1 && userInfoDTO?.location?.address?.city != null) profile_location.text = userInfoDTO?.location?.address?.city
+                    else if(it == 2 && userInfoDTO?.location?.address?.address != null) profile_location.text = userInfoDTO?.location?.address?.address
+                }
+
+
+            })
+
             if (args.whereFrom) {
                 profile_modify_btn.visibility = View.INVISIBLE
                 profile_follow_btn.visibility = View.VISIBLE
                 profile_settings_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_more_vert_black_profile_24dp))
                 profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_back_thin))
                 profile_follow_btn.setOnClickListener(this)
+            } else {
+                profile_modify_btn.visibility = View.VISIBLE
             }
 
             Glide
@@ -151,9 +169,14 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 .into(profile_pic_imageview)
 
             profile_name_toolbar.text = userInfoDTO?.userName
+            if(userInfoDTO?.description.isNullOrBlank()) profile_desc.visibility = View.GONE else
+            {
+                profile_desc.visibility = View.VISIBLE
+                profile_desc.text = userInfoDTO?.description
+            }
             profile_nbr_followers.text = userInfoDTO?.followers.toString()
             profile_nbr_following.text = userInfoDTO?.following.toString()
-            if (userInfoDTO?.isInFollowing!!) {
+            if (userInfoDTO?.isInFollowing!! && args.whereFrom) {
                 profile_modify_btn.visibility = View.INVISIBLE
                 profile_follow_btn.apply {
                     setBorderColor(resources.getColor(android.R.color.darker_gray))
@@ -264,19 +287,10 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                     followViewModel.followPublicUser(tokenId!!, userInfoDTO?.id!!).observe(
                         viewLifecycleOwner,
                         androidx.lifecycle.Observer {
-                            if (it.isSuccessful) Toast.makeText(
-                                requireContext(),
-                                "Followed",
-                                Toast.LENGTH_SHORT
-                            ).show()
                         })
                 } else if (userInfoDTO?.status == "private") {
                     followViewModel.followPrivateUser(tokenId!!, userInfoDTO?.id!!)
                         .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-                            if (it.isSuccessful)
-                                Toast.makeText(requireContext(),
-                                    "Ask sent", Toast.LENGTH_SHORT)
-                                    .show()
                         })
                 }
             }
@@ -285,7 +299,9 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 listItems(items = listOf(getString(R.string.no_location), getString(R.string.city), getString(
                                     R.string.address))) { dialog, index, text ->
                     when(index){
-                        0 -> loginViewModel.markAsUnauthenticated()
+                        0 -> prefs.edit().putInt("locaPref", index).apply()
+                        1 -> prefs.edit().putInt("locaPref", index).apply()
+                        2 -> prefs.edit().putInt("locaPref", index).apply()
                     }
                 }
             }

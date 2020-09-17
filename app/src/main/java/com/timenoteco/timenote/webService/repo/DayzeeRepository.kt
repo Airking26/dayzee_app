@@ -50,4 +50,8 @@ class DayzeeRepository {
     fun getAlarmService(): AlarmService{
         return service.create(AlarmService::class.java)
     }
+
+    fun getNearbyService(): NearbyService{
+        return service.create(NearbyService::class.java)
+    }
 }

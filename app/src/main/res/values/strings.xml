@@ -253,4 +253,5 @@
     <string name="all">All</string>
     <string name="first">first</string>
     <string name="second">second</string>
+    <string name="users_participating">Users Participating</string>
 </resources>

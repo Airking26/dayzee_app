@@ -31,6 +31,8 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.setupWithNavController
@@ -38,6 +40,7 @@ import com.timenoteco.timenote.listeners.BackToHomeListener
 import com.timenoteco.timenote.listeners.ExitCreationTimenote
 import com.timenoteco.timenote.listeners.ShowBarListener
 import com.timenoteco.timenote.model.FCMDTO
+import com.timenoteco.timenote.model.UserInfoDTO
 import com.timenoteco.timenote.view.homeFlow.Home
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.MeViewModel
@@ -48,6 +51,7 @@ import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.LinkProperties
 import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONObject
+import java.lang.reflect.Type
 
 class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby, ShowBarListener, ExitCreationTimenote {
 
@@ -72,9 +76,10 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        prefs = PreferenceManager.getDefaultSharedPreferences(this)
+
         setupController(true)
         Branch.getAutoInstance(this)
-        prefs = PreferenceManager.getDefaultSharedPreferences(this)
     }
 
     override fun onStart() {
@@ -110,6 +115,10 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun setupController(finished: Boolean) {
+
+        val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
+        val userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
+
         retrieveCurrentRegistrationToken()
         val view = this.currentFocus
         view?.let { v ->
@@ -144,12 +153,13 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
 
         if(!finished) bottomNavView.selectedItemId = R.id.navigation_graph_tab_2
 
-        Glide
+        if(userInfoDTO != null) Glide
             .with(this)
             .asBitmap()
             .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-            .load("https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792")
+            .load(userInfoDTO.picture)
             .apply(RequestOptions.circleCropTransform())
+            .placeholder(R.drawable.circle_pic)
             .into(object : CustomTarget<Bitmap>() {
                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                     bottomNavView.menu[4].icon = BitmapDrawable(resources, resource)
@@ -157,6 +167,11 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
 
                 override fun onLoadCleared(placeholder: Drawable?) {}
             })
+        else Glide
+            .with(this)
+            .asBitmap()
+            .apply(RequestOptions.circleCropTransform())
+            .placeholder(R.drawable.circle_pic)
 
         controller.observe(this, Observer {
             it.addOnDestinationChangedListener { navController, destination, arguments ->

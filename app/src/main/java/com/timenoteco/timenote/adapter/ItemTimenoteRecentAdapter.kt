@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.Utils
@@ -44,6 +45,7 @@ class ItemTimenoteRecentAdapter(private val timenotesToCome: List<TimenoteInfoDT
                 Glide
                     .with(itemView)
                     .load(timenote.pictures[0])
+                    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                     .centerCrop()
                     .placeholder(R.drawable.circle_pic)
                     .into(itemView.timenote_recent_pic_imageview)
@@ -52,6 +54,7 @@ class ItemTimenoteRecentAdapter(private val timenotesToCome: List<TimenoteInfoDT
             Glide
                 .with(itemView)
                 .load(timenote.createdBy.pictureURL)
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .apply(RequestOptions.circleCropTransform())
                 .placeholder(R.drawable.circle_pic)
                 .into(itemView.timenote_recent_pic_user_imageview)

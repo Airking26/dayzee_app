@@ -9,6 +9,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.timenoteco.timenote.model.DetailedPlace
 import com.timenoteco.timenote.model.NearbyRequestBody
+import com.timenoteco.timenote.paging.NearbyPagingSource
 import com.timenoteco.timenote.paging.TimenoteRemotePagingSource
 import com.timenoteco.timenote.webService.repo.DayzeeRepository
 import com.timenoteco.timenote.webService.repo.PlaceRepository
@@ -18,7 +19,7 @@ import retrofit2.Response
 class NearbyViewModel: ViewModel() {
 
     private val placeService = PlaceRepository().getPlaceService()
-    private val timenoteService = DayzeeRepository().getTimenoteService()
+    private val nearbyService = DayzeeRepository().getNearbyService()
 
     fun fetchLocation(id : String): LiveData<Response<DetailedPlace>> {
         return flow {
@@ -26,7 +27,6 @@ class NearbyViewModel: ViewModel() {
         }.asLiveData(viewModelScope.coroutineContext)
     }
 
-    fun getNearbyResults(token: String?, nearbyRequestBody: NearbyRequestBody) =
-        Pager(PagingConfig(pageSize = 12)){TimenoteRemotePagingSource(token, timenoteService)}.flow.cachedIn(viewModelScope)
+    fun getNearbyResults(nearbyRequestBody: NearbyRequestBody) = Pager(PagingConfig(pageSize = 1)){NearbyPagingSource(nearbyRequestBody, nearbyService)}.flow.cachedIn(viewModelScope)
 
 }

@@ -46,7 +46,7 @@ class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<Timenote
 object ProfileEventComparator : DiffUtil.ItemCallback<TimenoteInfoDTO>(){
 
     override fun areItemsTheSame(oldItem: TimenoteInfoDTO, newItem: TimenoteInfoDTO): Boolean {
-        return oldItem.createdAt == newItem.createdAt
+        return oldItem.startingAt == newItem.startingAt
     }
 
     override fun areContentsTheSame(oldItem: TimenoteInfoDTO, newItem: TimenoteInfoDTO): Boolean {

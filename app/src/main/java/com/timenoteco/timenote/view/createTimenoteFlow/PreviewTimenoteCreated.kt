@@ -53,6 +53,7 @@ class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
                 preview_created_timenote_buy.visibility =View.GONE
             }
             if(it.pictures?.size == 1) preview_created_timenote_indicator.visibility = View.GONE
+            mutableList.clear()
             if(it.pictures != null) {
                 for(pic in it.pictures!!){
                     mutableList.add(AWSFile(Uri.parse(pic), null))

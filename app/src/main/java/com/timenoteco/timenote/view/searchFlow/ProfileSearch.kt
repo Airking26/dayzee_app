@@ -197,17 +197,11 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
             profile_nbr_followers -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToFollowPageSearch())
             profile_nbr_following -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToFollowPageSearch())
             profile_follow_btn -> {
-                if (!args.userInfoDTO?.isInFollowers!! || !isFollowed) {
+                if (!isFollowed) {
                     if (args.userInfoDTO?.status == "0" || args.userInfoDTO?.status == "public") {
                         followViewModel.followPublicUser(tokenId!!, args.userInfoDTO?.id!!).observe(
                             viewLifecycleOwner,
                             androidx.lifecycle.Observer {
-                                if (it.isSuccessful) Toast.makeText(
-                                    requireContext(),
-                                    "Followed",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-
                                 profile_follow_btn.apply {
                                     setBorderColor(resources.getColor(android.R.color.darker_gray))
                                     setBorderWidth(1)
@@ -219,16 +213,9 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
                                 isFollowed = true
 
                             })
-                    } else if (args.userInfoDTO?.status == "1" || args.userInfoDTO?.status == "private") {
+                    } else if (!isFollowed && (args.userInfoDTO?.status == "1" || args.userInfoDTO?.status == "private")) {
                         followViewModel.followPrivateUser(tokenId!!, args.userInfoDTO?.id!!)
                             .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-                                if (it.isSuccessful)
-                                    Toast.makeText(
-                                        requireContext(),
-                                        "Ask sent", Toast.LENGTH_SHORT
-                                    )
-                                        .show()
-
                                 profile_follow_btn.apply {
                                     setBorderColor(resources.getColor(android.R.color.darker_gray))
                                     setBorderWidth(1)
@@ -241,16 +228,10 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
 
                             })
                     }
-                } else if(args.userInfoDTO?.isInFollowers!! || isFollowed){
+                } else if(isFollowed){
                     followViewModel.unfollowUser(tokenId!!, args.userInfoDTO?.id!!).observe(
                         viewLifecycleOwner,
                         androidx.lifecycle.Observer {
-                            if (it.isSuccessful) Toast.makeText(
-                                requireContext(),
-                                "Unfollowed",
-                                Toast.LENGTH_SHORT
-                            ).show()
-
                             profile_follow_btn.apply {
                                 setBorderColor(resources.getColor(android.R.color.transparent))
                                 setBorderWidth(0)

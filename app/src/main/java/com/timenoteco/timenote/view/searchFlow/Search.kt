@@ -34,6 +34,7 @@ import kotlinx.coroutines.launch
 
 class Search : BaseThroughFragment() {
 
+    private var isEnabled: Boolean = false
     private lateinit var handler: Handler
     private val TRIGGER_AUTO_COMPLETE = 200
     private val AUTO_COMPLETE_DELAY: Long = 200
@@ -126,6 +127,17 @@ class Search : BaseThroughFragment() {
                 }
 
             })
+
+            if(isEnabled){
+                search_tablayout.getTabAt(0)?.text = "People"
+                search_tablayout.getTabAt(1)?.text = "Tags"
+                search_viewpager.adapter = viewPeopleTagPagerAdapter
+            } else {
+                search_tablayout.getTabAt(0)?.text = "Top"
+                search_tablayout.getTabAt(1)?.text = "Explore"
+                search_viewpager.adapter = viewTopExplorePagerAdapter
+            }
+
             searchBar.setCardViewElevation(0)
             searchBar.setOnSearchActionListener(object : MaterialSearchBar.OnSearchActionListener {
                 override fun onButtonClicked(buttonCode: Int) {
@@ -133,6 +145,7 @@ class Search : BaseThroughFragment() {
                 }
 
                 override fun onSearchStateChanged(enabled: Boolean) {
+                    isEnabled = enabled
                     if (enabled) {
                         search_tablayout.getTabAt(0)?.text = "People"
                         search_tablayout.getTabAt(1)?.text = "Tags"

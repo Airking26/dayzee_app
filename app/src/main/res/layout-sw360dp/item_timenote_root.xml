@@ -203,7 +203,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="@id/timenote_plus"
         app:layout_constraintStart_toStartOf="@id/timenote_comment"
@@ -230,6 +229,7 @@
             android:src="@drawable/beach" />
 
         <TextView
+            android:layout_gravity="center"
             android:id="@+id/timenote_added_by"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
