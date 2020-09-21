@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -69,6 +70,7 @@ import com.timenoteco.timenote.adapter.WebSearchAdapter
 import com.timenoteco.timenote.androidView.input
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.stringLiveData
+import com.timenoteco.timenote.listeners.RefreshPicBottomNavListener
 import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.viewModel.ProfileModifyViewModel
 import com.timenoteco.timenote.viewModel.WebSearchViewModel
@@ -103,7 +105,6 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
     private lateinit var profileModifyPicIv : ImageView
     private lateinit var profileModifyPb: ProgressBar
     private lateinit var profileModifyData: ProfileModifyData
-    private val DATE_FORMAT = "dd MMMM yyyy"
     private var dateFormat : SimpleDateFormat
     private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     private val webSearchViewModel : WebSearchViewModel by activityViewModels()
@@ -111,6 +112,7 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
     private var images: AWSFile? = null
     private var tokenId: String? = null
     private lateinit var utils: Utils
+    private lateinit var onRefreshPicBottomNavListener: RefreshPicBottomNavListener
     private val profileModVieModel: ProfileModifyViewModel by activityViewModels()
     private var placesList: List<Place.Field> = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
     private lateinit var placesClient: PlacesClient
@@ -128,6 +130,11 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
         prefs.edit().putString("pmtc", "").apply()
         Places.initialize(requireContext(), "AIzaSyBhM9HQo1fzDlwkIVqobfmrRmEMCWTU1CA")
         placesClient = Places.createClient(requireContext())
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        onRefreshPicBottomNavListener = context as RefreshPicBottomNavListener
     }
 
     override fun onCreateView(
@@ -179,11 +186,11 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setProfilModifyViewModel() {
         profileModifyData = ProfileModifyData(requireContext())
-        prefs.stringLiveData("profile", Gson().toJson(profileModifyData.loadProfileModifyModel())).observe(
+        prefs.stringLiveData("UserInfoDTO", Gson().toJson(profileModifyData.loadProfileModifyModel())).observe(
             viewLifecycleOwner,
             Observer {
-                val type: Type = object : TypeToken<UpdateUserInfoDTO?>() {}.type
-                val profilModifyModel: UpdateUserInfoDTO? = Gson().fromJson<UpdateUserInfoDTO>(it, type)
+                val type: Type = object : TypeToken<UserInfoDTO?>() {}.type
+                val profilModifyModel: UserInfoDTO? = Gson().fromJson<UserInfoDTO>(it, type)
 
                 Glide
                     .with(this)
@@ -210,18 +217,18 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
                     null -> profile_modify_gender.hint = getString(R.string.gender)
                 }
                 when (profilModifyModel?.status) {
-                    getString(R.string.public_label) -> profile_modify_account_status.text =
+                    0 -> profile_modify_account_status.text =
                         getString(R.string.public_label)
-                    getString(R.string.private_label) -> profile_modify_account_status.text =
+                    1 -> profile_modify_account_status.text =
                         getString(
                             R.string.private_label
                         )
                     null -> profile_modify_account_status.hint = getString(R.string.account_status)
                 }
                 when (profilModifyModel?.dateFormat) {
-                    getString(R.string.first) -> profile_modify_format_timenote.text =
+                    0 -> profile_modify_format_timenote.text =
                         getString(R.string.date)
-                    getString(R.string.second) -> profile_modify_format_timenote.text =
+                    1 -> profile_modify_format_timenote.text =
                         getString(R.string.countdown)
                     null -> profile_modify_format_timenote.hint =
                         getString(R.string.timenote_date_format)
@@ -319,9 +326,14 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
 
 
                 if (prefs.getString("pmtc", "") != Gson().toJson(profileModifyData.loadProfileModifyModel())) {
-                    profileModVieModel.modifyProfile(tokenId!!, profilModifyModel).observe(viewLifecycleOwner, Observer { usr ->
-                        val f = usr.errorBody()?.string()
-                            prefs.edit().putString("UserInfoDTO", Gson().toJson(usr.body())).apply()
+                    profileModVieModel.modifyProfile(tokenId!!, UpdateUserInfoDTO(
+                        profilModifyModel.givenName, profilModifyModel.familyName, profilModifyModel.picture,
+                        profilModifyModel.location, profilModifyModel.birthday, profilModifyModel.description,
+                        profilModifyModel.gender, if(profilModifyModel.status == 0) STATUS.PUBLIC.ordinal else STATUS.PRIVATE.ordinal,
+                        if(profilModifyModel.dateFormat == 0) STATUS.PUBLIC.ordinal else STATUS.PRIVATE.ordinal, profilModifyModel.socialMedias
+                    )).observe(viewLifecycleOwner, Observer { usr ->
+                        onRefreshPicBottomNavListener.onrefreshPicBottomNav(usr.body())
+                        prefs.edit().putString("UserInfoDTO", Gson().toJson(usr.body())).apply()
                         })
                 }
 
@@ -384,7 +396,7 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
                         getString(R.string.private_label)
                     )
                 ) { dialog, index, text ->
-                    profileModifyData.setStatusAccount(text.toString())
+                    profileModifyData.setStatusAccount(index)
                 }
                 lifecycleOwner(this@ProfilModify)
             }
@@ -399,8 +411,8 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
                     listOf(getString(R.string.date), getString(R.string.countdown))
                 ) { dialog, index, text ->
                     when(index){
-                        0 -> profileModifyData.setFormatTimenote(getString(R.string.first))
-                        1 -> profileModifyData.setFormatTimenote(getString(R.string.second))
+                        0 -> profileModifyData.setFormatTimenote(index)
+                        1 -> profileModifyData.setFormatTimenote(index)
                     }
 
                 }

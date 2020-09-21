@@ -100,10 +100,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 simpleDateFormatDayNumber.format(System.currentTimeMillis())
 
             profileModifyData = ProfileModifyData(requireContext())
-            prefs.stringLiveData(
-                "profile",
-                Gson().toJson(profileModifyData.loadProfileModifyModel())
-            ).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            prefs.stringLiveData("UserInfoDTO", Gson().toJson(profileModifyData.loadProfileModifyModel())).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                 val type: Type = object : TypeToken<UpdateUserInfoDTO?>() {}.type
                 val profilModifyModel: UpdateUserInfoDTO? =
                     Gson().fromJson<UpdateUserInfoDTO>(it, type)
@@ -283,12 +280,12 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 }
             }
             profile_follow_btn -> {
-                if (userInfoDTO?.status == "public") {
+                if (userInfoDTO?.status == 0) {
                     followViewModel.followPublicUser(tokenId!!, userInfoDTO?.id!!).observe(
                         viewLifecycleOwner,
                         androidx.lifecycle.Observer {
                         })
-                } else if (userInfoDTO?.status == "private") {
+                } else if (userInfoDTO?.status == 1) {
                     followViewModel.followPrivateUser(tokenId!!, userInfoDTO?.id!!)
                         .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                         })

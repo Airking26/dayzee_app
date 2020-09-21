@@ -210,7 +210,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
             }
             val type: Type = object : TypeToken<UserInfoDTO?>() {}.type
             val userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), type)
-            creationTimenoteViewModel.setCreatedBy(userInfoDTO.id)
+            creationTimenoteViewModel.setCreatedBy(userInfoDTO.id!!)
             if (!args.modify)
                 creationTimenoteViewModel.getCreateTimeNoteLiveData()
                     .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
@@ -1078,7 +1078,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
     }
 
     override fun onSearchClicked(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
-        listSharedWith.add(userInfoDTO.id)
+        listSharedWith.add(userInfoDTO.id!!)
     }
 
 

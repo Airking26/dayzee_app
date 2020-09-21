@@ -198,7 +198,7 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
             profile_nbr_following -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToFollowPageSearch())
             profile_follow_btn -> {
                 if (!isFollowed) {
-                    if (args.userInfoDTO?.status == "0" || args.userInfoDTO?.status == "public") {
+                    if (args.userInfoDTO?.status == 0) {
                         followViewModel.followPublicUser(tokenId!!, args.userInfoDTO?.id!!).observe(
                             viewLifecycleOwner,
                             androidx.lifecycle.Observer {
@@ -213,7 +213,7 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
                                 isFollowed = true
 
                             })
-                    } else if (!isFollowed && (args.userInfoDTO?.status == "1" || args.userInfoDTO?.status == "private")) {
+                    } else if (!isFollowed && (args.userInfoDTO?.status == 1)) {
                         followViewModel.followPrivateUser(tokenId!!, args.userInfoDTO?.id!!)
                             .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                                 profile_follow_btn.apply {

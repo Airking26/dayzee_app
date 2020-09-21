@@ -38,6 +38,7 @@ import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.setupWithNavController
 import com.timenoteco.timenote.listeners.BackToHomeListener
 import com.timenoteco.timenote.listeners.ExitCreationTimenote
+import com.timenoteco.timenote.listeners.RefreshPicBottomNavListener
 import com.timenoteco.timenote.listeners.ShowBarListener
 import com.timenoteco.timenote.model.FCMDTO
 import com.timenoteco.timenote.model.UserInfoDTO
@@ -53,7 +54,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONObject
 import java.lang.reflect.Type
 
-class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby, ShowBarListener, ExitCreationTimenote {
+class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby, ShowBarListener, ExitCreationTimenote, RefreshPicBottomNavListener {
 
     private var currentNavController: LiveData<NavController>? = null
     private val utils = Utils()
@@ -153,25 +154,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
 
         if(!finished) bottomNavView.selectedItemId = R.id.navigation_graph_tab_2
 
-        if(userInfoDTO != null) Glide
-            .with(this)
-            .asBitmap()
-            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-            .load(userInfoDTO.picture)
-            .apply(RequestOptions.circleCropTransform())
-            .placeholder(R.drawable.circle_pic)
-            .into(object : CustomTarget<Bitmap>() {
-                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                    bottomNavView.menu[4].icon = BitmapDrawable(resources, resource)
-                }
-
-                override fun onLoadCleared(placeholder: Drawable?) {}
-            })
-        else Glide
-            .with(this)
-            .asBitmap()
-            .apply(RequestOptions.circleCropTransform())
-            .placeholder(R.drawable.circle_pic)
+        setPicBottomNav(userInfoDTO)
 
         controller.observe(this, Observer {
             it.addOnDestinationChangedListener { navController, destination, arguments ->
@@ -269,6 +252,24 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
         currentNavController = controller
     }
 
+    private fun setPicBottomNav(userInfoDTO: UserInfoDTO?) {
+        if (userInfoDTO != null || !userInfoDTO?.picture.isNullOrBlank()) Glide
+            .with(this)
+            .asBitmap()
+            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+            .load(userInfoDTO?.picture)
+            .apply(RequestOptions.circleCropTransform())
+            .placeholder(R.drawable.circle_pic)
+            .into(object : CustomTarget<Bitmap>() {
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                    bottomNavView.menu[4].icon = BitmapDrawable(resources, resource)
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {}
+            })
+        else bottomNavView.menu[4].icon = getDrawable(R.drawable.circle_pic)
+    }
+
     override fun onSupportNavigateUp(): Boolean {
         return currentNavController?.value?.navigateUp() ?: false
     }
@@ -294,6 +295,10 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
             4 -> bottomNavView.selectedItemId = R.id.navigation_graph_tab_4
 
         }
+    }
+
+    override fun onrefreshPicBottomNav(userInfoDTO: UserInfoDTO?) {
+        setPicBottomNav(userInfoDTO)
     }
 
 }

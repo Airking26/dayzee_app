@@ -12,19 +12,20 @@ import java.lang.reflect.Type
 class ProfileModifyData(context: Context) {
 
     private val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-    private val type: Type = object : TypeToken<UpdateUserInfoDTO?>() {}.type
+    private val type: Type = object : TypeToken<UserInfoDTO?>() {}.type
 
-    private var profilModifyModel: UpdateUserInfoDTO? = Gson().fromJson<UpdateUserInfoDTO>(
-        prefs.getString("profile",
-        Gson().toJson(UpdateUserInfoDTO(status = "public", dateFormat = "first", socialMedias =
+    private var profilModifyModel: UserInfoDTO? = Gson().fromJson<UserInfoDTO>(
+        prefs.getString("UserInfoDTO",
+        Gson().toJson(UserInfoDTO(status = 0, dateFormat = 0, socialMedias =
         SocialMedias(
             Youtube("", false),
             Facebook("", false),
             Instagram("", false),
-            WhatsApp("", false), LinkedIn("", false))
+            WhatsApp("", false),
+            LinkedIn("", false))
         ))), type)
 
-    fun loadProfileModifyModel(): UpdateUserInfoDTO? {
+    fun loadProfileModifyModel(): UserInfoDTO? {
         return profilModifyModel
     }
 
@@ -34,7 +35,7 @@ class ProfileModifyData(context: Context) {
     }
 
     private fun notifyProfileDataChanged() {
-        prefs.edit().putString("profile", Gson().toJson(profilModifyModel)).apply()
+        prefs.edit().putString("UserInfoDTO", Gson().toJson(profilModifyModel)).apply()
     }
 
     fun setName(name: String){
@@ -57,12 +58,12 @@ class ProfileModifyData(context: Context) {
         notifyProfileDataChanged()
     }
 
-    fun setStatusAccount(statusAccount: String) {
+    fun setStatusAccount(statusAccount: Int) {
         profilModifyModel?.status = statusAccount
         notifyProfileDataChanged()
     }
 
-    fun setFormatTimenote(formatTimenote: String) {
+    fun setFormatTimenote(formatTimenote: Int) {
         profilModifyModel?.dateFormat = formatTimenote
         notifyProfileDataChanged()
     }

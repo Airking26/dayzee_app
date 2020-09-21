@@ -49,14 +49,12 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     private val TRIGGER_AUTO_COMPLETE = 200
     private val AUTO_COMPLETE_DELAY: Long = 200
     private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
-    private var timenotes: List<TimenoteInfoDTO> = mutableListOf()
-    private lateinit var timenoteAdapter: ItemTimenoteAdapter
     private val loginViewModel: LoginViewModel by activityViewModels()
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
     private val alarmViewModel : AlarmViewModel by activityViewModels()
     private val followViewModel: FollowViewModel by activityViewModels()
-    private lateinit var timenotePagingAdapter: TimenotePagingAdapter
-    private lateinit var timenoteRecentPagingAdapter: TimenoteRecentPagingAdapter
+    private var timenotePagingAdapter: TimenotePagingAdapter? = null
+    private var timenoteRecentPagingAdapter: TimenoteRecentPagingAdapter? = null
     private lateinit var onGoToNearby: OnGoToNearby
     private lateinit var prefs: SharedPreferences
     val TOKEN: String = "TOKEN"
@@ -102,13 +100,13 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
             lifecycleScope.launch {
                 timenoteViewModel.getRecentTimenotePagingFlow(tokenId!!).collectLatest {
-                    timenoteRecentPagingAdapter.submitData(it)
+                    timenoteRecentPagingAdapter?.submitData(it)
                 }
             }
 
             lifecycleScope.launch {
                 timenoteViewModel.getTimenotePagingFlow(tokenId!!).collectLatest {
-                    timenotePagingAdapter.submitData(it)
+                    timenotePagingAdapter?.submitData(it)
                 }
             }
         }
@@ -131,6 +129,26 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if(tokenId != null) {
+
+            if(timenotePagingAdapter == null) {
+                timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils)
+                lifecycleScope.launch {
+                    timenoteViewModel.getTimenotePagingFlow(tokenId!!).collectLatest {
+                        timenotePagingAdapter?.submitData(it)
+                    }
+                }
+            }
+            if(timenoteRecentPagingAdapter == null) {
+                timenoteRecentPagingAdapter = TimenoteRecentPagingAdapter(TimenoteRecentComparator, this)
+                lifecycleScope.launch {
+                    timenoteViewModel.getRecentTimenotePagingFlow(tokenId!!).collectLatest {
+                        timenoteRecentPagingAdapter?.submitData(it)
+                    }
+                }
+            }
+
+
+
             home_swipe_refresh.setColorSchemeResources(
                 R.color.colorStartGradient,
                 R.color.colorEndGradient
@@ -142,30 +160,31 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                     LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
                 lifecycleScope.launch {
                     timenoteViewModel.getRecentTimenotePagingFlow(tokenId!!).collectLatest {
-                        timenoteRecentPagingAdapter.submitData(it)
+                        timenoteRecentPagingAdapter?.submitData(it)
                     }
                 }
 
+
                 timenotePagingAdapter =
                     TimenotePagingAdapter(TimenoteComparator, this, this, true, utils)
-                home_rv.adapter = timenotePagingAdapter
-                home_rv.layoutManager = LinearLayoutManager(requireContext())
+                home_rv?.adapter = timenotePagingAdapter
+                home_rv?.layoutManager = LinearLayoutManager(requireContext())
                 lifecycleScope.launch {
                     timenoteViewModel.getTimenotePagingFlow(tokenId!!).collectLatest {
                         home_swipe_refresh.isRefreshing = false
-                        timenotePagingAdapter.submitData(it)
+                        timenotePagingAdapter?.submitData(it)
                     }
                 }
             }
 
-            home_recent_rv.adapter = timenoteRecentPagingAdapter
-            home_recent_rv.layoutManager =
+            home_recent_rv?.adapter = timenoteRecentPagingAdapter
+            home_recent_rv?.layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-            home_rv.adapter = timenotePagingAdapter
-            home_rv.layoutManager = LinearLayoutManager(requireContext())
+            home_rv?.adapter = timenotePagingAdapter
+            home_rv?.layoutManager = LinearLayoutManager(requireContext())
 
 
-            timenotePagingAdapter.addLoadStateListener {
+            timenotePagingAdapter?.addLoadStateListener {
                 home_swipe_refresh.isRefreshing = it.refresh is LoadState.Loading
                 if (it.refresh != LoadState.Loading) home_posted_recently.visibility = View.VISIBLE
             }
@@ -193,11 +212,9 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
             home_past_timeline -> {
                 if(home_past_timeline.drawable.constantState == resources.getDrawable(R.drawable.ic_passe_ok).constantState){
                     home_recent_rv.visibility = View.GONE
+                    home_posted_recently.visibility = View.GONE
                     home_past_timeline.setImageDrawable(resources.getDrawable(R.drawable.ic_passe_plein_grad_ok))
                     home_future_timeline.setImageDrawable(resources.getDrawable(R.drawable.ic_futur_ok))
-                    timenoteAdapter = ItemTimenoteAdapter(timenotes, this, this, false, utils)
-                    home_rv.adapter = timenoteAdapter
-                    timenoteAdapter.notifyDataSetChanged()
                 }
             }
             home_future_timeline ->{
@@ -205,9 +222,6 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                     home_recent_rv.visibility = View.VISIBLE
                     home_future_timeline.setImageDrawable(resources.getDrawable(R.drawable.ic_futur_plein_grad))
                     home_past_timeline.setImageDrawable(resources.getDrawable(R.drawable.ic_passe_ok))
-                    timenoteAdapter = ItemTimenoteAdapter(timenotes,this, this, true, utils)
-                    timenoteAdapter.notifyDataSetChanged()
-                    home_rv.adapter = timenoteAdapter
                 }
             }
         }
@@ -312,7 +326,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     }
 
     override fun onSearchClicked(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
-        timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO?.id!!, listOf(userInfoDTO.id))).observe(viewLifecycleOwner, Observer {
+        timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO?.id!!, listOf(userInfoDTO.id!!))).observe(viewLifecycleOwner, Observer {
             if(it.isSuccessful) ""
         })
     }

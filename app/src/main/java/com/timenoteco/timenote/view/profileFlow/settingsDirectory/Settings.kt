@@ -22,6 +22,7 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.androidView.input
 import com.timenoteco.timenote.common.intLiveData
 import com.timenoteco.timenote.common.stringLiveData
+import com.timenoteco.timenote.model.STATUS
 import com.timenoteco.timenote.model.UpdateUserInfoDTO
 import com.timenoteco.timenote.viewModel.ProfileModifyViewModel
 import com.timenoteco.timenote.webService.ProfileModifyData
@@ -59,24 +60,28 @@ class Settings : Fragment(), View.OnClickListener {
         }
 
         profileModifyData = ProfileModifyData(requireContext())
-        prefs.stringLiveData("profile", Gson().toJson(profileModifyData.loadProfileModifyModel())).observe(viewLifecycleOwner, Observer {
+        prefs.stringLiveData("UserInfoDTO", Gson().toJson(profileModifyData.loadProfileModifyModel())).observe(viewLifecycleOwner, Observer {
             val type: Type = object : TypeToken<UpdateUserInfoDTO?>() {}.type
             val profilModifyModel : UpdateUserInfoDTO? = Gson().fromJson<UpdateUserInfoDTO>(it, type)
             when (profilModifyModel?.status) {
-                getString(R.string.public_label) -> profile_settings_switch_account_status.isChecked = false
-                getString(R.string.private_label)  -> profile_settings_switch_account_status.isChecked = true
+                STATUS.PUBLIC.ordinal -> profile_settings_switch_account_status.isChecked = false
+                STATUS.PRIVATE.ordinal  -> profile_settings_switch_account_status.isChecked = true
                 null -> profile_settings_switch_account_status.isChecked = false
             }
 
             when (profilModifyModel?.dateFormat) {
-                getString(R.string.date) -> profile_setting_date_format_tv.text = getString(R.string.date)
-                getString(R.string.countdown) -> profile_setting_date_format_tv.text = getString(R.string.countdown)
+                STATUS.PUBLIC.ordinal -> profile_setting_date_format_tv.text = getString(R.string.date)
+                STATUS.PRIVATE.ordinal -> profile_setting_date_format_tv.text = getString(R.string.countdown)
                 null -> profile_setting_date_format_tv.hint =
                     getString(R.string.timenote_date_format)
             }
 
             if(prefs.getString("pmtc", "") != Gson().toJson(profileModifyData.loadProfileModifyModel())){
-                profileModVieModel.modifyProfile(tokenId!!, profileModifyData.loadProfileModifyModel()!!).observe(viewLifecycleOwner, Observer {
+                profileModVieModel.modifyProfile(tokenId!!, UpdateUserInfoDTO(
+                    profilModifyModel?.givenName, profilModifyModel?.familyName, profilModifyModel?.picture,
+                    profilModifyModel?.location, profilModifyModel?.birthday, profilModifyModel?.description,
+                    profilModifyModel?.gender, profilModifyModel?.status!!, profilModifyModel.dateFormat, profilModifyModel.socialMedias
+                )!!).observe(viewLifecycleOwner, Observer {
 
                 })
             }
@@ -90,8 +95,8 @@ class Settings : Fragment(), View.OnClickListener {
         profile_settings_date_format.setOnClickListener(this)
         profile_settings_timenote_format.setOnClickListener(this)
         profile_settings_switch_account_status.setOnCheckedChangeListener { buttonView, isChecked ->
-            if(isChecked) profileModifyData.setStatusAccount(getString(R.string.private_label))
-            else profileModifyData.setStatusAccount(getString(R.string.public_label))
+            if(isChecked) profileModifyData.setStatusAccount(1)
+            else profileModifyData.setStatusAccount(0)
         }
     }
 
@@ -102,7 +107,7 @@ class Settings : Fragment(), View.OnClickListener {
             profile_settings_date_format -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.timenote_date_format)
                 listItems(null, listOf(getString(R.string.date), getString(R.string.countdown))) { dialog, index, text ->
-                    profileModifyData.setFormatTimenote(text.toString())
+                    profileModifyData.setFormatTimenote(index)
                 }
                 lifecycleOwner(this@Settings)
             }

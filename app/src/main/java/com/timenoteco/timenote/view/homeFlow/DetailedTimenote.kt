@@ -226,7 +226,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             timenote_detailed_send_comment -> commentViewModel.postComment(
                 tokenId!!,
                 CommentCreationDTO(
-                    userInfoDTO.id,
+                    userInfoDTO.id!!,
                     args.event?.id!!,
                     comments_edittext.text.toString(),
                     "#ok"

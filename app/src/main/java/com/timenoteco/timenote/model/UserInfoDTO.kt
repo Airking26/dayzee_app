@@ -15,24 +15,29 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 For support, please feel free to contact me at https://www.linkedin.com/in/syedabsar */
 
+enum class STATUS(status: Int){
+    PUBLIC(0),
+    PRIVATE(1)
+}
+
 @Parcelize
 data class UserInfoDTO (
-    @SerializedName("id") var id : String,
-    @SerializedName("email") var email : String,
-    @SerializedName("userName") var userName : String,
-    @SerializedName("picture") var picture : String,
-    @SerializedName("givenName") var givenName : String,
-    @SerializedName("familyName") var familyName : String,
-    @SerializedName("birthday") var birthday : String,
-    @SerializedName("location") var location : Location,
-    @SerializedName("gender") var gender : String,
-    @SerializedName("description") var description : String,
-    @SerializedName("status") var status : String,
-    @SerializedName("dateFormat") var dateFormat : String,
-    @SerializedName("followers") var followers : Int,
-    @SerializedName("following") var following : Int,
-    @SerializedName("isInFollowing") var isInFollowing: Boolean,
-    @SerializedName("isInFollowers") var isInFollowers: Boolean,
+    @SerializedName("id") var id : String? = null,
+    @SerializedName("email") var email : String? = null,
+    @SerializedName("userName") var userName : String? = null,
+    @SerializedName("picture") var picture : String? = null,
+    @SerializedName("givenName") var givenName : String? = null,
+    @SerializedName("familyName") var familyName : String? = null,
+    @SerializedName("birthday") var birthday : String? =  null,
+    @SerializedName("location") var location : Location? = null,
+    @SerializedName("gender") var gender : String? = null,
+    @SerializedName("description") var description : String? = null,
+    @SerializedName("status") var status : Int = 0,
+    @SerializedName("dateFormat") var dateFormat : Int,
+    @SerializedName("followers") var followers : Int = 0,
+    @SerializedName("following") var following : Int = 0,
+    @SerializedName("isInFollowing") var isInFollowing: Boolean = false,
+    @SerializedName("isInFollowers") var isInFollowers: Boolean = false,
     @SerializedName("socialMedias") var socialMedias : SocialMedias,
-    @SerializedName("createdAt") var createdAt : String
+    @SerializedName("createdAt") var createdAt : String? = null
 ) : Parcelable

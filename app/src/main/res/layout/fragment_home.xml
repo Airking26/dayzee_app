@@ -95,6 +95,8 @@
         android:background="@color/colorBackground"
         app:reverseLayout="true"
         app:stackFromEnd="true"
+        android:paddingEnd="8dp"
+        android:clipToPadding="false"
         android:id="@+id/home_recent_rv"
         android:orientation="horizontal"
         android:layout_width="match_parent"
