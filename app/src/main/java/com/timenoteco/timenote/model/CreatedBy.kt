@@ -6,7 +6,6 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class CreatedBy (
-
 	@SerializedName("id") val id : String,
 	@SerializedName("email") val email : String,
 	@SerializedName("userName") val userName : String,

@@ -56,6 +56,6 @@ class SearchPeople: Fragment(), UsersPagingAdapter.SearchPeopleListener {
     }
 
     override fun onSearchClicked(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
-        findNavController().navigate(SearchDirections.actionSearchToProfileSearch().setUserInfoDTO(userInfoDTO))
+        findNavController().navigate(SearchDirections.actionSearchToProfileSearch(timenoteInfoDTO))
     }
 }

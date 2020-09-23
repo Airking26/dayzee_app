@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.listeners.DoubleClickListener
 import kotlinx.android.synthetic.main.timenote_view_image.*
@@ -43,7 +44,12 @@ class ScreenSlideTimenoteImageFragment : Fragment() {
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Glide.with(this).load(Uri.parse(url)).into(create_timenote_pic)
+        Glide.with(this)
+            .load(Uri.parse(url))
+            .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+            .placeholder(R.drawable.loader)
+            .into(create_timenote_pic)
+
         create_timenote_pic.setOnClickListener(object: DoubleClickListener(){
             override fun onSimpleClick() {
                 itemClickListener(position!!, 0)

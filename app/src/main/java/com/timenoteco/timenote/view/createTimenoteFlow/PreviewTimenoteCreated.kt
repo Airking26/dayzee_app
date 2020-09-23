@@ -48,7 +48,7 @@ class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
                 }
             } else if(it.price.price > 0){
                 preview_created_timenote_buy.visibility = View.VISIBLE
-                preview_created_timenote_buy.text = """${it.price.toString()}$"""
+                preview_created_timenote_buy.text = """${it.price}$"""
             } else {
                 preview_created_timenote_buy.visibility =View.GONE
             }
@@ -58,7 +58,7 @@ class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
                 for(pic in it.pictures!!){
                     mutableList.add(AWSFile(Uri.parse(pic), null))
                 }
-                screenSlideCreationTimenotePagerAdapter = ScreenSlideCreationTimenotePagerAdapter(this, mutableList, true)
+                screenSlideCreationTimenotePagerAdapter = ScreenSlideCreationTimenotePagerAdapter(this, mutableList, true, false, listOf())
                 preview_created_timenote_vp.adapter = screenSlideCreationTimenotePagerAdapter
                 preview_created_timenote_indicator.setViewPager(preview_created_timenote_vp)
                 screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(preview_created_timenote_indicator.adapterDataObserver)

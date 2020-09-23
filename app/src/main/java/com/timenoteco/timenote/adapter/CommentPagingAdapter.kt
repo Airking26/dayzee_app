@@ -7,10 +7,12 @@ import androidx.recyclerview.widget.DiffUtil
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.model.CommentInfoDTO
 import com.timenoteco.timenote.model.TimenoteInfoDTO
+import com.timenoteco.timenote.view.searchFlow.DetailedTimenoteSearch
 
-class CommentPagingAdapter(diffCallback: DiffUtil.ItemCallback<CommentInfoDTO>,
-                           val commentPicUserListener: CommentAdapter.CommentPicUserListener,
-                           val commentMoreListener: CommentAdapter.CommentMoreListener) :
+class CommentPagingAdapter(
+    diffCallback: DiffUtil.ItemCallback<CommentInfoDTO>,
+    val commentPicUserListener: CommentAdapter.CommentPicUserListener,
+    val commentMoreListener: CommentAdapter.CommentMoreListener) :
     PagingDataAdapter<CommentInfoDTO, CommentAdapter.CommentViewHolder>(diffCallback) {
 
     override fun onBindViewHolder(holder: CommentAdapter.CommentViewHolder, position: Int) {

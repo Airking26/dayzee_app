@@ -10,10 +10,9 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class TimenoteInfoDTO (
-
 	@SerializedName("id") val id : String,
 	@SerializedName("createdAt") val createdAt : String,
-	@SerializedName("createdBy") val createdBy : CreatedBy,
+	@SerializedName("createdBy") val createdBy : UserInfoDTO,
 	@SerializedName("organizers") val organizers : List<UserInfoDTO>,
 	@SerializedName("title") val title : String,
 	@SerializedName("description") val description : String,

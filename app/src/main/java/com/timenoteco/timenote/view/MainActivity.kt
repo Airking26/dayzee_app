@@ -253,7 +253,8 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
     }
 
     private fun setPicBottomNav(userInfoDTO: UserInfoDTO?) {
-        if (userInfoDTO != null || !userInfoDTO?.picture.isNullOrBlank()) Glide
+        if (userInfoDTO != null || !userInfoDTO?.picture.isNullOrBlank())
+            Glide
             .with(this)
             .asBitmap()
             .diskCacheStrategy(DiskCacheStrategy.RESOURCE)

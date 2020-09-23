@@ -7,15 +7,13 @@ import com.timenoteco.timenote.model.AWSFile
 import com.timenoteco.timenote.view.createTimenoteFlow.ScreenSlideCreationTimenoteImageFragment
 
 
-class ScreenSlideCreationTimenotePagerAdapter(var fa: Fragment, var images: MutableList<AWSFile>?, val hideIcons: Boolean) : FragmentStateAdapter(fa) {
+class ScreenSlideCreationTimenotePagerAdapter(var fa: Fragment, var images: MutableList<AWSFile>?, val hideIcons: Boolean, val fromDuplicateOrEdit : Boolean, var pictures: List<String>?) : FragmentStateAdapter(fa) {
 
-    override fun getItemCount(): Int = images?.size!!
+    override fun getItemCount(): Int =
+        if(images.isNullOrEmpty()) pictures?.size!! else images?.size!!
 
-    override fun createFragment(position: Int): Fragment {
-        return ScreenSlideCreationTimenoteImageFragment.newInstance(position, images?.get(position), fa, hideIcons)
-    }
+    override fun createFragment(position: Int): Fragment
+        = ScreenSlideCreationTimenoteImageFragment.newInstance(position, if(images?.isNullOrEmpty()!!) AWSFile() else images?.get(position), fa, hideIcons, fromDuplicateOrEdit, if(pictures.isNullOrEmpty()) "" else pictures?.get(position))
 
-    override fun getItemViewType(position: Int): Int {
-        return POSITION_NONE
-    }
+    override fun getItemViewType(position: Int): Int = POSITION_NONE
 }

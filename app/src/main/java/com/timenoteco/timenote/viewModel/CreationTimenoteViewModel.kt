@@ -36,6 +36,7 @@ class CreationTimenoteViewModel: ViewModel() {
     fun setEndDate(endDate: Long) = timenoteLiveData.postValue(createTimenoteData.setEndDate(formatDate(ISO, endDate)))
     fun setColor(color: String) = timenoteLiveData.postValue(createTimenoteData.setColor(color))
     fun setCreatedBy(id: String) = timenoteLiveData.postValue(createTimenoteData.setCreatedBy(id))
+    fun setDuplicateOrEdit(creationTimenoteDTO: CreationTimenoteDTO) = timenoteLiveData.postValue(createTimenoteData.setDuplicateOrEdit(creationTimenoteDTO))
     fun fetchLocation(id : String): LiveData<Response<DetailedPlace>> {
         return flow {
             emit(placeService.getDetailedPlace(id, "AIzaSyBhM9HQo1fzDlwkIVqobfmrRmEMCWTU1CA"))

@@ -455,7 +455,7 @@ class Utils {
             if(n.types.contains("postal_code")) zipcode = n.short_name
             if(n.types.contains("country")) country = n.long_name
         }
-        return Location(detailedPlace.result.geometry.location.lat, detailedPlace.result.geometry.location.lng,
+        return Location( detailedPlace.result.geometry.location.lng, detailedPlace.result.geometry.location.lat,
             com.timenoteco.timenote.model.Address(detailedPlace.result.name, zipcode, city, country)
         )
     }

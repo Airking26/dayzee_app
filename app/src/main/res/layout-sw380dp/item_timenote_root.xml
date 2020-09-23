@@ -239,7 +239,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            tools:text="Joinde by Jordan Dahan and Thousands of other people"
+            tools:text="Joined by Jordan Dahan and Thousands of other people"
             android:textColor="@color/colorText"
             android:textSize="13sp" />
 

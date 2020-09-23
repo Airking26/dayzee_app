@@ -5,14 +5,13 @@ import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.SharedPreferences
 import android.graphics.Typeface
 import android.os.Bundle
-import android.text.Spannable
-import android.text.SpannableStringBuilder
+import android.os.Handler
+import android.text.*
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -24,6 +23,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
+import com.afollestad.materialdialogs.customview.customView
+import com.afollestad.materialdialogs.customview.getCustomView
 import com.afollestad.materialdialogs.datetime.dateTimePicker
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
@@ -37,23 +38,31 @@ import com.timenoteco.timenote.common.RoundedCornersTransformation
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.viewModel.CommentViewModel
+import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.TimenoteViewModel
 import kotlinx.android.synthetic.main.fragment_detailed_fragment.*
+import kotlinx.android.synthetic.main.fragment_search.*
+import kotlinx.android.synthetic.main.friends_search.view.*
 import kotlinx.android.synthetic.main.item_timenote_root.*
-import kotlinx.android.synthetic.main.item_timenote_root.view.*
+import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 
 
 class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.CommentPicUserListener,
-    CommentAdapter.CommentMoreListener {
+    CommentAdapter.CommentMoreListener, UsersPagingAdapter.SearchPeopleListener {
 
+    private lateinit var handler: Handler
+    private val TRIGGER_AUTO_COMPLETE = 200
+    private val AUTO_COMPLETE_DELAY: Long = 200
     private lateinit var userInfoDTO: UserInfoDTO
     private lateinit var prefs: SharedPreferences
     private lateinit var commentAdapter: CommentPagingAdapter
     val TOKEN: String = "TOKEN"
     private val commentViewModel: CommentViewModel by activityViewModels()
+    private val followViewModel: FollowViewModel by activityViewModels()
+    private val timenoteViewModel: TimenoteViewModel by activityViewModels()
     private var tokenId: String? = null
     private lateinit var screenSlideCreationTimenotePagerAdapter : ScreenSlideTimenotePagerAdapter
     private val args : DetailedTimenoteArgs by navArgs()
@@ -105,51 +114,68 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         timenote_indicator.setViewPager(timenote_vp)
         screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(timenote_indicator.adapterDataObserver)
 
+        handler = Handler { msg ->
+            if (msg.what == TRIGGER_AUTO_COMPLETE) {
+                if (!TextUtils.isEmpty(searchBar.text)) {
+                    //searchViewModel.searchChanged(tokenId!!, searchBar.text)
+                    lifecycleScope.launch {
+                        //searchViewModel.searchUser(tokenId!!, searchBar.text)
+                    }
+
+                }
+            }
+            false
+        }
+
         timenote_year.text = utils.setYear(args.event?.startingAt!!)
         timenote_day_month.text = utils.setFormatedStartDate(args.event?.startingAt!!, args.event?.endingAt!!)
         timenote_time.text = utils.setFormatedEndDate(args.event?.startingAt!!, args.event?.endingAt!!)
 
         var addedBy = ""
+        var addedByFormated = SpannableStringBuilder(addedBy)
         val p = Typeface.create("sans-serif-light", Typeface.NORMAL)
         val m = Typeface.create("sans-serif", Typeface.NORMAL)
         val light = ItemTimenoteRecentAdapter.CustomTypefaceSpan(p)
         val bold = ItemTimenoteRecentAdapter.CustomTypefaceSpan(m)
 
         if(!args.event?.joinedBy?.users.isNullOrEmpty()){
-            val t = SpannableStringBuilder(addedBy)
-            t.setSpan(light, 0, 8, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
-            t.setSpan(bold, 9, addedBy.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
 
             when {
-                args.event?.joinedBy?.count!! < 100 -> addedBy = "Saved by ${args.event?.joinedBy?.users?.get(0)?.userName} and tens of other people"
-                args.event?.joinedBy?.count!! in 101..999 -> addedBy = "Saved by ${args.event?.joinedBy?.users?.get(0)?.userName} and hundreds of other people"
-                args.event?.joinedBy?.count!! in 1001..9999 -> addedBy = "Saved by ${args.event?.joinedBy?.users?.get(0)?.userName} and thousands of other people"
-                args.event?.joinedBy?.count!! > 1000000 -> addedBy = "Saved by ${args.event?.joinedBy?.users?.get(0)?.userName} and millions of other people"
+                args.event?.joinedBy?.count == 1 -> addedBy = "Saved by ${args.event?.joinedBy?.users?.get(0)?.userName}"
+                args.event?.joinedBy?.count in 1..20 -> addedBy = "Saved by ${args.event?.joinedBy?.users?.get(0)?.userName} and ${args.event?.joinedBy?.count!! - 1} other people"
+                args.event?.joinedBy?.count in 21..100 -> addedBy = "Saved by ${args.event?.joinedBy?.users?.get(0)?.userName} and tens of other people"
+                args.event?.joinedBy?.count in 101..2000 -> addedBy = "Saved by ${args.event?.joinedBy?.users?.get(0)?.userName} and hundreds of other people"
+                args.event?.joinedBy?.count in 2001..2000000 -> addedBy = "Saved by ${args.event?.joinedBy?.users?.get(0)?.userName} and thousands of other people"
+                args.event?.joinedBy?.count!! > 2000000 -> addedBy = "Saved by ${args.event?.joinedBy?.users?.get(0)?.userName} and millions of other people"
             }
+
+            addedByFormated = SpannableStringBuilder(addedBy)
+            addedByFormated.setSpan(light, 0, 8, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
+            addedByFormated.setSpan(bold, 9, addedBy.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
 
             when (args.event?.joinedBy?.users?.size) {
                 1 -> {
                     Glide
                         .with(requireContext())
                         .load(args.event?.joinedBy?.users!![0].picture)
-                        .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(context, 90, 0, getString(0 + R.color.colorBackground), 4)))
-                        .into(timenote_pic_participant_one)
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(timenote_pic_participant_three)
                     timenote_pic_participant_two.visibility = View.GONE
-                    timenote_pic_participant_three.visibility = View.GONE
+                    timenote_pic_participant_one.visibility = View.GONE
                 }
                 2 -> {
                     Glide
                         .with(requireContext())
                         .load(args.event?.joinedBy?.users!![0].picture)
                         .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(context, 90, 0, getString(0 + R.color.colorBackground), 4)))
-                        .into(timenote_pic_participant_one)
+                        .into(timenote_pic_participant_two)
 
                     Glide
                         .with(requireContext())
                         .load(args.event?.joinedBy?.users!![1].picture)
                         .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(context, 90, 0, getString(0 + R.color.colorBackground), 4)))
                         .into(timenote_pic_participant_two)
-                    timenote_pic_participant_three.visibility = View.GONE
+                    timenote_pic_participant_one.visibility = View.GONE
                 }
                 else -> {
                     Glide
@@ -179,7 +205,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             timenote_fl.visibility = View.GONE
         }
 
-        timenote_added_by.text = addedBy
+        timenote_added_by.text = addedByFormated
 
         if(args.event?.hashtags.isNullOrEmpty() && args.event?.description.isNullOrBlank()){
             timenote_username_desc.visibility = View.GONE
@@ -202,7 +228,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
 
         Glide
             .with(this)
-            .load(args.event?.createdBy?.pictureURL)
+            .load(args.event?.createdBy?.picture)
             .apply(RequestOptions.circleCropTransform())
             .placeholder(R.drawable.circle_pic)
             .into(detailed_timenote_pic_user)
@@ -212,6 +238,10 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         timenote_comment.setOnClickListener(this)
         timenote_detailed_send_comment.setOnClickListener(this)
         detailed_timenote_btn_more.setOnClickListener(this)
+        timenote_share.setOnClickListener(this)
+        timenote_plus.setOnClickListener(this)
+        timenote_fl.setOnClickListener(this)
+
         detailed_timenote_btn_back.setOnClickListener { findNavController().popBackStack() }
     }
 
@@ -223,19 +253,8 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                 imm?.showSoftInput(comments_edittext, InputMethodManager.SHOW_IMPLICIT)
             }
             detailed_timenote_btn_more -> createOptionsOnTimenote(requireContext(), false)
-            timenote_detailed_send_comment -> commentViewModel.postComment(
-                tokenId!!,
-                CommentCreationDTO(
-                    userInfoDTO.id!!,
-                    args.event?.id!!,
-                    comments_edittext.text.toString(),
-                    "#ok"
-                )
-            ).observe(
-                viewLifecycleOwner,
-                Observer {
+            timenote_detailed_send_comment -> commentViewModel.postComment(tokenId!!, CommentCreationDTO(userInfoDTO.id!!, args.event?.id!!, comments_edittext.text.toString(), "#ok")).observe(viewLifecycleOwner, Observer {
                     if (it.isSuccessful){
-
                         val view = requireActivity().currentFocus
                         view?.let { v ->
                             val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
@@ -250,6 +269,52 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                         }
                     }
                 })
+            timenote_share -> {
+                val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
+                    customView(R.layout.friends_search)
+                    lifecycleOwner(this@DetailedTimenote)
+                }
+
+                val searchbar = dial.getCustomView().searchBar_friends
+                searchbar.setCardViewElevation(0)
+                searchbar.addTextChangeListener(object : TextWatcher {
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                        handler.removeMessages(TRIGGER_AUTO_COMPLETE)
+                        handler.sendEmptyMessageDelayed(TRIGGER_AUTO_COMPLETE, AUTO_COMPLETE_DELAY)
+                    }
+                    override fun afterTextChanged(s: Editable?) {}
+
+                })
+                val recyclerview = dial.getCustomView().shareWith_rv
+                val userAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, args.event, this)
+                recyclerview.layoutManager = LinearLayoutManager(requireContext())
+                recyclerview.adapter = userAdapter
+                lifecycleScope.launch{
+                    followViewModel.getUsers(tokenId!!, false).collectLatest {
+                        userAdapter.submitData(it)
+                    }
+                }
+            }
+            timenote_plus ->
+                if(false)timenoteViewModel.leaveTimenote(tokenId!!, args.event?.id!!).observe(viewLifecycleOwner, Observer {})else
+                timenoteViewModel.joinTimenote(tokenId!!, args.event?.id!!).observe(viewLifecycleOwner, Observer {})
+            timenote_fl -> {
+                val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                    customView(R.layout.users_participating)
+                    lifecycleOwner(this@DetailedTimenote)
+                }
+
+                val recyclerview = dial.getCustomView().users_participating_rv
+                val userAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, args.event, this)
+                recyclerview.layoutManager = LinearLayoutManager(requireContext())
+                recyclerview.adapter = userAdapter
+                lifecycleScope.launch{
+                    timenoteViewModel.getUsersParticipating(tokenId!!, args.event?.id!!).collectLatest {
+                        userAdapter.submitData(it)
+                    }
+                }
+            }
         }
     }
 
@@ -288,6 +353,10 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             listItems (items = listOf(getString(R.string.report))){ dialog, index, text ->  }
             lifecycleOwner(this@DetailedTimenote)
         }
+    }
+
+    override fun onSearchClicked(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+
     }
 
 }

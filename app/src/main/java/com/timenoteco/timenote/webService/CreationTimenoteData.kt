@@ -8,8 +8,12 @@ private var timenoteModel: CreationTimenoteDTO =
 
 class CreationTimenoteData {
 
-
     fun loadCreateTimenoteData(): CreationTimenoteDTO? {
+        return timenoteModel
+    }
+
+    fun setDuplicateOrEdit(creationTimenoteDTO: CreationTimenoteDTO): CreationTimenoteDTO{
+        timenoteModel = creationTimenoteDTO
         return timenoteModel
     }
 

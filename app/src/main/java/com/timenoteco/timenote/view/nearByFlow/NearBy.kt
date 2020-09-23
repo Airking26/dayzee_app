@@ -292,11 +292,11 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         }
     }
 
-    override fun onPictureClicked() {
-        findNavController().navigate(NearByDirections.actionNearByToProfile(true, 3))
+    override fun onPictureClicked(timenoteInfoDTO: TimenoteInfoDTO) {
+        findNavController().navigate(NearByDirections.actionNearByToProfile(true, 3, timenoteInfoDTO))
     }
 
-    override fun onHideToOthersClicked() {
+    override fun onHideToOthersClicked(timenoteInfoDTO: TimenoteInfoDTO) {
 
     }
 
@@ -335,7 +335,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         timenoteViewModel.deleteTimenote(tokenId!!, "")
     }
 
-    override fun onEditClicked() {
+    override fun onEditClicked(timenoteInfoDTO: TimenoteInfoDTO) {
     }
 
     override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO) {
@@ -358,7 +358,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         }
     }
 
-    override fun onDeleteClicked() {
+    override fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         timenoteViewModel.deleteTimenote(tokenId!!, "")
     }
 
@@ -366,7 +366,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         //findNavController().navigate(NearByDirections.actionNearByToCreateTimenote(true, "", CreationTimenoteDTO(), 3))
     }
 
-    override fun onAddressClicked() {
+    override fun onAddressClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         findNavController().navigate(NearByDirections.actionNearByToTimenoteAddress())
     }
 

@@ -134,6 +134,10 @@
         <argument
             android:name="from"
             app:argType="integer" />
+        <argument
+            android:name="timenoteInfoDTO"
+            app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/timenoteAddress"
@@ -150,7 +154,7 @@
             app:destination="@id/previewTimenoteCreated" />
         <argument
             android:name="modify"
-            app:argType="boolean" />
+            app:argType="integer" />
         <argument
             android:name="id"
             app:argType="string"

@@ -46,7 +46,7 @@ class ProfilePastEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBar
             this,
             this,
             this,
-            showHideFilterBar!!)
+            showHideFilterBar!!, "")
 
         profile_rv.apply {
             layoutManager = LinearLayoutManager(view.context)
@@ -57,19 +57,19 @@ class ProfilePastEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBar
     override fun onReportClicked() {
     }
 
-    override fun onEditClicked() {
+    override fun onEditClicked(timenoteInfoDTO: TimenoteInfoDTO) {
     }
 
     override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO) {
     }
 
-    override fun onDeleteClicked() {
+    override fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO) {
     }
 
     override fun onDuplicateClicked(timenoteInfoDTO: TimenoteInfoDTO) {
     }
 
-    override fun onAddressClicked() {
+    override fun onAddressClicked(timenoteInfoDTO: TimenoteInfoDTO) {
     }
 
     override fun onSeeMoreClicked(event: TimenoteInfoDTO) {
@@ -81,10 +81,10 @@ class ProfilePastEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBar
     override fun onPlusClicked(timenoteInfoDTO: TimenoteInfoDTO) {
     }
 
-    override fun onPictureClicked() {
+    override fun onPictureClicked(timenoteInfoDTO: TimenoteInfoDTO) {
     }
 
-    override fun onHideToOthersClicked() {
+    override fun onHideToOthersClicked(timenoteInfoDTO: TimenoteInfoDTO) {
     }
 
     override fun onMaskThisUser() {

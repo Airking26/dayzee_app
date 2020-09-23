@@ -50,15 +50,18 @@
             android:textAllCaps="true"
             android:textColor="@android:color/white"
             android:textSize="15sp"
-            tools:text="MARSEILLE - PA"
-            android:breakStrategy="simple"
+            tools:text="MARSEILLE - PARIS"
             android:maxLines="1"
-            android:layout_width="wrap_content"
+            android:ellipsize="end"
+            android:breakStrategy="simple"
+            app:layout_constraintEnd_toStartOf="@id/timenote_recent_pic_user_imageview"
+            android:layout_width="120dp"
             android:layout_height="wrap_content"/>
 
         <ImageView
             android:id="@+id/timenote_recent_pic_user_imageview"
             android:layout_marginEnd="8dp"
+            app:layout_constraintStart_toEndOf="@id/timenote_recent_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/timenote_recent_title"
             app:layout_constraintBottom_toBottomOf="@id/timenote_recent_title"
@@ -81,6 +84,8 @@
             android:gravity="center"
             android:paddingVertical="8dp"
             android:paddingHorizontal="8dp"
+            android:maxLines="1"
+            android:ellipsize="end"
             tools:text="In 12 days and 8 hours"
             android:layout_width="0dp"
             android:layout_height="wrap_content"/>

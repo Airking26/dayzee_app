@@ -25,6 +25,7 @@ import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.TimenoteInfoDTO
 import kotlinx.android.synthetic.main.item_timenote.view.*
 import kotlinx.android.synthetic.main.item_timenote_root.view.*
+import java.text.SimpleDateFormat
 
 class ItemTimenoteAdapter(
     private val timenotes: List<TimenoteInfoDTO>,
@@ -68,24 +69,18 @@ class ItemTimenoteAdapter(
 
             Glide
                 .with(itemView)
-                .load(timenote.createdBy.pictureURL)
+                .load(timenote.createdBy.picture)
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .apply(RequestOptions.circleCropTransform())
                 .placeholder(R.drawable.circle_pic)
                 .into(itemView.timenote_pic_user_imageview)
 
             var addedBy = ""
+            val addedByFormated: SpannableStringBuilder
             val p = Typeface.create("sans-serif-light", Typeface.NORMAL)
             val m = Typeface.create("sans-serif", Typeface.NORMAL)
             val light = ItemTimenoteRecentAdapter.CustomTypefaceSpan(p)
             val bold = ItemTimenoteRecentAdapter.CustomTypefaceSpan(m)
-
-            /*when {
-                timenote.joinedBy.count < 100 -> addedBy = "Saved by tens of people"
-                timenote.joinedBy.count in 101..999 -> addedBy = "Saved by hundreds of people"
-                timenote.joinedBy.count in 1001..9999 -> addedBy = "Saved by thousands of people"
-                timenote.joinedBy.count > 1000000 -> addedBy = "Saved by millions of people"
-            }*/
 
             if(!timenote.joinedBy.users.isNullOrEmpty()){
                 when {
@@ -97,10 +92,10 @@ class ItemTimenoteAdapter(
                     timenote.joinedBy.count > 2000000 -> addedBy = "Saved by ${timenote.joinedBy.users[0].userName} and millions of other people"
                 }
 
-                val t = SpannableStringBuilder(addedBy)
-                t.setSpan(light, 0, 8, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
-                t.setSpan(bold, 9, addedBy.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
-                itemView.timenote_added_by.text = addedBy
+                addedByFormated = SpannableStringBuilder(addedBy)
+                addedByFormated.setSpan(light, 0, 8, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+                addedByFormated.setSpan(bold, 9, addedBy.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+                itemView.timenote_added_by.text = addedByFormated
 
                 when (timenote.joinedBy.users.size) {
                     1 -> {
@@ -160,7 +155,7 @@ class ItemTimenoteAdapter(
                 itemView.timenote_fl.visibility = View.GONE
             }
 
-            val screenSlideCreationTimenotePagerAdapter =  ScreenSlideTimenotePagerAdapter(fragment, timenote.pictures, true){ i: Int, i1: Int ->
+            val screenSlideCreationTimenotePagerAdapter =  ScreenSlideTimenotePagerAdapter(fragment, timenote.pictures, true){ _ : Int, i1: Int ->
                 if(i1 == 0) {
                     if (timenote.price.price >= 0 || (timenote.price.price >= 0 && !timenote.url.isBlank())) {
                         itemView.timenote_buy.visibility = View.VISIBLE
@@ -225,7 +220,7 @@ class ItemTimenoteAdapter(
             }
 
             itemView.timenote_share.setOnClickListener{timenoteListenerListener.onShareClicked(timenote)}
-            itemView.timenote_pic_user_imageview.setOnClickListener { timenoteListenerListener.onPictureClicked() }
+            itemView.timenote_pic_user_imageview.setOnClickListener { timenoteListenerListener.onPictureClicked(timenote) }
             itemView.timenote_comment.setOnClickListener { timenoteListenerListener.onCommentClicked(timenote) }
             itemView.timenote_plus.setOnClickListener {
                 if(false){
@@ -236,7 +231,7 @@ class ItemTimenoteAdapter(
                 timenoteListenerListener.onPlusClicked(timenote)
             }
             itemView.timenote_see_more.setOnClickListener { timenoteListenerListener.onSeeMoreClicked(timenote) }
-            itemView.timenote_place.setOnClickListener{timenoteListenerListener.onAddressClicked()}
+            itemView.timenote_place.setOnClickListener{timenoteListenerListener.onAddressClicked(timenote)}
             itemView.timenote_fl.setOnClickListener{timenoteListenerListener.onSeeParticipants(timenote)}
         }
 
@@ -245,10 +240,12 @@ class ItemTimenoteAdapter(
             timenoteListenerListener: TimenoteOptionsListener,
             timenote: TimenoteInfoDTO
         ){
+            val dateFormat = SimpleDateFormat("dd.MM.yyyy")
+            val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
             val listItems: MutableList<String> = mutableListOf(context.getString(R.string.duplicate), context.getString(R.string.alarm), context.getString(R.string.report))
             MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                title(R.string.posted_false)
-                listItems (items = listItems){ dialog, index, text ->
+                title(text = "Posted : " + dateFormat.format(SimpleDateFormat(ISO).parse(timenote.createdAt).time))
+                listItems (items = listItems){ _, _, text ->
                     when(text.toString()){
                         context.getString(R.string.duplicate) -> timenoteListenerListener.onDuplicateClicked(timenote)
                         context.getString(R.string.report) -> timenoteListenerListener.onReportClicked()

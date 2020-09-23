@@ -70,9 +70,9 @@
             android:id="@+id/action_createTimenote_to_previewTimenoteCreated"
             app:destination="@id/previewTimenoteCreated" />
         <argument
-            android:defaultValue="false"
+            android:defaultValue="0"
             android:name="modify"
-            app:argType="boolean" />
+            app:argType="integer" />
         <argument
             android:defaultValue="@null"
             android:name="id"

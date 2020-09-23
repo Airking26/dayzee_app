@@ -129,16 +129,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if(tokenId != null) {
-
-            if(timenotePagingAdapter == null) {
-                timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils)
-                lifecycleScope.launch {
-                    timenoteViewModel.getTimenotePagingFlow(tokenId!!).collectLatest {
-                        timenotePagingAdapter?.submitData(it)
-                    }
-                }
-            }
-            if(timenoteRecentPagingAdapter == null) {
+            if(timenoteRecentPagingAdapter == null || home_nothing_to_display?.visibility == View.VISIBLE) {
                 timenoteRecentPagingAdapter = TimenoteRecentPagingAdapter(TimenoteRecentComparator, this)
                 lifecycleScope.launch {
                     timenoteViewModel.getRecentTimenotePagingFlow(tokenId!!).collectLatest {
@@ -146,13 +137,16 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                     }
                 }
             }
+            if(timenotePagingAdapter == null || home_nothing_to_display?.visibility == View.VISIBLE) {
+                timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils)
+                lifecycleScope.launch {
+                    timenoteViewModel.getTimenotePagingFlow(tokenId!!).collectLatest {
+                        timenotePagingAdapter?.submitData(it)
+                    }
+                }
+            }
 
-
-
-            home_swipe_refresh.setColorSchemeResources(
-                R.color.colorStartGradient,
-                R.color.colorEndGradient
-            )
+            home_swipe_refresh.setColorSchemeResources(R.color.colorStartGradient, R.color.colorEndGradient)
             home_swipe_refresh.setOnRefreshListener {
                 timenoteRecentPagingAdapter = TimenoteRecentPagingAdapter(TimenoteComparator, this)
                 home_recent_rv.adapter = timenoteRecentPagingAdapter
@@ -186,7 +180,19 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
             timenotePagingAdapter?.addLoadStateListener {
                 home_swipe_refresh.isRefreshing = it.refresh is LoadState.Loading
-                if (it.refresh != LoadState.Loading) home_posted_recently.visibility = View.VISIBLE
+                if (it.refresh != LoadState.Loading) {
+                    if(timenoteRecentPagingAdapter?.itemCount  == 0 && timenotePagingAdapter?.itemCount == 0){
+                        home_recent_rv?.visibility = View.GONE
+                        home_rv?.visibility = View.GONE
+                        home_posted_recently?.visibility = View.GONE
+                        home_nothing_to_display?.visibility = View.VISIBLE
+                    } else {
+                        home_recent_rv?.visibility = View.VISIBLE
+                        home_rv?.visibility = View.VISIBLE
+                        home_posted_recently?.visibility = View.VISIBLE
+                        home_nothing_to_display?.visibility = View.GONE
+                    }
+                }
             }
 
             home_past_timeline.setOnClickListener(this)
@@ -239,8 +245,8 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         }
     }
 
-    override fun onPictureClicked() {
-        findNavController().navigate(HomeDirections.actionHomeToProfile(true, 1))
+    override fun onPictureClicked(timenoteInfoDTO: TimenoteInfoDTO) {
+        findNavController().navigate(HomeDirections.actionHomeToProfile(true, 1, timenoteInfoDTO))
     }
 
     override fun onDoubleClick() {}
@@ -277,7 +283,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             dateTimePicker { dialog, datetime ->
-                alarmViewModel.createAlarm(tokenId!!, AlarmCreationDTO(timenoteInfoDTO.createdBy.id, timenoteInfoDTO.id, SimpleDateFormat(ISO).format(datetime.time.time))).observe(viewLifecycleOwner, Observer {
+                alarmViewModel.createAlarm(tokenId!!, AlarmCreationDTO(timenoteInfoDTO.createdBy.id!!, timenoteInfoDTO.id, SimpleDateFormat(ISO).format(datetime.time.time))).observe(viewLifecycleOwner, Observer {
                     if (it.isSuccessful) ""
                 })
             }
@@ -286,19 +292,18 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     }
 
     override fun onDuplicateClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(HomeDirections.actionHomeToCreateTimenote(true, "",
-            CreationTimenoteDTO(timenoteInfoDTO.createdBy.id, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
+        findNavController().navigate(HomeDirections.actionHomeToCreateTimenote(1, "",
+            CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
             timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
             timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null), 1))
     }
 
-    override fun onAddressClicked() {
-        findNavController().navigate(HomeDirections.actionHomeToTimenoteAddress())
+    override fun onAddressClicked(timenoteInfoDTO: TimenoteInfoDTO) {
+        findNavController().navigate(HomeDirections.actionHomeToTimenoteAddress(timenoteInfoDTO))
     }
 
     override fun onShareClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
-            //title(R.string.share_with)
             customView(R.layout.friends_search)
             lifecycleOwner(this@Home)
         }
@@ -333,11 +338,11 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
 
 
-    override fun onHideToOthersClicked() {}
+    override fun onHideToOthersClicked(timenoteInfoDTO: TimenoteInfoDTO) {}
     override fun onMaskThisUser() {}
-    override fun onDeleteClicked() {
+    override fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO) {
     }
-    override fun onEditClicked() {}
+    override fun onEditClicked(timenoteInfoDTO: TimenoteInfoDTO) {}
 
 
 }

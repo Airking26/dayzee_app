@@ -57,7 +57,7 @@ class PreviewTimenoteCreatedSearch : Fragment(), View.OnClickListener {
                 for(pic in it.pictures!!){
                     mutableList.add(AWSFile(Uri.parse(pic), null))
                 }
-                screenSlideCreationTimenotePagerAdapter = ScreenSlideCreationTimenotePagerAdapter(this, mutableList, true)
+                screenSlideCreationTimenotePagerAdapter = ScreenSlideCreationTimenotePagerAdapter(this, mutableList, true, false, listOf())
                 preview_created_timenote_vp.adapter = screenSlideCreationTimenotePagerAdapter
                 preview_created_timenote_indicator.setViewPager(preview_created_timenote_vp)
                 screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(preview_created_timenote_indicator.adapterDataObserver)

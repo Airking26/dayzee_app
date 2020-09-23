@@ -15,9 +15,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 For support, please feel free to contact me at https://www.linkedin.com/in/syedabsar */
 
-enum class STATUS(status: Int){
-    PUBLIC(0),
-    PRIVATE(1)
+enum class STATUS{
+    PUBLIC,
+    PRIVATE,
+    BANNED,
+    DELETED
+}
+
+enum class DATEFORMAT{
+    FIRST,
+    SECOND
 }
 
 @Parcelize

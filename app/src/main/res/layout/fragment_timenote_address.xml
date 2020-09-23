@@ -10,14 +10,14 @@
 
     <LinearLayout
         android:id="@+id/timenote_address_ll"
-        style="@style/AppTheme.Toolbar.LinearLayout">
+        style="@style/AppTheme.Toolbar.LinearLayout"
+        tools:ignore="MissingConstraints">
 
         <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
 
             <TextView
                 android:id="@+id/timenote_address_toolbar"
-                style="@style/AppTheme.Toolbar.Title"
-                android:text="13 Herzl Street, Tel-Aviv Israel" />
+                style="@style/AppTheme.Toolbar.Title"/>
 
         </androidx.appcompat.widget.Toolbar>
 

@@ -221,7 +221,7 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setUp()
-        if(!args.modify)creationTimenoteViewModel.getCreateTimeNoteLiveData().observe(
+        if(args.modify == 0)creationTimenoteViewModel.getCreateTimeNoteLiveData().observe(
             viewLifecycleOwner,
             androidx.lifecycle.Observer {
                 populateModel(it)
@@ -361,7 +361,9 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
             screenSlideCreationTimenotePagerAdapter = ScreenSlideCreationTimenotePagerAdapter(
                 this@CreateTimenoteSearch,
                 images,
-                false
+                false,
+                false,
+                listOf()
             )
             adapter = screenSlideCreationTimenotePagerAdapter
         }
@@ -978,7 +980,9 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
             screenSlideCreationTimenotePagerAdapter = ScreenSlideCreationTimenotePagerAdapter(
                 this@CreateTimenoteSearch,
                 images,
-                false
+                false,
+                false,
+                listOf()
             )
             adapter = screenSlideCreationTimenotePagerAdapter
         }

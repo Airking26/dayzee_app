@@ -12,7 +12,7 @@ import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.TimenoteInfoDTO
 
 class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<TimenoteInfoDTO>, var showHideFilterBar: Boolean, private val timenoteOptionsListener: TimenoteOptionsListener,
-                                private val onRemoveFilterBarListener: OnRemoveFilterBarListener, private val onCardClicked: ItemProfileCardListener)
+                                private val onRemoveFilterBarListener: OnRemoveFilterBarListener, private val onCardClicked: ItemProfileCardListener, private val isMine: String?)
     : PagingDataAdapter<TimenoteInfoDTO, RecyclerView.ViewHolder>(diffUtilCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -32,7 +32,8 @@ class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<Timenote
             (holder as ItemProfileEventAdapter.TimenoteListHolder).bindListStyleItem(
                 getItem(position)!!,
                 timenoteOptionsListener,
-                onCardClicked
+                onCardClicked,
+                isMine
             )
     }
 

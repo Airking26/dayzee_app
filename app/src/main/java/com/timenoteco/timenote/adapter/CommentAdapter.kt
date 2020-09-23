@@ -60,7 +60,7 @@ class CommentAdapter(
         ) {
             Glide
                 .with(itemView)
-                .load(commentModel.createdBy.pictureURL)
+                .load(commentModel.createdBy.picture)
                 .apply(RequestOptions.circleCropTransform())
                 .placeholder(R.drawable.circle_pic)
                 .into(itemView.comment_user_pic_imageview)
@@ -70,11 +70,11 @@ class CommentAdapter(
             val o = ItemTimenoteRecentAdapter.CustomTypefaceSpan(p)
             val k = ItemTimenoteRecentAdapter.CustomTypefaceSpan(m)
 
-            val sizeName = commentModel.createdBy.userName.length
+            val sizeName = commentModel.createdBy.userName?.length
             val nameAndComment = commentModel.createdBy.userName + " " + commentModel.description
 
             val i = SpannableStringBuilder(nameAndComment)
-            i.setSpan(k, 0, sizeName, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+            i.setSpan(k, 0, sizeName!!, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
             i.setSpan(o, sizeName, nameAndComment.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
 
             itemView.comment_username_comment.text = i

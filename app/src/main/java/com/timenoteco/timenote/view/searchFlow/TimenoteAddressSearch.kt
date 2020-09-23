@@ -1,4 +1,4 @@
-package com.timenoteco.timenote.view.homeFlow
+package com.timenoteco.timenote.view.searchFlow
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -13,11 +13,12 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.timenoteco.timenote.R
+import com.timenoteco.timenote.view.homeFlow.TimenoteAddressArgs
 import kotlinx.android.synthetic.main.fragment_timenote_address.*
 
-class TimenoteAddress : Fragment() {
+class TimenoteAddressSearch : Fragment() {
 
-    private val args: TimenoteAddressArgs by navArgs()
+    private val args: TimenoteAddressSearchArgs by navArgs()
 
     private var googleMap: GoogleMap? = null
     private val callback = OnMapReadyCallback { googleMap ->
