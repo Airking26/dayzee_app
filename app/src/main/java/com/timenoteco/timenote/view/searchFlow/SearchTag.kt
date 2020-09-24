@@ -183,7 +183,7 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
     }
 
     override fun onPictureClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(SearchDirections.actionSearchToProfileSearch(timenoteInfoDTO))
+        findNavController().navigate(SearchDirections.actionSearchToProfileSearch(timenoteInfoDTO.createdBy))
     }
 
     override fun onHideToOthersClicked(timenoteInfoDTO: TimenoteInfoDTO) {

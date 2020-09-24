@@ -245,26 +245,28 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
         detailed_timenote_btn_back.setOnClickListener { findNavController().popBackStack() }
     }
 
-    private fun createOptionsOnTimenote(context: Context, isMine: Boolean){
-        val listItems: MutableList<String>
-        if(isMine) listItems = mutableListOf(context.getString(R.string.duplicate), context.getString(R.string.alarm), context.getString(R.string.report))
-        else listItems = mutableListOf(context.getString(R.string.duplicate), context.getString(R.string.delete), context.getString(R.string.alarm),  context.getString(R.string.mask_user))
+    private fun createOptionsOnTimenote(context: Context, timenoteInfoDTO: TimenoteInfoDTO){
+        val listItems: MutableList<String> = mutableListOf(context.getString(R.string.duplicate), context.getString(R.string.alarm), context.getString(R.string.report))
         MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             title(R.string.posted_false)
             listItems (items = listItems){ dialog, index, text ->
-                when(text.toString()){
-                    //context.getString(R.string.duplicate) -> findNavController().navigate(DetailedTimenoteSearchDirections.actionDetailedTimenoteSearchToCreateTimenoteSearch(true, "", CreationTimenoteDTO(), 2))
-                    context.getString(R.string.report) -> Toast.makeText(
+                when(index){
+                    2 -> Toast.makeText(
                         requireContext(),
                         "Reported, thank you",
                         Toast.LENGTH_SHORT
                     )
                         .show()
-                    context.getString(R.string.alarm) -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                    1 -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                         dateTimePicker { dialog, datetime ->
 
                         }
                         lifecycleOwner(this@DetailedTimenoteSearch)
+                    }
+                    0 -> {
+                        findNavController().navigate(DetailedTimenoteSearchDirections.actionDetailedTimenoteSearchToCreateTimenoteSearch(1, "", CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
+                            timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
+                            timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null), 2))
                     }
                 }
             }
@@ -279,7 +281,7 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
                 val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
                 imm?.showSoftInput(comments_edittext, InputMethodManager.SHOW_IMPLICIT)
             }
-            detailed_timenote_btn_more -> createOptionsOnTimenote(requireContext(), false)
+            detailed_timenote_btn_more -> createOptionsOnTimenote(requireContext(), args.timenoteInfoDTO!!)
             timenote_detailed_send_comment -> commentViewModel.postComment(tokenId!!, CommentCreationDTO(userInfoDTO.id!!, args.timenoteInfoDTO?.id!!, comments_edittext.text.toString(), "#ok")).observe(viewLifecycleOwner, Observer {
                 if (it.isSuccessful){
                     val view = requireActivity().currentFocus

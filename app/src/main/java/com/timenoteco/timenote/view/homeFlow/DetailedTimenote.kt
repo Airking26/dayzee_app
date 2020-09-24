@@ -252,7 +252,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                 val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
                 imm?.showSoftInput(comments_edittext, InputMethodManager.SHOW_IMPLICIT)
             }
-            detailed_timenote_btn_more -> createOptionsOnTimenote(requireContext(), false)
+            detailed_timenote_btn_more -> createOptionsOnTimenote(requireContext(), userInfoDTO.id == args.event?.createdBy?.id)
             timenote_detailed_send_comment -> commentViewModel.postComment(tokenId!!, CommentCreationDTO(userInfoDTO.id!!, args.event?.id!!, comments_edittext.text.toString(), "#ok")).observe(viewLifecycleOwner, Observer {
                     if (it.isSuccessful){
                         val view = requireActivity().currentFocus
@@ -320,13 +320,20 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
 
     private fun createOptionsOnTimenote(context: Context, isMine: Boolean){
         val listItems: MutableList<String>
-        if(isMine) listItems = mutableListOf(context.getString(R.string.duplicate), context.getString(R.string.alarm), context.getString(R.string.report))
-        else listItems = mutableListOf(context.getString(R.string.duplicate), context.getString(R.string.delete), context.getString(R.string.alarm),  context.getString(R.string.mask_user))
+        if(isMine) listItems = mutableListOf(context.getString(R.string.duplicate),context.getString(R.string.edit) , context.getString(R.string.alarm))
+        else listItems = mutableListOf(context.getString(R.string.duplicate), context.getString(R.string.delete), context.getString(R.string.alarm), context.getString(R.string.report))
         MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             title(R.string.posted_false)
             listItems (items = listItems){ dialog, index, text ->
                 when(text.toString()){
-                    //context.getString(R.string.duplicate) -> findNavController().navigate(DetailedTimenoteDirections.actionDetailedTimenoteToCreateTimenote(true, "", CreationTimenoteDTO(), args.from))
+                    context.getString(R.string.duplicate) -> findNavController().navigate(DetailedTimenoteDirections.actionDetailedTimenoteToCreateTimenote(1, args.event?.id,
+                        CreationTimenoteDTO(args.event?.createdBy?.id!!, null, args.event?.title!!, args.event?.description, args.event?.pictures,
+                            args.event?.colorHex, args.event?.location, args.event?.category, args.event?.startingAt!!, args.event?.endingAt!!,
+                            args.event?.hashtags, args.event?.url, args.event?.price!!, null), args.from))
+                    context.getString(R.string.edit) -> findNavController().navigate(DetailedTimenoteDirections.actionDetailedTimenoteToCreateTimenote(2, args.event?.id,
+                        CreationTimenoteDTO(args.event?.createdBy?.id!!, null, args.event?.title!!, args.event?.description, args.event?.pictures,
+                            args.event?.colorHex, args.event?.location, args.event?.category, args.event?.startingAt!!, args.event?.endingAt!!,
+                            args.event?.hashtags, args.event?.url, args.event?.price!!, null), args.from))
                     context.getString(R.string.report) -> Toast.makeText(
                         requireContext(),
                         "Reported. Thank You.",

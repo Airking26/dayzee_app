@@ -141,7 +141,7 @@
             app:destination="@id/createTimenoteSearch" />
         <argument
             android:name="userInfoDTO"
-            app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
+            app:argType="com.timenoteco.timenote.model.UserInfoDTO"
             app:nullable="true" />
     </fragment>
     <fragment

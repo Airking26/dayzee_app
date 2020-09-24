@@ -3,8 +3,7 @@ package com.timenoteco.timenote.webService
 import android.graphics.Bitmap
 import com.timenoteco.timenote.model.*
 
-private var timenoteModel: CreationTimenoteDTO =
-    CreationTimenoteDTO(createdBy = "", title = "", startingAt = "", endingAt = "", price = Price(0, ""))
+private var timenoteModel: CreationTimenoteDTO = CreationTimenoteDTO(createdBy = "", title = "", startingAt = "", endingAt = "", price = Price(0, ""))
 
 class CreationTimenoteData {
 

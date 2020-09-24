@@ -71,7 +71,6 @@ class Search : BaseThroughFragment() {
         }
     }
 
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_search)
     }

@@ -70,34 +70,34 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
         profile_day_name_calendar.text = simpleDateFormatDayName.format(System.currentTimeMillis())
         profile_day_number_calendar.text = simpleDateFormatDayNumber.format(System.currentTimeMillis())
 
-            if(args.userInfoDTO?.createdBy?.socialMedias?.youtube?.enabled!!) {
-                if(!args.userInfoDTO?.createdBy?.socialMedias?.youtube?.url?.isBlank()!!){
+            if(args.userInfoDTO?.socialMedias?.youtube?.enabled!!) {
+                if(!args.userInfoDTO?.socialMedias?.youtube?.url?.isBlank()!!){
                     profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_youtube_colored))
-                    stateSwitchUrl = args.userInfoDTO?.createdBy?.socialMedias?.youtube?.url
+                    stateSwitchUrl = args.userInfoDTO?.socialMedias?.youtube?.url
                 }
             }
-            else if(args.userInfoDTO?.createdBy?.socialMedias?.facebook?.enabled!!) {
-                if(!args.userInfoDTO?.createdBy?.socialMedias?.facebook?.url?.isBlank()!!){
+            else if(args.userInfoDTO?.socialMedias?.facebook?.enabled!!) {
+                if(!args.userInfoDTO?.socialMedias?.facebook?.url?.isBlank()!!){
                     profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_facebook_colored))
-                    stateSwitchUrl = args.userInfoDTO?.createdBy?.socialMedias?.facebook?.url
+                    stateSwitchUrl = args.userInfoDTO?.socialMedias?.facebook?.url
                 }
             }
-            else if(args.userInfoDTO?.createdBy?.socialMedias?.instagram?.enabled!!) {
-                if(!args.userInfoDTO?.createdBy?.socialMedias?.instagram?.url?.isBlank()!!){
+            else if(args.userInfoDTO?.socialMedias?.instagram?.enabled!!) {
+                if(!args.userInfoDTO?.socialMedias?.instagram?.url?.isBlank()!!){
                     profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_insta_colored))
-                    stateSwitchUrl = args.userInfoDTO?.createdBy?.socialMedias?.instagram?.url
+                    stateSwitchUrl = args.userInfoDTO?.socialMedias?.instagram?.url
                 }
             }
-            else if(args.userInfoDTO?.createdBy?.socialMedias?.whatsApp?.enabled!!) {
-                if(!args.userInfoDTO?.createdBy?.socialMedias?.whatsApp?.url?.isBlank()!!){
+            else if(args.userInfoDTO?.socialMedias?.whatsApp?.enabled!!) {
+                if(!args.userInfoDTO?.socialMedias?.whatsApp?.url?.isBlank()!!){
                     profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_whatsapp))
-                    stateSwitchUrl = args.userInfoDTO?.createdBy?.socialMedias?.whatsApp?.url
+                    stateSwitchUrl = args.userInfoDTO?.socialMedias?.whatsApp?.url
                 }
             }
-            else if(args.userInfoDTO?.createdBy?.socialMedias?.linkedIn?.enabled!!){
-                if(!args.userInfoDTO?.createdBy?.socialMedias?.linkedIn?.url?.isBlank()!!){
+            else if(args.userInfoDTO?.socialMedias?.linkedIn?.enabled!!){
+                if(!args.userInfoDTO?.socialMedias?.linkedIn?.url?.isBlank()!!){
                     profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_linkedin_colored))
-                    stateSwitchUrl = args.userInfoDTO?.createdBy?.socialMedias?.linkedIn?.url
+                    stateSwitchUrl = args.userInfoDTO?.socialMedias?.linkedIn?.url
                 }
             }
             else {
@@ -109,8 +109,8 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
         profile_settings_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_more_vert_black_profile_24dp))
         profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_back_thin))
         profile_follow_btn.setOnClickListener(this)
-        isFollowed = args.userInfoDTO?.createdBy?.isInFollowers!!
-        if(args.userInfoDTO?.createdBy?.isInFollowers!!) {
+        isFollowed = args.userInfoDTO?.isInFollowers!!
+        if(args.userInfoDTO?.isInFollowers!!) {
             profile_modify_btn.visibility = View.INVISIBLE
             profile_follow_btn.apply {
                 setBorderColor(resources.getColor(android.R.color.darker_gray))
@@ -121,19 +121,19 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
             }
         }
 
-        profile_name_toolbar.text = args.userInfoDTO?.createdBy?.userName
-        profile_nbr_followers.text = args.userInfoDTO?.createdBy?.followers.toString()
-        profile_nbr_following.text = args.userInfoDTO?.createdBy?.following.toString()
+        profile_name_toolbar.text = args.userInfoDTO?.userName
+        profile_nbr_followers.text = args.userInfoDTO?.followers.toString()
+        profile_nbr_following.text = args.userInfoDTO?.following.toString()
 
 
         Glide
             .with(this)
-            .load(args.userInfoDTO?.createdBy?.picture)
+            .load(args.userInfoDTO?.picture)
             .apply(RequestOptions.circleCropTransform())
             .placeholder(R.drawable.circle_pic)
             .into(profile_pic_imageview)
 
-        if(args.userInfoDTO?.createdBy?.status == STATUS.PRIVATE.ordinal && !args.userInfoDTO?.createdBy?.isInFollowers!!){
+        if(args.userInfoDTO?.status == STATUS.PRIVATE.ordinal && !args.userInfoDTO?.isInFollowers!!){
             scrollable.visibility = View.GONE
             profile_account_private.visibility = View.VISIBLE
         } else {
@@ -202,7 +202,7 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
             profile_nbr_following -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToFollowPageSearch())
             profile_follow_btn -> {
                 if (!isFollowed) {
-                    if (args.userInfoDTO?.createdBy?.status == 0) {
+                    if (args.userInfoDTO?.status == 0) {
                         followViewModel.followPublicUser(tokenId!!, args.userInfoDTO?.id!!).observe(
                             viewLifecycleOwner,
                             androidx.lifecycle.Observer {
@@ -217,7 +217,7 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
                                 isFollowed = true
 
                             })
-                    } else if (!isFollowed && (args.userInfoDTO?.createdBy?.status == 1)) {
+                    } else if (!isFollowed && (args.userInfoDTO?.status == 1)) {
                         followViewModel.followPrivateUser(tokenId!!, args.userInfoDTO?.id!!)
                             .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                                 profile_follow_btn.apply {

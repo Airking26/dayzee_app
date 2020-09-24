@@ -207,6 +207,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
             val userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), type)
             creationTimenoteViewModel.setCreatedBy(userInfoDTO.id!!)
 
+            creationTimenoteViewModel.clear()
             if (args.modify == 0) creationTimenoteViewModel.getCreateTimeNoteLiveData().observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                 populateModel(it)
             }) else {
