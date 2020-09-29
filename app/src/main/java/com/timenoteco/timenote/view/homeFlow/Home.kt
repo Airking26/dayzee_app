@@ -2,6 +2,7 @@ package com.timenoteco.timenote.view.homeFlow
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
@@ -20,10 +21,13 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.WhichButton
+import com.afollestad.materialdialogs.actions.getActionButton
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
 import com.afollestad.materialdialogs.datetime.dateTimePicker
+import com.afollestad.materialdialogs.internal.button.DialogActionButton
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.mancj.materialsearchbar.MaterialSearchBar
 import com.timenoteco.timenote.R
@@ -43,8 +47,10 @@ import java.text.SimpleDateFormat
 import kotlin.math.log
 
 class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListener,
-    UsersPagingAdapter.SearchPeopleListener, ItemTimenoteRecentAdapter.TimenoteRecentClicked {
+    UsersPagingAdapter.SearchPeopleListener, ItemTimenoteRecentAdapter.TimenoteRecentClicked, UsersShareWithPagingAdapter.SearchPeopleListener,
+    UsersShareWithPagingAdapter.AddToSend {
 
+    private var sendTo: MutableList<String> = mutableListOf()
     private lateinit var handler: Handler
     private val TRIGGER_AUTO_COMPLETE = 200
     private val AUTO_COMPLETE_DELAY: Long = 200
@@ -252,7 +258,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     override fun onDoubleClick() {}
 
     override fun onSeeParticipants(timenoteInfoDTO: TimenoteInfoDTO) {
-        val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+        val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
             customView(R.layout.users_participating)
             lifecycleOwner(this@Home)
         }
@@ -303,11 +309,17 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     }
 
     override fun onShareClicked(timenoteInfoDTO: TimenoteInfoDTO) {
+        sendTo.clear()
         val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
             customView(R.layout.friends_search)
             lifecycleOwner(this@Home)
+            positiveButton(R.string.send){
+                timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo))
+            }
+            negativeButton(R.string.cancel)
         }
 
+        dial.getActionButton(WhichButton.NEGATIVE).updateTextColor(resources.getColor(android.R.color.darker_gray))
         val searchbar = dial.getCustomView().searchBar_friends
         searchbar.setCardViewElevation(0)
         searchbar.addTextChangeListener(object : TextWatcher{
@@ -320,7 +332,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
         })
         val recyclerview = dial.getCustomView().shareWith_rv
-        val userAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, timenoteInfoDTO, this)
+        val userAdapter = UsersShareWithPagingAdapter(UsersPagingAdapter.UserComparator, timenoteInfoDTO, this, this)
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
@@ -330,12 +342,18 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         }
     }
 
-    override fun onSearchClicked(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
-        timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO?.id!!, listOf(userInfoDTO.id!!))).observe(viewLifecycleOwner, Observer {
-            if(it.isSuccessful) ""
-        })
+    override fun onAdd(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+        sendTo.add(userInfoDTO.id!!)
     }
 
+    override fun onRemove(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+        sendTo.remove(userInfoDTO.id!!)
+    }
+
+
+    override fun onSearchClicked(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+        findNavController().navigate(HomeDirections.actionHomeToProfile(true, 1, timenoteInfoDTO))
+    }
 
 
     override fun onHideToOthersClicked(timenoteInfoDTO: TimenoteInfoDTO) {}

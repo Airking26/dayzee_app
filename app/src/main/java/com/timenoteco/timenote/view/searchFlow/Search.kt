@@ -99,26 +99,14 @@ class Search : BaseThroughFragment() {
                 if (msg.what == TRIGGER_AUTO_COMPLETE) {
                     if (!TextUtils.isEmpty(searchBar.text)) {
                         searchViewModel.searchChanged(tokenId!!, searchBar.text)
-                        lifecycleScope.launch {
-                            searchViewModel.searchUser(tokenId!!, searchBar.text)
-                        }
-
                     }
                 }
                 false
             }
 
             searchBar.addTextChangeListener(object : TextWatcher {
-                override fun afterTextChanged(s: Editable?) {
-                }
-
-                override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int
-                ) {
-                }
+                override fun afterTextChanged(s: Editable?) {}
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     handler.removeMessages(TRIGGER_AUTO_COMPLETE)
@@ -140,7 +128,6 @@ class Search : BaseThroughFragment() {
             searchBar.setCardViewElevation(0)
             searchBar.setOnSearchActionListener(object : MaterialSearchBar.OnSearchActionListener {
                 override fun onButtonClicked(buttonCode: Int) {
-                    Toast.makeText(context, "onButtonClicked", Toast.LENGTH_SHORT).show()
                 }
 
                 override fun onSearchStateChanged(enabled: Boolean) {
@@ -157,7 +144,6 @@ class Search : BaseThroughFragment() {
                 }
 
                 override fun onSearchConfirmed(text: CharSequence?) {
-                    Toast.makeText(context, "onSearchConfirmed", Toast.LENGTH_SHORT).show()
                 }
 
             })

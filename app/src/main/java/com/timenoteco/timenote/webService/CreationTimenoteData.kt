@@ -71,6 +71,16 @@ class CreationTimenoteData {
         return timenoteModel
     }
 
+    fun setOrganizers(organizers: List<String>): CreationTimenoteDTO{
+        timenoteModel.organizers = organizers
+        return timenoteModel
+    }
+
+    fun setSharedWith(listSharedWith: List<String>): CreationTimenoteDTO{
+        timenoteModel.sharedWith = listSharedWith
+        return timenoteModel
+    }
+
     fun clear(): CreationTimenoteDTO {
         timenoteModel = CreationTimenoteDTO(createdBy = "", title = "", startingAt = "", endingAt = "", price = Price(0, ""))
         return timenoteModel

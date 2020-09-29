@@ -20,7 +20,6 @@ import me.samlss.broccoli.Broccoli
 class SearchExploreClicked: Fragment(), SuggestionAdapter.SuggestionItemListener,
     SuggestionAdapter.SuggestionItemPicListener {
 
-    private val broccoli = Broccoli()
     private var suggestions: List<UserSuggested> = listOf()
     private lateinit var suggestionItemAdapter: SuggestionItemAdapter
     private val followViewModel : FollowViewModel by activityViewModels()
@@ -43,14 +42,14 @@ class SearchExploreClicked: Fragment(), SuggestionAdapter.SuggestionItemListener
                 "Ligue 1",
                 false))
 
-        suggestionItemAdapter = SuggestionItemAdapter(suggestions, this, this, broccoli)
+        suggestionItemAdapter = SuggestionItemAdapter(suggestions, this, this)
         search_explore_clicked_rv.apply {
             layoutManager = LinearLayoutManager(view.context)
             adapter = suggestionItemAdapter
         }
     }
 
-    override fun onItemSelected() {
+    override fun onItemSelected(follow: Boolean) {
         //followViewModel.followPublicUser("", 0).observe(viewLifecycleOwner, Observer {})
     }
 

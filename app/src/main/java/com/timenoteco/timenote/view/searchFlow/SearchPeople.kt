@@ -46,10 +46,12 @@ class SearchPeople: Fragment(), UsersPagingAdapter.SearchPeopleListener {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = userAdapter
         }
+
             searchViewModel.getUserSearchLiveData().observe(viewLifecycleOwner, Observer {
                 lifecycleScope.launch {
                     it.collectLatest {
                         userAdapter.submitData(it.filterSync { userInfoDTO -> userInfoDTO.id != userInfoDTOPref.id })
+                        userAdapter.notifyDataSetChanged()
                     }
                 }
             })

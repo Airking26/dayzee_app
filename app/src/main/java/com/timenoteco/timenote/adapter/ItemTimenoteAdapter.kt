@@ -147,8 +147,7 @@ class ItemTimenoteAdapter(
                             .into(itemView.timenote_pic_participant_three)
                     }
                 }
-            }
-            else {
+            } else {
                 itemView.timenote_pic_participant_one.visibility = View.GONE
                 itemView.timenote_pic_participant_two.visibility = View.GONE
                 itemView.timenote_pic_participant_three.visibility = View.GONE
@@ -171,17 +170,17 @@ class ItemTimenoteAdapter(
             if(timenote.pictures.size == 1) itemView.timenote_indicator.visibility = View.GONE
             screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(itemView.timenote_indicator.adapterDataObserver)
             itemView.timenote_username.text = timenote.createdBy.userName
-            if(timenote.location != null) itemView.timenote_place.text = timenote.location.address.address
+            if(timenote.location != null) itemView.timenote_place.text = timenote.location.address.address.plus(", ").plus(timenote.location.address.city).plus(" ").plus(timenote.location.address.country)
 
 
-            if(timenote.hashtags.isNullOrEmpty() && timenote.description.isNullOrBlank()){
+            if(timenote.hashtags.isNullOrEmpty() && timenote.description.isBlank()){
                 itemView.timenote_username_desc.visibility = View.GONE
                 if(timenote.joinedBy.count == 0){
                     itemView.timenote_see_more.visibility = View.GONE
                 }
-            } else if(timenote.hashtags.isNullOrEmpty() && !timenote.description.isNullOrBlank()){
+            } else if(timenote.hashtags.isNullOrEmpty() && !timenote.description.isBlank()){
                 itemView.timenote_username_desc.text = timenote.description
-            } else if(!timenote.hashtags.isNullOrEmpty() && timenote.description.isNullOrBlank()){
+            } else if(!timenote.hashtags.isNullOrEmpty() && timenote.description.isBlank()){
                 val hashtags = SpannableStringBuilder(timenote.hashtags.joinToString(separator = ""))
                 hashtags.setSpan(bold, 0, hashtags.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
                 itemView.timenote_username_desc.text = hashtags

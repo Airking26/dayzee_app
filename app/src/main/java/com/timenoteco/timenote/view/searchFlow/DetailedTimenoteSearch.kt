@@ -22,6 +22,8 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.WhichButton
+import com.afollestad.materialdialogs.actions.getActionButton
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
@@ -51,8 +53,10 @@ import java.lang.reflect.Type
 
 
 class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdapter.SearchPeopleListener,
-    CommentAdapter.CommentPicUserListener, CommentAdapter.CommentMoreListener {
+    CommentAdapter.CommentPicUserListener, CommentAdapter.CommentMoreListener,
+    UsersShareWithPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.AddToSend {
 
+    private var sendTo: MutableList<String> = mutableListOf()
     private lateinit var handler: Handler
     private val TRIGGER_AUTO_COMPLETE = 200
     private val AUTO_COMPLETE_DELAY: Long = 200
@@ -299,14 +303,20 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
                 }
             })
             timenote_share -> {
+                sendTo.clear()
                 val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
                     customView(R.layout.friends_search)
                     lifecycleOwner(this@DetailedTimenoteSearch)
+                    positiveButton(R.string.send){
+                        timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(args.timenoteInfoDTO?.id!!, sendTo))
+                    }
+                    negativeButton(R.string.cancel)
                 }
 
+                dial.getActionButton(WhichButton.NEGATIVE).updateTextColor(resources.getColor(android.R.color.darker_gray))
                 val searchbar = dial.getCustomView().searchBar_friends
                 searchbar.setCardViewElevation(0)
-                searchbar.addTextChangeListener(object : TextWatcher {
+                searchbar.addTextChangeListener(object : TextWatcher{
                     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                         handler.removeMessages(TRIGGER_AUTO_COMPLETE)
@@ -316,7 +326,7 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
 
                 })
                 val recyclerview = dial.getCustomView().shareWith_rv
-                val userAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, args.timenoteInfoDTO, this)
+                val userAdapter = UsersShareWithPagingAdapter(UsersPagingAdapter.UserComparator, args.timenoteInfoDTO, this, this)
                 recyclerview.layoutManager = LinearLayoutManager(requireContext())
                 recyclerview.adapter = userAdapter
                 lifecycleScope.launch{
@@ -329,7 +339,7 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
                 if(false)timenoteViewModel.leaveTimenote(tokenId!!, args.timenoteInfoDTO?.id!!).observe(viewLifecycleOwner, Observer {})else
                     timenoteViewModel.joinTimenote(tokenId!!, args.timenoteInfoDTO?.id!!).observe(viewLifecycleOwner, Observer {})
             timenote_fl -> {
-                val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
                     customView(R.layout.users_participating)
                     lifecycleOwner(this@DetailedTimenoteSearch)
                 }
@@ -359,6 +369,14 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
     }
 
     override fun onPicUserCommentClicked() {
+    }
+
+    override fun onAdd(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+        sendTo.add(userInfoDTO.id!!)
+    }
+
+    override fun onRemove(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+        sendTo.remove(userInfoDTO.id!!)
     }
 
 }

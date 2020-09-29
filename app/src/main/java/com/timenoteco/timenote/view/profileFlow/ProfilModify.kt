@@ -204,7 +204,7 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
                     getString(R.string.your_name) else profile_modify_name.text =
                     profilModifyModel?.givenName
                 if (profilModifyModel?.location?.address?.address.isNullOrBlank()) profile_modify_from.hint =
-                    getString(R.string.from) else profile_modify_from.text = profilModifyModel?.location?.address?.address
+                    getString(R.string.from) else profile_modify_from.text = profilModifyModel?.location?.address?.address.plus(", ").plus(profilModifyModel?.location?.address?.city).plus(" ").plus(profilModifyModel?.location?.address?.country)
                 if (profilModifyModel?.birthday.isNullOrBlank()) profile_modify_birthday.hint =
                     getString(R.string.birthday) else profile_modify_birthday.text =
                     profilModifyModel?.birthday
@@ -334,6 +334,8 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
                     )).observe(viewLifecycleOwner, Observer { usr ->
                         onRefreshPicBottomNavListener.onrefreshPicBottomNav(usr.body())
                         prefs.edit().putString("UserInfoDTO", Gson().toJson(usr.body())).apply()
+                        prefs.edit().putInt("followers", usr.body()?.followers!!).apply()
+                        prefs.edit().putInt("following", usr.body()?.following!!).apply()
                         })
                 }
 

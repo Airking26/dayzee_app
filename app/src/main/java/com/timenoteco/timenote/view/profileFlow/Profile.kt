@@ -205,8 +205,12 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 profile_desc.visibility = View.VISIBLE
                 profile_desc.text = userInfoDTO?.description
             }
-            profile_nbr_followers.text = userInfoDTO?.followers.toString()
-            profile_nbr_following.text = userInfoDTO?.following.toString()
+             prefs.intLiveData("followers", userInfoDTO?.followers!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                 profile_nbr_followers.text = it.toString()
+             })
+             prefs.intLiveData("following", userInfoDTO?.following!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                 profile_nbr_following.text = it.toString()
+             })
 
             if (userInfoDTO?.isInFollowers!! && args.whereFrom) {
                 profile_modify_btn.visibility = View.INVISIBLE
@@ -327,6 +331,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                         followViewModel.followPublicUser(tokenId!!, userInfoDTO?.id!!).observe(
                             viewLifecycleOwner,
                             androidx.lifecycle.Observer {
+                                prefs.edit().putInt("following", prefs.getInt("following", 0) + 1).apply()
                                 profile_follow_btn.apply {
                                     setBorderColor(resources.getColor(android.R.color.darker_gray))
                                     setBorderWidth(1)
@@ -357,6 +362,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                     followViewModel.unfollowUser(tokenId!!, userInfoDTO?.id!!).observe(
                         viewLifecycleOwner,
                         androidx.lifecycle.Observer {
+                            prefs.edit().putInt("following", prefs.getInt("following", 0) - 1).apply()
                             profile_follow_btn.apply {
                                 setBorderColor(resources.getColor(android.R.color.transparent))
                                 setBorderWidth(0)

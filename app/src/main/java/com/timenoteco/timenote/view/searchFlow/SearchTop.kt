@@ -26,7 +26,6 @@ class SearchTop: Fragment(), SuggestionAdapter.SuggestionItemListener,
     SuggestionAdapter.SuggestionItemPicListener {
 
 
-    private val broccoli = Broccoli()
     private lateinit var topAdapter: SuggestionAdapter
     private var tops: Map<String, List<UserSuggested>> = mapOf()
     private val followViewModel : FollowViewModel by activityViewModels()
@@ -59,7 +58,7 @@ class SearchTop: Fragment(), SuggestionAdapter.SuggestionItemListener,
                 "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
                 "Techno",
                 false)))
-        topAdapter = SuggestionAdapter(tops, this, this, broccoli)
+        topAdapter = SuggestionAdapter(tops, this, this)
         search_top_rv.apply {
             layoutManager = LinearLayoutManager(view.context)
             adapter = topAdapter
@@ -67,7 +66,7 @@ class SearchTop: Fragment(), SuggestionAdapter.SuggestionItemListener,
 
     }
 
-    override fun onItemSelected() {
+    override fun onItemSelected(follow: Boolean) {
         //followViewModel.followPublicUser("", 0).observe(viewLifecycleOwner, Observer {})
     }
 

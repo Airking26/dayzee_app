@@ -14,6 +14,9 @@ import android.location.*
 import android.location.Address
 import android.os.Bundle
 import android.os.Handler
+import android.text.Editable
+import android.text.TextUtils
+import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.widget.TextView
@@ -26,6 +29,8 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.WhichButton
+import com.afollestad.materialdialogs.actions.getActionButton
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.callbacks.onDismiss
 import com.afollestad.materialdialogs.customview.customView
@@ -45,10 +50,7 @@ import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
-import com.timenoteco.timenote.adapter.ItemTimenoteAdapter
-import com.timenoteco.timenote.adapter.TimenoteComparator
-import com.timenoteco.timenote.adapter.TimenotePagingAdapter
-import com.timenoteco.timenote.adapter.UsersPagingAdapter
+import com.timenoteco.timenote.adapter.*
 import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.stringLiveData
@@ -61,6 +63,8 @@ import com.timenoteco.timenote.view.profileFlow.ProfileDirections
 import com.timenoteco.timenote.viewModel.*
 import com.timenoteco.timenote.webService.NearbyFilterData
 import kotlinx.android.synthetic.main.fragment_near_by.*
+import kotlinx.android.synthetic.main.fragment_search.*
+import kotlinx.android.synthetic.main.friends_search.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -69,8 +73,13 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListener,
-    UsersPagingAdapter.SearchPeopleListener {
+    UsersPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.SearchPeopleListener,
+    UsersShareWithPagingAdapter.AddToSend {
 
+    private var sendTo: MutableList<String> = mutableListOf()
+    private lateinit var handler: Handler
+    private val TRIGGER_AUTO_COMPLETE = 200
+    private val AUTO_COMPLETE_DELAY: Long = 200
     private lateinit var makeBarVisibleListener: ShowBarListener
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
     private val AUTOCOMPLETE_REQUEST_CODE: Int = 12
@@ -196,6 +205,19 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
             }
             nearbyToCompare = Gson().toJson(nearbyFilterData.loadNearbyFilter())
         })
+
+        handler = Handler { msg ->
+            if (msg.what == TRIGGER_AUTO_COMPLETE) {
+                if (!TextUtils.isEmpty(searchBar.text)) {
+                    //searchViewModel.searchChanged(tokenId!!, searchBar.text)
+                    lifecycleScope.launch {
+                        //searchViewModel.searchUser(tokenId!!, searchBar.text)
+                    }
+
+                }
+            }
+            false
+        }
      }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -311,7 +333,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     }
 
     override fun onSeeParticipants(infoDTO: TimenoteInfoDTO) {
-        val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+        val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
             customView(R.layout.users_participating)
             lifecycleOwner(this@NearBy)
         }
@@ -342,13 +364,30 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     }
 
     override fun onShareClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-            customView(R.layout.users_participating)
+        sendTo.clear()
+        val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
+            customView(R.layout.friends_search)
             lifecycleOwner(this@NearBy)
+            positiveButton(R.string.send){
+                timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo))
+            }
+            negativeButton(R.string.cancel)
         }
 
-        val recyclerview = dial.getCustomView().users_participating_rv
-        val userAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, timenoteInfoDTO,this)
+        dial.getActionButton(WhichButton.NEGATIVE).updateTextColor(resources.getColor(android.R.color.darker_gray))
+        val searchbar = dial.getCustomView().searchBar_friends
+        searchbar.setCardViewElevation(0)
+        searchbar.addTextChangeListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                handler.removeMessages(TRIGGER_AUTO_COMPLETE)
+                handler.sendEmptyMessageDelayed(TRIGGER_AUTO_COMPLETE, AUTO_COMPLETE_DELAY)
+            }
+            override fun afterTextChanged(s: Editable?) {}
+
+        })
+        val recyclerview = dial.getCustomView().shareWith_rv
+        val userAdapter = UsersShareWithPagingAdapter(UsersPagingAdapter.UserComparator, timenoteInfoDTO, this, this)
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
@@ -356,6 +395,14 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
                 userAdapter.submitData(it)
             }
         }
+    }
+
+    override fun onAdd(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+        sendTo.add(userInfoDTO.id!!)
+    }
+
+    override fun onRemove(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+        sendTo.remove(userInfoDTO.id!!)
     }
 
     override fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO) {

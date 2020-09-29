@@ -69,7 +69,7 @@ class ItemProfileEventAdapter(
 
             itemView.profile_item_name_event.text = event.title
             if(event.location != null)
-            itemView.profile_item_address_event.text = event.location.address.address
+            itemView.profile_item_address_event.text = event.location.address.address.plus(", ").plus(event.location.address.city).plus(" ").plus(event.location.address.country)
             itemView.profile_item_name_owner.text = event.createdBy.userName
             itemView.profile_item_date_event.text = Utils().calculateDecountTime(event.startingAt)
             itemView.profile_item_options.setOnClickListener { createOptionsOnTimenote(itemView.context, isMine, timenoteOptionsListener, event) }

@@ -14,8 +14,12 @@ import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
 import android.provider.MediaStore
+import android.text.Editable
 import android.text.InputType
+import android.text.TextUtils
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -36,7 +40,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.WhichButton
+import com.afollestad.materialdialogs.actions.getActionButton
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
+import com.afollestad.materialdialogs.callbacks.onCancel
 import com.afollestad.materialdialogs.color.ColorPalette
 import com.afollestad.materialdialogs.color.colorChooser
 import com.afollestad.materialdialogs.customview.customView
@@ -68,6 +75,7 @@ import com.theartofdev.edmodo.cropper.CropImageView
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ScreenSlideCreationTimenotePagerAdapter
 import com.timenoteco.timenote.adapter.UsersPagingAdapter
+import com.timenoteco.timenote.adapter.UsersShareWithPagingAdapter
 import com.timenoteco.timenote.adapter.WebSearchAdapter
 import com.timenoteco.timenote.androidView.input
 import com.timenoteco.timenote.common.HashTagHelper
@@ -79,6 +87,7 @@ import com.timenoteco.timenote.view.createTimenoteFlow.CreateTimenoteDirections
 import com.timenoteco.timenote.viewModel.*
 import kotlinx.android.synthetic.main.cropview.view.*
 import kotlinx.android.synthetic.main.fragment_create_timenote.*
+import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.friends_search.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -95,8 +104,13 @@ import java.util.*
 class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnSingleImageSelectedListener,
     BSImagePicker.OnMultiImageSelectedListener, BSImagePicker.ImageLoaderDelegate, BSImagePicker.OnSelectImageCancelledListener,
     TimenoteCreationPicListeners, WebSearchAdapter.ImageChoosedListener, WebSearchAdapter.MoreImagesClicked,
-    HashTagHelper.OnHashTagClickListener, UsersPagingAdapter.SearchPeopleListener {
+    HashTagHelper.OnHashTagClickListener, UsersPagingAdapter.SearchPeopleListener,
+    UsersShareWithPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.AddToSend {
 
+    private var sendTo: MutableList<String> = mutableListOf()
+    private lateinit var handler: Handler
+    private val TRIGGER_AUTO_COMPLETE = 200
+    private val AUTO_COMPLETE_DELAY: Long = 200
     val amazonClient = AmazonS3Client(
         BasicAWSCredentials(
             "AKIA5JWTNYVYJQIE5GWS",
@@ -240,6 +254,19 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
         creationTimenoteViewModel.setDuplicateOrEdit(args.timenoteBody!!)
         creationTimenoteViewModel.setCreatedBy(userInfoDTO.id!!)
         populateModel(args.timenoteBody!!)
+
+        handler = Handler { msg ->
+            if (msg.what == TRIGGER_AUTO_COMPLETE) {
+                if (!TextUtils.isEmpty(searchBar.text)) {
+                    //searchViewModel.searchChanged(tokenId!!, searchBar.text)
+                    lifecycleScope.launch {
+                        //searchViewModel.searchUser(tokenId!!, searchBar.text)
+                    }
+
+                }
+            }
+            false
+        }
     }
 
     private fun populateModel(it: CreationTimenoteDTO) {
@@ -728,13 +755,17 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
                                 requireContext(),
                                 BottomSheet(LayoutMode.WRAP_CONTENT)
                             ).show {
+                                onCancel { creationTimenoteViewModel.setPrice(Price(0, "")) }
                                 title(R.string.price)
-                                input(inputType = InputType.TYPE_CLASS_NUMBER) { _, charSequence ->
-                                    creationTimenoteViewModel.setPrice(
-                                        Price(
-                                        charSequence.toString().toInt(), "")
-                                    )
+                                input(inputType = InputType.TYPE_CLASS_NUMBER) { _, price ->
                                     lifecycleOwner(this@CreateTimenoteSearch)
+                                    MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                                        title(R.string.currency)
+                                        input (inputType = InputType.TYPE_CLASS_TEXT){ _, charSequence ->
+                                            creationTimenoteViewModel.setPrice(Price(price.toString().toInt(), charSequence.toString()))
+                                            lifecycleOwner(this@CreateTimenoteSearch)
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -785,23 +816,7 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
                         lifecycleOwner(this@CreateTimenoteSearch)
                     }
                     3 -> {
-                        val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
-                            customView(R.layout.friends_search)
-                            lifecycleOwner(this@CreateTimenoteSearch)
-                        }
-
-                        positiveButton(R.string.done)
-                        val searchbar = dial.getCustomView().searchBar_friends
-                        searchbar.setCardViewElevation(0)
-                        val recyclerView = dial.getCustomView().shareWith_rv
-                        val userAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, null, this@CreateTimenoteSearch)
-                        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-                        recyclerView.adapter = userAdapter
-                        lifecycleScope.launch {
-                            followViewModel.getUsers(tokenId!!, false).collectLatest {
-                                userAdapter.submitData(it)
-                            }
-                        }
+                        createFriendsBottomSheet(0, null)
                     }
                     4 ->
                         MaterialDialog(
@@ -810,37 +825,61 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
                         ).show {
                             title(R.string.name_group)
                             input(inputType = InputType.TYPE_CLASS_TEXT, maxLength = 20) { materialDialog, charSequence ->
-                                val dial = MaterialDialog(
-                                    requireContext(),
-                                    BottomSheet(LayoutMode.WRAP_CONTENT)
-                                ).show {
-                                    customView(R.layout.friends_search)
-                                    lifecycleOwner(this@CreateTimenoteSearch)
-                                }
-                                val searchbar = dial.getCustomView().searchBar_friends
-                                searchbar.setCardViewElevation(0)
-                                val recyclerView = dial.getCustomView().shareWith_rv
-                                val userAdapter = UsersPagingAdapter(
-                                    UsersPagingAdapter.UserComparator,
-                                    null,
-                                    this@CreateTimenoteSearch
-                                )
-                                recyclerView.layoutManager = LinearLayoutManager(requireContext())
-                                recyclerView.adapter = userAdapter
-                                lifecycleScope.launch {
-                                    followViewModel.getUsers(tokenId!!, false).collectLatest {
-                                        userAdapter.submitData(it)
-                                    }
-                                    positiveButton(R.string.done) {
-                                        profileViewModel.createGroup(tokenId!!, CreateGroupDTO(charSequence.toString(), listOf()))
-                                    }
-                                }
+                                createFriendsBottomSheet(1, charSequence.toString())
                             }
-                            positiveButton(R.string.done)
+                            positiveButton(R.string.confirm)
                             lifecycleOwner(this@CreateTimenoteSearch)
                         }
                     else -> shareWithTv.text = text.toString()
                 }
+            }
+        }
+    }
+
+    private fun createFriendsBottomSheet(createGroup: Int, groupName: String?) {
+        sendTo = mutableListOf()
+        val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
+            customView(R.layout.friends_search)
+            lifecycleOwner(this@CreateTimenoteSearch)
+            positiveButton(R.string.confirm) {
+                if(createGroup == 0){
+                    creationTimenoteViewModel.setSharedWith(sendTo)
+                }
+                else if(createGroup == 1) {
+                    profileViewModel.createGroup(tokenId!!, CreateGroupDTO(groupName!!, sendTo))
+                    creationTimenoteViewModel.setSharedWith(sendTo)
+                } else {
+                    creationTimenoteViewModel.setOrganizers(sendTo)
+                }
+            }
+            negativeButton(R.string.cancel)
+        }
+        dial.getActionButton(WhichButton.NEGATIVE)
+            .updateTextColor(resources.getColor(android.R.color.darker_gray))
+        val searchbar = dial.getCustomView().searchBar_friends
+        searchbar.setCardViewElevation(0)
+        searchbar.addTextChangeListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                handler.removeMessages(TRIGGER_AUTO_COMPLETE)
+                handler.sendEmptyMessageDelayed(TRIGGER_AUTO_COMPLETE, AUTO_COMPLETE_DELAY)
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+
+        })
+        val recyclerView = dial.getCustomView().shareWith_rv
+        val userAdapter = UsersShareWithPagingAdapter(
+            UsersPagingAdapter.UserComparator,
+            null,
+            this,
+            this
+        )
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.adapter = userAdapter
+        lifecycleScope.launch {
+            followViewModel.getUsers(tokenId!!, false).collectLatest {
+                userAdapter.submitData(it)
             }
         }
     }
@@ -1042,6 +1081,14 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
     }
 
     override fun onSearchClicked(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+    }
+
+    override fun onAdd(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+        sendTo.add(userInfoDTO.id!!)
+    }
+
+    override fun onRemove(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+        sendTo.remove(userInfoDTO.id!!)
     }
 
 

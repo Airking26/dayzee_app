@@ -18,6 +18,8 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.WhichButton
+import com.afollestad.materialdialogs.actions.getActionButton
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
@@ -27,12 +29,10 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.TimenoteComparator
 import com.timenoteco.timenote.adapter.TimenotePagingAdapter
 import com.timenoteco.timenote.adapter.UsersPagingAdapter
+import com.timenoteco.timenote.adapter.UsersShareWithPagingAdapter
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
-import com.timenoteco.timenote.model.AlarmCreationDTO
-import com.timenoteco.timenote.model.CreationTimenoteDTO
-import com.timenoteco.timenote.model.TimenoteInfoDTO
-import com.timenoteco.timenote.model.UserInfoDTO
+import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.view.homeFlow.HomeDirections
 import com.timenoteco.timenote.viewModel.AlarmViewModel
 import com.timenoteco.timenote.viewModel.FollowViewModel
@@ -48,8 +48,10 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.temporal.WeekFields.ISO
 
-class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.SearchPeopleListener {
+class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.SearchPeopleListener,
+    UsersShareWithPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.AddToSend {
 
+    private var sendTo: MutableList<String> = mutableListOf()
     private val searchViewModel : SearchViewModel by activityViewModels()
     private val followViewModel : FollowViewModel by activityViewModels()
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
@@ -113,15 +115,22 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
     }
 
 
+
     override fun onShareClicked(timenoteInfoDTO: TimenoteInfoDTO) {
+        sendTo.clear()
         val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
             customView(R.layout.friends_search)
             lifecycleOwner(this@SearchTag)
+            positiveButton(R.string.send){
+                timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo))
+            }
+            negativeButton(R.string.cancel)
         }
 
+        dial.getActionButton(WhichButton.NEGATIVE).updateTextColor(resources.getColor(android.R.color.darker_gray))
         val searchbar = dial.getCustomView().searchBar_friends
         searchbar.setCardViewElevation(0)
-        searchbar.addTextChangeListener(object : TextWatcher {
+        searchbar.addTextChangeListener(object : TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 handler.removeMessages(TRIGGER_AUTO_COMPLETE)
@@ -131,7 +140,7 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
 
         })
         val recyclerview = dial.getCustomView().shareWith_rv
-        val userAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, timenoteInfoDTO, this)
+        val userAdapter = UsersShareWithPagingAdapter(UsersPagingAdapter.UserComparator, timenoteInfoDTO, this, this)
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
@@ -196,7 +205,7 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
     }
 
     override fun onSeeParticipants(timenoteInfoDTO: TimenoteInfoDTO) {
-        val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+        val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
             customView(R.layout.users_participating)
             lifecycleOwner(this@SearchTag)
         }
@@ -213,5 +222,13 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
     }
 
     override fun onSearchClicked(userInfoDTO: UserInfoDTO, infoDTO: TimenoteInfoDTO?) {
+    }
+
+    override fun onAdd(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+        sendTo.add(userInfoDTO.id!!)
+    }
+
+    override fun onRemove(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+        sendTo.remove(userInfoDTO.id!!)
     }
 }

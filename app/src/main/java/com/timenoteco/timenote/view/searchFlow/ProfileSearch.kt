@@ -206,6 +206,7 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
                         followViewModel.followPublicUser(tokenId!!, args.userInfoDTO?.id!!).observe(
                             viewLifecycleOwner,
                             androidx.lifecycle.Observer {
+                                prefs.edit().putInt("following", prefs.getInt("following", 0) + 1).apply()
                                 profile_follow_btn.apply {
                                     setBorderColor(resources.getColor(android.R.color.darker_gray))
                                     setBorderWidth(1)
@@ -236,6 +237,7 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
                     followViewModel.unfollowUser(tokenId!!, args.userInfoDTO?.id!!).observe(
                         viewLifecycleOwner,
                         androidx.lifecycle.Observer {
+                            prefs.edit().putInt("following", prefs.getInt("following", 0) - 1).apply()
                             profile_follow_btn.apply {
                                 setBorderColor(resources.getColor(android.R.color.transparent))
                                 setBorderWidth(0)

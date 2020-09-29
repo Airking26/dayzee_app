@@ -168,6 +168,8 @@ class Signup: Fragment(), View.OnClickListener {
                                 viewModel.markAsAuthenticated()
                                 prefs.edit().putString(TOKEN, it.body()?.token).apply()
                                 prefs.edit().putString("UserInfoDTO", Gson().toJson(it.body()?.user)).apply()
+                                prefs.edit().putInt("followers", it.body()?.user?.followers!!).apply()
+                                prefs.edit().putInt("following", it.body()?.user?.following!!).apply()
                             }
                             else -> {
                                 Toast.makeText(requireContext(), "Invalid Authentication", Toast.LENGTH_SHORT).show()
@@ -217,6 +219,9 @@ class Signup: Fragment(), View.OnClickListener {
                                     //viewModel.markAsAuthenticated()
                                     findNavController().navigate(SignupDirections.actionSignupToPreferenceCategory(true))
                                     prefs.edit().putString(TOKEN, it.body()?.token).apply()
+                                    prefs.edit().putString("UserInfoDTO", Gson().toJson(it.body()?.user)).apply()
+                                    prefs.edit().putInt("followers", it.body()?.user?.followers!!).apply()
+                                    prefs.edit().putInt("following", it.body()?.user?.following!!).apply()
                                 }
                                 409 -> {
                                     Toast.makeText(requireContext(), "Invalid Authentication", Toast.LENGTH_SHORT).show()

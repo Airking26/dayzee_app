@@ -489,7 +489,7 @@
                         android:drawableStart="@drawable/ic_new_timenote_share_with"
                         android:textColor="@android:color/darker_gray"
                         android:textSize="14sp"
-                        android:text="@string/share_with"
+                        android:hint="@string/share_with"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         android:layout_width="wrap_content"
@@ -630,6 +630,44 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:hint="@string/add_an_url"
+                        android:textColor="@color/colorText"
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <com.google.android.material.card.MaterialCardView
+                android:visibility="visible"
+                android:id="@+id/organizers_cv"
+                android:layout_width="match_parent"
+                app:cardBackgroundColor="@color/colorBackground"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="12dp"
+                app:cardCornerRadius="5dp"
+                app:cardElevation="5dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/url_cardview">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/create_timenote_organizers_btn"
+                        android:drawablePadding="8dp"
+                        android:drawableStart="@drawable/ic_baseline_people_alt_24"
+                        android:fontFamily="sans-serif-light"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/organizers"
                         android:textColor="@color/colorText"
                         android:textSize="14sp"
                         app:layout_constraintStart_toStartOf="parent"

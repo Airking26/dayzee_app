@@ -254,4 +254,9 @@
     <string name="first">first</string>
     <string name="second">second</string>
     <string name="users_participating">Users Participating</string>
+    <string name="send">Send</string>
+    <string name="cancel">Cancel</string>
+    <string name="organizers">Organizers</string>
+    <string name="confirm">Confirm</string>
+    <string name="currency">Currency</string>
 </resources>
