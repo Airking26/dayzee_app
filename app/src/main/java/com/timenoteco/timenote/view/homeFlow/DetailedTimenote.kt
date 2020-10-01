@@ -301,7 +301,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                 recyclerview.layoutManager = LinearLayoutManager(requireContext())
                 recyclerview.adapter = userAdapter
                 lifecycleScope.launch{
-                    followViewModel.getUsers(tokenId!!, false).collectLatest {
+                    followViewModel.getUsers(tokenId!!, 0).collectLatest {
                         userAdapter.submitData(it)
                     }
                 }
@@ -361,8 +361,8 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         }
     }
 
-    override fun onPicUserCommentClicked() {
-        findNavController().navigate(DetailedTimenoteDirections.actionDetailedTimenoteToProfile().setWhereFrom(true).setFrom(args.from))
+    override fun onPicUserCommentClicked(userInfoDTO: UserInfoDTO) {
+        findNavController().navigate(DetailedTimenoteDirections.actionDetailedTimenoteToProfile().setWhereFrom(true).setFrom(args.from).setUserInfoDTO(userInfoDTO))
     }
 
     override fun onCommentMoreClicked() {
@@ -372,15 +372,15 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         }
     }
 
-    override fun onSearchClicked(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+    override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
 
     }
 
-    override fun onAdd(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+    override fun onAdd(userInfoDTO: UserInfoDTO) {
         sendTo.add(userInfoDTO.id!!)
     }
 
-    override fun onRemove(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+    override fun onRemove(userInfoDTO: UserInfoDTO) {
         sendTo.remove(userInfoDTO.id!!)
     }
 

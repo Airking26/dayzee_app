@@ -213,17 +213,17 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
-            followViewModel.getUsers(tokenId!!, false).collectLatest {
+            followViewModel.getUsers(tokenId!!, 0).collectLatest {
                 userAdapter.submitData(it)
             }
         }
     }
 
-    override fun onAdd(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+    override fun onAdd(userInfoDTO: UserInfoDTO) {
         sendTo.add(userInfoDTO.id!!)
     }
 
-    override fun onRemove(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+    override fun onRemove(userInfoDTO: UserInfoDTO) {
         sendTo.remove(userInfoDTO.id!!)
     }
 
@@ -266,12 +266,12 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
     }
 
 
-    override fun onSearchClicked(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {}
+    override fun onSearchClicked(userInfoDTO: UserInfoDTO) {}
     override fun onAddressClicked(timenoteInfoDTO: TimenoteInfoDTO) {}
     override fun onSeeMoreClicked(event: TimenoteInfoDTO) {}
     override fun onCommentClicked(event: TimenoteInfoDTO) {}
     override fun onPlusClicked(timenoteInfoDTO: TimenoteInfoDTO) {}
-    override fun onPictureClicked(timenoteInfoDTO: TimenoteInfoDTO) {}
+    override fun onPictureClicked(userInfoDTO: UserInfoDTO) {}
     override fun onMaskThisUser() {}
     override fun onDoubleClick() {}
 

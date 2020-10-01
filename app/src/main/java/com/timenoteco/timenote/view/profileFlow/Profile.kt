@@ -91,7 +91,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if(!tokenId.isNullOrBlank()) {
             val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
-            userInfoDTO = if(args.whereFrom) args.timenoteInfoDTO?.createdBy else Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
+            userInfoDTO = if(args.whereFrom) args.userInfoDTO else Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
 
             val simpleDateFormatDayName = SimpleDateFormat("EEE.", Locale.getDefault())
             val simpleDateFormatDayNumber = SimpleDateFormat("dd", Locale.getDefault())
@@ -223,12 +223,11 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 }
             }
 
-            if(userInfoDTO?.status == STATUS.PRIVATE.ordinal && !userInfoDTO?.isInFollowers!!){
+            if(userInfoDTO?.status == STATUS.PRIVATE.ordinal && !userInfoDTO?.isInFollowers!! && args.whereFrom){
                 scrollable.visibility = View.GONE
                 profile_account_private.visibility = View.VISIBLE
             }
             else {
-
                 profilePastFuturePagerAdapter = ProfilePastFuturePagerAdapter(
                     childFragmentManager,
                     lifecycle,
@@ -305,10 +304,10 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 if(args.whereFrom)findNavController().popBackStack()
                 else findNavController().navigate(ProfileDirections.actionProfileToNotifications())
             }
-            profile_followers_label -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage(true))
-            profile_following_label -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage(false))
-            profile_nbr_followers -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage(true))
-            profile_nbr_following -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage(false))
+            profile_followers_label -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage().setFollowers(1))
+            profile_following_label -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage().setFollowers(0))
+            profile_nbr_followers -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage().setFollowers(1))
+            profile_nbr_following -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage().setFollowers(0))
             profile_infos -> {
                 if(stateSwitch == null) findNavController().navigate(ProfileDirections.actionProfileToProfilModify())
                 else {

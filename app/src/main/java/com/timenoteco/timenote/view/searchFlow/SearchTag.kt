@@ -144,7 +144,7 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
-            followViewModel.getUsers(tokenId!!, false).collectLatest {
+            followViewModel.getUsers(tokenId!!, 0).collectLatest {
                 userAdapter.submitData(it)
             }
         }
@@ -191,8 +191,8 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
         }
     }
 
-    override fun onPictureClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(SearchDirections.actionSearchToProfileSearch(timenoteInfoDTO.createdBy))
+    override fun onPictureClicked(userInfoDTO: UserInfoDTO) {
+        findNavController().navigate(SearchDirections.actionSearchToProfileSearch(userInfoDTO))
     }
 
     override fun onHideToOthersClicked(timenoteInfoDTO: TimenoteInfoDTO) {
@@ -221,14 +221,14 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
         }
     }
 
-    override fun onSearchClicked(userInfoDTO: UserInfoDTO, infoDTO: TimenoteInfoDTO?) {
+    override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
     }
 
-    override fun onAdd(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+    override fun onAdd(userInfoDTO: UserInfoDTO) {
         sendTo.add(userInfoDTO.id!!)
     }
 
-    override fun onRemove(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+    override fun onRemove(userInfoDTO: UserInfoDTO) {
         sendTo.remove(userInfoDTO.id!!)
     }
 }

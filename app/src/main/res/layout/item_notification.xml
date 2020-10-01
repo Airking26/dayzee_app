@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:background="@color/colorBackground"
     android:layout_height="wrap_content"
+    android:padding="8dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -20,27 +21,26 @@
     <TextView
         android:fontFamily="sans-serif-light"
         android:id="@+id/notification_annoucement"
-        android:gravity="center"
         android:textColor="@color/colorText"
-        tools:text="Ruby Aliza wants to follow you."
-        android:textSize="14sp"
+        tools:text="Ruby Aliza wants to follow you and i can add some text"
+        android:textSize="13sp"
         android:layout_marginStart="8dp"
         app:layout_constraintStart_toEndOf="@id/notification_user_pic_imageview"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@id/notification_user_pic_imageview" />
     
     <TextView
+        android:layout_marginStart="8dp"
+        android:id="@+id/notification_time"
         android:fontFamily="sans-serif-light"
         android:gravity="center"
         android:textSize="12sp"
         android:textColor="@android:color/darker_gray"
-        tools:text="23min ago"
-        android:layout_marginStart="4dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/notification_annoucement"
-        app:layout_constraintTop_toTopOf="parent"
+        tools:text="23 minutes"
+        app:layout_constraintStart_toEndOf="@id/notification_user_pic_imageview"
+        app:layout_constraintTop_toBottomOf="@id/notification_annoucement"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 

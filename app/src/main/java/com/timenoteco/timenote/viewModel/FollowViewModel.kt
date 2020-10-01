@@ -26,6 +26,6 @@ class FollowViewModel: ViewModel() {
     fun removeUserFromFollower(token: String, id: String) = flow { emit(followService.removeUserFromFollowers("Bearer $token", id))}.asLiveData(viewModelScope.coroutineContext)
     fun getUsersWaitingForApproval(token: String) = Pager(PagingConfig(pageSize = 1)){FollowPagingSource(token, followService, true)}.flow.cachedIn(viewModelScope)
     fun getUsersAskedToFollow(token: String) = Pager(PagingConfig(pageSize = 1)){FollowPagingSource(token, followService, false)}.flow.cachedIn(viewModelScope)
-    fun getUsers(token: String, followers: Boolean): Flow<PagingData<UserInfoDTO>>  = Pager(PagingConfig(pageSize = 1)){ UserPagingSource(token, followService, followers) }.flow.cachedIn(viewModelScope)
+    fun getUsers(token: String, followers: Int): Flow<PagingData<UserInfoDTO>>  = Pager(PagingConfig(pageSize = 1)){ UserPagingSource(token, followService, followers) }.flow.cachedIn(viewModelScope)
 
 }

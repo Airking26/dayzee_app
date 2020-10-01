@@ -27,7 +27,7 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:background="@color/colorBackground"
-        android:paddingVertical="4dp"
+        android:clipToPadding="false"
         tools:itemCount="5"
         tools:listitem="@layout/item_notification"
         android:id="@+id/notifications_rv"

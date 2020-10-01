@@ -15,29 +15,29 @@ import com.timenoteco.timenote.model.UserInfoDTO
 import kotlinx.android.synthetic.main.item_user.view.givenName
 import kotlinx.android.synthetic.main.item_user.view.name_user
 import kotlinx.android.synthetic.main.item_user.view.user_imageview
-import kotlinx.android.synthetic.main.item_user_send.view.*
+import kotlinx.android.synthetic.main.item_user_awaiting.view.*
 
-class UsersShareWithPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>,
-                                  val timenoteInfoDTO: TimenoteInfoDTO?,
-                                  val searchPeopleListener: SearchPeopleListener,
-                                  val addToSend: AddToSend)
-    : PagingDataAdapter<UserInfoDTO, UsersShareWithPagingAdapter.UserViewHolder>(diffCallback){
+class UsersAwaitingPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>,
+                                 val timenoteInfoDTO: TimenoteInfoDTO?,
+                                 val searchPeopleListener: SearchPeopleListener,
+                                 val acceptDecline: AcceptDecline)
+    : PagingDataAdapter<UserInfoDTO, UsersAwaitingPagingAdapter.UserViewHolder>(diffCallback){
 
     interface SearchPeopleListener{
         fun onSearchClicked(userInfoDTO: UserInfoDTO)
     }
 
-    interface AddToSend{
-        fun onAdd(userInfoDTO: UserInfoDTO)
-        fun onRemove(userInfoDTO: UserInfoDTO)
+    interface AcceptDecline{
+        fun onAccept(userInfoDTO: UserInfoDTO, position: Int)
+        fun onDecline(userInfoDTO: UserInfoDTO, position: Int)
     }
 
     class UserViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         fun bindUser(
             userInfoDTO: UserInfoDTO?,
             searchPeopleListener: SearchPeopleListener,
-            timenoteInfoDTO: TimenoteInfoDTO?,
-            addToSend: AddToSend
+            acceptDecline: AcceptDecline,
+            position: Int
         ) {
 
                 Glide
@@ -56,25 +56,18 @@ class UsersShareWithPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDT
             itemView.user_imageview.setOnClickListener { searchPeopleListener.onSearchClicked(userInfoDTO!!) }
             itemView.name_user.setOnClickListener { searchPeopleListener.onSearchClicked(userInfoDTO!!) }
             itemView.givenName.setOnClickListener { searchPeopleListener.onSearchClicked(userInfoDTO!!) }
-            itemView.item_user_send.setOnClickListener {
-                if(itemView.item_user_send.drawable.constantState == itemView.context.resources.getDrawable(R.drawable.ic_add_circle_yellow_send).constantState){
-                    addToSend.onAdd(userInfoDTO!!)
-                    itemView.item_user_send.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.ic_baseline_remove_send))
-                } else {
-                    addToSend.onRemove(userInfoDTO!!)
-                    itemView.item_user_send.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.ic_add_circle_yellow_send))
-                }
-            }
+            itemView.item_user_accept.setOnClickListener { acceptDecline.onAccept(userInfoDTO!!, position) }
+            itemView.item_user_decline.setOnClickListener { acceptDecline.onDecline(userInfoDTO!!, position) }
         }
 
     }
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-        holder.bindUser(getItem(position), searchPeopleListener, timenoteInfoDTO, addToSend)
+        holder.bindUser(getItem(position), searchPeopleListener, acceptDecline, position)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder =
-        UserViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_user_send, parent, false))
+        UserViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_user_awaiting, parent, false))
 
     object UserComparator: DiffUtil.ItemCallback<UserInfoDTO>(){
         override fun areItemsTheSame(oldItem: UserInfoDTO, newItem: UserInfoDTO): Boolean {

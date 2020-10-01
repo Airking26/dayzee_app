@@ -878,7 +878,7 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = userAdapter
         lifecycleScope.launch {
-            followViewModel.getUsers(tokenId!!, false).collectLatest {
+            followViewModel.getUsers(tokenId!!, 0).collectLatest {
                 userAdapter.submitData(it)
             }
         }
@@ -1080,14 +1080,14 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
     override fun onHashTagClicked(hashTag: String?) {
     }
 
-    override fun onSearchClicked(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+    override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
     }
 
-    override fun onAdd(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+    override fun onAdd(userInfoDTO: UserInfoDTO) {
         sendTo.add(userInfoDTO.id!!)
     }
 
-    override fun onRemove(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+    override fun onRemove(userInfoDTO: UserInfoDTO) {
         sendTo.remove(userInfoDTO.id!!)
     }
 

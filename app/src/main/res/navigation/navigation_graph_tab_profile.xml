@@ -98,8 +98,8 @@
             android:id="@+id/action_profile_to_navigation"
             app:destination="@id/navigation" />
         <argument
-            android:name="timenoteInfoDTO"
-            app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
+            android:name="userInfoDTO"
+            app:argType="com.timenoteco.timenote.model.UserInfoDTO"
             app:nullable="true"
             android:defaultValue="@null" />
     </fragment>
@@ -122,6 +122,9 @@
         <action
             android:id="@+id/action_settings_to_profilModify"
             app:destination="@id/profilModify" />
+        <action
+            android:id="@+id/action_settings_to_followPage"
+            app:destination="@id/followPage" />
     </fragment>
     <fragment
         android:id="@+id/notifications"
@@ -140,7 +143,11 @@
         tools:layout="@layout/fragment_follow_page" >
         <argument
             android:name="followers"
-            app:argType="boolean" />
+            app:argType="integer"
+            android:defaultValue="-1" />
+        <action
+            android:id="@+id/action_followPage_to_profile"
+            app:destination="@id/profile" />
     </fragment>
     <fragment
         android:name="com.timenoteco.timenote.view.profileFlow.menuDirectory.Menu"

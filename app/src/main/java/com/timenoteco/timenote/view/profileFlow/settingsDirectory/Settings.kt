@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import com.afollestad.materialdialogs.LayoutMode
@@ -24,10 +25,14 @@ import com.timenoteco.timenote.common.intLiveData
 import com.timenoteco.timenote.common.stringLiveData
 import com.timenoteco.timenote.model.STATUS
 import com.timenoteco.timenote.model.UpdateUserInfoDTO
+import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.ProfileModifyViewModel
 import com.timenoteco.timenote.webService.ProfileModifyData
+import com.timenoteco.timenote.webService.service.FollowService
 import kotlinx.android.synthetic.main.fragment_profil_modify.*
 import kotlinx.android.synthetic.main.fragment_settings.*
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 
 class Settings : Fragment(), View.OnClickListener {
@@ -94,6 +99,9 @@ class Settings : Fragment(), View.OnClickListener {
         profile_settings_edit_personnal_infos.setOnClickListener(this)
         profile_settings_date_format.setOnClickListener(this)
         profile_settings_timenote_format.setOnClickListener(this)
+        profile_settings_disconnect.setOnClickListener(this)
+        profile_settings_asked_sent.setOnClickListener(this)
+        profile_settings_awaiting.setOnClickListener(this)
         profile_settings_switch_account_status.setOnCheckedChangeListener { buttonView, isChecked ->
             if(isChecked) profileModifyData.setStatusAccount(1)
             else profileModifyData.setStatusAccount(0)
@@ -101,20 +109,32 @@ class Settings : Fragment(), View.OnClickListener {
     }
 
     override fun onClick(v: View?) {
-        when(v){
+        when(v) {
             profile_settings_notification_manager -> findNavController().navigate(SettingsDirections.actionSettingsToNotificationManager())
             profile_settings_edit_personnal_infos -> findNavController().navigate(SettingsDirections.actionSettingsToProfilModify())
-            profile_settings_date_format -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            profile_settings_date_format -> MaterialDialog(
+                requireContext(),
+                BottomSheet(LayoutMode.WRAP_CONTENT)
+            ).show {
                 title(R.string.timenote_date_format)
-                listItems(null, listOf(getString(R.string.date), getString(R.string.countdown))) { dialog, index, text ->
+                listItems(
+                    null,
+                    listOf(getString(R.string.date), getString(R.string.countdown))
+                ) { dialog, index, text ->
                     profileModifyData.setFormatTimenote(index)
                 }
                 lifecycleOwner(this@Settings)
             }
-            profile_settings_timenote_format -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            profile_settings_timenote_format -> MaterialDialog(
+                requireContext(),
+                BottomSheet(LayoutMode.WRAP_CONTENT)
+            ).show {
                 title(R.string.timenote_visibility_format)
-                listItems(null, listOf(getString(R.string.only_me),  getString(R.string.public_label))) { dialog, index, text ->
-                    when(index){
+                listItems(
+                    null,
+                    listOf(getString(R.string.only_me), getString(R.string.public_label))
+                ) { dialog, index, text ->
+                    when (index) {
                         0 -> {
                             dsactv.text = text
                             prefs.edit().putInt("default_settings_at_creation_time", index).apply()
@@ -128,16 +148,22 @@ class Settings : Fragment(), View.OnClickListener {
                 }
                 lifecycleOwner(this@Settings)
             }
-            profile_settings_change_password -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            profile_settings_change_password -> MaterialDialog(
+                requireContext(),
+                BottomSheet(LayoutMode.WRAP_CONTENT)
+            ).show {
                 title(R.string.change_password)
                 input(hintRes = R.string.actual_password) { _, oldPassword ->
                     MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                         title(R.string.change_password)
-                        input (hintRes = R.string.new_password) { _, newPassword ->
-                            MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                        input(hintRes = R.string.new_password) { _, newPassword ->
+                            MaterialDialog(
+                                requireContext(),
+                                BottomSheet(LayoutMode.WRAP_CONTENT)
+                            ).show {
                                 title(R.string.change_password)
-                                input (hintRes = R.string.new_password_again){ _, newPasswordAgain ->
-                                    if(newPassword == newPasswordAgain){
+                                input(hintRes = R.string.new_password_again) { _, newPasswordAgain ->
+                                    if (newPassword == newPasswordAgain) {
 
                                     }
                                 }
@@ -149,6 +175,10 @@ class Settings : Fragment(), View.OnClickListener {
                     lifecycleOwner(this@Settings)
                 }
             }
+            profile_settings_disconnect -> prefs.edit().putString(TOKEN, null).apply()
+            profile_settings_asked_sent -> findNavController().navigate(
+                SettingsDirections.actionSettingsToFollowPage().setFollowers(3))
+            profile_settings_awaiting -> findNavController().navigate(SettingsDirections.actionSettingsToFollowPage().setFollowers(2))
         }
     }
 }

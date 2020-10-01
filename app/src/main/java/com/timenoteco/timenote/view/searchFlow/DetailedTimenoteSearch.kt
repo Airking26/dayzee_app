@@ -330,7 +330,7 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
                 recyclerview.layoutManager = LinearLayoutManager(requireContext())
                 recyclerview.adapter = userAdapter
                 lifecycleScope.launch{
-                    followViewModel.getUsers(tokenId!!, false).collectLatest {
+                    followViewModel.getUsers(tokenId!!, 0).collectLatest {
                         userAdapter.submitData(it)
                     }
                 }
@@ -364,18 +364,18 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
         }
     }
 
-    override fun onSearchClicked(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+    override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
         TODO("Not yet implemented")
     }
 
-    override fun onPicUserCommentClicked() {
+    override fun onPicUserCommentClicked(userInfoDTO: UserInfoDTO) {
     }
 
-    override fun onAdd(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+    override fun onAdd(userInfoDTO: UserInfoDTO) {
         sendTo.add(userInfoDTO.id!!)
     }
 
-    override fun onRemove(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+    override fun onRemove(userInfoDTO: UserInfoDTO) {
         sendTo.remove(userInfoDTO.id!!)
     }
 

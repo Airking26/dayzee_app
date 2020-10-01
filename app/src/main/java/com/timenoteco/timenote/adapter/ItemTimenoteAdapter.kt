@@ -219,7 +219,7 @@ class ItemTimenoteAdapter(
             }
 
             itemView.timenote_share.setOnClickListener{timenoteListenerListener.onShareClicked(timenote)}
-            itemView.timenote_pic_user_imageview.setOnClickListener { timenoteListenerListener.onPictureClicked(timenote) }
+            itemView.timenote_pic_user_imageview.setOnClickListener { timenoteListenerListener.onPictureClicked(timenote.createdBy) }
             itemView.timenote_comment.setOnClickListener { timenoteListenerListener.onCommentClicked(timenote) }
             itemView.timenote_plus.setOnClickListener {
                 if(false){

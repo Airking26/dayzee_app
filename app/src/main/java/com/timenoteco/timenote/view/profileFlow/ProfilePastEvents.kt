@@ -12,6 +12,7 @@ import com.timenoteco.timenote.listeners.ItemProfileCardListener
 import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.TimenoteInfoDTO
+import com.timenoteco.timenote.model.UserInfoDTO
 import kotlinx.android.synthetic.main.fragment_profile_future_events.*
 import java.sql.Time
 
@@ -81,7 +82,7 @@ class ProfilePastEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBar
     override fun onPlusClicked(timenoteInfoDTO: TimenoteInfoDTO) {
     }
 
-    override fun onPictureClicked(timenoteInfoDTO: TimenoteInfoDTO) {
+    override fun onPictureClicked(userInfoDTO: UserInfoDTO) {
     }
 
     override fun onHideToOthersClicked(timenoteInfoDTO: TimenoteInfoDTO) {

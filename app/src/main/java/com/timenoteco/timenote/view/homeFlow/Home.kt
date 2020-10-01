@@ -251,8 +251,8 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         }
     }
 
-    override fun onPictureClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(HomeDirections.actionHomeToProfile(true, 1, timenoteInfoDTO))
+    override fun onPictureClicked(userInfoDTO: UserInfoDTO) {
+        findNavController().navigate(HomeDirections.actionHomeToProfile(true, 1, userInfoDTO))
     }
 
     override fun onDoubleClick() {}
@@ -336,23 +336,23 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
-            followViewModel.getUsers(tokenId!!, false).collectLatest {
+            followViewModel.getUsers(tokenId!!, 0).collectLatest {
                 userAdapter.submitData(it)
             }
         }
     }
 
-    override fun onAdd(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+    override fun onAdd(userInfoDTO: UserInfoDTO) {
         sendTo.add(userInfoDTO.id!!)
     }
 
-    override fun onRemove(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+    override fun onRemove(userInfoDTO: UserInfoDTO) {
         sendTo.remove(userInfoDTO.id!!)
     }
 
 
-    override fun onSearchClicked(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
-        findNavController().navigate(HomeDirections.actionHomeToProfile(true, 1, timenoteInfoDTO))
+    override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
+        findNavController().navigate(HomeDirections.actionHomeToProfile(true, 1, userInfoDTO))
     }
 
 

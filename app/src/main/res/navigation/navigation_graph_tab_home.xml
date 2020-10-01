@@ -122,8 +122,8 @@
             android:id="@+id/action_profile_to_detailedTimenote"
             app:destination="@id/detailedTimenote" />
         <argument
-            android:name="timenoteInfoDTO"
-            app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
+            android:name="userInfoDTO"
+            app:argType="com.timenoteco.timenote.model.UserInfoDTO"
             app:nullable="true" />
     </fragment>
     <fragment

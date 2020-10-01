@@ -1,6 +1,7 @@
 package com.timenoteco.timenote.listeners
 
 import com.timenoteco.timenote.model.TimenoteInfoDTO
+import com.timenoteco.timenote.model.UserInfoDTO
 
 interface TimenoteOptionsListener {
     fun onReportClicked()
@@ -12,7 +13,7 @@ interface TimenoteOptionsListener {
     fun onSeeMoreClicked(timenoteInfoDTO: TimenoteInfoDTO)
     fun onCommentClicked(timenoteInfoDTO: TimenoteInfoDTO)
     fun onPlusClicked(timenoteInfoDTO: TimenoteInfoDTO)
-    fun onPictureClicked(timenoteInfoDTO: TimenoteInfoDTO)
+    fun onPictureClicked(userInfoDTO: UserInfoDTO)
     fun onHideToOthersClicked(timenoteInfoDTO: TimenoteInfoDTO)
     fun onMaskThisUser()
     fun onDoubleClick()

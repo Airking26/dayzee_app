@@ -1,6 +1,8 @@
 package com.timenoteco.timenote.view
 
 import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -56,6 +58,7 @@ import java.lang.reflect.Type
 
 class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby, ShowBarListener, ExitCreationTimenote, RefreshPicBottomNavListener {
 
+    private val CHANNEL_ID: String = "dayzee_channel"
     private var currentNavController: LiveData<NavController>? = null
     private val utils = Utils()
     private lateinit var prefs : SharedPreferences
@@ -117,6 +120,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
     @RequiresApi(Build.VERSION_CODES.M)
     private fun setupController(finished: Boolean) {
 
+        createNotificationChannel()
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
         val userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
 
@@ -250,6 +254,20 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
 
         })
         currentNavController = controller
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = getString(R.string.channel_name)
+            val descriptionText = getString(R.string.channel_description)
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+                description = descriptionText
+            }
+            val notificationManager: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
     }
 
     private fun setPicBottomNav(userInfoDTO: UserInfoDTO?) {

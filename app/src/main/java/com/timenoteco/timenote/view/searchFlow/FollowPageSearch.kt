@@ -40,13 +40,13 @@ class FollowPageSearch : Fragment(), UsersPagingAdapter.SearchPeopleListener {
         usersPagingAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, null, this)
         users_rv.adapter = usersPagingAdapter
         lifecycleScope.launch{
-            followViewModel.getUsers(tokenId!!, followers = true).collectLatest {
+            followViewModel.getUsers(tokenId!!, followers = 1).collectLatest {
                 usersPagingAdapter.submitData(it)
             }
         }
     }
 
-    override fun onSearchClicked(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+    override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
 
     }
 }

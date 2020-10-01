@@ -135,8 +135,8 @@
             android:name="from"
             app:argType="integer" />
         <argument
-            android:name="timenoteInfoDTO"
-            app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
+            android:name="userInfoDTO"
+            app:argType="com.timenoteco.timenote.model.UserInfoDTO"
             app:nullable="true" />
     </fragment>
     <fragment

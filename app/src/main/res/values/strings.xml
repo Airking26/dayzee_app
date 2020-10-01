@@ -179,7 +179,7 @@
     <string name="picture_successfully_added">PICTURE SUCCESSFULLY ADDED</string>
     <string name="man">male</string>
     <string name="woman">Woman</string>
-    <string name="public_label">public</string>
+    <string name="public_label">Public</string>
     <string name="private_label">Private</string>
     <string name="sorting">Sorting</string>
     <string name="error_message_filling">Please fill in all the fields</string>
@@ -259,4 +259,7 @@
     <string name="organizers">Organizers</string>
     <string name="confirm">Confirm</string>
     <string name="currency">Currency</string>
+    <string name="waiting_for_approval">Waiting for approval</string>
+    <string name="channel_name">dayzee</string>
+    <string name="channel_description">dayzee channel</string>
 </resources>

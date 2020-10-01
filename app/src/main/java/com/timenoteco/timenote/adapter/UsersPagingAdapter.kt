@@ -22,11 +22,11 @@ class UsersPagingAdapter(
     : PagingDataAdapter<UserInfoDTO, UsersPagingAdapter.UserViewHolder>(diffCallback){
 
     interface SearchPeopleListener{
-        fun onSearchClicked(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?)
+        fun onSearchClicked(userInfoDTO: UserInfoDTO)
     }
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-        holder.bindUser(getItem(position), searchPeopleListener, timenoteInfoDTO)
+        holder.bindUser(getItem(position), searchPeopleListener)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -45,9 +45,7 @@ class UsersPagingAdapter(
     class UserViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         fun bindUser(
             item: UserInfoDTO?,
-            searchPeopleListener: SearchPeopleListener,
-            timenoteInfoDTO: TimenoteInfoDTO?
-        ) {
+            searchPeopleListener: SearchPeopleListener) {
             Glide
                 .with(itemView)
                 .load(item?.picture)
@@ -61,10 +59,7 @@ class UsersPagingAdapter(
                 itemView.givenName.visibility = View.VISIBLE
                 itemView.givenName.text = item?.givenName
             }
-            itemView.setOnClickListener { searchPeopleListener.onSearchClicked(
-                item!!,
-                timenoteInfoDTO
-            ) }
+            itemView.setOnClickListener { searchPeopleListener.onSearchClicked(item!!) }
         }
 
     }

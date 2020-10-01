@@ -314,8 +314,8 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         }
     }
 
-    override fun onPictureClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(NearByDirections.actionNearByToProfile(true, 3, timenoteInfoDTO))
+    override fun onPictureClicked(userInfoDTO: UserInfoDTO) {
+        findNavController().navigate(NearByDirections.actionNearByToProfile(true, 3, userInfoDTO))
     }
 
     override fun onHideToOthersClicked(timenoteInfoDTO: TimenoteInfoDTO) {
@@ -391,17 +391,17 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
-            followViewModel.getUsers(tokenId!!, false).collectLatest {
+            followViewModel.getUsers(tokenId!!, 0).collectLatest {
                 userAdapter.submitData(it)
             }
         }
     }
 
-    override fun onAdd(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+    override fun onAdd(userInfoDTO: UserInfoDTO) {
         sendTo.add(userInfoDTO.id!!)
     }
 
-    override fun onRemove(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+    override fun onRemove(userInfoDTO: UserInfoDTO) {
         sendTo.remove(userInfoDTO.id!!)
     }
 
@@ -417,7 +417,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         findNavController().navigate(NearByDirections.actionNearByToTimenoteAddress())
     }
 
-    override fun onSearchClicked(userInfoDTO: UserInfoDTO, timenoteInfoDTO: TimenoteInfoDTO?) {
+    override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
 
     }
 

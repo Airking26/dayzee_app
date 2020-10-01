@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.model.CommentInfoDTO
+import com.timenoteco.timenote.model.UserInfoDTO
 import kotlinx.android.synthetic.main.item_comment.view.*
 import org.joda.time.DateTime
 import java.text.SimpleDateFormat
@@ -29,7 +30,7 @@ class CommentAdapter(
     RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() {
 
     interface CommentPicUserListener{
-        fun onPicUserCommentClicked()
+        fun onPicUserCommentClicked(userInfoDTO: UserInfoDTO)
     }
 
     interface CommentMoreListener{
@@ -82,7 +83,7 @@ class CommentAdapter(
             itemView.comment_time.text = calculateTimeSinceComment(commentModel.createdAt)
 
             itemView.comment_more.setOnClickListener{commentMoreListener.onCommentMoreClicked()}
-            itemView.comment_user_pic_imageview.setOnClickListener { commentPicUserListener.onPicUserCommentClicked() }
+            itemView.comment_user_pic_imageview.setOnClickListener { commentPicUserListener.onPicUserCommentClicked(commentModel.createdBy) }
         }
 
         private fun calculateTimeSinceComment(createdAt: String): String{
