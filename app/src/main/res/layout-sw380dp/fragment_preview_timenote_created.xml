@@ -4,12 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorBackground"
     tools:context=".view.createTimenoteFlow.PreviewTimenoteCreated">
 
     <LinearLayout
         android:id="@+id/preview_created_timenote_ll"
-        style="@style/AppTheme.Toolbar.LinearLayout">
+        style="@style/AppTheme.Toolbar.LinearLayout"
+        tools:ignore="MissingConstraints">
 
         <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
 
@@ -177,23 +179,44 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:drawableStart="@drawable/ic_profile_from"
+        android:layout_marginStart="16dp"
+        android:drawableStart="@drawable/ic_toolbar_location_nearby"
         android:drawablePadding="8dp"
         android:fontFamily="sans-serif-light"
         android:textColor="@color/colorText"
+        tools:text="23 Avenue de la Joconde, Paris France"
         android:textSize="15sp"
-        app:layout_constraintEnd_toEndOf="@id/where_cardview"
-        app:layout_constraintStart_toStartOf="@id/where_cardview"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/preview_created_timenote_indicator" />
 
-    <androidx.cardview.widget.CardView
+    <Button
+        android:textColor="@color/colorText"
+        android:text="@string/share_to"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/colorYellow"
+        android:drawableLeft="@drawable/ic_partage_sans_fleche_preview"
+        android:drawablePadding="-16dp"
+        android:paddingVertical="6dp"
+        android:paddingHorizontal="48dp"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/preview_created_timenote_place"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/preview_timenote_created_share_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <com.google.android.material.card.MaterialCardView
+        android:visibility="gone"
         android:id="@+id/where_cardview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="24dp"
         android:layout_marginTop="24dp"
         app:cardCornerRadius="5dp"
-        app:cardElevation="5dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@color/colorBackground"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/preview_created_timenote_place">
@@ -207,7 +230,6 @@
                 android:id="@+id/share_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_partage"
                 android:drawablePadding="8dp"
                 android:fontFamily="sans-serif-light"
                 android:text="@string/share_to"
@@ -217,6 +239,8 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 android:id="@+id/preview_created_timenote_facebook"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -260,14 +284,14 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_begin="205dp" />
+        app:layout_constraintGuide_end="197dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

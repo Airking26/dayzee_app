@@ -106,7 +106,7 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
         timenote_title.text = args.timenoteInfoDTO?.title
 
         screenSlideCreationTimenotePagerAdapter = if(!args.timenoteInfoDTO?.pictures.isNullOrEmpty()){
-            ScreenSlideTimenotePagerAdapter(this, args.timenoteInfoDTO?.pictures, true){ i: Int, i1: Int -> }
+            ScreenSlideTimenotePagerAdapter(this, args.timenoteInfoDTO?.pictures, true){ _: Int, _: Int -> }
         } else {
             ScreenSlideTimenotePagerAdapter(this, mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
                 "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",

@@ -149,7 +149,7 @@
         android:id="@+id/preview_created_timenote_buy"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorAccentCustom"
+        android:background="@color/colorYellow"
         android:fontFamily="sans-serif-light"
         android:gravity="end"
         android:paddingHorizontal="8dp"
@@ -177,90 +177,33 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:drawableStart="@drawable/ic_profile_from"
+        android:layout_marginStart="16dp"
+        android:drawableStart="@drawable/ic_toolbar_location_nearby"
         android:drawablePadding="8dp"
         android:fontFamily="sans-serif-light"
         android:textColor="@color/colorText"
+        tools:text="23 Avenue de la Joconde, Paris France"
         android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/preview_created_timenote_indicator" />
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/where_cardview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="24dp"
-        app:cardCornerRadius="5dp"
-        app:cardElevation="5dp"
-        app:layout_constraintEnd_toEndOf="parent"
+    <Button
+        android:textColor="@color/colorText"
+        android:text="@string/share_to"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/colorYellow"
+        android:drawableLeft="@drawable/ic_partage_sans_fleche_preview"
+        android:drawablePadding="-16dp"
+        android:paddingVertical="6dp"
+        android:paddingHorizontal="48dp"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/preview_created_timenote_place"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/preview_created_timenote_place">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp">
-
-            <TextView
-                android:id="@+id/share_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_partage_sans_fleche_ok"
-                android:drawablePadding="8dp"
-                android:fontFamily="sans-serif-light"
-                android:text="@string/share_to"
-                android:textColor="@color/colorText"
-                android:textSize="14sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/preview_created_timenote_facebook"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="8dp"
-                android:src="@drawable/ic_facebook_ok"
-                app:layout_constraintEnd_toStartOf="@id/preview_created_timenote_twitter"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/share_label" />
-
-            <ImageView
-                android:id="@+id/preview_created_timenote_twitter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:src="@drawable/ic_wa_ok"
-                app:layout_constraintEnd_toStartOf="@id/preview_created_timenote_linkedin"
-                app:layout_constraintStart_toEndOf="@id/preview_created_timenote_facebook"
-                app:layout_constraintTop_toBottomOf="@id/share_label" />
-
-            <ImageView
-                android:id="@+id/preview_created_timenote_linkedin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:src="@drawable/ic_linkedin_ok"
-                app:layout_constraintEnd_toStartOf="@id/preview_created_timenote_instagram"
-                app:layout_constraintStart_toEndOf="@id/preview_created_timenote_twitter"
-                app:layout_constraintTop_toBottomOf="@id/share_label" />
-
-            <ImageView
-                android:id="@+id/preview_created_timenote_instagram"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="24dp"
-                android:src="@drawable/ic_insta_ok"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/preview_created_timenote_linkedin"
-                app:layout_constraintTop_toBottomOf="@id/share_label" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </androidx.cardview.widget.CardView>
+        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/preview_timenote_created_share_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline3"

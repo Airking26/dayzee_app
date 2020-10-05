@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.common
 
+import android.content.res.Resources
 import android.graphics.Color
 import android.text.Editable
 import android.text.Spannable
@@ -8,13 +9,15 @@ import android.text.method.LinkMovementMethod
 import android.text.style.CharacterStyle
 import android.text.style.ForegroundColorSpan
 import android.widget.TextView
+import com.timenoteco.timenote.R
 import java.util.*
 
 
 class HashTagHelper private constructor(
     private val mHashTagWordColor: Int,
     private val listener: OnHashTagClickListener,
-    private val additionalHashTagCharacters: List<Char>?
+    private val additionalHashTagCharacters: List<Char>?,
+    private val resources: Resources
 ) : ClickableForegroundColorSpan.OnHashTagClickListener {
 
     private val mAdditionalHashTagChars: MutableList<Char>
@@ -22,12 +25,12 @@ class HashTagHelper private constructor(
     private val mOnHashTagClickListener: OnHashTagClickListener?
 
     object Creator {
-        fun create(color: Int, listener: OnHashTagClickListener): HashTagHelper {
-            return HashTagHelper(color, listener, null)
+        fun create(color: Int, listener: OnHashTagClickListener, resources: Resources): HashTagHelper {
+            return HashTagHelper(color, listener, null, resources)
         }
 
-        fun create(color: Int, listener: OnHashTagClickListener, additionalHashTagChars: List<Char>?): HashTagHelper {
-            return HashTagHelper(color, listener, additionalHashTagChars)
+        fun create(color: Int, listener: OnHashTagClickListener, additionalHashTagChars: List<Char>?,  resources: Resources): HashTagHelper {
+            return HashTagHelper(color, listener, additionalHashTagChars, resources)
         }
     }
 
@@ -134,10 +137,10 @@ class HashTagHelper private constructor(
         val s = mTextView!!.text as Spannable
         val span: CharacterStyle
         if (mOnHashTagClickListener != null) {
-            span = ClickableForegroundColorSpan(mHashTagWordColor, this)
+            span = ClickableForegroundColorSpan(resources.getColor(R.color.colorText), this)
         } else {
             // no need for clickable span because it is messing with selection when click
-            span = ForegroundColorSpan(mHashTagWordColor)
+            span = ForegroundColorSpan(resources.getColor(R.color.colorText))
         }
         s.setSpan(span, startIndex, nextNotLetterDigitCharIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
     }

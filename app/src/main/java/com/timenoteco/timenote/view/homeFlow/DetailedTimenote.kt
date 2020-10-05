@@ -7,6 +7,7 @@ import android.graphics.Typeface
 import android.os.Bundle
 import android.os.Handler
 import android.text.*
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,9 +40,12 @@ import com.timenoteco.timenote.adapter.*
 import com.timenoteco.timenote.common.RoundedCornersTransformation
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.model.*
+import com.timenoteco.timenote.view.MainActivity
 import com.timenoteco.timenote.viewModel.CommentViewModel
 import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.TimenoteViewModel
+import io.branch.referral.Branch
+import io.branch.referral.BranchError
 import kotlinx.android.synthetic.main.fragment_detailed_fragment.*
 import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.friends_search.view.*
@@ -49,6 +53,7 @@ import kotlinx.android.synthetic.main.item_timenote_root.*
 import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import java.lang.reflect.Type
 
 

@@ -9,5 +9,25 @@
         android:id="@+id/blankFragment"
         android:name="com.timenoteco.timenote.view.BlankFragment"
         android:label="fragment_blank"
-        tools:layout="@layout/fragment_blank" />
+        tools:layout="@layout/fragment_blank" >
+        <action
+            android:id="@+id/action_blankFragment_to_detailedTimenote"
+            app:destination="@id/detailedTimenote" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/detailedTimenote"
+        android:name="com.timenoteco.timenote.view.homeFlow.DetailedTimenote"
+        android:label="fragment_detailed_fragment"
+        tools:layout="@layout/fragment_detailed_fragment" >
+        <argument android:name="from"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <argument
+            android:name="event"
+            app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
+    <include app:graph="@navigation/navigation_graph_tab_home" />
 </navigation>

@@ -1,6 +1,7 @@
 package com.timenoteco.timenote.view
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -9,6 +10,7 @@ import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -19,10 +21,12 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
+import androidx.navigation.*
+import androidx.navigation.fragment.NavHostFragment
 import androidx.preference.PreferenceManager
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.auth.BasicSessionCredentials
@@ -43,8 +47,13 @@ import com.timenoteco.timenote.listeners.ExitCreationTimenote
 import com.timenoteco.timenote.listeners.RefreshPicBottomNavListener
 import com.timenoteco.timenote.listeners.ShowBarListener
 import com.timenoteco.timenote.model.FCMDTO
+import com.timenoteco.timenote.model.TimenoteInfoDTO
 import com.timenoteco.timenote.model.UserInfoDTO
+import com.timenoteco.timenote.view.homeFlow.DetailedTimenoteArgs
+import com.timenoteco.timenote.view.homeFlow.DetailedTimenoteDirections
 import com.timenoteco.timenote.view.homeFlow.Home
+import com.timenoteco.timenote.view.homeFlow.HomeDirections
+import com.timenoteco.timenote.view.searchFlow.ProfileSearchDirections
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.MeViewModel
 import io.branch.indexing.BranchUniversalObject
@@ -58,23 +67,12 @@ import java.lang.reflect.Type
 
 class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby, ShowBarListener, ExitCreationTimenote, RefreshPicBottomNavListener {
 
+    private lateinit var control: NavController
     private val CHANNEL_ID: String = "dayzee_channel"
     private var currentNavController: LiveData<NavController>? = null
     private val utils = Utils()
     private lateinit var prefs : SharedPreferences
     private val meViewModel : MeViewModel by viewModels()
-
-    object BranchListener : Branch.BranchReferralInitListener {
-        override fun onInitFinished(referringParams: JSONObject?, error: BranchError?) {
-            if (error == null) {
-                Log.i("BRANCH SDK", referringParams.toString())
-                // Retrieve deeplink keys from 'referringParams' and evaluate the values to determine where to route the user
-                // Check '+clicked_branch_link' before deciding whether to use your Branch routing logic
-            } else {
-                Log.e("BRANCH SDK", error.message)
-            }
-        }
-    }
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,20 +80,37 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
         setContentView(R.layout.activity_main)
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
 
-        setupController(true)
-        Branch.getAutoInstance(this)
+        setupController()
     }
 
     override fun onStart() {
         super.onStart()
-        Branch.sessionBuilder(this).withCallback(BranchListener).withData(this.intent?.data).init()
+        Branch.sessionBuilder(this).withCallback { referringParams, error ->
+            if (error == null) {
+                if (referringParams?.getBoolean("+clicked_branch_link")!!) {
+                    val typeTimenoteInfo: Type = object : TypeToken<TimenoteInfoDTO?>() {}.type
+                    val timenoteInfoDTO = Gson().fromJson<TimenoteInfoDTO>(referringParams.getString("timenoteInfoDTO"), typeTimenoteInfo)
+                    control.navigate(HomeDirections.actionGlobalDetailedTimenote(1, timenoteInfoDTO))
+                }
+            }
+        }.withData(this.intent?.data).init()
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         this.intent = intent
-        // Branch reinit (in case Activity is already in foreground when Branch link is clicked)
-        Branch.sessionBuilder(this).withCallback(BranchListener).reInit()
+        Branch.sessionBuilder(this).withCallback{ referringParams, error ->
+            if (error == null) {
+                Log.i("BRANCH SDK START", referringParams.toString())
+                if (referringParams?.getBoolean("+clicked_branch_link")!!) {
+                    val typeTimenoteInfo: Type = object : TypeToken<TimenoteInfoDTO?>() {}.type
+                    val timenoteInfoDTO = Gson().fromJson<TimenoteInfoDTO>(referringParams.getString("timenoteInfoDTO"), typeTimenoteInfo)
+                    control.navigate(HomeDirections.actionGlobalDetailedTimenote(1, timenoteInfoDTO))
+                }
+            } else {
+                Log.e("BRANCH SDK START", error.message)
+            }
+        }.reInit()
     }
 
     @SuppressLint("StringFormatInvalid")
@@ -114,11 +129,11 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        setupController(true)
+        setupController()
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    private fun setupController(finished: Boolean) {
+    private fun setupController() {
 
         createNotificationChannel()
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
@@ -156,12 +171,14 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
             bottomNavView.menu[4].iconTintMode = null
         }
 
-        if(!finished) bottomNavView.selectedItemId = R.id.navigation_graph_tab_2
-
         setPicBottomNav(userInfoDTO)
 
         controller.observe(this, Observer {
             it.addOnDestinationChangedListener { navController, destination, arguments ->
+
+                control = navController
+                val u = destination
+
                 when (destination.id) {
                     R.id.login -> {
                         utils.hideStatusBar(this)
@@ -199,7 +216,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                         utils.showStatusBar(this)
                         bottomNavView.visibility = View.GONE
                     }
-                    R.id.detailedTimenoteSearch ->{
+                    R.id.detailedTimenoteSearch -> {
                         utils.showStatusBar(this)
                         bottomNavView.visibility = View.GONE
                     }
@@ -212,20 +229,6 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                         bottomNavView.visibility = View.GONE
                     }
                     R.id.profileCalendar -> {
-
-                        val linkProperties: LinkProperties = LinkProperties()
-                            .setChannel("sms")
-                            .setFeature("sharing")
-
-                        val br = BranchUniversalObject().apply {
-                            canonicalIdentifier = ("test/123")
-                            title = "hello"
-                            setContentDescription("its working")
-                        }
-                        Branch.showInstallPrompt(this@MainActivity, 123, br)
-                        br.generateShortUrl(this, linkProperties) { url, error ->
-                            BranchEvent("branch_url_created").logEvent(applicationContext)
-                        }
                         utils.hideStatusBar(this)
                         bottomNavView.visibility = View.GONE
                     }
@@ -271,22 +274,25 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
     }
 
     private fun setPicBottomNav(userInfoDTO: UserInfoDTO?) {
-        if (userInfoDTO != null || !userInfoDTO?.picture.isNullOrBlank())
+        if (userInfoDTO != null || !userInfoDTO?.picture.isNullOrBlank()) {
             Glide
-            .with(this)
-            .asBitmap()
-            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-            .load(userInfoDTO?.picture)
-            .apply(RequestOptions.circleCropTransform())
-            .placeholder(R.drawable.circle_pic)
-            .into(object : CustomTarget<Bitmap>() {
-                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                    bottomNavView.menu[4].icon = BitmapDrawable(resources, resource)
-                }
+                .with(this)
+                .asBitmap()
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                .load(userInfoDTO?.picture)
+                .apply(RequestOptions.circleCropTransform())
+                .placeholder(R.drawable.circle_pic)
+                .into(object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(
+                        resource: Bitmap,
+                        transition: Transition<in Bitmap>?
+                    ) {
+                        bottomNavView.menu[4].icon = BitmapDrawable(resources, resource)
+                    }
 
-                override fun onLoadCleared(placeholder: Drawable?) {}
-            })
-        else bottomNavView.menu[4].icon = getDrawable(R.drawable.circle_pic)
+                    override fun onLoadCleared(placeholder: Drawable?) {}
+                })
+        } else bottomNavView.menu[4].icon = getDrawable(R.drawable.circle_pic)
     }
 
     override fun onSupportNavigateUp(): Boolean {

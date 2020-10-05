@@ -111,7 +111,7 @@
         android:id="@+id/detailedTimenoteSearch"
         android:name="com.timenoteco.timenote.view.searchFlow.DetailedTimenoteSearch"
         android:label="detailedTimenoteSearch"
-        tools:layout="@layout/fragment_detailed_fragment" >
+        tools:layout="@layout/fragment_detailed_fragment">
         <action
             android:id="@+id/action_detailedTimenoteSearch_to_profileSearch"
             app:destination="@id/profileSearch" />
@@ -122,6 +122,9 @@
             android:name="timenoteInfoDTO"
             app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
             app:nullable="true" />
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri="https://timenote.app.link/owfJ8Houjab" />
     </fragment>
     <fragment
         android:id="@+id/profileSearch"
@@ -155,6 +158,10 @@
         <argument
             android:name="from"
             app:argType="integer" />
+        <argument
+            android:name="timenoteInfoDTO"
+            app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/profileCalendarSearch"

@@ -29,11 +29,14 @@ import com.afollestad.materialdialogs.customview.getCustomView
 import com.afollestad.materialdialogs.datetime.dateTimePicker
 import com.afollestad.materialdialogs.internal.button.DialogActionButton
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.mancj.materialsearchbar.MaterialSearchBar
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.*
 import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.common.Utils
+import com.timenoteco.timenote.listeners.RefreshPicBottomNavListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.viewModel.*
@@ -43,6 +46,7 @@ import kotlinx.android.synthetic.main.friends_search.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import kotlin.math.log
 
@@ -62,6 +66,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     private var timenotePagingAdapter: TimenotePagingAdapter? = null
     private var timenoteRecentPagingAdapter: TimenoteRecentPagingAdapter? = null
     private lateinit var onGoToNearby: OnGoToNearby
+    private lateinit var onRefreshPicBottomNavListener: RefreshPicBottomNavListener
     private lateinit var prefs: SharedPreferences
     val TOKEN: String = "TOKEN"
     private var tokenId: String? = null
@@ -73,6 +78,8 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        tokenId = prefs.getString(TOKEN, null)
         if(!tokenId.isNullOrBlank()) loginViewModel.markAsAuthenticated() else findNavController().navigate(HomeDirections.actionHomeToNavigation())
         loginViewModel.getAuthenticationState().observe(requireActivity(), Observer {
             when (it) {
@@ -97,29 +104,12 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        tokenId = prefs.getString(TOKEN, null)
-        if(!tokenId.isNullOrBlank()) {
-
-            timenoteRecentPagingAdapter = TimenoteRecentPagingAdapter(TimenoteRecentComparator, this)
-            timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils)
-
-            lifecycleScope.launch {
-                timenoteViewModel.getRecentTimenotePagingFlow(tokenId!!).collectLatest {
-                    timenoteRecentPagingAdapter?.submitData(it)
-                }
-            }
-
-            lifecycleScope.launch {
-                timenoteViewModel.getTimenotePagingFlow(tokenId!!).collectLatest {
-                    timenotePagingAdapter?.submitData(it)
-                }
-            }
-        }
-
-        retainInstance = true
+        //if(!tokenId.isNullOrBlank()) loadData()
+        //retainInstance = true
         onGoToNearby = context as OnGoToNearby
+        onRefreshPicBottomNavListener = context as RefreshPicBottomNavListener
     }
+
 
     override fun onResume() {
         super.onResume()
@@ -127,6 +117,11 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
             LoginViewModel.AuthenticationState.GUEST -> loginViewModel.markAsUnauthenticated()
             LoginViewModel.AuthenticationState.UNAUTHENTICATED -> loginViewModel.markAsUnauthenticated()
         }
+
+        val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
+        val userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
+
+        onRefreshPicBottomNavListener.onrefreshPicBottomNav(userInfoDTO)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -135,70 +130,11 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if(tokenId != null) {
-            if(timenoteRecentPagingAdapter == null || home_nothing_to_display?.visibility == View.VISIBLE) {
-                timenoteRecentPagingAdapter = TimenoteRecentPagingAdapter(TimenoteRecentComparator, this)
-                lifecycleScope.launch {
-                    timenoteViewModel.getRecentTimenotePagingFlow(tokenId!!).collectLatest {
-                        timenoteRecentPagingAdapter?.submitData(it)
-                    }
-                }
-            }
-            if(timenotePagingAdapter == null || home_nothing_to_display?.visibility == View.VISIBLE) {
-                timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils)
-                lifecycleScope.launch {
-                    timenoteViewModel.getTimenotePagingFlow(tokenId!!).collectLatest {
-                        timenotePagingAdapter?.submitData(it)
-                    }
-                }
-            }
-
             home_swipe_refresh.setColorSchemeResources(R.color.colorStartGradient, R.color.colorEndGradient)
-            home_swipe_refresh.setOnRefreshListener {
-                timenoteRecentPagingAdapter = TimenoteRecentPagingAdapter(TimenoteComparator, this)
-                home_recent_rv.adapter = timenoteRecentPagingAdapter
-                home_recent_rv.layoutManager =
-                    LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-                lifecycleScope.launch {
-                    timenoteViewModel.getRecentTimenotePagingFlow(tokenId!!).collectLatest {
-                        timenoteRecentPagingAdapter?.submitData(it)
-                    }
-                }
+            home_swipe_refresh.setOnRefreshListener { loadData() }
 
-
-                timenotePagingAdapter =
-                    TimenotePagingAdapter(TimenoteComparator, this, this, true, utils)
-                home_rv?.adapter = timenotePagingAdapter
-                home_rv?.layoutManager = LinearLayoutManager(requireContext())
-                lifecycleScope.launch {
-                    timenoteViewModel.getTimenotePagingFlow(tokenId!!).collectLatest {
-                        home_swipe_refresh.isRefreshing = false
-                        timenotePagingAdapter?.submitData(it)
-                    }
-                }
-            }
-
-            home_recent_rv?.adapter = timenoteRecentPagingAdapter
-            home_recent_rv?.layoutManager =
-                LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-            home_rv?.adapter = timenotePagingAdapter
-            home_rv?.layoutManager = LinearLayoutManager(requireContext())
-
-
-            timenotePagingAdapter?.addLoadStateListener {
-                home_swipe_refresh.isRefreshing = it.refresh is LoadState.Loading
-                if (it.refresh != LoadState.Loading) {
-                    if(timenoteRecentPagingAdapter?.itemCount  == 0 && timenotePagingAdapter?.itemCount == 0){
-                        home_recent_rv?.visibility = View.GONE
-                        home_rv?.visibility = View.GONE
-                        home_posted_recently?.visibility = View.GONE
-                        home_nothing_to_display?.visibility = View.VISIBLE
-                    } else {
-                        home_recent_rv?.visibility = View.VISIBLE
-                        home_rv?.visibility = View.VISIBLE
-                        home_posted_recently?.visibility = View.VISIBLE
-                        home_nothing_to_display?.visibility = View.GONE
-                    }
-                }
+            if(timenoteRecentPagingAdapter == null || timenotePagingAdapter == null || home_nothing_to_display?.visibility == View.VISIBLE) {
+                loadData()
             }
 
             home_past_timeline.setOnClickListener(this)
@@ -215,6 +151,56 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                     }
                 }
                 false
+            }
+        }
+    }
+
+    private fun loadData() {
+        timenoteRecentPagingAdapter = TimenoteRecentPagingAdapter(TimenoteComparator, this)
+        LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        lifecycleScope.launch {
+            timenoteViewModel.getRecentTimenotePagingFlow(tokenId!!).collectLatest {
+                timenoteRecentPagingAdapter?.submitData(it)
+            }
+        }
+        timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils)
+        lifecycleScope.launch {
+            timenoteViewModel.getTimenotePagingFlow(tokenId!!).collectLatest {
+                home_swipe_refresh?.isRefreshing = false
+                timenotePagingAdapter?.submitData(it)
+            }
+        }
+
+        home_recent_rv?.apply {
+            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            adapter = timenoteRecentPagingAdapter
+        }
+        home_rv?.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = timenotePagingAdapter
+        }
+
+
+        timenotePagingAdapter?.addLoadStateListener {
+            if (it.refresh != LoadState.Loading) {
+                if (timenoteRecentPagingAdapter?.itemCount == 0 && timenotePagingAdapter?.itemCount == 0) {
+                    home_recent_rv?.visibility = View.GONE
+                    home_rv?.visibility = View.GONE
+                    home_posted_recently?.visibility = View.GONE
+                    home_nothing_to_display?.visibility = View.VISIBLE
+                } else {
+                    home_swipe_refresh?.isRefreshing = it.refresh is LoadState.Loading
+                    home_recent_rv?.visibility = View.VISIBLE
+                    home_rv?.visibility = View.VISIBLE
+                    home_posted_recently?.visibility = View.VISIBLE
+                    home_nothing_to_display?.visibility = View.GONE
+                }
+            } else {
+                home_swipe_refresh?.isRefreshing = it.refresh is LoadState.Loading
+                home_recent_rv?.visibility = View.GONE
+                home_rv?.visibility = View.GONE
+                home_posted_recently?.visibility = View.GONE
+                home_nothing_to_display?.visibility = View.GONE
             }
         }
     }

@@ -1,11 +1,14 @@
 package com.timenoteco.timenote.adapter
 
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.ViewTarget
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.androidView.calendar.data.Day
 import com.timenoteco.timenote.model.EventCalendar
@@ -56,7 +59,7 @@ class ItemCalendarAdapter(
 
             Glide
                 .with(itemView)
-                .load(event.pictures[0])
+                .load(event.pictures?.get(0))
                 .apply(RequestOptions.circleCropTransform())
                 .into(itemView.profile_calendar_item_pic_event_imageview)
         }

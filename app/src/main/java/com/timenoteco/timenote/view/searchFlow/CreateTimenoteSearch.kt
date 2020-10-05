@@ -195,44 +195,6 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
         backToHomeListener = context as BackToHomeListener
     }
 
-    fun pushPic(file: File, bitmap: Bitmap){
-        amazonClient.setRegion(Region.getRegion(Regions.EU_WEST_3))
-        val transferUtiliy = TransferUtility(amazonClient, requireContext())
-        compressFile(file, bitmap)
-        val key = "timenote/${UUID.randomUUID().mostSignificantBits}"
-        val transferObserver = transferUtiliy.upload(
-            "timenote-dev-images", key,
-            file, CannedAccessControlList.Private
-        )
-        transferObserver.setTransferListener(object : TransferListener {
-            override fun onStateChanged(id: Int, state: TransferState?) {
-                Log.d(TAG, "onStateChanged: ${state?.name}")
-                if (state == TransferState.COMPLETED) {
-                    imagesUrl.add(
-                        amazonClient.getResourceUrl("timenote-dev-images", key).toString()
-                    )
-                    if(images?.size == imagesUrl.size) {
-                        progressDialog.hide()
-                        findNavController().navigate(CreateTimenoteSearchDirections.actionCreateTimenoteSearchToPreviewTimenoteCreatedSearch(2))
-                    }
-
-                }
-
-            }
-
-            override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {
-                Log.d(TAG, "onProgressChanged: ")
-            }
-
-            override fun onError(id: Int, ex: java.lang.Exception?) {
-                Log.d(TAG, "onError: ${ex?.message}")
-                Toast.makeText(requireContext(), ex?.message, Toast.LENGTH_LONG).show()
-            }
-
-        })
-
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -522,7 +484,7 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
                             timenoteViewModel.createTimenote(tokenId!!, creationTimenoteViewModel.getCreateTimeNoteLiveData().value!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                                 if(it.isSuccessful) {
                                     progressDialog.hide()
-                                    findNavController().navigate(CreateTimenoteSearchDirections.actionCreateTimenoteSearchToPreviewTimenoteCreatedSearch(2))
+                                    findNavController().navigate(CreateTimenoteSearchDirections.actionCreateTimenoteSearchToPreviewTimenoteCreatedSearch(2, it.body()))
                                     imagesUrl = mutableListOf()
                                     images = mutableListOf()
                                 }
@@ -532,9 +494,7 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
                                 if(it.isSuccessful) {
                                     progressDialog.hide()
                                     findNavController().navigate(
-                                        CreateTimenoteSearchDirections.actionCreateTimenoteSearchToPreviewTimenoteCreatedSearch(
-                                            2
-                                        )
+                                        CreateTimenoteSearchDirections.actionCreateTimenoteSearchToPreviewTimenoteCreatedSearch(2, it.body())
                                     )
                                     imagesUrl = mutableListOf()
                                     images = mutableListOf()
@@ -638,9 +598,10 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
                 ) { materialDialog, charSequence ->
                     descTv.text = charSequence.toString()
                     val hashTagHelper = HashTagHelper.Creator.create(
-                        R.color.colorAccentCustom,
+                        R.color.colorText,
                         this@CreateTimenoteSearch,
-                        null
+                        null,
+                        resources
                     )
                     hashTagHelper.handle(descTv)
                     val hashtagList = hashTagHelper.getAllHashTags(true)

@@ -82,14 +82,14 @@ class ItemTimenoteAdapter(
             val light = ItemTimenoteRecentAdapter.CustomTypefaceSpan(p)
             val bold = ItemTimenoteRecentAdapter.CustomTypefaceSpan(m)
 
-            if(!timenote.joinedBy.users.isNullOrEmpty()){
+            if(!timenote.joinedBy?.users.isNullOrEmpty()){
                 when {
-                    timenote.joinedBy.count == 1 -> addedBy = "Saved by ${timenote.joinedBy.users[0].userName}"
-                    timenote.joinedBy.count in 1..20 -> addedBy = "Saved by ${timenote.joinedBy.users[0].userName} and ${timenote.joinedBy.count - 1} other people"
-                    timenote.joinedBy.count in 21..100 -> addedBy = "Saved by ${timenote.joinedBy.users[0].userName} and tens of other people"
-                    timenote.joinedBy.count in 101..2000 -> addedBy = "Saved by ${timenote.joinedBy.users[0].userName} and hundreds of other people"
-                    timenote.joinedBy.count in 2001..2000000 -> addedBy = "Saved by ${timenote.joinedBy.users[0].userName} and thousands of other people"
-                    timenote.joinedBy.count > 2000000 -> addedBy = "Saved by ${timenote.joinedBy.users[0].userName} and millions of other people"
+                    timenote.joinedBy?.count == 1 -> addedBy = "Saved by ${timenote.joinedBy.users[0].userName}"
+                    timenote.joinedBy?.count in 1..20 -> addedBy = "Saved by ${timenote.joinedBy?.users?.get(0)?.userName} and ${timenote.joinedBy?.count!! - 1} other people"
+                    timenote.joinedBy?.count in 21..100 -> addedBy = "Saved by ${timenote.joinedBy?.users?.get(0)?.userName} and tens of other people"
+                    timenote.joinedBy?.count in 101..2000 -> addedBy = "Saved by ${timenote.joinedBy?.users?.get(0)?.userName} and hundreds of other people"
+                    timenote.joinedBy?.count in 2001..2000000 -> addedBy = "Saved by ${timenote.joinedBy?.users?.get(0)?.userName} and thousands of other people"
+                    timenote.joinedBy?.count!! > 2000000 -> addedBy = "Saved by ${timenote.joinedBy?.users?.get(0)?.userName} and millions of other people"
                 }
 
                 addedByFormated = SpannableStringBuilder(addedBy)
@@ -97,7 +97,7 @@ class ItemTimenoteAdapter(
                 addedByFormated.setSpan(bold, 9, addedBy.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
                 itemView.timenote_added_by.text = addedByFormated
 
-                when (timenote.joinedBy.users.size) {
+                when (timenote.joinedBy?.users?.size) {
                     1 -> {
                         Glide
                             .with(itemView)
@@ -127,21 +127,21 @@ class ItemTimenoteAdapter(
                     else -> {
                         Glide
                             .with(itemView)
-                            .load(timenote.joinedBy.users[0].picture)
+                            .load(timenote.joinedBy?.users?.get(0)?.picture)
                             .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                             .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(itemView.context, 90, 0, itemView.context.resources.getString(0 + R.color.colorBackground), 4)))
                             .into(itemView.timenote_pic_participant_one)
 
                         Glide
                             .with(itemView)
-                            .load(timenote.joinedBy.users[1].picture)
+                            .load(timenote.joinedBy?.users?.get(1)?.picture)
                             .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                             .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(itemView.context, 90, 0, itemView.context.resources.getString(0 + R.color.colorBackground), 4)))
                             .into(itemView.timenote_pic_participant_two)
 
                         Glide
                             .with(itemView)
-                            .load(timenote.joinedBy.users[2].picture)
+                            .load(timenote.joinedBy?.users?.get(2)?.picture)
                             .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                             .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(itemView.context, 90, 0, itemView.context.resources.getString(0 + R.color.colorBackground), 4)))
                             .into(itemView.timenote_pic_participant_three)
@@ -156,7 +156,7 @@ class ItemTimenoteAdapter(
 
             val screenSlideCreationTimenotePagerAdapter =  ScreenSlideTimenotePagerAdapter(fragment, timenote.pictures, true){ _ : Int, i1: Int ->
                 if(i1 == 0) {
-                    if (timenote.price.price >= 0 || (timenote.price.price >= 0 && !timenote.url.isBlank())) {
+                    if (timenote.price.price >= 0 || (timenote.price.price >= 0 && !timenote.url.isNullOrBlank())) {
                         itemView.timenote_buy.visibility = View.VISIBLE
                         if (timenote.price .price> 0) itemView.timenote_buy.text = timenote.price.price.toString().plus(timenote.price.currency)
                     }
@@ -167,26 +167,26 @@ class ItemTimenoteAdapter(
 
             itemView.timenote_vp.adapter = screenSlideCreationTimenotePagerAdapter
             itemView.timenote_indicator.setViewPager(itemView.timenote_vp)
-            if(timenote.pictures.size == 1) itemView.timenote_indicator.visibility = View.GONE
+            if(timenote.pictures?.size == 1) itemView.timenote_indicator.visibility = View.GONE
             screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(itemView.timenote_indicator.adapterDataObserver)
             itemView.timenote_username.text = timenote.createdBy.userName
             if(timenote.location != null) itemView.timenote_place.text = timenote.location.address.address.plus(", ").plus(timenote.location.address.city).plus(" ").plus(timenote.location.address.country)
 
 
-            if(timenote.hashtags.isNullOrEmpty() && timenote.description.isBlank()){
+            if(timenote.hashtags.isNullOrEmpty() && timenote.description.isNullOrBlank()){
                 itemView.timenote_username_desc.visibility = View.GONE
-                if(timenote.joinedBy.count == 0){
+                if(timenote.joinedBy?.count == 0){
                     itemView.timenote_see_more.visibility = View.GONE
                 }
-            } else if(timenote.hashtags.isNullOrEmpty() && !timenote.description.isBlank()){
+            } else if(timenote.hashtags.isNullOrEmpty() && !timenote.description.isNullOrBlank()){
                 itemView.timenote_username_desc.text = timenote.description
-            } else if(!timenote.hashtags.isNullOrEmpty() && timenote.description.isBlank()){
+            } else if(!timenote.hashtags.isNullOrEmpty() && timenote.description.isNullOrBlank()){
                 val hashtags = SpannableStringBuilder(timenote.hashtags.joinToString(separator = ""))
                 hashtags.setSpan(bold, 0, hashtags.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
                 itemView.timenote_username_desc.text = hashtags
             } else {
-                val hashtags = SpannableStringBuilder(timenote.hashtags.joinToString(separator = ""))
-                val completeDesc = SpannableStringBuilder(timenote.hashtags.joinToString(separator = "")).append(" ${timenote.description}")
+                val hashtags = SpannableStringBuilder(timenote.hashtags?.joinToString(separator = ""))
+                val completeDesc = SpannableStringBuilder(timenote.hashtags?.joinToString(separator = "")).append(" ${timenote.description}")
                 completeDesc.setSpan(bold, 0, hashtags.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
                 completeDesc.setSpan(light, hashtags.length, completeDesc.toString().length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
                 itemView.timenote_username_desc.text = completeDesc

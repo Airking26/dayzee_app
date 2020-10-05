@@ -167,6 +167,10 @@
         <argument
             android:name="from"
             app:argType="integer" />
+        <argument
+            android:name="timenoteInfoDTO"
+            app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/followPage"
@@ -176,5 +180,5 @@
     <fragment
         android:id="@+id/profileCalendar"
         android:name="com.timenoteco.timenote.view.profileFlow.ProfileCalendar"
-        android:label="ProfileCalendar" />
+        android:label="ProfileCalendar" /><action android:id="@+id/action_global_detailedTimenote" app:destination="@id/detailedTimenote"/>
 </navigation>

@@ -237,6 +237,10 @@
         <argument
             android:name="from"
             app:argType="integer"/>
+        <argument
+            android:name="timenoteInfoDTO"
+            app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/profilePreview"
