@@ -76,6 +76,11 @@
         <!-- Branch testing (TestMode "true" to simulate fresh installs on dev environment) -->
         <meta-data android:name="io.branch.sdk.TestMode" android:value="false" />
 
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
     </application>
 
 </manifest>

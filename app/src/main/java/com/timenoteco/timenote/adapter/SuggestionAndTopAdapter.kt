@@ -12,7 +12,6 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.model.UserSuggested
 import kotlinx.android.synthetic.main.adapter_suggestion_card.view.*
 import kotlinx.android.synthetic.main.item_suggestion.view.*
-import me.samlss.broccoli.Broccoli
 
 class SuggestionAdapter(private var suggestions: Map<String, List<UserSuggested>>,
                         private val listener: SuggestionItemListener,

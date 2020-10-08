@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
@@ -42,7 +43,6 @@ import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
-import com.asksira.bsimagepicker.BSImagePicker
 import com.google.android.gms.maps.model.LatLng
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.AutoSuggestAdapter
@@ -53,6 +53,11 @@ import com.timenoteco.timenote.model.AWSFile
 import com.timenoteco.timenote.model.DetailedPlace
 import com.timenoteco.timenote.model.Location
 import com.timenoteco.timenote.viewModel.WebSearchViewModel
+import com.zhihu.matisse.Matisse
+import com.zhihu.matisse.MimeType
+import com.zhihu.matisse.engine.impl.GlideEngine
+import com.zhihu.matisse.filter.Filter
+import com.zhihu.matisse.internal.entity.CaptureStrategy
 import kotlinx.android.synthetic.main.autocomplete_search_address.view.*
 import kotlinx.android.synthetic.main.web_search_rv.view.*
 import org.apache.http.impl.cookie.DateUtils.formatDate
@@ -129,14 +134,14 @@ class Utils {
 
         MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             title(R.string.take_add_a_picture)
-            listItems(items = listOf(resources.getString(R.string.take_a_photo), resources.getString(R.string.choose_from_gallery), resources.getString(R.string.search_on_web))) { _, index, text ->
+            listItems(items = listOf(resources.getString(R.string.add_a_picture), resources.getString(R.string.search_on_web))) { _, index, text ->
                 if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
                     && ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                     view.visibility = View.GONE
                     view1.visibility = View.VISIBLE
                     when (text) {
-                        resources.getString(R.string.take_a_photo) -> createPictureSingleBS(fragment.childFragmentManager, "single")
-                        resources.getString(R.string.choose_from_gallery) -> createPictureMultipleBS(fragment.childFragmentManager, "multiple")
+                        resources.getString(R.string.add_a_picture) -> createImagePicker(fragment, context)
+                        //resources.getString(R.string.choose_from_gallery) -> createPictureMultipleBS(fragment.childFragmentManager, "multiple")
                         resources.getString(R.string.search_on_web) -> createWebSearchDialog(context, webSearchViewModel, fragment, view, view1)
                     }
                 } else fragment.requestPermissions(PERMISSIONS_STORAGE, 2)
@@ -208,7 +213,25 @@ class Utils {
         }
     }
 
-    fun createPictureSingleBS(childFragmentManager: FragmentManager, tag: String){
+    fun createImagePicker(fragment: Fragment, context: Context){
+        Matisse.from(fragment)
+            .choose(MimeType.ofImage())
+            .countable(false)
+            .capture(true)
+            .spanCount(4)
+            .captureStrategy(CaptureStrategy(true, "com.timenoteco.timenote.fileprovider", "TIMENOTE"))
+            .maxSelectable(3)
+            .addFilter(GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))
+            .gridExpectedSize(context.resources.getDimensionPixelSize(R.dimen.grid))
+            .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+            .thumbnailScale(0.85f)
+            .imageEngine(GlideEngine())
+            .maxOriginalSize(10)
+            .autoHideToolbarOnSingleTap(true)
+            .forResult(112)
+    }
+
+    /*fun createPictureSingleBS(childFragmentManager: FragmentManager, tag: String){
         BSImagePicker.Builder("com.timenoteco.timenote.fileprovider")
             .setSpanCount(3)
             .useFrontCamera()
@@ -224,7 +247,7 @@ class Utils {
             .setTag(tag)
             .build()
             .show(childFragmentManager, "")
-    }
+    }*/
 
     fun hideStatusBar(activity: Activity){
         activity.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_IMMERSIVE

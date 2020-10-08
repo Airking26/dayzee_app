@@ -20,7 +20,6 @@ import com.timenoteco.timenote.model.UserSuggested
 import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import kotlinx.android.synthetic.main.fragment_search_top.*
-import me.samlss.broccoli.Broccoli
 
 class SearchTop: Fragment(), SuggestionAdapter.SuggestionItemListener,
     SuggestionAdapter.SuggestionItemPicListener {

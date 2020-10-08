@@ -97,7 +97,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="8dp"
                     android:layout_marginTop="8dp"
-                    android:text="Nothing to show, add some people or center of interest to begin your adventure with Dayzee"
+                    android:text="@string/nothing_to_show_add_some_people_or_center_of_interest_to_begin_your_adventure_with_dayzee"
                     android:textColor="@color/colorText"
                     android:textSize="14sp"
                     android:visibility="gone"/>

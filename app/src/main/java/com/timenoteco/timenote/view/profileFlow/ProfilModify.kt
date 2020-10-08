@@ -49,13 +49,9 @@ import com.amazonaws.regions.Region
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.CannedAccessControlList
-import com.asksira.bsimagepicker.BSImagePicker
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.PlacesClient
@@ -71,10 +67,15 @@ import com.timenoteco.timenote.androidView.input
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.stringLiveData
 import com.timenoteco.timenote.listeners.RefreshPicBottomNavListener
-import com.timenoteco.timenote.model.*
+import com.timenoteco.timenote.model.AWSFile
+import com.timenoteco.timenote.model.STATUS
+import com.timenoteco.timenote.model.UpdateUserInfoDTO
+import com.timenoteco.timenote.model.UserInfoDTO
 import com.timenoteco.timenote.viewModel.ProfileModifyViewModel
 import com.timenoteco.timenote.viewModel.WebSearchViewModel
 import com.timenoteco.timenote.webService.ProfileModifyData
+import com.yalantis.ucrop.UCrop
+import com.zhihu.matisse.Matisse
 import kotlinx.android.synthetic.main.cropview_circle.view.*
 import kotlinx.android.synthetic.main.fragment_profil_modify.*
 import java.io.File
@@ -84,14 +85,11 @@ import java.lang.reflect.Type
 import java.net.URL
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 
-class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImageSelectedListener,
-    WebSearchAdapter.ImageChoosedListener, WebSearchAdapter.MoreImagesClicked, BSImagePicker.ImageLoaderDelegate, BSImagePicker.OnSelectImageCancelledListener{
+class ProfilModify: Fragment(), View.OnClickListener,
+    WebSearchAdapter.ImageChoosedListener, WebSearchAdapter.MoreImagesClicked{
 
     private var imagesUrl: String = ""
     val amazonClient = AmazonS3Client(
@@ -109,12 +107,17 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
     private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     private val webSearchViewModel : WebSearchViewModel by activityViewModels()
     val TOKEN: String = "TOKEN"
-    private var images: AWSFile? = null
+    private var images: String? = null
     private var tokenId: String? = null
     private lateinit var utils: Utils
     private lateinit var onRefreshPicBottomNavListener: RefreshPicBottomNavListener
     private val profileModVieModel: ProfileModifyViewModel by activityViewModels()
-    private var placesList: List<Place.Field> = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
+    private var placesList: List<Place.Field> = listOf(
+        Place.Field.ID,
+        Place.Field.NAME,
+        Place.Field.ADDRESS,
+        Place.Field.LAT_LNG
+    )
     private lateinit var placesClient: PlacesClient
 
     init {
@@ -151,11 +154,16 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
         profileModifyPb = profile_modify_pb
         profileModifyPicIv = profile_modify_pic_imageview
 
+        profileModifyPicIv.visibility = View.VISIBLE
+        profileModifyPb.visibility = View.GONE
 
         setListeners()
         setProfilModifyViewModel()
 
-        profile_from_switch.isChecked = prefs.getInt("locaPref", -1) == 1 || prefs.getInt("locaPref", -1) == 2
+        profile_from_switch.isChecked = prefs.getInt("locaPref", -1) == 1 || prefs.getInt(
+            "locaPref",
+            -1
+        ) == 2
 
         profile_from_switch.setOnCheckedChangeListener{ _, isChecked ->
             if(isChecked) prefs.edit().putInt("locaPref", 1).apply()
@@ -186,7 +194,10 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setProfilModifyViewModel() {
         profileModifyData = ProfileModifyData(requireContext())
-        prefs.stringLiveData("UserInfoDTO", Gson().toJson(profileModifyData.loadProfileModifyModel())).observe(
+        prefs.stringLiveData(
+            "UserInfoDTO",
+            Gson().toJson(profileModifyData.loadProfileModifyModel())
+        ).observe(
             viewLifecycleOwner,
             Observer {
                 val type: Type = object : TypeToken<UserInfoDTO?>() {}.type
@@ -199,12 +210,17 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
                     .apply(RequestOptions.circleCropTransform())
                     .placeholder(R.drawable.circle_pic)
                     .into(profile_modify_pic_imageview)
+                profile_modify_name_appearance.text = profilModifyModel?.userName
 
                 if (profilModifyModel?.givenName.isNullOrBlank()) profile_modify_name.hint =
                     getString(R.string.your_name) else profile_modify_name.text =
                     profilModifyModel?.givenName
                 if (profilModifyModel?.location?.address?.address.isNullOrBlank()) profile_modify_from.hint =
-                    getString(R.string.from) else profile_modify_from.text = profilModifyModel?.location?.address?.address.plus(", ").plus(profilModifyModel?.location?.address?.city).plus(" ").plus(profilModifyModel?.location?.address?.country)
+                    getString(R.string.from) else profile_modify_from.text =
+                    profilModifyModel?.location?.address?.address.plus(
+                        ", "
+                    ).plus(profilModifyModel?.location?.address?.city).plus(" ")
+                        .plus(profilModifyModel?.location?.address?.country)
                 if (profilModifyModel?.birthday.isNullOrBlank()) profile_modify_birthday.hint =
                     getString(R.string.birthday) else profile_modify_birthday.text =
                     profilModifyModel?.birthday
@@ -325,21 +341,36 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
                 }
 
 
-                if (prefs.getString("pmtc", "") != Gson().toJson(profileModifyData.loadProfileModifyModel())) {
-                    profileModVieModel.modifyProfile(tokenId!!, UpdateUserInfoDTO(
-                        profilModifyModel.givenName, profilModifyModel.familyName, profilModifyModel.picture,
-                        profilModifyModel.location, profilModifyModel.birthday, profilModifyModel.description,
-                        profilModifyModel.gender, if(profilModifyModel.status == 0) STATUS.PUBLIC.ordinal else STATUS.PRIVATE.ordinal,
-                        if(profilModifyModel.dateFormat == 0) STATUS.PUBLIC.ordinal else STATUS.PRIVATE.ordinal, profilModifyModel.socialMedias
-                    )).observe(viewLifecycleOwner, Observer { usr ->
+                if (prefs.getString(
+                        "pmtc",
+                        ""
+                    ) != Gson().toJson(profileModifyData.loadProfileModifyModel())
+                ) {
+                    profileModVieModel.modifyProfile(
+                        tokenId!!, UpdateUserInfoDTO(
+                            profilModifyModel.givenName,
+                            profilModifyModel.familyName,
+                            profilModifyModel.picture,
+                            profilModifyModel.location,
+                            profilModifyModel.birthday,
+                            profilModifyModel.description,
+                            profilModifyModel.gender,
+                            if (profilModifyModel.status == 0) STATUS.PUBLIC.ordinal else STATUS.PRIVATE.ordinal,
+                            if (profilModifyModel.dateFormat == 0) STATUS.PUBLIC.ordinal else STATUS.PRIVATE.ordinal,
+                            profilModifyModel.socialMedias
+                        )
+                    ).observe(viewLifecycleOwner, Observer { usr ->
                         onRefreshPicBottomNavListener.onrefreshPicBottomNav(usr.body())
                         prefs.edit().putString("UserInfoDTO", Gson().toJson(usr.body())).apply()
                         prefs.edit().putInt("followers", usr.body()?.followers!!).apply()
                         prefs.edit().putInt("following", usr.body()?.following!!).apply()
-                        })
+                    })
                 }
 
-                prefs.edit().putString("pmtc", Gson().toJson(profileModifyData.loadProfileModifyModel())).apply()
+                prefs.edit().putString(
+                    "pmtc",
+                    Gson().toJson(profileModifyData.loadProfileModifyModel())
+                ).apply()
             })
     }
 
@@ -412,7 +443,7 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
                     null,
                     listOf(getString(R.string.date), getString(R.string.countdown))
                 ) { dialog, index, text ->
-                    when(index){
+                    when (index) {
                         0 -> profileModifyData.setFormatTimenote(index)
                         1 -> profileModifyData.setFormatTimenote(index)
                     }
@@ -436,7 +467,9 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
             }
             profile_modify_from -> startActivityForResult(
                 Autocomplete.IntentBuilder(
-                    AutocompleteActivityMode.OVERLAY, placesList).build(requireContext()), AUTOCOMPLETE_REQUEST_CODE)
+                    AutocompleteActivityMode.OVERLAY, placesList
+                ).build(requireContext()), AUTOCOMPLETE_REQUEST_CODE
+            )
             profile_modify_youtube_channel -> MaterialDialog(
                 requireContext(), BottomSheet(
                     LayoutMode.WRAP_CONTENT
@@ -555,6 +588,8 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
             override fun onStateChanged(id: Int, state: TransferState?) {
                 Log.d(ContentValues.TAG, "onStateChanged: ${state?.name}")
                 if (state == TransferState.COMPLETED) {
+                    profileModifyPb.visibility = View.GONE
+                    profileModifyPicIv.visibility = View.VISIBLE
                     imagesUrl = amazonClient.getResourceUrl("timenote-dev-images", key).toString()
                     profileModifyData.setPicture(imagesUrl)
                 }
@@ -608,9 +643,7 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
             title(R.string.take_add_a_picture)
             listItems(
                 items = listOf(
-                    getString(R.string.take_a_photo), getString(R.string.search_on_web), getString(
-                        R.string.trim
-                    ), getString(R.string.delete)
+                    getString(R.string.add_a_picture), getString(R.string.search_on_web), getString(R.string.delete)
                 )
             ) { _, index, text ->
                 if (ContextCompat.checkSelfPermission(
@@ -622,16 +655,19 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
                         Manifest.permission.WRITE_EXTERNAL_STORAGE
                     ) == PackageManager.PERMISSION_GRANTED) {
                     when (index) {
-                        0 -> utils.createPictureSingleBS(childFragmentManager, "single")
+                        0 -> {
+                            utils.createImagePicker(this@ProfilModify, requireContext())
+                            profileModifyPicIv.visibility = View.GONE
+                            profileModifyPb.visibility = View.VISIBLE
+                        }
                         1 -> utils.createWebSearchDialog(
                             requireContext(),
                             webSearchViewModel,
                             this@ProfilModify,
-                            null,
-                            null
+                            profileModifyPicIv,
+                            profileModifyPb
                         )
-                        2 -> cropImage(images)
-                        3 -> {
+                        2 -> {
                             images = null
 
                         }
@@ -642,8 +678,8 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
         }
     }
 
-    private fun cropImage(awsFile: AWSFile?) {
-        var cropView: CropImageView? = null
+    private fun cropImage(uri: Uri?) {
+        /*var cropView: CropImageView? = null
         val dialog = MaterialDialog(requireContext()).show {
             customView(R.layout.cropview_circle)
             title(R.string.resize)
@@ -659,7 +695,7 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
             lifecycleOwner(this@ProfilModify)
         }
         cropView = dialog.getCustomView().crop_view_circle as CropImageView
-        cropView.setImageBitmap(awsFile?.bitmap)
+        cropView.setImageBitmap(awsFile?.bitmap)*/
     }
 
     private fun saveImage(image: Bitmap, dialog: MaterialDialog): String? {
@@ -692,31 +728,39 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
         mediaScanIntent.data = contentUri
         requireActivity().sendBroadcast(mediaScanIntent)
         dialog.dismiss()
-        utils.createPictureSingleBS(childFragmentManager, "single")
+        utils.createImagePicker(this, requireContext())
     }
 
-    override fun onSingleImageSelected(uri: Uri?, tag: String?) {
-        images = AWSFile(
-            uri, MediaStore.Images.Media.getBitmap(
-                requireActivity().contentResolver,
-                uri
-            )
-        )
-        pushPic(
-            File(getPath(uri)!!), MediaStore.Images.Media.getBitmap(
-                requireActivity().contentResolver,
-                uri
-            )
-        )
-    }
-
-    fun getPath(uri: Uri?): String? {
+    private fun getPath(uri: Uri?): String? {
         val projection = arrayOf(MediaStore.Images.Media.DATA)
         val cursor: Cursor = requireActivity().managedQuery(uri, projection, null, null, null)
         requireActivity().startManagingCursor(cursor)
         val column_index: Int = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
         cursor.moveToFirst()
         return cursor.getString(column_index)
+    }
+
+    fun getImageContentUri(context: Context, imageFile: File): Uri? {
+        val filePath = imageFile.absolutePath
+        val cursor = context.contentResolver.query(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, arrayOf(MediaStore.Images.Media._ID),
+            MediaStore.Images.Media.DATA + "=? ", arrayOf(filePath), null
+        )
+        return if (cursor != null && cursor.moveToFirst()) {
+            val id = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns._ID))
+            cursor.close()
+            Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "" + id)
+        } else {
+            if (imageFile.exists()) {
+                val values = ContentValues()
+                values.put(MediaStore.Images.Media.DATA, filePath)
+                context.contentResolver.insert(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values
+                )
+            } else {
+                null
+            }
+        }
     }
 
     override fun onImageSelectedFromWeb(bitmap: String, dialog: MaterialDialog) {
@@ -735,23 +779,18 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
         webSearchViewModel.search(query, requireContext(), (position).toLong())
     }
 
-    override fun loadImage(imageUri: Uri?, ivImage: ImageView?) {
-        Glide.with(this).load(imageUri).into(ivImage!!)
-    }
-
-    override fun onCancelled(isMultiSelecting: Boolean, tag: String?) {
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
             when (resultCode) {
                 Activity.RESULT_OK -> {
                     data?.let {
                         val place = Autocomplete.getPlaceFromIntent(data)
-                        profileModVieModel.fetchLocation(place.id!!).observe(viewLifecycleOwner, Observer {
-                            val location = Utils().setLocation(it.body()!!)
-                            profileModifyData.setLocation(location)
-                        })
+                        profileModVieModel.fetchLocation(place.id!!).observe(
+                            viewLifecycleOwner,
+                            Observer {
+                                val location = utils.setLocation(it.body()!!)
+                                profileModifyData.setLocation(location)
+                            })
                     }
                 }
                 AutocompleteActivity.RESULT_ERROR -> {
@@ -769,6 +808,8 @@ class ProfilModify: Fragment(), View.OnClickListener, BSImagePicker.OnSingleImag
             if (resultCode == Activity.RESULT_OK){
                 picturePickerUser()
             }
+        } else if(requestCode == 112 && resultCode == Activity.RESULT_OK){
+            pushPic(File(getPath(Matisse.obtainResult(data)[0])!!), MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, Matisse.obtainResult(data)[0]))
         }
         super.onActivityResult(requestCode, resultCode, data)
     }

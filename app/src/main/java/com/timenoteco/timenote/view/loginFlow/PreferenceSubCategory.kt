@@ -8,8 +8,6 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.Navigation
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
@@ -35,11 +33,18 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
     private val preferencesViewModel: PreferencesViewModel by activityViewModels()
     private lateinit var preferences: Preferences
     private lateinit var prefs: SharedPreferences
+    private lateinit var tokenId: String
     open val TOKEN: String = "TOKEN"
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        tokenId = prefs.getString(TOKEN, null)!!
+    }
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view =  inflater.inflate(R.layout.fragment_preference_sub_category, container, false).apply {
+        return inflater.inflate(R.layout.fragment_preference_sub_category, container, false).apply {
             isFocusableInTouchMode = true
             requestFocus()
             setOnKeyListener { _, keyCode, event ->
@@ -49,15 +54,13 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
                 true
             }
         }
-
-        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         setListenerOnClick()
         setRvAndAdapters(view)
-        preferencesViewModel.getPreferences().observe(viewLifecycleOwner, Observer {
+        preferencesViewModel.getPreferences(tokenId).observe(viewLifecycleOwner, Observer {
 //            preferences = Preferences(it.body()!!)
 //            updateListCategoryAndSubCategory(it.body())
         })

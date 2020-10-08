@@ -262,4 +262,8 @@
     <string name="waiting_for_approval">Waiting for approval</string>
     <string name="channel_name">dayzee</string>
     <string name="channel_description">dayzee channel</string>
+    <string name="nothing_to_show_add_some_people_or_center_of_interest_to_begin_your_adventure_with_dayzee">Nothing to show, add some people or center of interest to begin your adventure with Dayzee</string>
+    <string name="nothing_to_show_nearby">Nothing around, try another set of filters</string>
+    <string name="nothing_to_show_profile">You don\'t have anything plan</string>
+    <string name="add_a_picture">Add a picture</string>
 </resources>

@@ -25,6 +25,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.ExperimentalPagingApi
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.LayoutMode
@@ -87,10 +88,8 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     private lateinit var nearbyDateTv: TextView
     private val loginViewModel : LoginViewModel by activityViewModels()
     private val followViewModel: FollowViewModel by activityViewModels()
-    private var timenotes: List<TimenoteInfoDTO> = mutableListOf()
     private val DATE_FORMAT = "EEE, d MMM yyyy"
     private lateinit var dateFormat : SimpleDateFormat
-    private lateinit var timenoteAdapter: ItemTimenoteAdapter
     private var googleMap: GoogleMap? = null
     private var placesList: List<Place.Field> = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
     private lateinit var placesClient: PlacesClient
@@ -139,9 +138,13 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         Utils().hideStatusBar(requireActivity())
     }
 
+    @OptIn(ExperimentalPagingApi::class)
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         Utils().hideStatusBar(requireActivity())
+
+        nearby_swipe_refresh.isRefreshing = true
+        nearby_swipe_refresh.setColorSchemeResources(R.color.colorStartGradient, R.color.colorEndGradient)
 
         nearbyFilterData = NearbyFilterData(requireContext())
         dateFormat = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
@@ -149,6 +152,8 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         nearby_place.setOnClickListener(this)
         nearby_time.setOnClickListener(this)
         nearby_filter_btn.setOnClickListener(this)
+
+        nearby_swipe_refresh.setOnRefreshListener { loadData() }
 
         if(mapFragment == null){
             mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
@@ -179,30 +184,15 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
             }
         }
 
-        timenoteAdapter = ItemTimenoteAdapter(timenotes,this, this, true, utils)
-
-        nearby_rv.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = timenoteAdapter
-        }
-
         prefs.stringLiveData("nearby", Gson().toJson(nearbyFilterData.loadNearbyFilter())).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             val nearbyModifyModel : NearbyRequestBody? = Gson().fromJson<NearbyRequestBody>(it, object : TypeToken<NearbyRequestBody?>() {}.type)
             nearby_place.text = nearbyModifyModel?.location?.address?.address
             if(nearbyModifyModel?.date == null || nearbyModifyModel.date.isBlank())
                 nearby_time.text = dateFormat.format(System.currentTimeMillis())
-            else
-                nearby_time.text = nearbyModifyModel.date
-            timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, Utils())
-            nearby_rv.adapter = timenotePagingAdapter
-            nearby_rv.layoutManager = LinearLayoutManager(requireContext())
-            if(nearbyToCompare != Gson().toJson(nearbyFilterData.loadNearbyFilter()) && !tokenId.isNullOrBlank()){
-                lifecycleScope.launch {
-                    nearbyViewModel.getNearbyResults(nearbyModifyModel!!).collectLatest { pagingData ->
-                        timenotePagingAdapter.submitData(pagingData)
-                    }
-                }
-            }
+            else nearby_time.text = nearbyModifyModel.date
+
+            loadData()
+
             nearbyToCompare = Gson().toJson(nearbyFilterData.loadNearbyFilter())
         })
 
@@ -219,6 +209,31 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
             false
         }
      }
+
+    @ExperimentalPagingApi
+    private fun loadData() {
+        timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, Utils())
+        nearby_rv.adapter = timenotePagingAdapter
+        nearby_rv.layoutManager = LinearLayoutManager(requireContext())
+        /*if(nearbyToCompare != Gson().toJson(nearbyFilterData.loadNearbyFilter()) && !tokenId.isNullOrBlank()){
+                lifecycleScope.launch {
+                    nearbyViewModel.getNearbyResults(nearbyModifyModel!!).collectLatest { pagingData ->
+                        timenotePagingAdapter.submitData(pagingData)
+                    }
+                }
+            }*/
+
+        timenotePagingAdapter.addDataRefreshListener { isEmpty ->
+            nearby_swipe_refresh.isRefreshing = false
+            if (isEmpty) {
+                nearby_rv.visibility = View.GONE
+                nearby_nothing_to_display.visibility = View.VISIBLE
+            } else {
+                nearby_rv.visibility = View.VISIBLE
+                nearby_nothing_to_display.visibility = View.GONE
+            }
+        }
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {

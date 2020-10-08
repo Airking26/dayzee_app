@@ -12,9 +12,9 @@ class PreferencesViewModel: ViewModel() {
 
     private val preferencesService = DayzeeRepository().getPreferencesService()
 
-    fun getPreferences(): LiveData<Response<MutableList<SubCategoryRated>>> {
+    fun getPreferences(token: String): LiveData<Response<MutableList<SubCategoryRated>>> {
         return flow {
-            emit(preferencesService.getMyPreferences(""))
+            emit(preferencesService.getMyPreferences("Bearer $token"))
         }.asLiveData(viewModelScope.coroutineContext)
     }
 

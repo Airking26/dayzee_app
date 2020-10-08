@@ -21,9 +21,8 @@ import java.lang.reflect.Type
 
 class MyFirebaseNotificationService : FirebaseMessagingService() {
 
-    val intent = Intent(this, Notifications::class.java).apply {
-        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK }
-    val pendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
+    //private var intent = Intent(this, Notifications::class.java).apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK }
+    //val pendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
     private lateinit var prefs : SharedPreferences
     private val CHANNEL_ID: String = "dayzee_channel"
     private var notifications: MutableList<Notification> = mutableListOf()
@@ -52,7 +51,7 @@ class MyFirebaseNotificationService : FirebaseMessagingService() {
             .setContentText(message.messageId)
             .setStyle(NotificationCompat.BigTextStyle().bigText(message.messageId))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setContentIntent(pendingIntent)
+            //.setContentIntent(pendingIntent)
             .setAutoCancel(true)
 
         with(NotificationManagerCompat.from(this)){

@@ -119,20 +119,41 @@
 
         </com.google.android.material.appbar.AppBarLayout>
 
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:fillViewport="true"
+            android:id="@+id/nearby_swipe_refresh"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
         <androidx.core.widget.NestedScrollView
             android:id="@+id/scrollable"
             android:layout_width="match_parent"
-            android:fillViewport="true"
             android:layout_height="wrap_content"
-            android:scrollbars="none"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            android:scrollbars="none">
 
             <LinearLayout
+                android:gravity="center"
                 android:focusableInTouchMode="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+                <TextView
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:id="@+id/nearby_nothing_to_display"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/nothing_to_show_nearby"
+                    android:textColor="@color/colorText"
+                    android:textSize="14sp"
+                    android:visibility="gone"/>
+
                 <androidx.recyclerview.widget.RecyclerView
+                    android:visibility="visible"
                     tools:listitem="@layout/item_timenote"
                     android:background="@color/colorBackground"
                     android:clipToPadding="false"
@@ -149,6 +170,8 @@
             </LinearLayout>
 
         </androidx.core.widget.NestedScrollView>
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

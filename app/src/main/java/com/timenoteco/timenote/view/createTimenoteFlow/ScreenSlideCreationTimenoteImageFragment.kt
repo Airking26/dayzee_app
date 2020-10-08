@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.view.createTimenoteFlow
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,7 +20,7 @@ private const val ARG_PARAM5 = "picture"
 
 class ScreenSlideCreationTimenoteImageFragment: Fragment() {
     private var param1: Int? = null
-    private var param2: AWSFile? = null
+    private var param2: String? = null
     private var param3: Boolean? = null
     private var param4: Boolean? = null
     private var param5: String? =null
@@ -30,7 +31,7 @@ class ScreenSlideCreationTimenoteImageFragment: Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
             param1 = it.getInt(ARG_PARAM1)
-            param2 = it.getParcelable(ARG_PARAM2)
+            param2 = it.getString(ARG_PARAM2)
             param3 = it.getBoolean(ARG_PARAM3)
             param4 = it.getBoolean(ARG_PARAM4)
             param5 = it.getString(ARG_PARAM5)
@@ -51,7 +52,7 @@ class ScreenSlideCreationTimenoteImageFragment: Fragment() {
                 .load(param5)
                 .into(create_timenote_pic)
         } else Glide.with(view)
-            .load(param2?.uri)
+            .load(Uri.parse(param2))
             .into(create_timenote_pic)
 
         if(param3!! || param4!!){
@@ -59,20 +60,20 @@ class ScreenSlideCreationTimenoteImageFragment: Fragment() {
             timenote_add_pic.visibility = View.GONE
             timenote_delete_pic.visibility = View.GONE
         } else {
-            timenote_crop_pic.visibility = View.VISIBLE
+            timenote_crop_pic.visibility = View.GONE
             timenote_add_pic.visibility = View.VISIBLE
             timenote_delete_pic.visibility = View.VISIBLE
         }
-        timenote_crop_pic.setOnClickListener { timenoteCreationPicListeners.onCropPicClicked(param2) }
+        timenote_crop_pic.setOnClickListener { timenoteCreationPicListeners.onCropPicClicked(Uri.parse(param2)) }
         timenote_add_pic.setOnClickListener { timenoteCreationPicListeners.onAddClicked() }
-        timenote_delete_pic.setOnClickListener { timenoteCreationPicListeners.onDeleteClicked(param2) }
+        timenote_delete_pic.setOnClickListener { timenoteCreationPicListeners.onDeleteClicked(Uri.parse(param2)) }
     }
 
     companion object {
         @JvmStatic
         fun newInstance(
             param1: Int,
-            awsFile: AWSFile?,
+            uri: String?,
             context: Fragment,
             hideIcons: Boolean,
             fromDuplicateOrEdit: Boolean,
@@ -82,7 +83,7 @@ class ScreenSlideCreationTimenoteImageFragment: Fragment() {
                 .apply {
                 arguments = Bundle().apply {
                     putInt(ARG_PARAM1, param1)
-                    putParcelable(ARG_PARAM2, awsFile)
+                    putString(ARG_PARAM2, uri)
                     putBoolean(ARG_PARAM3, hideIcons)
                     putBoolean(ARG_PARAM4, fromDuplicateOrEdit)
                     putString(ARG_PARAM5, picture)

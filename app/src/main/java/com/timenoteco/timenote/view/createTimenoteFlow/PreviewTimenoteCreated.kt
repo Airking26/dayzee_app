@@ -33,7 +33,7 @@ class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
     private lateinit var listener : ExitCreationTimenote
     private val creationTimenoteViewModel: CreationTimenoteViewModel by activityViewModels()
     private lateinit var screenSlideCreationTimenotePagerAdapter: ScreenSlideCreationTimenotePagerAdapter
-    private var mutableList : MutableList<AWSFile> = mutableListOf()
+    private var mutableList : MutableList<String> = mutableListOf()
     private val args : PreviewTimenoteCreatedArgs by navArgs()
     private val utils: Utils = Utils()
 
@@ -71,7 +71,7 @@ class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
             mutableList.clear()
             if (it.pictures != null) {
                 for (pic in it.pictures!!) {
-                    mutableList.add(AWSFile(Uri.parse(pic), null))
+                    mutableList.add(pic)
                 }
                 screenSlideCreationTimenotePagerAdapter = ScreenSlideCreationTimenotePagerAdapter(
                     this,

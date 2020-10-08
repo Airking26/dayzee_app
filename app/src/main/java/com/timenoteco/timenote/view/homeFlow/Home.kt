@@ -16,6 +16,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -110,7 +111,6 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         onRefreshPicBottomNavListener = context as RefreshPicBottomNavListener
     }
 
-
     override fun onResume() {
         super.onResume()
         when(loginViewModel.getAuthenticationState().value){
@@ -128,6 +128,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         return getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_home)
     }
 
+    @ExperimentalPagingApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if(tokenId != null) {
             home_swipe_refresh.setColorSchemeResources(R.color.colorStartGradient, R.color.colorEndGradient)
@@ -155,7 +156,11 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         }
     }
 
+    @ExperimentalPagingApi
     private fun loadData() {
+
+        home_swipe_refresh?.isRefreshing = true
+
         timenoteRecentPagingAdapter = TimenoteRecentPagingAdapter(TimenoteComparator, this)
         LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         lifecycleScope.launch {
@@ -163,10 +168,10 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                 timenoteRecentPagingAdapter?.submitData(it)
             }
         }
+
         timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils)
         lifecycleScope.launch {
             timenoteViewModel.getTimenotePagingFlow(tokenId!!).collectLatest {
-                home_swipe_refresh?.isRefreshing = false
                 timenotePagingAdapter?.submitData(it)
             }
         }
@@ -180,26 +185,17 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
             adapter = timenotePagingAdapter
         }
 
-
-        timenotePagingAdapter?.addLoadStateListener {
-            if (it.refresh != LoadState.Loading) {
-                if (timenoteRecentPagingAdapter?.itemCount == 0 && timenotePagingAdapter?.itemCount == 0) {
-                    home_recent_rv?.visibility = View.GONE
-                    home_rv?.visibility = View.GONE
-                    home_posted_recently?.visibility = View.GONE
-                    home_nothing_to_display?.visibility = View.VISIBLE
-                } else {
-                    home_swipe_refresh?.isRefreshing = it.refresh is LoadState.Loading
-                    home_recent_rv?.visibility = View.VISIBLE
-                    home_rv?.visibility = View.VISIBLE
-                    home_posted_recently?.visibility = View.VISIBLE
-                    home_nothing_to_display?.visibility = View.GONE
-                }
-            } else {
-                home_swipe_refresh?.isRefreshing = it.refresh is LoadState.Loading
+        timenotePagingAdapter?.addDataRefreshListener {
+            home_swipe_refresh?.isRefreshing = false
+            if(it){
                 home_recent_rv?.visibility = View.GONE
                 home_rv?.visibility = View.GONE
                 home_posted_recently?.visibility = View.GONE
+                home_nothing_to_display?.visibility = View.VISIBLE
+            } else {
+                home_recent_rv?.visibility = View.VISIBLE
+                home_rv?.visibility = View.VISIBLE
+                home_posted_recently?.visibility = View.VISIBLE
                 home_nothing_to_display?.visibility = View.GONE
             }
         }
@@ -296,7 +292,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
     override fun onShareClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         sendTo.clear()
-        val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
+        val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             customView(R.layout.friends_search)
             lifecycleOwner(this@Home)
             positiveButton(R.string.send){
@@ -336,16 +332,13 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         sendTo.remove(userInfoDTO.id!!)
     }
 
-
     override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
         findNavController().navigate(HomeDirections.actionHomeToProfile(true, 1, userInfoDTO))
     }
 
-
     override fun onHideToOthersClicked(timenoteInfoDTO: TimenoteInfoDTO) {}
     override fun onMaskThisUser() {}
-    override fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-    }
+    override fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO) {}
     override fun onEditClicked(timenoteInfoDTO: TimenoteInfoDTO) {}
 
 

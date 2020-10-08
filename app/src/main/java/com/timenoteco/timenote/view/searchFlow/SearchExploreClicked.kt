@@ -15,7 +15,6 @@ import com.timenoteco.timenote.adapter.SuggestionItemAdapter
 import com.timenoteco.timenote.model.UserSuggested
 import com.timenoteco.timenote.viewModel.FollowViewModel
 import kotlinx.android.synthetic.main.fragment_search_explore_clicked.*
-import me.samlss.broccoli.Broccoli
 
 class SearchExploreClicked: Fragment(), SuggestionAdapter.SuggestionItemListener,
     SuggestionAdapter.SuggestionItemPicListener {

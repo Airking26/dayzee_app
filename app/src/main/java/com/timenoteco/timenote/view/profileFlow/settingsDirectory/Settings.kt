@@ -26,6 +26,7 @@ import com.timenoteco.timenote.common.stringLiveData
 import com.timenoteco.timenote.model.STATUS
 import com.timenoteco.timenote.model.UpdateUserInfoDTO
 import com.timenoteco.timenote.viewModel.FollowViewModel
+import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.ProfileModifyViewModel
 import com.timenoteco.timenote.webService.ProfileModifyData
 import com.timenoteco.timenote.webService.service.FollowService
@@ -40,6 +41,7 @@ class Settings : Fragment(), View.OnClickListener {
     private lateinit var prefs : SharedPreferences
     val TOKEN: String = "TOKEN"
     private var tokenId: String? = null
+    private val loginViewModel: LoginViewModel by activityViewModels()
     private lateinit var profileModifyData: ProfileModifyData
     private val profileModVieModel: ProfileModifyViewModel by activityViewModels()
     private lateinit var dsactv : TextView
@@ -175,7 +177,7 @@ class Settings : Fragment(), View.OnClickListener {
                     lifecycleOwner(this@Settings)
                 }
             }
-            profile_settings_disconnect -> prefs.edit().putString(TOKEN, null).apply()
+            profile_settings_disconnect -> loginViewModel.markAsUnauthenticated()
             profile_settings_asked_sent -> findNavController().navigate(
                 SettingsDirections.actionSettingsToFollowPage().setFollowers(3))
             profile_settings_awaiting -> findNavController().navigate(SettingsDirections.actionSettingsToFollowPage().setFollowers(2))

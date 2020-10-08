@@ -15,7 +15,6 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.model.CommentInfoDTO
 import com.timenoteco.timenote.model.UserInfoDTO
 import kotlinx.android.synthetic.main.item_comment.view.*
-import org.joda.time.DateTime
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.format.DateTimeFormatter

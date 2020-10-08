@@ -117,7 +117,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
     fun retrieveCurrentRegistrationToken(){
         FirebaseInstanceId.getInstance().instanceId
             .addOnCompleteListener(OnCompleteListener { task ->
-                if (!task.isSuccessful) {
+                if (task.isSuccessful) {
                     val token = task.result?.token
                     if (prefs.getString("TOKEN", null) != null)
                         meViewModel.putFCMToken(prefs.getString("TOKEN", null)!!, FCMDTO(token!!))

@@ -22,7 +22,7 @@ import kotlinx.android.synthetic.main.fragment_preview_timenote_created.*
 
 class PreviewTimenoteCreatedSearch : Fragment(), View.OnClickListener {
 
-    private var mutableList : MutableList<AWSFile> = mutableListOf()
+    private var mutableList : MutableList<String> = mutableListOf()
     private lateinit var backToHomeListener: BackToHomeListener
     private lateinit var listener : ExitCreationTimenote
     private val creationTimenoteViewModel: CreationTimenoteViewModel by activityViewModels()
@@ -55,7 +55,7 @@ class PreviewTimenoteCreatedSearch : Fragment(), View.OnClickListener {
             if(it.pictures?.size == 1) preview_created_timenote_indicator.visibility = View.GONE
             if(it.pictures != null) {
                 for(pic in it.pictures!!){
-                    mutableList.add(AWSFile(Uri.parse(pic), null))
+                    mutableList.add(pic)
                 }
                 screenSlideCreationTimenotePagerAdapter = ScreenSlideCreationTimenotePagerAdapter(this, mutableList, true, false, listOf())
                 preview_created_timenote_vp.adapter = screenSlideCreationTimenotePagerAdapter

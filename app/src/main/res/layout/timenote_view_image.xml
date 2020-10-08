@@ -22,16 +22,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:id="@+id/timenote_crop_pic"
         android:layout_marginTop="12dp"
+        android:visibility="gone"
         android:src="@drawable/ic_baseline_aspect_ratio_24"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
     <ImageView
         android:src="@drawable/ic_baseline_add_bordered_24"
-        android:layout_marginTop="12dp"
+        android:layout_margin="16dp"
         android:id="@+id/timenote_add_pic"
-        app:layout_constraintEnd_toEndOf="@id/timenote_crop_pic"
-        app:layout_constraintTop_toBottomOf="@id/timenote_crop_pic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 

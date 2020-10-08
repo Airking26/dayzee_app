@@ -9,4 +9,5 @@
     <dimen name="day_circle_height">24dp</dimen>
     <dimen name="day_circle_radius">140dp</dimen>
     <dimen name="day_circle_stroke_width">1dp</dimen>
+    <dimen name="grid">120dp</dimen>
 </resources>

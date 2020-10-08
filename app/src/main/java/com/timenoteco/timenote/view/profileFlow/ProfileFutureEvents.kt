@@ -15,6 +15,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.ExperimentalPagingApi
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.LayoutMode
@@ -92,22 +93,13 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
     ): View? =
         inflater.inflate(R.layout.fragment_profile_future_events, container, false)
 
+    @ExperimentalPagingApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
         val userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
 
-        profileEventPagingAdapter = ProfileEventPagingAdapter(ProfileEventComparator, showHideFilterBar!!, this, this, this, userInfoDTO.id)
-        profile_rv.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = profileEventPagingAdapter
-        }
-
-        lifecycleScope.launch {
-            profileViewModel.getEventProfile(tokenId!!, id, isFuture).collectLatest {
-                profileEventPagingAdapter.submitData(it)
-            }
-        }
+        loadData(userInfoDTO)
 
         handler = Handler { msg ->
             if (msg.what == TRIGGER_AUTO_COMPLETE) {
@@ -122,6 +114,39 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
             false
         }
 
+    }
+
+    @ExperimentalPagingApi
+    private fun loadData(userInfoDTO: UserInfoDTO) {
+        profileEventPagingAdapter = ProfileEventPagingAdapter(
+            ProfileEventComparator,
+            showHideFilterBar!!,
+            this,
+            this,
+            this,
+            userInfoDTO.id
+        )
+        profile_rv.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = profileEventPagingAdapter
+        }
+
+        lifecycleScope.launch {
+            profileViewModel.getEventProfile(tokenId!!, id, isFuture).collectLatest {
+                profileEventPagingAdapter.submitData(it)
+            }
+        }
+
+        profileEventPagingAdapter.addDataRefreshListener {
+            profile_pb.visibility = View.GONE
+            if (it) {
+                profile_nothing_to_display.visibility = View.VISIBLE
+                profile_rv.visibility = View.GONE
+            } else {
+                profile_nothing_to_display.visibility = View.GONE
+                profile_rv.visibility = View.VISIBLE
+            }
+        }
     }
 
     override fun onReportClicked() {

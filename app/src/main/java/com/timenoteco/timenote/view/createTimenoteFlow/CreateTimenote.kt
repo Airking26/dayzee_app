@@ -6,6 +6,7 @@ import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Bitmap
@@ -53,7 +54,6 @@ import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
 import com.afollestad.materialdialogs.list.listItemsMultiChoice
 import com.amazonaws.auth.BasicAWSCredentials
-import com.amazonaws.mobile.client.AWSMobileClient
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
@@ -61,8 +61,8 @@ import com.amazonaws.regions.Region
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.CannedAccessControlList
-import com.asksira.bsimagepicker.BSImagePicker
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.model.ResourceLoader
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.PlacesClient
@@ -78,12 +78,19 @@ import com.timenoteco.timenote.adapter.UsersPagingAdapter
 import com.timenoteco.timenote.adapter.UsersShareWithPagingAdapter
 import com.timenoteco.timenote.adapter.WebSearchAdapter
 import com.timenoteco.timenote.androidView.input
+import com.timenoteco.timenote.common.GifSizeFilter
 import com.timenoteco.timenote.common.HashTagHelper
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.BackToHomeListener
 import com.timenoteco.timenote.listeners.TimenoteCreationPicListeners
 import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.viewModel.*
+import com.yalantis.ucrop.UCrop
+import com.zhihu.matisse.Matisse
+import com.zhihu.matisse.MimeType
+import com.zhihu.matisse.engine.impl.GlideEngine
+import com.zhihu.matisse.filter.Filter
+import com.zhihu.matisse.internal.entity.CaptureStrategy
 import kotlinx.android.synthetic.main.cropview.view.*
 import kotlinx.android.synthetic.main.fragment_create_timenote.*
 import kotlinx.android.synthetic.main.fragment_search.*
@@ -100,8 +107,7 @@ import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
 
-class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleImageSelectedListener,
-    BSImagePicker.OnMultiImageSelectedListener, BSImagePicker.ImageLoaderDelegate, BSImagePicker.OnSelectImageCancelledListener,
+class CreateTimenote : Fragment(), View.OnClickListener,
     TimenoteCreationPicListeners, WebSearchAdapter.ImageChoosedListener, WebSearchAdapter.MoreImagesClicked,
     HashTagHelper.OnHashTagClickListener, UsersPagingAdapter.SearchPeopleListener,
     UsersShareWithPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.AddToSend {
@@ -111,7 +117,12 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
     private val TRIGGER_AUTO_COMPLETE = 200
     private val AUTO_COMPLETE_DELAY: Long = 200
     private var visibilityTimenote: Int = -1
-    val amazonClient = AmazonS3Client(BasicAWSCredentials("AKIA5JWTNYVYJQIE5GWS", "pVf9Wxd/rK4r81FsOsNDaaOJIKE5AGbq96Lh4RB9"))
+    val amazonClient = AmazonS3Client(
+        BasicAWSCredentials(
+            "AKIA5JWTNYVYJQIE5GWS",
+            "pVf9Wxd/rK4r81FsOsNDaaOJIKE5AGbq96Lh4RB9"
+        )
+    )
     private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     private val args : CreateTimenoteArgs by navArgs()
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
@@ -127,7 +138,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
     private lateinit var noAnswer: TextView
     private lateinit var vp: ViewPager2
     private lateinit var screenSlideCreationTimenotePagerAdapter: ScreenSlideCreationTimenotePagerAdapter
-    private var images: MutableList<AWSFile>? = mutableListOf()
+    private var images: MutableList<String>? = mutableListOf()
     private lateinit var titleInput: String
     private var endDate: Long? = null
     private var formCompleted: Boolean = true
@@ -183,9 +194,10 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                     LoginViewModel.AuthenticationState.AUTHENTICATED -> {
                         tokenId = prefs.getString(TOKEN, null)
                         findNavController().popBackStack(
-                        R.id.createTimenote,
-                        false
-                    )}
+                            R.id.createTimenote,
+                            false
+                        )
+                    }
                     LoginViewModel.AuthenticationState.GUEST -> findNavController().popBackStack(
                         R.id.createTimenote,
                         false
@@ -208,7 +220,11 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
         backToHomeListener = context as BackToHomeListener
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? =
         inflater.inflate(R.layout.fragment_create_timenote, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -224,9 +240,11 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
             creationTimenoteViewModel.setCreatedBy(userInfoDTO.id!!)
 
             //creationTimenoteViewModel.clear()
-            if (args.modify == 0) creationTimenoteViewModel.getCreateTimeNoteLiveData().observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-                populateModel(it)
-            }) else {
+            if (args.modify == 0) creationTimenoteViewModel.getCreateTimeNoteLiveData().observe(
+                viewLifecycleOwner,
+                androidx.lifecycle.Observer {
+                    populateModel(it)
+                }) else {
                 creationTimenoteViewModel.setDuplicateOrEdit(args.timenoteBody!!)
                 creationTimenoteViewModel.setCreatedBy(userInfoDTO.id!!)
                 populateModel(args.timenoteBody!!)
@@ -256,7 +274,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                     noAnswer.text = getString(R.string.no_answer)
                 }
             }
-            in 1 .. Int.MAX_VALUE -> {
+            in 1..Int.MAX_VALUE -> {
                 noAnswer.text = it.price.price.toString() + it.price.currency
             }
             else -> noAnswer.text = getString(R.string.no_answer)
@@ -289,7 +307,9 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
 
         if (it.title.isBlank()) titleTv.text = getString(R.string.title) else titleTv.text = it.title
         if (it.location == null || it.location?.address?.address?.isBlank()!!) create_timenote_where_btn.text =
-            getString(R.string.where) else create_timenote_where_btn.text = it.location?.address?.address?.plus(", ")?.plus(it.location?.address?.city)?.plus(" ")?.plus(it.location?.address?.country)
+            getString(R.string.where) else create_timenote_where_btn.text = it.location?.address?.address?.plus(
+            ", "
+        )?.plus(it.location?.address?.city)?.plus(" ")?.plus(it.location?.address?.country)
         if (!it.startingAt.isBlank() && !it.endingAt.isBlank() && it.startingAt != it.endingAt) {
             fixedDate.visibility = View.GONE
             toLabel.visibility = View.VISIBLE
@@ -387,12 +407,24 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
         picCl = pic_cl
         vp = vp_pic
         if(args.modify == 0) {
-            screenSlideCreationTimenotePagerAdapter = ScreenSlideCreationTimenotePagerAdapter(this@CreateTimenote, images, hideIcons = false, fromDuplicateOrEdit = false, pictures = listOf())
+            screenSlideCreationTimenotePagerAdapter = ScreenSlideCreationTimenotePagerAdapter(
+                this@CreateTimenote,
+                images,
+                hideIcons = false,
+                fromDuplicateOrEdit = false,
+                pictures = listOf()
+            )
             vp_pic.apply {
                 adapter = screenSlideCreationTimenotePagerAdapter
             }
         } else {
-            screenSlideCreationTimenotePagerAdapter = ScreenSlideCreationTimenotePagerAdapter(this@CreateTimenote, images, hideIcons = true, fromDuplicateOrEdit = true, pictures = args.timenoteBody?.pictures)
+            screenSlideCreationTimenotePagerAdapter = ScreenSlideCreationTimenotePagerAdapter(
+                this@CreateTimenote,
+                images,
+                hideIcons = true,
+                fromDuplicateOrEdit = true,
+                pictures = args.timenoteBody?.pictures
+            )
             vp_pic.apply {
                 adapter = screenSlideCreationTimenotePagerAdapter
             }
@@ -448,6 +480,19 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                 }
             }
             return
+        } else if(requestCode == 112 && resultCode == Activity.RESULT_OK){
+            val r = Matisse.obtainResult(data)
+            for(image in r!!){
+                images?.add(image.toString())
+                //images?.add(AWSFile(image, MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, image)))
+            }
+            screenSlideCreationTimenotePagerAdapter.images = images
+            screenSlideCreationTimenotePagerAdapter.notifyDataSetChanged()
+            indicator.setViewPager(vp_pic)
+            pic_cl.visibility = View.VISIBLE
+            progressBar.visibility = View.GONE
+            takeAddPicTv.visibility = View.GONE
+            hideChooseBackground()
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
@@ -510,13 +555,14 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                 if (checkFormCompleted()) {
                     if (!images?.isNullOrEmpty()!!) {
                         progressDialog.show()
-                        for (awsFile in images!!) {
+                        for (image in images!!) {
+                            var file: File = if(image.contains("content://")) {
+                                File(getPath(Uri.parse(image))!!)
+                            } else File(image)
+
                             pushPic(
-                                File(getPath(awsFile.uri)!!),
-                                MediaStore.Images.Media.getBitmap(
-                                    requireActivity().contentResolver,
-                                    awsFile.uri
-                                )
+                                file,
+                                MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, Uri.parse(image))
                             )
                         }
                     } else if (!creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.colorHex.isNullOrBlank() || !creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.pictures.isNullOrEmpty()) {
@@ -528,7 +574,11 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                             ).observe(
                                 viewLifecycleOwner,
                                 androidx.lifecycle.Observer {
-                                    Toast.makeText(requireContext(), it.errorBody().toString(), Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        requireContext(),
+                                        it.errorBody().toString(),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                     if (it.isSuccessful) {
                                         progressDialog.hide()
                                         findNavController().navigate(
@@ -655,12 +705,25 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                     prefill = creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.description
                 ) { materialDialog, charSequence ->
                     descTv.text = charSequence.toString()
-                    val hashTagHelper = HashTagHelper.Creator.create(R.color.colorText, this@CreateTimenote, null, resources)
+                    val hashTagHelper = HashTagHelper.Creator.create(
+                        R.color.colorText,
+                        this@CreateTimenote,
+                        null,
+                        resources
+                    )
                     hashTagHelper.handle(descTv)
                     val hashtagList = hashTagHelper.getAllHashTags(true)
                     var descWithoutHashtag = descTv.text.toString()
-                    for (hashtag in hashtagList) { descWithoutHashtag = descWithoutHashtag.replace(hashtag, "") }
-                    var descWithoutHashtagFormated = descWithoutHashtag.replace("\\s+".toRegex(), " ").trim().capitalize()
+                    for (hashtag in hashtagList) {
+                        descWithoutHashtag = descWithoutHashtag.replace(
+                            hashtag,
+                            ""
+                        )
+                    }
+                    var descWithoutHashtagFormated = descWithoutHashtag.replace(
+                        "\\s+".toRegex(),
+                        " "
+                    ).trim().capitalize()
                     creationTimenoteViewModel.setHashtags(hashtagList)
                     creationTimenoteViewModel.setDescription(descWithoutHashtagFormated)
                 }
@@ -768,10 +831,18 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                                 title(R.string.price)
                                 input(inputType = InputType.TYPE_CLASS_NUMBER) { _, price ->
                                     lifecycleOwner(this@CreateTimenote)
-                                    MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                                    MaterialDialog(
+                                        requireContext(),
+                                        BottomSheet(LayoutMode.WRAP_CONTENT)
+                                    ).show {
                                         title(R.string.currency)
-                                        input (inputType = InputType.TYPE_CLASS_TEXT){ _, charSequence ->
-                                            creationTimenoteViewModel.setPrice(Price(price.toString().toInt(), charSequence.toString()))
+                                        input(inputType = InputType.TYPE_CLASS_TEXT) { _, charSequence ->
+                                            creationTimenoteViewModel.setPrice(
+                                                Price(
+                                                    price.toString().toInt(),
+                                                    charSequence.toString()
+                                                )
+                                            )
                                             lifecycleOwner(this@CreateTimenote)
                                         }
                                     }
@@ -812,14 +883,21 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
         MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             title(R.string.share_with)
             listItems(
-                items = listOf("All", "Only me", "Groups", "Friends", "Create a new group")) { _, index, text ->
+                items = listOf("All", "Only me", "Groups", "Friends", "Create a new group")
+            ) { _, index, text ->
                 when (index) {
-                    2 -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                    2 -> MaterialDialog(
+                        requireContext(),
+                        BottomSheet(LayoutMode.WRAP_CONTENT)
+                    ).show {
                         title(R.string.share_with)
-                        profileViewModel.getAllGroups(tokenId!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                        profileViewModel.getAllGroups(tokenId!!).observe(
+                            viewLifecycleOwner,
+                            androidx.lifecycle.Observer {
 
-                        })
-                        listItemsMultiChoice(items = listOf("LeFramboisier", "La Famille")
+                            })
+                        listItemsMultiChoice(
+                            items = listOf("LeFramboisier", "La Famille")
                         ) { _, index, text ->
                             listSharedWith.add(text.joinToString())
                             shareWithTv.text = listSharedWith.joinToString()
@@ -836,7 +914,10 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                             BottomSheet(LayoutMode.WRAP_CONTENT)
                         ).show {
                             title(R.string.name_group)
-                            input(inputType = InputType.TYPE_CLASS_TEXT, maxLength = 20) { materialDialog, charSequence ->
+                            input(
+                                inputType = InputType.TYPE_CLASS_TEXT,
+                                maxLength = 20
+                            ) { materialDialog, charSequence ->
                                 createFriendsBottomSheet(1, charSequence.toString())
                             }
                             positiveButton(R.string.confirm)
@@ -900,8 +981,14 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
         }
     }
 
-    private fun cropView(awsFile: AWSFile?) {
-        var cropView: CropImageView? = null
+    private fun cropView(uri: Uri?) {
+        val u = Uri.parse(File(getPath(uri)!!).absolutePath)
+        val a = Uri.parse(File(getPath(uri)!!).canonicalPath)
+        UCrop.of(Uri.parse(uri?.toString()), u)
+            .withAspectRatio(16F, 9F)
+            .start(requireContext(), this)
+
+        /*var cropView: CropImageView?
         val dialog = MaterialDialog(requireContext()).show {
             customView(R.layout.cropview)
             title(R.string.resize)
@@ -909,11 +996,9 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
                 progressBar.visibility = View.GONE
                 takeAddPicTv.visibility = View.GONE
                 picCl.visibility = View.VISIBLE
-                /*if(awsFile == null)
-                    images?.add(AWSFile(Uri.parse(""), cropView?.croppedImage))
-                else*/
-                awsFile?.bitmap = cropView?.croppedImage!!
-                saveImage(awsFile?.bitmap!!, null, awsFile)
+
+                //MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri) = cropView?.croppedImage!!
+                saveImage(MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri), uri , null)
                 screenSlideCreationTimenotePagerAdapter.notifyDataSetChanged()
                 vp.adapter = screenSlideCreationTimenotePagerAdapter
             }
@@ -921,13 +1006,13 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
         }
 
         cropView = dialog.getCustomView().crop_view as CropImageView
-        cropView.setImageBitmap(awsFile?.bitmap)
-        if(awsFile?.bitmap != null){
+        cropView.setImageBitmap(MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri))
+        if(uri != null){
             hideChooseBackground()
-        }
+        }*/
     }
 
-    private fun saveImage(image: Bitmap, dialog: MaterialDialog?, awsFile: AWSFile?): String? {
+    private fun saveImage(image: Bitmap, uri: Uri?, dialog: MaterialDialog?): String? {
         var savedImagePath: String? = null
         val imageFileName = "JPEG_${Timestamp(System.currentTimeMillis())}.jpg"
         val storageDir = File(
@@ -942,10 +1027,18 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
             val imageFile = File(storageDir, imageFileName)
             savedImagePath = imageFile.absolutePath
             compressFile(imageFile, image)
+            val u1 = Uri.parse("file://$savedImagePath")
+            val u3 = Uri.parse("file://$imageFile")
+            val u10 = File(u1.path!!)
+            val u12= File(u3.path!!)
+            val u13= File(u1.path!!).absolutePath
+            val u14= File(u1.path!!).canonicalPath
+            val u17= File(u3.path!!).canonicalPath
+            val u18= File(u3.path!!).absolutePath
 
             if(dialog != null) galleryAddPic(savedImagePath, dialog)
             else{
-                images!![images?.indexOf(awsFile)!!] = AWSFile(Uri.parse(savedImagePath), image)
+                images!![images?.indexOf(uri.toString())!!] = u3.toString()
             }
         }
 
@@ -981,10 +1074,16 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
         requireActivity().sendBroadcast(mediaScanIntent)
         dialog.dismiss()
         progressDialog.hide()
-        utils.createPictureMultipleBS(childFragmentManager, "multiple")
+        utils.createImagePicker(this, requireContext())
     }
 
-    private fun colorChoosedUI(fancyButton1: FancyButton, fancyButton2: FancyButton, fancyButton3: FancyButton, fancyButton4: FancyButton, fancyButton5: FancyButton) {
+    private fun colorChoosedUI(
+        fancyButton1: FancyButton,
+        fancyButton2: FancyButton,
+        fancyButton3: FancyButton,
+        fancyButton4: FancyButton,
+        fancyButton5: FancyButton
+    ) {
         fancyButton1.setBorderWidth(24)
         fancyButton1.setBorderColor(android.R.color.black)
         fancyButton2.setBorderWidth(24)
@@ -1021,7 +1120,12 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
         val transferUtiliy = TransferUtility(amazonClient, requireContext())
         compressFile(file, bitmap)
         val key = "timenote/${UUID.randomUUID().mostSignificantBits}"
-        val transferObserver = transferUtiliy.upload("timenote-dev-images", key, file, CannedAccessControlList.Private)
+        val transferObserver = transferUtiliy.upload(
+            "timenote-dev-images",
+            key,
+            file,
+            CannedAccessControlList.Private
+        )
         transferObserver.setTransferListener(object : TransferListener {
             override fun onStateChanged(id: Int, state: TransferState?) {
                 Log.d(TAG, "onStateChanged: ${state?.name}")
@@ -1087,17 +1191,6 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
 
     }
 
-    override fun onSingleImageSelected(uri: Uri?, tag: String?) {
-        images?.add(AWSFile(uri, MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri)))
-        screenSlideCreationTimenotePagerAdapter.images = images
-        screenSlideCreationTimenotePagerAdapter.notifyDataSetChanged()
-        indicator.setViewPager(vp_pic)
-        pic_cl.visibility = View.VISIBLE
-        progressBar.visibility = View.GONE
-        takeAddPicTv.visibility = View.GONE
-        hideChooseBackground()
-    }
-
     fun getPath(uri: Uri?): String? {
         val projection = arrayOf(MediaStore.Images.Media.DATA)
         val cursor: Cursor = requireActivity().managedQuery(uri, projection, null, null, null)
@@ -1107,35 +1200,8 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
         return cursor.getString(column_index)
     }
 
-    override fun onMultiImageSelected(uriList: MutableList<Uri>?, tag: String?) {
-        for(image in uriList!!){
-            images?.add(AWSFile(image, MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, image)))
-        }
-        screenSlideCreationTimenotePagerAdapter.images = images
-        screenSlideCreationTimenotePagerAdapter.notifyDataSetChanged()
-        indicator.setViewPager(vp_pic)
-        pic_cl.visibility = View.VISIBLE
-        progressBar.visibility = View.GONE
-        takeAddPicTv.visibility = View.GONE
-        hideChooseBackground()
-    }
-
-    override fun loadImage(imageUri: Uri?, ivImage: ImageView?) {
-        Glide.with(this).load(imageUri).into(ivImage!!)
-    }
-
-    override fun onCancelled(isMultiSelecting: Boolean, tag: String?) {
-        if(images?.isNullOrEmpty()!!){
-            progressBar.visibility = View.GONE
-            takeAddPicTv.visibility = View.VISIBLE
-            picCl.visibility = View.GONE }
-        else {
-            progressBar.visibility = View.GONE
-        }
-    }
-
-    override fun onCropPicClicked(awsFile: AWSFile?) {
-        cropView(awsFile)
+    override fun onCropPicClicked(uri: Uri?) {
+        cropView(uri)
     }
 
     override fun onAddClicked() {
@@ -1149,8 +1215,8 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
         )
     }
 
-    override fun onDeleteClicked(awsFile: AWSFile?) {
-        images?.remove(awsFile)
+    override fun onDeleteClicked(uri: Uri?) {
+        images?.remove(uri.toString())
         vp_pic.apply {
             screenSlideCreationTimenotePagerAdapter = ScreenSlideCreationTimenotePagerAdapter(
                 this@CreateTimenote,
@@ -1182,7 +1248,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, BSImagePicker.OnSingleI
         webSearchViewModel.decodeSampledBitmapFromResource(URL(bitmap), Rect(), 100, 100)
         webSearchViewModel.getBitmap().observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             if (it != null) {
-                saveImage(it, dialog, null)
+                saveImage(it, null,  dialog)
                 webSearchViewModel.clearBitmap()
                 webSearchViewModel.getBitmap().removeObservers(viewLifecycleOwner)
             }

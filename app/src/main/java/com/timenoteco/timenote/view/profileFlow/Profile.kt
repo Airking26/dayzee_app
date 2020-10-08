@@ -47,7 +47,6 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
 
     private var userInfoDTO: UserInfoDTO? = null
     private var stateSwitchUrl: String? = null
-    private var stateSwitch: Int? = null
     private var isFollowed = false
     private var profilePastFuturePagerAdapter: ProfilePastFuturePagerAdapter? = null
     private lateinit var profileModifyData: ProfileModifyData
@@ -309,7 +308,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
             profile_nbr_followers -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage().setFollowers(1))
             profile_nbr_following -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage().setFollowers(0))
             profile_infos -> {
-                if(stateSwitch == null) findNavController().navigate(ProfileDirections.actionProfileToProfilModify())
+                if(stateSwitchUrl.isNullOrBlank()) findNavController().navigate(ProfileDirections.actionProfileToProfilModify())
                 else {
                     val intent = Intent(Intent.ACTION_VIEW)
                     intent.data = Uri.parse(stateSwitchUrl)

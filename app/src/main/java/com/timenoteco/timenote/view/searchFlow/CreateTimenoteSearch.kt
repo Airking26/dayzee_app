@@ -61,7 +61,6 @@ import com.amazonaws.regions.Region
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.CannedAccessControlList
-import com.asksira.bsimagepicker.BSImagePicker
 import com.bumptech.glide.Glide
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
@@ -101,8 +100,7 @@ import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
 
-class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnSingleImageSelectedListener,
-    BSImagePicker.OnMultiImageSelectedListener, BSImagePicker.ImageLoaderDelegate, BSImagePicker.OnSelectImageCancelledListener,
+class CreateTimenoteSearch : Fragment(), View.OnClickListener,
     TimenoteCreationPicListeners, WebSearchAdapter.ImageChoosedListener, WebSearchAdapter.MoreImagesClicked,
     HashTagHelper.OnHashTagClickListener, UsersPagingAdapter.SearchPeopleListener,
     UsersShareWithPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.AddToSend {
@@ -136,7 +134,7 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
     private lateinit var noAnswer: TextView
     private lateinit var vp: ViewPager2
     private lateinit var screenSlideCreationTimenotePagerAdapter: ScreenSlideCreationTimenotePagerAdapter
-    private var images: MutableList<AWSFile>? = mutableListOf()
+    private var images: MutableList<String>? = mutableListOf()
     private lateinit var titleInput: String
     private var endDate: Long? = null
     private var formCompleted: Boolean = true
@@ -874,7 +872,7 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
 
             if(dialog != null) galleryAddPic(savedImagePath, dialog)
             else{
-                images!![images?.indexOf(awsFile)!!] = AWSFile(Uri.parse(savedImagePath), image)
+               // images!![images?.indexOf(awsFile)!!] = AWSFile(Uri.parse(savedImagePath), image)
             }
         }
 
@@ -900,7 +898,7 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
         requireActivity().sendBroadcast(mediaScanIntent)
         dialog.dismiss()
         progressDialog.hide()
-        utils.createPictureMultipleBS(childFragmentManager, "multiple")
+        utils.createImagePicker(this, requireContext())
     }
 
     private fun colorChoosedUI(
@@ -942,45 +940,7 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
         return formCompleted
     }
 
-    override fun onSingleImageSelected(uri: Uri?, tag: String?) {
-        images?.add(AWSFile(uri, MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri)))
-        screenSlideCreationTimenotePagerAdapter.images = images
-        screenSlideCreationTimenotePagerAdapter.notifyDataSetChanged()
-        indicator.setViewPager(vp_pic)
-        pic_cl.visibility = View.VISIBLE
-        progressBar.visibility = View.GONE
-        takeAddPicTv.visibility = View.GONE
-        hideChooseBackground()
-    }
-
-    override fun onMultiImageSelected(uriList: MutableList<Uri>?, tag: String?) {
-        for(image in uriList!!){
-            images?.add(AWSFile(image, MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, image)))
-        }
-        screenSlideCreationTimenotePagerAdapter.images = images
-        screenSlideCreationTimenotePagerAdapter.notifyDataSetChanged()
-        indicator.setViewPager(vp_pic)
-        pic_cl.visibility = View.VISIBLE
-        progressBar.visibility = View.GONE
-        takeAddPicTv.visibility = View.GONE
-        hideChooseBackground()
-    }
-
-    override fun loadImage(imageUri: Uri?, ivImage: ImageView?) {
-        Glide.with(this).load(imageUri).into(ivImage!!)
-    }
-
-    override fun onCancelled(isMultiSelecting: Boolean, tag: String?) {
-        if(images?.isNullOrEmpty()!!){
-            progressBar.visibility = View.GONE
-            takeAddPicTv.visibility = View.VISIBLE
-            picCl.visibility = View.GONE }
-        else {
-            progressBar.visibility = View.GONE
-        }
-    }
-
-    override fun onCropPicClicked(awsFile: AWSFile?) {
+    override fun onCropPicClicked(uri: Uri?) {
     }
 
     override fun onAddClicked() {
@@ -994,8 +954,8 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
         )
     }
 
-    override fun onDeleteClicked(awsFile: AWSFile?) {
-        images?.remove(awsFile)
+    override fun onDeleteClicked(uri: Uri?) {
+       // images?.remove(awsFile)
         vp_pic.apply {
             screenSlideCreationTimenotePagerAdapter = ScreenSlideCreationTimenotePagerAdapter(
                 this@CreateTimenoteSearch,
@@ -1021,10 +981,10 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener, BSImagePicker.OnS
         }
     }
 
-    override fun onImageSelectedFromWeb(bitmap: String, dialog: MaterialDialog) {
+    override fun onImageSelectedFromWeb(link: String, dialog: MaterialDialog) {
         progressDialog.show()
         webSearchViewModel.getBitmap().removeObservers(viewLifecycleOwner)
-        webSearchViewModel.decodeSampledBitmapFromResource(URL(bitmap), Rect(), 100, 100)
+        webSearchViewModel.decodeSampledBitmapFromResource(URL(link), Rect(), 100, 100)
         webSearchViewModel.getBitmap().observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             if (it != null) {
                 saveImage(it, dialog, null)
