@@ -67,6 +67,9 @@ class ItemTimenoteAdapter(
 
             itemView.timenote_title.text = timenote.title
 
+            if(timenote.isParticipating) itemView.timenote_plus.setImageDrawable(itemView.resources.getDrawable(R.drawable.ic_ajout_cal_plein_gradient))
+            else itemView.timenote_plus.setImageDrawable(itemView.resources.getDrawable(R.drawable.ic_ajout_cal))
+
             Glide
                 .with(itemView)
                 .load(timenote.createdBy.picture)
@@ -222,12 +225,13 @@ class ItemTimenoteAdapter(
             itemView.timenote_pic_user_imageview.setOnClickListener { timenoteListenerListener.onPictureClicked(timenote.createdBy) }
             itemView.timenote_comment.setOnClickListener { timenoteListenerListener.onCommentClicked(timenote) }
             itemView.timenote_plus.setOnClickListener {
-                if(false){
+                if(itemView.timenote_plus.drawable.constantState == itemView.context.getDrawable(R.drawable.ic_ajout_cal)?.constantState){
+                    itemView.timenote_plus.setImageDrawable(itemView.context.getDrawable(R.drawable.ic_ajout_cal_plein_gradient))
+                    timenoteListenerListener.onPlusClicked(timenote, true)
+                } else if(itemView.timenote_plus.drawable.constantState == itemView.context.getDrawable(R.drawable.ic_ajout_cal_plein_gradient)?.constantState) {
                     itemView.timenote_plus.setImageDrawable(itemView.context.getDrawable(R.drawable.ic_ajout_cal))
-                } else {
-                    itemView.timenote_plus.setImageDrawable(itemView.context.getDrawable(R.drawable.ic_ajoute_cal_grad_ok))
+                    timenoteListenerListener.onPlusClicked(timenote, false)
                 }
-                timenoteListenerListener.onPlusClicked(timenote)
             }
             itemView.timenote_see_more.setOnClickListener { timenoteListenerListener.onSeeMoreClicked(timenote) }
             itemView.timenote_place.setOnClickListener{timenoteListenerListener.onAddressClicked(timenote)}

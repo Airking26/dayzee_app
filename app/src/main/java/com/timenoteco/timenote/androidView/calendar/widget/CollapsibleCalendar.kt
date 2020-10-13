@@ -324,7 +324,7 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
                 mCurrentWeekIndex = -1
             }
             if (mListener != null) {
-                mListener!!.onMonthChange()
+                mListener!!.onMonthChange(day)
             }
             reload()
         }
@@ -376,7 +376,7 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
             }
             reload()
             if (mListener != null) {
-                mListener!!.onMonthChange()
+                mListener!!.onMonthChange(Day(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), 1))
             }
         }
 
@@ -400,7 +400,7 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
             }
             reload()
             if (mListener != null) {
-                mListener!!.onMonthChange()
+                mListener!!.onMonthChange(Day(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), 1))
             }
         }
     }
@@ -626,7 +626,7 @@ class CollapsibleCalendar : UICalendar, View.OnClickListener {
         fun onDataUpdate()
 
         // triggered when the month are changed.
-        fun onMonthChange()
+        fun onMonthChange(day: Day?)
 
         // triggered when the week position are changed.
         fun onWeekChange(position: Int)

@@ -266,4 +266,5 @@
     <string name="nothing_to_show_nearby">Nothing around, try another set of filters</string>
     <string name="nothing_to_show_profile">You don\'t have anything plan</string>
     <string name="add_a_picture">Add a picture</string>
+    <string name="default_notification_channel_id">dayzee_channel</string>
 </resources>

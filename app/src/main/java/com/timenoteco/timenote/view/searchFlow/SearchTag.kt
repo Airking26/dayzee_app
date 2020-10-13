@@ -183,8 +183,8 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
         findNavController().navigate(SearchDirections.actionSearchToDetailedTimenoteSearch(timenoteInfoDTO))
     }
 
-    override fun onPlusClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        if(false){
+    override fun onPlusClicked(timenoteInfoDTO: TimenoteInfoDTO, isAdded: Boolean) {
+        if(isAdded){
             timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {})
         } else {
             timenoteViewModel.joinTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {})

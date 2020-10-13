@@ -56,7 +56,7 @@ class ItemTimenoteRecentAdapter(private val timenotesToCome: List<TimenoteInfoDT
                 .load(timenote.createdBy.picture)
                 .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 .apply(RequestOptions.circleCropTransform())
-                .placeholder(R.drawable.loader)
+                .placeholder(R.drawable.circle_pic)
                 .into(itemView.timenote_recent_pic_user_imageview)
 
             itemView.timenote_recent_title.text = timenote.title
@@ -74,5 +74,6 @@ class ItemTimenoteRecentAdapter(private val timenotesToCome: List<TimenoteInfoDT
             paint.typeface = typeface
         }
     }
+
 
 }

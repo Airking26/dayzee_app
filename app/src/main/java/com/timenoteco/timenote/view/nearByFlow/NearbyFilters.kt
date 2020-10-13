@@ -45,6 +45,7 @@ import com.timenoteco.timenote.common.stringLiveData
 import com.timenoteco.timenote.model.Categories
 import com.timenoteco.timenote.model.Category
 import com.timenoteco.timenote.model.NearbyRequestBody
+import com.timenoteco.timenote.model.Price
 import com.timenoteco.timenote.viewModel.NearbyViewModel
 import com.timenoteco.timenote.webService.NearbyFilterData
 import com.warkiz.widget.IndicatorSeekBar
@@ -53,6 +54,7 @@ import com.warkiz.widget.SeekParams
 import kotlinx.android.synthetic.main.fragment_nearby_filters.*
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
+import java.time.temporal.WeekFields.ISO
 import java.util.*
 
 class NearbyFilters : Fragment(), View.OnClickListener {
@@ -61,6 +63,7 @@ class NearbyFilters : Fragment(), View.OnClickListener {
     private lateinit var nearbyFilterData: NearbyFilterData
     private lateinit var nearbyFilterCategoryTv: TextView
     private lateinit var nearbyFilterFromTv: TextView
+    val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     private lateinit var nearbyFilterPaidTimenoteTv: TextView
     private lateinit var nearbyFilterWhenTv: TextView
     private lateinit var nearbyFilterWhereTv: TextView
@@ -71,10 +74,10 @@ class NearbyFilters : Fragment(), View.OnClickListener {
     private val AUTOCOMPLETE_REQUEST_CODE: Int = 12
     private val nearbyViewModel : NearbyViewModel by activityViewModels()
 
-    enum class Type(type: String){
-        FROMFOLLOWER("fromFollowers"),
-        NOTFROMFOLLOWER("notFromFollowers"),
-        ALL("all")
+    enum class Type(){
+        FROMFOLLOWER,
+        NOTFROMFOLLOWER,
+        ALL
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -122,14 +125,14 @@ class NearbyFilters : Fragment(), View.OnClickListener {
         prefs.stringLiveData("nearby", Gson().toJson(nearbyFilterData.loadNearbyFilter())).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             val type = object : TypeToken<NearbyRequestBody?>() {}.type
             val nearbyModifyModel : NearbyRequestBody? = Gson().fromJson<NearbyRequestBody>(prefs.getString("nearby", null), type)
-            if(nearbyModifyModel?.categories?.subcategory?.isEmpty()!!) nearby_filter_category_tv.text = getString(R.string.none) else nearby_filter_category_tv.text = nearbyModifyModel?.categories.toString()
+            if(nearbyModifyModel?.categories?.get(0)?.subcategory?.isEmpty()!!) nearby_filter_category_tv.text = getString(R.string.none) else nearby_filter_category_tv.text = nearbyModifyModel.categories[0].subcategory
             when (nearbyModifyModel.type) {
-                Type.ALL.name -> nearby_filter_from_tv.text = getString(R.string.public_and_private)
-                Type.FROMFOLLOWER.name -> nearby_filter_from_tv.text = getString(R.string.private_label)
-                Type.NOTFROMFOLLOWER.name -> nearby_filter_from_tv.text = getString(R.string.public_label)
+                Type.ALL.ordinal -> nearby_filter_from_tv.text = getString(R.string.public_and_private)
+                Type.FROMFOLLOWER.ordinal -> nearby_filter_from_tv.text = getString(R.string.private_label)
+                Type.NOTFROMFOLLOWER.ordinal -> nearby_filter_from_tv.text = getString(R.string.public_label)
                 else -> nearby_filter_from_tv.text = getString(R.string.public_label)
             }
-            when(nearbyModifyModel.price){
+            when(nearbyModifyModel.price.price){
                 0 -> nearby_filter_paid_timenote_tv.text = getString(R.string.free)
                 in 1 .. Int.MAX_VALUE  -> nearby_filter_paid_timenote_tv.text = getString(R.string.paid)
                 else -> nearby_filter_paid_timenote_tv.text = getText(R.string.free)
@@ -138,7 +141,7 @@ class NearbyFilters : Fragment(), View.OnClickListener {
                 in 1..100 -> nearby_distance_seekbar.setProgress(nearbyModifyModel.maxDistance.toFloat())
                 else -> nearby_distance_seekbar.setProgress(10F)
             }
-            if(nearbyModifyModel.date.isBlank()) nearby_filter_when_tv.text = getString(R.string.today) else nearby_filter_when_tv.text = nearbyModifyModel?.date
+            if(nearbyModifyModel.date.isBlank()) nearby_filter_when_tv.text = SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis()) else nearby_filter_when_tv.text = SimpleDateFormat(DATE_FORMAT, Locale.getDefault()).format(SimpleDateFormat(ISO, Locale.getDefault()).parse(nearbyModifyModel.date).time)
             nearby_filter_where_tv.text = nearbyModifyModel.location.address.address
         })
 
@@ -169,7 +172,7 @@ class NearbyFilters : Fragment(), View.OnClickListener {
                         "Football",
                         "Tennis"
                     )) { _, index, text ->
-                    nearbyFilterData.setCategories(Categories("", text.toString()))
+                    nearbyFilterData.setCategories(listOf(Categories("", text.toString())))
                 }
                 lifecycleOwner(this@NearbyFilters)
             }
@@ -177,9 +180,9 @@ class NearbyFilters : Fragment(), View.OnClickListener {
                 title(R.string.from)
                 listItems(null, listOf("Public", "Private", "Public and Private")) { dialog, index, text ->
                     when(index){
-                        0 -> nearbyFilterData.setFrom(Type.NOTFROMFOLLOWER.name)
-                        1 -> nearbyFilterData.setFrom(Type.FROMFOLLOWER.name)
-                        2 -> nearbyFilterData.setFrom(Type.ALL.name)
+                        0 -> nearbyFilterData.setFrom(Type.NOTFROMFOLLOWER.ordinal)
+                        1 -> nearbyFilterData.setFrom(Type.FROMFOLLOWER.ordinal)
+                        2 -> nearbyFilterData.setFrom(Type.ALL.ordinal)
                     }
                 }
                 lifecycleOwner(this@NearbyFilters)
@@ -189,7 +192,7 @@ class NearbyFilters : Fragment(), View.OnClickListener {
                 title(R.string.from)
                 listItems(null, listOf(getString(R.string.free), getString(R.string.paid))) { dialog, index, text ->
                     when(index){
-                        0 -> nearbyFilterData.setPaidTimenote(0)
+                        0 -> nearbyFilterData.setPaidTimenote(Price(0, ""))
                         1 -> {
                             MaterialDialog(
                                 requireContext(),
@@ -197,10 +200,10 @@ class NearbyFilters : Fragment(), View.OnClickListener {
                             ).show {
                                 title(R.string.max_price)
                                 input(inputType = InputType.TYPE_CLASS_NUMBER) { _, charSequence ->
-                                    nearbyFilterData.setPaidTimenote(charSequence.toString().toInt())
+                                    nearbyFilterData.setPaidTimenote(Price( charSequence.toString().toInt(), ""))
                                     lifecycleOwner(this@NearbyFilters)
                                 }
-                                negativeButton(R.string.all){nearbyFilterData.setPaidTimenote(Int.MAX_VALUE)}
+                                negativeButton(R.string.all){nearbyFilterData.setPaidTimenote(Price(Int.MAX_VALUE, ""))}
                             }
                         }
                     }
@@ -209,7 +212,7 @@ class NearbyFilters : Fragment(), View.OnClickListener {
             }
             nearby_filter_when -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 datePicker { dialog, datetime ->
-                    nearbyFilterData.setWhen(dateFormat.format(datetime.time.time))
+                    nearbyFilterData.setWhen(Utils().formatDate(ISO, datetime.time.time))
                 }
             }
             nearby_filter_where -> startActivityForResult(

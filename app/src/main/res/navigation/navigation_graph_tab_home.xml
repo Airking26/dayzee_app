@@ -181,4 +181,9 @@
         android:id="@+id/profileCalendar"
         android:name="com.timenoteco.timenote.view.profileFlow.ProfileCalendar"
         android:label="ProfileCalendar" /><action android:id="@+id/action_global_detailedTimenote" app:destination="@id/detailedTimenote"/>
+    <fragment
+        android:id="@+id/notifications"
+        android:name="com.timenoteco.timenote.view.profileFlow.Notifications"
+        android:label="fragment_notifications"
+        tools:layout="@layout/fragment_notifications" />
 </navigation>

@@ -20,7 +20,8 @@ class TimenoteViewModel: ViewModel() {
     private val timenoteService = DayzeeRepository().getTimenoteService()
 
     fun getRecentTimenotePagingFlow(token: String) = Pager(PagingConfig(pageSize = 1)){ TimenoteRecentPagingSource(token, timenoteService)}.flow.cachedIn(viewModelScope)
-    fun getTimenotePagingFlow(token: String) = Pager(PagingConfig(pageSize = 1)){ TimenoteRemotePagingSource(token, timenoteService) }.flow.cachedIn(viewModelScope)
+    fun getUpcomingTimenotePagingFlow(token: String, upcoming: Boolean) = Pager(PagingConfig(pageSize = 1)){ TimenoteRemotePagingSource(token, timenoteService, upcoming) }.flow.cachedIn(viewModelScope)
+    fun getPastTimenotePagingFlow(token: String, upcoming: Boolean) = Pager(PagingConfig(pageSize = 1)){ TimenoteRemotePagingSource(token, timenoteService, upcoming) }.flow.cachedIn(viewModelScope)
     fun getSpecificTimenote(token: String, id: String) = flow { emit(timenoteService.getTimenoteId("Bearer $token",id)) }.asLiveData(viewModelScope.coroutineContext)
     fun modifySpecificTimenote(token: String, id: String, timenoteBody: CreationTimenoteDTO) =  flow {emit(timenoteService.modifyTimenote("Bearer $token",id, timenoteBody))}.asLiveData(viewModelScope.coroutineContext)
     fun deleteTimenote(token: String, id: String) = flow {emit(timenoteService.deleteTimenote("Bearer $token",id))}.asLiveData(viewModelScope.coroutineContext)
@@ -29,7 +30,7 @@ class TimenoteViewModel: ViewModel() {
     fun hideToOthers(token: String, id: String) = flow { emit(timenoteService.joinPrivateTimenote("Bearer $token",id)) }.asLiveData(viewModelScope.coroutineContext)
     fun createTimenote(token: String, creationTimenoteDTO: CreationTimenoteDTO) = flow { emit(timenoteService.createTimenote("Bearer $token", creationTimenoteDTO)) }.asLiveData(viewModelScope.coroutineContext)
     fun getUsersParticipating(token: String, id: String) = Pager(PagingConfig(pageSize = 1)){UsersParticipatingPagingSource(token, id, timenoteService)}.flow.cachedIn(viewModelScope)
-    fun shareWith(token: String, shareTimenoteDTO: ShareTimenoteDTO) = flow { emit(timenoteService.shareWith("Bearer: $token", shareTimenoteDTO)) }.asLiveData(viewModelScope.coroutineContext)
+    fun shareWith(token: String, shareTimenoteDTO: ShareTimenoteDTO) = flow { emit(timenoteService.shareWith("Bearer $token", shareTimenoteDTO)) }.asLiveData(viewModelScope.coroutineContext)
 
 
 }

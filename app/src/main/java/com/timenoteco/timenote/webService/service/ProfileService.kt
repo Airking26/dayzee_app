@@ -1,9 +1,6 @@
 package com.timenoteco.timenote.webService.service
 
-import com.timenoteco.timenote.model.CreateGroupDTO
-import com.timenoteco.timenote.model.TimenoteDateFilteredDTO
-import com.timenoteco.timenote.model.TimenoteFilteredDTO
-import com.timenoteco.timenote.model.TimenoteInfoDTO
+import com.timenoteco.timenote.model.*
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -16,21 +13,21 @@ interface ProfileService {
     suspend fun getPastTimenotes(@Header("Authorization") token: String,@Path("id") id: String, @Path("offset") offset: Int) : Response<List<TimenoteInfoDTO>>
 
     @POST("profile/group")
-    suspend fun createGroup(@Header("Authorization") token: String, @Body createGroupDTO: CreateGroupDTO) : Response<Any>
+    suspend fun createGroup(@Header("Authorization") token: String, @Body createGroupDTO: CreateGroupDTO) : Response<UserGroupDTO>
 
     @PATCH("profile/group/{id}")
-    suspend fun modifyGroup(@Header("Authorization") token: String, @Path("id") id: String, @Body createGroupDTO: CreateGroupDTO) : Response<Any>
+    suspend fun modifyGroup(@Header("Authorization") token: String, @Path("id") id: String, @Body createGroupDTO: CreateGroupDTO) : Response<UserGroupDTO>
 
     @DELETE("profile/group/{id}")
-    suspend fun deleteGroup(@Header("Authorization") token: String, @Path("id") id: String) : Response<Any>
+    suspend fun deleteGroup(@Header("Authorization") token: String, @Path("id") id: String) : Response<UserGroupDTO>
 
     @GET("profile/groups")
-    suspend fun getAllGroups(@Header("Authorization") token: String) : Response<Any>
+    suspend fun getAllGroups(@Header("Authorization") token: String) : Response<UserGroupDTO>
 
-    @GET("profile/timenotes/filtered/{offset}")
-    suspend fun getTimenotesFiltered(@Header("Authorization") token: String, @Path("offset") offset: Int, @Body timenoteFilteredDTO: TimenoteFilteredDTO) : Response<List<Any>>
+    @POST("profile/timenotes/filtered/{offset}")
+    suspend fun getTimenotesFiltered(@Header("Authorization") token: String, @Path("offset") offset: Int, @Body timenoteFilteredDTO: TimenoteFilteredDTO) : Response<List<TimenoteInfoDTO>>
 
-    @HTTP(method = "GET", path = "profile/timenotes/date", hasBody = true)
+    @POST("profile/timenotes/date")
     suspend fun getTimenoteByDate(@Header("Authorization") token: String, @Body timenoteDateFilteredDTO: TimenoteDateFilteredDTO) : Response<List<TimenoteInfoDTO>>
 
 }

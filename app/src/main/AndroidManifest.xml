@@ -30,6 +30,8 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
@@ -75,6 +77,10 @@
         <meta-data android:name="io.branch.sdk.BranchKey" android:value="key_live_ddP6u3tNWB2zC5rRnctFKnhfAsof8nj3" />
         <!-- Branch testing (TestMode "true" to simulate fresh installs on dev environment) -->
         <meta-data android:name="io.branch.sdk.TestMode" android:value="false" />
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/default_notification_channel_id" />
 
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"

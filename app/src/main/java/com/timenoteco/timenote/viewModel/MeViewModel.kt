@@ -12,4 +12,5 @@ class MeViewModel: ViewModel() {
     private val meService = DayzeeRepository().getMeService()
 
     fun putFCMToken(token: String, fcmToken: FCMDTO) = flow { emit(meService.putFCMToken("Bearer $token", fcmToken)) }.asLiveData(viewModelScope.coroutineContext)
+    fun getSpecificUser(token: String, id: String) = flow { emit(meService.getSpecificUser("Bearer $token", id))}.asLiveData(viewModelScope.coroutineContext)
 }

@@ -27,6 +27,6 @@ class NearbyViewModel: ViewModel() {
         }.asLiveData(viewModelScope.coroutineContext)
     }
 
-    fun getNearbyResults(nearbyRequestBody: NearbyRequestBody) = Pager(PagingConfig(pageSize = 1)){NearbyPagingSource(nearbyRequestBody, nearbyService)}.flow.cachedIn(viewModelScope)
+    fun getNearbyResults(token: String, nearbyRequestBody: NearbyRequestBody) = Pager(PagingConfig(pageSize = 1)){NearbyPagingSource(token, nearbyRequestBody, nearbyService)}.flow.cachedIn(viewModelScope)
 
 }

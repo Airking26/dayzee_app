@@ -22,9 +22,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.*
 import androidx.navigation.*
 import androidx.navigation.fragment.NavHostFragment
 import androidx.preference.PreferenceManager
@@ -56,6 +54,8 @@ import com.timenoteco.timenote.view.homeFlow.HomeDirections
 import com.timenoteco.timenote.view.searchFlow.ProfileSearchDirections
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.MeViewModel
+import com.timenoteco.timenote.viewModel.StringViewModel
+import com.timenoteco.timenote.viewModel.ViewModelFactory
 import io.branch.indexing.BranchUniversalObject
 import io.branch.referral.Branch
 import io.branch.referral.BranchError
@@ -67,6 +67,7 @@ import java.lang.reflect.Type
 
 class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby, ShowBarListener, ExitCreationTimenote, RefreshPicBottomNavListener {
 
+    private var fromNotification: String?= null
     private lateinit var control: NavController
     private val CHANNEL_ID: String = "dayzee_channel"
     private var currentNavController: LiveData<NavController>? = null
@@ -119,8 +120,11 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
             .addOnCompleteListener(OnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val token = task.result?.token
+                    var tokenID = prefs.getString("TOKEN", null)
                     if (prefs.getString("TOKEN", null) != null)
-                        meViewModel.putFCMToken(prefs.getString("TOKEN", null)!!, FCMDTO(token!!))
+                        meViewModel.putFCMToken(tokenID!!, FCMDTO(token!!)).observe(this, Observer {
+                           if(it.isSuccessful) Toast.makeText(this, "successPostingToken", Toast.LENGTH_SHORT).show()
+                        })
                     return@OnCompleteListener
                 }
             })
@@ -130,6 +134,19 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         setupController()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if(!intent.getStringExtra("userID").isNullOrBlank()){
+            bottomNavView.selectedItemId = R.id.navigation_graph_tab_4
+            ViewModelProviders.of(this, object : ViewModelProvider.Factory {
+                override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                    @Suppress("UNCHECKED_CAST")
+                    return StringViewModel() as T
+                }
+            })[StringViewModel::class.java].switchNotif(true)
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)

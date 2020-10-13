@@ -33,17 +33,18 @@ class ItemCalendarAdapter(
 
     fun checkEventForDay(day: Day) {
 
+        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
         val simpleDateFormatYear = SimpleDateFormat("yyyy", Locale.getDefault())
         val simpleDateFormatMonth = SimpleDateFormat("M", Locale.getDefault())
         val simpleDateFormatDay = SimpleDateFormat("d", Locale.getDefault())
 
         val eventsOfDay: MutableList<TimenoteInfoDTO> = mutableListOf()
         for(e in allEvents){
-            val dayOfEvent = simpleDateFormatDay.format(e.startingAt)
+            val dayOfEvent = simpleDateFormatDay.format(SimpleDateFormat(ISO).parse(e.startingAt))
             val daySelected = day.day.toString()
-            val monthOfEvent = simpleDateFormatMonth.format(e.startingAt)
+            val monthOfEvent = simpleDateFormatMonth.format(SimpleDateFormat(ISO).parse(e.startingAt))
             val monthSelected = (day.month + 1).toString()
-            val yearOfEvent = simpleDateFormatYear.format(e.startingAt)
+            val yearOfEvent = simpleDateFormatYear.format(SimpleDateFormat(ISO).parse(e.startingAt))
             val yearSelected = day.year.toString()
             if(daySelected == dayOfEvent && monthSelected == monthOfEvent && yearSelected == yearOfEvent){ eventsOfDay.add(e) }
         }
@@ -55,7 +56,7 @@ class ItemCalendarAdapter(
 
         fun bindListStyleItem(event: TimenoteInfoDTO) {
             itemView.profile_calendar_item_name_event.text = event.title
-            //itemView.profile_calendar_item_address_event.text = event.
+            itemView.profile_calendar_item_address_event.text = event.location?.address?.address?.plus(", ")?.plus(event.location?.address?.city)?.plus(" ")?.plus(event.location?.address?.country)
 
             Glide
                 .with(itemView)

@@ -5,7 +5,6 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.timenoteco.timenote.view.profileFlow.ProfileFutureEvents
-import com.timenoteco.timenote.view.profileFlow.ProfilePastEvents
 
 
 class ProfilePastFuturePagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle,b: Boolean, fragment: Fragment, from: Int, id: String): FragmentStateAdapter(fragmentManager, lifecycle) {

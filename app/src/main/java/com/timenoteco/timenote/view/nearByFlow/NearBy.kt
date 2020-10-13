@@ -4,14 +4,12 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ContentValues
-import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Context.LOCATION_SERVICE
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.*
-import android.location.Address
 import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
@@ -21,7 +19,6 @@ import android.util.Log
 import android.view.*
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -55,12 +52,9 @@ import com.timenoteco.timenote.adapter.*
 import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.stringLiveData
-import com.timenoteco.timenote.listeners.PlacePickerListener
 import com.timenoteco.timenote.listeners.ShowBarListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.*
-import com.timenoteco.timenote.model.Location
-import com.timenoteco.timenote.view.profileFlow.ProfileDirections
 import com.timenoteco.timenote.viewModel.*
 import com.timenoteco.timenote.webService.NearbyFilterData
 import kotlinx.android.synthetic.main.fragment_near_by.*
@@ -89,6 +83,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     private val loginViewModel : LoginViewModel by activityViewModels()
     private val followViewModel: FollowViewModel by activityViewModels()
     private val DATE_FORMAT = "EEE, d MMM yyyy"
+    val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     private lateinit var dateFormat : SimpleDateFormat
     private var googleMap: GoogleMap? = null
     private var placesList: List<Place.Field> = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
@@ -126,7 +121,9 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         makeBarVisibleListener.onBarAskedToShow()
-         return inflater.inflate(R.layout.fragment_near_by, container, false)}
+        //return getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_near_by)
+        return inflater.inflate(R.layout.fragment_near_by, container, false)
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -153,7 +150,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         nearby_time.setOnClickListener(this)
         nearby_filter_btn.setOnClickListener(this)
 
-        nearby_swipe_refresh.setOnRefreshListener { loadData() }
+        //nearby_swipe_refresh.setOnRefreshListener { loadData(nearbyModifyModel) }
 
         if(mapFragment == null){
             mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
@@ -184,14 +181,16 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
             }
         }
 
+        nearbyFilterData.clear()
         prefs.stringLiveData("nearby", Gson().toJson(nearbyFilterData.loadNearbyFilter())).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            val nearbyModifyModel : NearbyRequestBody? = Gson().fromJson<NearbyRequestBody>(it, object : TypeToken<NearbyRequestBody?>() {}.type)
+            val typeNearby: Type = object : TypeToken<NearbyRequestBody?>() {}.type
+            val nearbyModifyModel : NearbyRequestBody? = Gson().fromJson<NearbyRequestBody>(it, typeNearby)
             nearby_place.text = nearbyModifyModel?.location?.address?.address
             if(nearbyModifyModel?.date == null || nearbyModifyModel.date.isBlank())
                 nearby_time.text = dateFormat.format(System.currentTimeMillis())
-            else nearby_time.text = nearbyModifyModel.date
+            else nearby_time.text = SimpleDateFormat(DATE_FORMAT, Locale.getDefault()).format(SimpleDateFormat(ISO, Locale.getDefault()).parse(nearbyModifyModel.date).time)
 
-            loadData()
+            loadData(nearbyModifyModel)
 
             nearbyToCompare = Gson().toJson(nearbyFilterData.loadNearbyFilter())
         })
@@ -211,17 +210,17 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
      }
 
     @ExperimentalPagingApi
-    private fun loadData() {
+    private fun loadData(nearbyModifyModel: NearbyRequestBody?) {
         timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, Utils())
         nearby_rv.adapter = timenotePagingAdapter
         nearby_rv.layoutManager = LinearLayoutManager(requireContext())
-        /*if(nearbyToCompare != Gson().toJson(nearbyFilterData.loadNearbyFilter()) && !tokenId.isNullOrBlank()){
+        //if(nearbyToCompare != Gson().toJson(nearbyFilterData.loadNearbyFilter()) && !tokenId.isNullOrBlank()){
                 lifecycleScope.launch {
-                    nearbyViewModel.getNearbyResults(nearbyModifyModel!!).collectLatest { pagingData ->
+                    nearbyViewModel.getNearbyResults(tokenId!!, nearbyModifyModel!!).collectLatest { pagingData ->
                         timenotePagingAdapter.submitData(pagingData)
                     }
                 }
-            }*/
+            //}
 
         timenotePagingAdapter.addDataRefreshListener { isEmpty ->
             nearby_swipe_refresh.isRefreshing = false
@@ -313,7 +312,13 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         findNavController().navigate(NearByDirections.actionNearByToDetailedTimenote(3, event))
     }
 
-    override fun onPlusClicked(timenoteInfoDTO: TimenoteInfoDTO) {}
+    override fun onPlusClicked(timenoteInfoDTO: TimenoteInfoDTO, isAdded: Boolean) {
+        if(isAdded){
+            timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id)
+        } else {
+            timenoteViewModel.joinTimenote(tokenId!!, timenoteInfoDTO.id)
+        }
+    }
 
     override fun onClick(v: View?) {
         when(v){
@@ -322,7 +327,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
                 onDismiss { Utils().hideStatusBar(requireActivity()) }
                 datePicker { dialog, datetime ->
                     nearbyDateTv.text = dateFormat.format(datetime.time.time)
-                    nearbyFilterData.setWhen(dateFormat.format(datetime.time.time))
+                    nearbyFilterData.setWhen(utils.formatDate(ISO, datetime.time.time))
                 }
             }
             nearby_filter_btn -> findNavController().navigate(NearByDirections.actionNearByToNearbyFilters())

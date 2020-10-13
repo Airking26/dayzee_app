@@ -10,12 +10,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
-import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.model.Notification
-import kotlinx.android.synthetic.main.item_comment.view.*
 import kotlinx.android.synthetic.main.item_notification.view.*
 
-class NotificationAdapter(private val notifications: MutableList<Notification>): RecyclerView.Adapter<NotificationAdapter.NotificationViewHolder>() {
+class NotificationAdapter(private val notifications: MutableList<Notification>, private val notificationClickListener: NotificationClickListener): RecyclerView.Adapter<NotificationAdapter.NotificationViewHolder>() {
+
+    interface NotificationClickListener{
+        fun onNotificationClicked(notification: Notification)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotificationViewHolder =
         NotificationViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_notification, parent, false))
@@ -23,12 +25,15 @@ class NotificationAdapter(private val notifications: MutableList<Notification>):
     override fun getItemCount(): Int = notifications.size
 
     @RequiresApi(Build.VERSION_CODES.M)
-    override fun onBindViewHolder(holder: NotificationViewHolder, position: Int) = holder.bindNotification(notifications[position])
+    override fun onBindViewHolder(holder: NotificationViewHolder, position: Int) = holder.bindNotification(notifications[position], notificationClickListener)
 
     class NotificationViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
         @RequiresApi(Build.VERSION_CODES.M)
-        fun bindNotification(notification: Notification) {
+        fun bindNotification(
+            notification: Notification,
+            notificationClickListener: NotificationClickListener
+        ) {
 
             if(!notification.read){
                 itemView.setBackgroundColor(Color.parseColor("#20aaaaaa"))
@@ -45,6 +50,7 @@ class NotificationAdapter(private val notifications: MutableList<Notification>):
 
             itemView.notification_annoucement.text = notification.message
             itemView.notification_time.text = "17 minutes"
+            itemView.setOnClickListener{notificationClickListener.onNotificationClicked(notification)}
         }
 
     }

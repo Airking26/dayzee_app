@@ -10,11 +10,29 @@
             android:layout_height="wrap_content">
 
         <ProgressBar
+            android:visibility="gone"
             android:id="@+id/profile_pb"
             android:layout_margin="16dp"
             android:layout_gravity="center"
             android:layout_width="32dp"
             android:layout_height="32dp"/>
+
+         <androidx.recyclerview.widget.RecyclerView
+             android:visibility="gone"
+                    android:background="@color/colorBackground"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:paddingHorizontal="8dp"
+                    android:paddingTop="8dp"
+                    android:clipToPadding="false"
+                    android:nestedScrollingEnabled="true"
+                    tools:listitem="@layout/item_pref_filter_chip"
+                    android:id="@+id/profile_filter_rv_chips_in_rv"
+                    android:layout_width="match_parent"
+             android:layout_height="wrap_content"/>
+
+
 
                 <TextView
                     android:layout_gravity="center"

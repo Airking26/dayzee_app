@@ -6,8 +6,11 @@ import retrofit2.http.*
 
 interface TimenoteService {
 
-    @GET("timenote/feed/{offset}")
-    suspend fun getAllTimenotes(@Header("Authorization") token: String, @Path ("offset") offset: Int) : Response<List<TimenoteInfoDTO>>
+    @GET("timenote/feed/upcoming/{offset}")
+    suspend fun getUpcomingTimenotes(@Header("Authorization") token: String, @Path ("offset") offset: Int) : Response<List<TimenoteInfoDTO>>
+
+    @GET("timenote/feed/past/{offset}")
+    suspend fun getPastTimenotes(@Header("Authorization") token: String, @Path ("offset") offset: Int) : Response<List<TimenoteInfoDTO>>
 
     @GET("timenote/around/{offset}")
     suspend fun getAroundTimenotes(@Header("Authorization") token: String, @Path ("offset") offset: Int) : Response<List<TimenoteInfoDTO>>

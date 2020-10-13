@@ -26,4 +26,7 @@ interface MeService{
     @PUT("users/me/fcm")
     suspend fun putFCMToken(@Header("Authorization") token: String, @Body fcmToken : FCMDTO) : Response<UserInfoDTO>
 
+    @GET("users/{id}")
+    suspend fun getSpecificUser(@Header("Authorization") token: String, @Path("id") id: String) : Response<UserInfoDTO>
+
 }

@@ -37,6 +37,7 @@ import com.timenoteco.timenote.model.UpdateUserInfoDTO
 import com.timenoteco.timenote.model.UserInfoDTO
 import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
+import com.timenoteco.timenote.viewModel.StringViewModel
 import com.timenoteco.timenote.webService.ProfileModifyData
 import kotlinx.android.synthetic.main.fragment_profile.*
 import java.lang.reflect.Type
@@ -52,6 +53,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
     private lateinit var profileModifyData: ProfileModifyData
     private val loginViewModel : LoginViewModel by activityViewModels()
     private val followViewModel: FollowViewModel by activityViewModels()
+    private val stringViewModel : StringViewModel by activityViewModels()
     private var showFilterBar: Boolean = false
     private val args : ProfileArgs by navArgs()
     private lateinit var prefs: SharedPreferences
@@ -64,6 +66,9 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         tokenId = prefs.getString(TOKEN, null)
         locaPref = prefs.getInt("locaPref", -1)
+        stringViewModel.getSwitchNotifLiveData().observe(requireActivity(), androidx.lifecycle.Observer {
+            if(it) findNavController().navigate(ProfileDirections.actionProfileToNotifications())
+        })
         loginViewModel.getAuthenticationState().observe(requireActivity(), androidx.lifecycle.Observer {
             findNavController().popBackStack(R.id.profile, false)
             when (it) {
@@ -78,6 +83,10 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
 
     override fun onResume() {
         super.onResume()
+        arguments.let {
+            if(!it?.getString("userID").isNullOrBlank())
+                findNavController().navigate(ProfileDirections.actionProfileToNotifications())
+        }
         when(loginViewModel.getAuthenticationState().value){
             LoginViewModel.AuthenticationState.GUEST -> loginViewModel.markAsUnauthenticated()
         }

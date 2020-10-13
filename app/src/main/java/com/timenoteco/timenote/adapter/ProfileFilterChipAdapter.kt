@@ -10,7 +10,7 @@ import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import kotlinx.android.synthetic.main.item_pref_filter_chip.view.*
 import kotlinx.android.synthetic.main.item_remove_filter_bar.view.*
 
-class ProfileFilterChipAdapter(private val chips: MutableList<String>, val onRemoveFilterBarListener: OnRemoveFilterBarListener): RecyclerView.Adapter<ProfileFilterChipAdapter.ChipViewHolder>() {
+class ProfileFilterChipAdapter(private val chips: List<String>, val onRemoveFilterBarListener: OnRemoveFilterBarListener): RecyclerView.Adapter<ProfileFilterChipAdapter.ChipViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChipViewHolder {
         val view = if(viewType == R.layout.item_pref_filter_chip) {
@@ -22,39 +22,27 @@ class ProfileFilterChipAdapter(private val chips: MutableList<String>, val onRem
     }
 
     override fun getItemCount(): Int {
-        return chips.size
+        return chips.size + 1
     }
 
     override fun onBindViewHolder(holder: ChipViewHolder, position: Int) {
-        if(position == chips.size -1) holder.bindClose(onRemoveFilterBarListener)
+        if(position == chips.size) holder.bindClose(onRemoveFilterBarListener)
         else holder.bindChip(chips[position])
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if(position == chips.size -1) R.layout.item_remove_filter_bar else R.layout.item_pref_filter_chip
+        return if(position == chips.size) R.layout.item_remove_filter_bar else R.layout.item_pref_filter_chip
     }
 
     class ChipViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         fun bindChip(name: String) {
             itemView.chip_profile_filter.text = name
-            itemView.chip_profile_filter.setOnClickListener {
-                if((it as Chip).chipTextColor == itemView.context.resources.getColor(R.color.colorText)) {
-                    it.apply {
-                        chipBackgroundColor = itemView.context.resources.getColor(R.color.colorBackground)
-                        chipTextColor = itemView.context.resources.getColor(R.color.colorYellow)
-                    }
-                } else {
-                    it.apply {
-                        chipBackgroundColor = itemView.context.resources.getColor(R.color.colorBackground)
-                        chipTextColor = itemView.context.resources.getColor(R.color.colorText)
-                    }
-                }
-
-            }
         }
 
         fun bindClose(onRemoveFilterBarListener: OnRemoveFilterBarListener) {
-            itemView.close_filter_bar.setOnClickListener { onRemoveFilterBarListener.onHideFilterBarClicked(null) }
+            itemView.close_filter_bar.setOnClickListener {
+                onRemoveFilterBarListener.onHideFilterBarClicked(null)
+            }
         }
     }
 }

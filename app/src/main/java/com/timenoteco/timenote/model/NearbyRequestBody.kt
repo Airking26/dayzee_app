@@ -8,8 +8,8 @@ import kotlinx.android.parcel.Parcelize
 data class NearbyRequestBody (
     @SerializedName("location") var location : Location,
     @SerializedName("maxDistance") var maxDistance : Int,
-    @SerializedName("categories") var categories : Categories,
+    @SerializedName("categories") var categories : List<Categories>,
     @SerializedName("date") var date : String,
-    @SerializedName("price") var price : Int,
-    @SerializedName("type") var type : String
+    @SerializedName("price") var price : Price,
+    @SerializedName("type") var type : Int
 ) : Parcelable

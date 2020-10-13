@@ -99,7 +99,7 @@ class ProfileCalendarSearch: Fragment() {
             override fun onItemClick(v: View, day: Day) {
             }
 
-            override fun onMonthChange() {}
+            override fun onMonthChange(day: Day?) {}
             override fun onWeekChange(position: Int) {}
 
         })

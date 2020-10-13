@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -29,8 +30,10 @@ import com.afollestad.materialdialogs.datetime.datePicker
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.robertlevonyan.views.chip.Chip
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.*
+import com.timenoteco.timenote.common.onItemClick
 import com.timenoteco.timenote.listeners.ItemProfileCardListener
 import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
@@ -55,8 +58,9 @@ private const val ARG_PARAM4 = "is_future"
 
 class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarListener,
     ItemProfileCardListener, UsersPagingAdapter.SearchPeopleListener,
-    UsersShareWithPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.AddToSend {
+    UsersShareWithPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.AddToSend{
 
+    private var userInfoDTO: UserInfoDTO? = null
     private var sendTo: MutableList<String> = mutableListOf()
     private lateinit var handler: Handler
     private val TRIGGER_AUTO_COMPLETE = 200
@@ -64,7 +68,7 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
     private lateinit var prefs: SharedPreferences
     val TOKEN: String = "TOKEN"
     private var tokenId: String? = null
-    private var showHideFilterBar: Boolean? = null
+    private var showHideFilterBar: Boolean = false
     private var from: Int? = null
     private lateinit var id: String
     private var isFuture = true
@@ -97,9 +101,25 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
-        val userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
+        userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
 
-        loadData(userInfoDTO)
+        val profileFilterChipAdapter = ProfileFilterChipAdapter(listOf("My Timenotes", "The Joined", "With Alarm", "Group Related"), this)
+        profile_filter_rv_chips_in_rv.apply {
+            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            adapter = profileFilterChipAdapter
+            onItemClick { recyclerView, position, v ->
+                when(position){
+                    0 -> switchFilters(v, recyclerView[1], recyclerView[2], recyclerView[3], position)
+                    1 -> switchFilters(v, recyclerView[0], recyclerView[2], recyclerView[3] , position)
+                    2 -> switchFilters(v, recyclerView[1], recyclerView[0], recyclerView[3] ,position)
+                    3 -> switchFilters(v, recyclerView[1], recyclerView[2], recyclerView[0] , position)
+                    4 -> onRemoveFilterBarListener.onHideFilterBarClicked(null)
+                }
+            }
+        }
+
+
+        loadData(userInfoDTO!!)
 
         handler = Handler { msg ->
             if (msg.what == TRIGGER_AUTO_COMPLETE) {
@@ -120,8 +140,6 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
     private fun loadData(userInfoDTO: UserInfoDTO) {
         profileEventPagingAdapter = ProfileEventPagingAdapter(
             ProfileEventComparator,
-            showHideFilterBar!!,
-            this,
             this,
             this,
             userInfoDTO.id
@@ -138,13 +156,13 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
         }
 
         profileEventPagingAdapter.addDataRefreshListener {
-            profile_pb.visibility = View.GONE
+            profile_pb?.visibility = View.GONE
             if (it) {
-                profile_nothing_to_display.visibility = View.VISIBLE
-                profile_rv.visibility = View.GONE
+                profile_nothing_to_display?.visibility = View.VISIBLE
+                profile_rv?.visibility = View.GONE
             } else {
-                profile_nothing_to_display.visibility = View.GONE
-                profile_rv.visibility = View.VISIBLE
+                profile_nothing_to_display?.visibility = View.GONE
+                profile_rv?.visibility = View.VISIBLE
             }
         }
     }
@@ -253,7 +271,7 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
     }
 
     override fun onHideFilterBarClicked(position: Int?) {
-        this.onRemoveFilterBarListener.onHideFilterBarClicked(1)
+        onRemoveFilterBarListener.onHideFilterBarClicked(1)
     }
 
     fun setListener(onRemoveFilterBarListener: OnRemoveFilterBarListener){
@@ -261,12 +279,87 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
     }
 
     fun setShowFilterBar(b: Boolean) {
-        profileEventPagingAdapter.showHideFilterBar(b)
+        //profileEventPagingAdapter.showHideFilterBar(b)
+        if(b) profile_filter_rv_chips_in_rv.visibility = View.VISIBLE
+        else profile_filter_rv_chips_in_rv.visibility = View.GONE
     }
 
     override fun onCardClicked(event: TimenoteInfoDTO) {
         if(from == 2)findNavController().navigate(ProfileSearchDirections.actionProfileSearchToDetailedTimenoteSearch(event))
         else findNavController().navigate(ProfileDirections.actionProfileToDetailedTimenote(from!!, event))
+    }
+
+    @ExperimentalPagingApi
+    private fun onFilterClicked(position: Int, isClicked : Boolean) {
+        if(isClicked) {
+            when (position) {
+                0 -> {
+                    lifecycleScope.launch {
+                        profileViewModel.getTimenotesFiltered(
+                            tokenId!!, TimenoteFilteredDTO(
+                                upcoming = true,
+                                alarm = false,
+                                created = true,
+                                joined = false,
+                                sharedWith = false
+                            )
+                        ).collectLatest {
+                            profileEventPagingAdapter.submitData(it)
+                        }
+                    }
+                }
+                1 -> lifecycleScope.launch {
+                    profileViewModel.getTimenotesFiltered(tokenId!!, TimenoteFilteredDTO(true, false, false, true, false)).collectLatest { profileEventPagingAdapter.submitData(it) }
+                }
+                2 -> lifecycleScope.launch {
+                    profileViewModel.getTimenotesFiltered(tokenId!!, TimenoteFilteredDTO(true, true, false, false, false)).collectLatest { profileEventPagingAdapter.submitData(it) }
+                }
+                3 -> lifecycleScope.launch {
+                    profileViewModel.getTimenotesFiltered(tokenId!!, TimenoteFilteredDTO(true, false, false, false, true)).collectLatest { profileEventPagingAdapter.submitData(it) }
+                }
+            }
+        } else {
+            loadData(userInfoDTO!!)
+        }
+    }
+
+
+    @ExperimentalPagingApi
+    fun switchFilters(
+        view: View,
+        view1: View,
+        view2: View,
+        view3: View,
+        position: Int
+    ){
+        var isCliked : Boolean = false
+
+        (view as Chip).apply {
+            if(this.chipTextColor == resources.getColor(R.color.colorText)){
+                isCliked = true
+                chipBackgroundColor = resources.getColor(R.color.colorBackground)
+                chipTextColor = resources.getColor(R.color.colorYellow)
+            } else {
+                isCliked = false
+                chipBackgroundColor = resources.getColor(R.color.colorBackground)
+                chipTextColor = resources.getColor(R.color.colorText)
+            }
+        }
+        (view1 as Chip).apply {
+            chipBackgroundColor = resources.getColor(R.color.colorBackground)
+            chipTextColor = resources.getColor(R.color.colorText)
+        }
+        (view2 as Chip).apply {
+            chipBackgroundColor = resources.getColor(R.color.colorBackground)
+            chipTextColor = resources.getColor(R.color.colorText)
+        }
+        (view3 as Chip).apply {
+            chipBackgroundColor = resources.getColor(R.color.colorBackground)
+            chipTextColor = resources.getColor(R.color.colorText)
+        }
+
+        onFilterClicked(position, isCliked)
+
     }
 
 
@@ -295,7 +388,7 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
     override fun onAddressClicked(timenoteInfoDTO: TimenoteInfoDTO) {}
     override fun onSeeMoreClicked(event: TimenoteInfoDTO) {}
     override fun onCommentClicked(event: TimenoteInfoDTO) {}
-    override fun onPlusClicked(timenoteInfoDTO: TimenoteInfoDTO) {}
+    override fun onPlusClicked(timenoteInfoDTO: TimenoteInfoDTO, isAdded: Boolean) {}
     override fun onPictureClicked(userInfoDTO: UserInfoDTO) {}
     override fun onMaskThisUser() {}
     override fun onDoubleClick() {}

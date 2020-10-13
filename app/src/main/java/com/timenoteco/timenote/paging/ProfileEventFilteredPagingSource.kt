@@ -5,9 +5,9 @@ import com.timenoteco.timenote.model.TimenoteFilteredDTO
 import com.timenoteco.timenote.model.TimenoteInfoDTO
 import com.timenoteco.timenote.webService.service.ProfileService
 
-class ProfileEventFilteredPagingSource(val token : String, val timenoteFilteredDTO: TimenoteFilteredDTO, val profileService: ProfileService): PagingSource<Int, Any>() {
+class ProfileEventFilteredPagingSource(val token : String, val timenoteFilteredDTO: TimenoteFilteredDTO, val profileService: ProfileService): PagingSource<Int, TimenoteInfoDTO>() {
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Any> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, TimenoteInfoDTO> {
         return try {
             val nextPageNumber = params.key ?: 0
             val response = profileService.getTimenotesFiltered("Bearer $token", nextPageNumber, timenoteFilteredDTO)

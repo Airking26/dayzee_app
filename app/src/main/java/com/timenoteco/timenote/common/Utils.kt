@@ -282,7 +282,7 @@ class Utils {
     }
 
 
-    private fun formatDate(format: String, timestamp: Long): String {
+    fun formatDate(format: String, timestamp: Long): String {
         val dateFormat = SimpleDateFormat(format, Locale.getDefault())
         return if(timestamp == 0L) ""
         else dateFormat.format(timestamp)
@@ -347,7 +347,6 @@ class Utils {
         val startingAt = SimpleDateFormat(ISO, Locale.getDefault()).parse(startDate).time
 
         return formatDate(YEAR, startingAt)
-
     }
 
 

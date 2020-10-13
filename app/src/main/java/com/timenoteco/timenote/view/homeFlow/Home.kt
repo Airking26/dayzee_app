@@ -2,7 +2,6 @@ package com.timenoteco.timenote.view.homeFlow
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
@@ -17,7 +16,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
-import androidx.paging.LoadState
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.LayoutMode
@@ -28,11 +26,9 @@ import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
 import com.afollestad.materialdialogs.datetime.dateTimePicker
-import com.afollestad.materialdialogs.internal.button.DialogActionButton
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.mancj.materialsearchbar.MaterialSearchBar
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.*
 import com.timenoteco.timenote.common.BaseThroughFragment
@@ -49,7 +45,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
-import kotlin.math.log
 
 class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListener,
     UsersPagingAdapter.SearchPeopleListener, ItemTimenoteRecentAdapter.TimenoteRecentClicked, UsersShareWithPagingAdapter.SearchPeopleListener,
@@ -105,7 +100,6 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        //if(!tokenId.isNullOrBlank()) loadData()
         //retainInstance = true
         onGoToNearby = context as OnGoToNearby
         onRefreshPicBottomNavListener = context as RefreshPicBottomNavListener
@@ -113,6 +107,12 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
     override fun onResume() {
         super.onResume()
+        arguments.let {
+            val m = it?.getInt("test")
+            val n = it?.getString("testFCM")
+            Toast.makeText(requireContext(), "Profile" + m, Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "ProfileFCM" + n, Toast.LENGTH_SHORT).show()
+        }
         when(loginViewModel.getAuthenticationState().value){
             LoginViewModel.AuthenticationState.GUEST -> loginViewModel.markAsUnauthenticated()
             LoginViewModel.AuthenticationState.UNAUTHENTICATED -> loginViewModel.markAsUnauthenticated()
@@ -171,7 +171,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
         timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils)
         lifecycleScope.launch {
-            timenoteViewModel.getTimenotePagingFlow(tokenId!!).collectLatest {
+            timenoteViewModel.getUpcomingTimenotePagingFlow(tokenId!!, true).collectLatest {
                 timenotePagingAdapter?.submitData(it)
             }
         }
@@ -225,11 +225,11 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         findNavController().navigate(HomeDirections.actionHomeToDetailedTimenote(1, event))
     }
 
-    override fun onPlusClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        if(false){
-            timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {})
+    override fun onPlusClicked(timenoteInfoDTO: TimenoteInfoDTO, isAdded: Boolean) {
+        if(isAdded){
+            timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id)
         } else {
-            timenoteViewModel.joinTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {})
+            timenoteViewModel.joinTimenote(tokenId!!, timenoteInfoDTO.id)
         }
     }
 
