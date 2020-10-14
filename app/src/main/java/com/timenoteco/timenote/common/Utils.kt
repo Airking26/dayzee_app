@@ -393,7 +393,7 @@ class Utils {
         return timeSince
     }
 
-    fun calculateDecountTime(startDate: String): String {
+    fun inTime(startDate: String): String {
         val d = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Date.from(Instant.from(DateTimeFormatter.ISO_INSTANT.parse(startDate)))
         } else {
@@ -462,6 +462,81 @@ class Utils {
                     decountTime = "In $mYear year and $mMonth months"
                 } else {
                     decountTime = "In $mYear year and $mMonth month"
+                }
+            }
+        }
+        return decountTime
+    }
+
+    fun sinceTime(startDate: String): String {
+        val d = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Date.from(Instant.from(DateTimeFormatter.ISO_INSTANT.parse(startDate)))
+        } else {
+            TODO("VERSION.SDK_INT < O")
+        }
+        val time = System.currentTimeMillis() - d.time
+        val c: Calendar = Calendar.getInstance(Locale.getDefault())
+        c.timeInMillis = time
+        val mYear: Int = c.get(Calendar.YEAR) - 1970
+        val mMonth: Int = c.get(Calendar.MONTH)
+        val mDay: Int = c.get(Calendar.DAY_OF_MONTH) - 1
+        val mHours: Int = c.get(Calendar.HOUR)
+        val mMin : Int = c.get(Calendar.MINUTE)
+
+        val decountTime: String
+        if(mYear == 0){
+            if(mMonth == 0){
+                if(mDay == 0){
+                    if(mHours > 1){
+                        if(mMin > 1){
+                            decountTime = "Since $mHours hours and $mMin minutes"
+                        } else {
+                            decountTime = "Since $mHours hours and $mMin minute"
+                        }
+                    } else {
+                        if(mMin > 1){
+                            decountTime = "Since $mHours hour and $mMin minutes"
+                        } else {
+                            decountTime = "Since $mHours hour and $mMin minute"
+                        }
+                    }
+                } else {
+                    if(mDay > 1){
+                        if(mHours > 1) decountTime = "Since $mDay days and $mHours hours"
+                        else decountTime = "Since $mDay days and $mHours hour"
+                    } else {
+                        if(mHours > 1) decountTime = "Since $mDay day and $mHours hours"
+                        else decountTime = "Since $mDay day and $mHours hour"
+                    }
+
+                }
+            } else {
+                if(mMonth > 1){
+                    if(mDay > 1){
+                        decountTime = "Since $mMonth months and $mDay days"
+                    } else {
+                        decountTime = "Since $mMonth months and $mDay day"
+                    }
+                } else {
+                    if(mDay >1){
+                        decountTime = "Since $mMonth month and $mDay days"
+                    } else {
+                        decountTime = "Since $mMonth month and $mDay day"
+                    }
+                }
+            }
+        } else {
+            if(mYear > 1){
+                if(mMonth > 1) {
+                    decountTime = "Since $mYear years and $mMonth months"
+                } else {
+                    decountTime = "Since $mYear years and $mMonth month"
+                }
+            } else {
+                if(mMonth > 1){
+                    decountTime = "Since $mYear year and $mMonth months"
+                } else {
+                    decountTime = "Since $mYear year and $mMonth month"
                 }
             }
         }

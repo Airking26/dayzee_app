@@ -18,7 +18,6 @@ import kotlinx.android.synthetic.main.item_user.view.user_imageview
 import kotlinx.android.synthetic.main.item_user_send.view.*
 
 class UsersShareWithPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>,
-                                  val timenoteInfoDTO: TimenoteInfoDTO?,
                                   val searchPeopleListener: SearchPeopleListener,
                                   val addToSend: AddToSend)
     : PagingDataAdapter<UserInfoDTO, UsersShareWithPagingAdapter.UserViewHolder>(diffCallback){
@@ -36,7 +35,6 @@ class UsersShareWithPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDT
         fun bindUser(
             userInfoDTO: UserInfoDTO?,
             searchPeopleListener: SearchPeopleListener,
-            timenoteInfoDTO: TimenoteInfoDTO?,
             addToSend: AddToSend
         ) {
 
@@ -70,7 +68,7 @@ class UsersShareWithPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDT
     }
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-        holder.bindUser(getItem(position), searchPeopleListener, timenoteInfoDTO, addToSend)
+        holder.bindUser(getItem(position), searchPeopleListener, addToSend)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder =

@@ -107,12 +107,6 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
     override fun onResume() {
         super.onResume()
-        arguments.let {
-            val m = it?.getInt("test")
-            val n = it?.getString("testFCM")
-            Toast.makeText(requireContext(), "Profile" + m, Toast.LENGTH_SHORT).show()
-            Toast.makeText(requireContext(), "ProfileFCM" + n, Toast.LENGTH_SHORT).show()
-        }
         when(loginViewModel.getAuthenticationState().value){
             LoginViewModel.AuthenticationState.GUEST -> loginViewModel.markAsUnauthenticated()
             LoginViewModel.AuthenticationState.UNAUTHENTICATED -> loginViewModel.markAsUnauthenticated()
@@ -132,10 +126,10 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if(tokenId != null) {
             home_swipe_refresh.setColorSchemeResources(R.color.colorStartGradient, R.color.colorEndGradient)
-            home_swipe_refresh.setOnRefreshListener { loadData() }
+            home_swipe_refresh.setOnRefreshListener { loadUpcomingData() }
 
             if(timenoteRecentPagingAdapter == null || timenotePagingAdapter == null || home_nothing_to_display?.visibility == View.VISIBLE) {
-                loadData()
+                loadUpcomingData()
             }
 
             home_past_timeline.setOnClickListener(this)
@@ -157,7 +151,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     }
 
     @ExperimentalPagingApi
-    private fun loadData() {
+    private fun loadUpcomingData() {
 
         home_swipe_refresh?.isRefreshing = true
 
@@ -201,6 +195,38 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         }
     }
 
+    @ExperimentalPagingApi
+    private fun loadPastData(){
+        home_swipe_refresh?.isRefreshing = true
+
+        timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, false, utils)
+        lifecycleScope.launch {
+            timenoteViewModel.getUpcomingTimenotePagingFlow(tokenId!!, false).collectLatest {
+                timenotePagingAdapter?.submitData(it)
+            }
+        }
+
+        home_rv?.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = timenotePagingAdapter
+        }
+
+        timenotePagingAdapter?.addDataRefreshListener {
+            home_swipe_refresh?.isRefreshing = false
+            if(it){
+                home_recent_rv?.visibility = View.GONE
+                home_rv?.visibility = View.GONE
+                home_posted_recently?.visibility = View.GONE
+                home_nothing_to_display?.visibility = View.VISIBLE
+            } else {
+                home_rv?.visibility = View.VISIBLE
+                home_nothing_to_display?.visibility = View.GONE
+            }
+        }
+
+    }
+
+    @ExperimentalPagingApi
     override fun onClick(v: View?) {
         when(v){
             home_past_timeline -> {
@@ -209,6 +235,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                     home_posted_recently.visibility = View.GONE
                     home_past_timeline.setImageDrawable(resources.getDrawable(R.drawable.ic_passe_plein_grad_ok))
                     home_future_timeline.setImageDrawable(resources.getDrawable(R.drawable.ic_futur_ok))
+                    loadPastData()
                 }
             }
             home_future_timeline ->{
@@ -216,6 +243,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                     home_recent_rv.visibility = View.VISIBLE
                     home_future_timeline.setImageDrawable(resources.getDrawable(R.drawable.ic_futur_plein_grad))
                     home_past_timeline.setImageDrawable(resources.getDrawable(R.drawable.ic_passe_ok))
+                    loadUpcomingData()
                 }
             }
         }
@@ -227,9 +255,13 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
     override fun onPlusClicked(timenoteInfoDTO: TimenoteInfoDTO, isAdded: Boolean) {
         if(isAdded){
-            timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id)
+            timenoteViewModel.joinTimenote(tokenId!!, timenoteInfoDTO.id).observe(
+                viewLifecycleOwner,
+                Observer {
+                })
         } else {
-            timenoteViewModel.joinTimenote(tokenId!!, timenoteInfoDTO.id)
+            timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {
+            })
         }
     }
 
@@ -314,7 +346,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
         })
         val recyclerview = dial.getCustomView().shareWith_rv
-        val userAdapter = UsersShareWithPagingAdapter(UsersPagingAdapter.UserComparator, timenoteInfoDTO, this, this)
+        val userAdapter = UsersShareWithPagingAdapter(UsersPagingAdapter.UserComparator, this, this)
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{

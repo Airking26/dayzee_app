@@ -830,7 +830,6 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener,
         val recyclerView = dial.getCustomView().shareWith_rv
         val userAdapter = UsersShareWithPagingAdapter(
             UsersPagingAdapter.UserComparator,
-            null,
             this,
             this
         )

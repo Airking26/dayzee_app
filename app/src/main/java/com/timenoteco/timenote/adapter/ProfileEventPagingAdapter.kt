@@ -5,10 +5,8 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.get
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
@@ -17,22 +15,18 @@ import com.afollestad.materialdialogs.list.listItems
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
-import com.robertlevonyan.views.chip.Chip
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.Utils
-import com.timenoteco.timenote.common.onItemClick
 import com.timenoteco.timenote.listeners.ItemProfileCardListener
-import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.TimenoteInfoDTO
-import kotlinx.android.synthetic.main.fragment_filter.view.*
 import kotlinx.android.synthetic.main.item_profile_timenote_list_style.view.*
 import java.text.SimpleDateFormat
 
 class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<TimenoteInfoDTO>,
                                 private val timenoteOptionsListener: TimenoteOptionsListener,
                                 private val onCardClicked: ItemProfileCardListener,
-                                private val isMine: String?)
+                                private val isMine: String?, private val isUpcoming: Boolean)
     : PagingDataAdapter<TimenoteInfoDTO, RecyclerView.ViewHolder>(diffUtilCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -45,7 +39,7 @@ class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<Timenote
                 getItem(position)!!,
                 timenoteOptionsListener,
                 onCardClicked,
-                isMine)
+                isMine, isUpcoming)
     }
 
 
@@ -56,7 +50,7 @@ class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<Timenote
 }
 
 class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-    fun bindListStyleItem(event: TimenoteInfoDTO, timenoteOptionsListener: TimenoteOptionsListener, onCardClicked: ItemProfileCardListener, isMine: String?) {
+    fun bindListStyleItem(event: TimenoteInfoDTO, timenoteOptionsListener: TimenoteOptionsListener, onCardClicked: ItemProfileCardListener, isMine: String?, isUpcoming: Boolean) {
 
         itemView.setOnClickListener { onCardClicked.onCardClicked(event) }
 
@@ -64,7 +58,7 @@ class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         if(event.location != null)
             itemView.profile_item_address_event.text = event.location.address.address.plus(", ").plus(event.location.address.city).plus(" ").plus(event.location.address.country)
         itemView.profile_item_name_owner.text = event.createdBy.userName
-        itemView.profile_item_date_event.text = Utils().calculateDecountTime(event.startingAt)
+        itemView.profile_item_date_event.text = if(isUpcoming) Utils().inTime(event.startingAt) else Utils().sinceTime(event.endingAt)
         itemView.profile_item_options.setOnClickListener { createOptionsOnTimenote(itemView.context, isMine, timenoteOptionsListener, event) }
         if(!event.pictures.isNullOrEmpty()) {
             Glide

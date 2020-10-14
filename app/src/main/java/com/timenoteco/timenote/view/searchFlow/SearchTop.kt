@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.view.searchFlow
 
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -12,13 +13,16 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.SuggestionAdapter
 import com.timenoteco.timenote.common.BaseThroughFragment
+import com.timenoteco.timenote.model.UserInfoDTO
 import com.timenoteco.timenote.model.UserSuggested
 import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
+import com.timenoteco.timenote.viewModel.SearchViewModel
 import kotlinx.android.synthetic.main.fragment_search_top.*
 
 class SearchTop: Fragment(), SuggestionAdapter.SuggestionItemListener,
@@ -26,42 +30,33 @@ class SearchTop: Fragment(), SuggestionAdapter.SuggestionItemListener,
 
 
     private lateinit var topAdapter: SuggestionAdapter
-    private var tops: Map<String, List<UserSuggested>> = mapOf()
+    private var tops: MutableMap<String, List<UserInfoDTO>> = mutableMapOf()
     private val followViewModel : FollowViewModel by activityViewModels()
+    private val searchViewModel : SearchViewModel by activityViewModels()
+    private lateinit var prefs: SharedPreferences
+    val TOKEN: String = "TOKEN"
+    private var tokenId: String? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        tokenId = prefs.getString(TOKEN, null)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_search_top, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        tops = mapOf(
-            "Football" to listOf(UserSuggested(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-            "Ligue 1",
-            false),UserSuggested(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-            "Ligue 1",
-            false),UserSuggested(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-            "Ligue 1",
-            false),UserSuggested(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-            "Ligue 1",
-            false)),
-            "Music" to listOf(UserSuggested(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                "Techno",
-                false),UserSuggested(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                "Techno",
-                false),UserSuggested(
-                "https://media.istockphoto.com/photos/beautiful-woman-posing-against-dark-background-picture-id638756792",
-                "Techno",
-                false)))
+
         topAdapter = SuggestionAdapter(tops, this, this)
         search_top_rv.apply {
             layoutManager = LinearLayoutManager(view.context)
             adapter = topAdapter
         }
+
+        searchViewModel.getTop(tokenId!!).observe(viewLifecycleOwner, Observer { response ->
+            response.body()?.groupBy { it.category.subcategory }?.entries?.map { (name, group) -> tops.put(name, group.map { it.users[0] }) }
+        })
 
     }
 

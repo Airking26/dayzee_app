@@ -27,6 +27,7 @@ import com.timenoteco.timenote.model.STATUS
 import com.timenoteco.timenote.model.UpdateUserInfoDTO
 import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
+import com.timenoteco.timenote.viewModel.MeViewModel
 import com.timenoteco.timenote.viewModel.ProfileModifyViewModel
 import com.timenoteco.timenote.webService.ProfileModifyData
 import com.timenoteco.timenote.webService.service.FollowService
@@ -42,6 +43,7 @@ class Settings : Fragment(), View.OnClickListener {
     val TOKEN: String = "TOKEN"
     private var tokenId: String? = null
     private val loginViewModel: LoginViewModel by activityViewModels()
+    private val meViewModel : MeViewModel by activityViewModels()
     private lateinit var profileModifyData: ProfileModifyData
     private val profileModVieModel: ProfileModifyViewModel by activityViewModels()
     private lateinit var dsactv : TextView
@@ -84,7 +86,7 @@ class Settings : Fragment(), View.OnClickListener {
             }
 
             if(prefs.getString("pmtc", "") != Gson().toJson(profileModifyData.loadProfileModifyModel())){
-                profileModVieModel.modifyProfile(tokenId!!, UpdateUserInfoDTO(
+                meViewModel.modifyProfile(tokenId!!, UpdateUserInfoDTO(
                     profilModifyModel?.givenName, profilModifyModel?.familyName, profilModifyModel?.picture,
                     profilModifyModel?.location, profilModifyModel?.birthday, profilModifyModel?.description,
                     profilModifyModel?.gender, profilModifyModel?.status!!, profilModifyModel.dateFormat, profilModifyModel.socialMedias

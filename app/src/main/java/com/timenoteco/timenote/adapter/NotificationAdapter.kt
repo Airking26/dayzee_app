@@ -48,7 +48,7 @@ class NotificationAdapter(private val notifications: MutableList<Notification>, 
                 .placeholder(R.drawable.circle_pic)
                 .into(itemView.notification_user_pic_imageview)
 
-            itemView.notification_annoucement.text = notification.message
+            itemView.notification_annoucement.text = notification.body
             itemView.notification_time.text = "17 minutes"
             itemView.setOnClickListener{notificationClickListener.onNotificationClicked(notification)}
         }

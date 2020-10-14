@@ -29,6 +29,14 @@ class ProfileModifyData(context: Context) {
         return profilModifyModel
     }
 
+    fun setNbrFollowers(nbrFollowers: Int){
+        profilModifyModel?.followers = nbrFollowers
+    }
+
+    fun setNbrFollowing(nbrFollowing: Int){
+        profilModifyModel?.following = nbrFollowing
+    }
+
     fun setPicture(url: String){
         profilModifyModel?.picture = url
         notifyProfileDataChanged()

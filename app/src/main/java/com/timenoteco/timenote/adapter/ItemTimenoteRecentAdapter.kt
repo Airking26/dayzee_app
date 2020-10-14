@@ -15,7 +15,6 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.model.TimenoteInfoDTO
 import kotlinx.android.synthetic.main.item_timenote_recent.view.*
-import java.sql.Time
 
 class ItemTimenoteRecentAdapter(private val timenotesToCome: List<TimenoteInfoDTO>, val timenoteRecentClicked: TimenoteRecentClicked):
     RecyclerView.Adapter<ItemTimenoteRecentAdapter.TimenoteToComeViewHolder>(){
@@ -60,7 +59,7 @@ class ItemTimenoteRecentAdapter(private val timenotesToCome: List<TimenoteInfoDT
                 .into(itemView.timenote_recent_pic_user_imageview)
 
             itemView.timenote_recent_title.text = timenote.title
-            itemView.timenote_recent_date.text = Utils().calculateDecountTime(timenote.startingAt)
+            itemView.timenote_recent_date.text = Utils().inTime(timenote.startingAt)
             itemView.setOnClickListener { timenoteClicked.onTimenoteRecentClicked(timenote) }
         }
     }

@@ -15,8 +15,8 @@ class NearbyFilterData(context: Context) {
 
     private var nearbyFilterModel: NearbyRequestBody? = Gson().fromJson<NearbyRequestBody>(
         prefs.getString("nearby",
-            Gson().toJson(NearbyRequestBody(Location(0.0, 0.0, Address("some","some", "some","some")),
-                10, listOf(Categories("some", "some")), "2020-10-12T15:51:53.448Z", Price(0, ""), 2))), type)
+            Gson().toJson(NearbyRequestBody(Location(0.0, 0.0, Address("","", "","")),
+                10, listOf(), "2020-10-12T15:51:53.448Z", Price(0, ""), 2))), type)
 
     private fun notifyNearbyFilterChanged(){
         prefs.edit().putString("nearby", Gson().toJson(nearbyFilterModel)).apply()

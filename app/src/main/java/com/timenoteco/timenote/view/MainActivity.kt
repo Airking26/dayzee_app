@@ -138,7 +138,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
 
     override fun onResume() {
         super.onResume()
-        if(!intent.getStringExtra("userID").isNullOrBlank()){
+        if(!intent.getStringExtra("type").isNullOrBlank()){
             bottomNavView.selectedItemId = R.id.navigation_graph_tab_4
             ViewModelProviders.of(this, object : ViewModelProvider.Factory {
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {

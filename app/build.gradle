@@ -37,8 +37,8 @@ android {
         applicationId "com.timenoteco.timenote"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 23
-        versionName "23.0"
+        versionCode 24
+        versionName "24.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

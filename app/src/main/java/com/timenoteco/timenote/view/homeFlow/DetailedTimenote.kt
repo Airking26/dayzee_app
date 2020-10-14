@@ -302,7 +302,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
 
                 })
                 val recyclerview = dial.getCustomView().shareWith_rv
-                val userAdapter = UsersShareWithPagingAdapter(UsersPagingAdapter.UserComparator, args.event, this, this)
+                val userAdapter = UsersShareWithPagingAdapter(UsersPagingAdapter.UserComparator, this, this)
                 recyclerview.layoutManager = LinearLayoutManager(requireContext())
                 recyclerview.adapter = userAdapter
                 lifecycleScope.launch{

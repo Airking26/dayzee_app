@@ -8,5 +8,8 @@ data class Notification (
     var read: Boolean,
     var message: String,
     var time: Long,
-    var userInfoDTO: UserInfoDTO?
+    var type: String,
+    var id: String,
+    var title: String,
+    var body: String
 ) : Parcelable

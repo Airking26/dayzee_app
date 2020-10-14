@@ -13,10 +13,7 @@ import retrofit2.Response
 
 class ProfileModifyViewModel: ViewModel() {
 
-    private val meService = DayzeeRepository().getMeService()
     private val placeService = PlaceRepository().getPlaceService()
-
-    fun modifyProfile(token: String, updateUserInfo: UpdateUserInfoDTO) = flow { emit(meService.modifyMyInfos("Bearer $token", updateUserInfo)) }.asLiveData(viewModelScope.coroutineContext)
 
     fun fetchLocation(id : String): LiveData<Response<DetailedPlace>> {
         return flow {

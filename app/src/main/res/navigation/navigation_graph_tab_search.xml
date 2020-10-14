@@ -102,6 +102,10 @@
         <action
             android:id="@+id/action_searchExploreClicked_to_profileSearch"
             app:destination="@id/profileSearch" />
+        <argument
+            android:name="category"
+            app:argType="com.timenoteco.timenote.model.Category"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/searchTop"

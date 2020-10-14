@@ -142,8 +142,8 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
             ProfileEventComparator,
             this,
             this,
-            userInfoDTO.id
-        )
+            userInfoDTO.id,
+            isFuture)
         profile_rv.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = profileEventPagingAdapter
@@ -252,7 +252,7 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
 
         })
         val recyclerview = dial.getCustomView().shareWith_rv
-        val userAdapter = UsersShareWithPagingAdapter(UsersPagingAdapter.UserComparator, timenoteInfoDTO, this, this)
+        val userAdapter = UsersShareWithPagingAdapter(UsersPagingAdapter.UserComparator, this, this)
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
@@ -297,7 +297,7 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
                     lifecycleScope.launch {
                         profileViewModel.getTimenotesFiltered(
                             tokenId!!, TimenoteFilteredDTO(
-                                upcoming = true,
+                                upcoming = isFuture,
                                 alarm = false,
                                 created = true,
                                 joined = false,
@@ -309,13 +309,13 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
                     }
                 }
                 1 -> lifecycleScope.launch {
-                    profileViewModel.getTimenotesFiltered(tokenId!!, TimenoteFilteredDTO(true, false, false, true, false)).collectLatest { profileEventPagingAdapter.submitData(it) }
+                    profileViewModel.getTimenotesFiltered(tokenId!!, TimenoteFilteredDTO(isFuture, false, false, true, false)).collectLatest { profileEventPagingAdapter.submitData(it) }
                 }
                 2 -> lifecycleScope.launch {
-                    profileViewModel.getTimenotesFiltered(tokenId!!, TimenoteFilteredDTO(true, true, false, false, false)).collectLatest { profileEventPagingAdapter.submitData(it) }
+                    profileViewModel.getTimenotesFiltered(tokenId!!, TimenoteFilteredDTO(isFuture, true, false, false, false)).collectLatest { profileEventPagingAdapter.submitData(it) }
                 }
                 3 -> lifecycleScope.launch {
-                    profileViewModel.getTimenotesFiltered(tokenId!!, TimenoteFilteredDTO(true, false, false, false, true)).collectLatest { profileEventPagingAdapter.submitData(it) }
+                    profileViewModel.getTimenotesFiltered(tokenId!!, TimenoteFilteredDTO(isFuture, false, false, false, true)).collectLatest { profileEventPagingAdapter.submitData(it) }
                 }
             }
         } else {
@@ -332,7 +332,7 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
         view3: View,
         position: Int
     ){
-        var isCliked : Boolean = false
+        var isCliked: Boolean
 
         (view as Chip).apply {
             if(this.chipTextColor == resources.getColor(R.color.colorText)){

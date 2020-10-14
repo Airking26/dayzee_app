@@ -24,56 +24,7 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
 
     private lateinit var prefs : SharedPreferences
     private lateinit var notificationAdapter: NotificationAdapter
-    private var notifications: MutableList<Notification>? = mutableListOf(
-        Notification(true, "Ronny wants to follow you", 0L, null),
-        Notification(true, "Ronny wants to follow you", 0L, null),
-        Notification(true, "Ronny wants to follow you", 0L, null),
-        Notification(true, "Ronny wants to follow you", 0L, null),
-        Notification(true, "Ronny wants to follow you", 0L, null),
-        Notification(true, "Ronny wants to follow you", 0L, null),
-        Notification(true, "Ronny wants to follow you", 0L, null),
-        Notification(true, "Ronny wants to follow you", 0L, null),
-        Notification(true, "Ronny wants to follow you", 0L, null),
-        Notification(true, "Ronny wants to follow you", 0L, null),
-        Notification(true, "Ronny wants to follow you", 0L, null),
-        Notification(true, "Ronny wants to follow you", 0L, null),
-        Notification(true, "Ronny wants to follow you", 0L, null),
-        Notification(true, "Ronny wants to follow you", 0L, null),
-        Notification(true, "Ronny wants to follow you", 0L, null),
-        Notification(true, "Ronny wants to follow you", 0L, null),
-        Notification(true, "Ronny wants to follow you", 0L, null),
-        Notification(true, "Ronny wants to follow you", 0L, null),
-        Notification(true, "Ronny wants to follow you", 0L, null),
-        Notification(true, "Ronny wants to follow you", 0L, null),
-        Notification(true, "Ronny wants to follow you", 0L, null),
-        Notification(false, "Ronny wants to follow you, accept or decline", 0L, null),
-        Notification(false, "Samuel share a timenote with you", 0L, null),
-        Notification(false, "Jordan has accepted your ask", 0L, null),
-        Notification(false, "Aziz just commented your timenote", 0L, null),
-        Notification(false, "Ronny wants to follow you, accept or decline", 0L, null),
-        Notification(false, "Samuel share a timenote with you", 0L, null),
-        Notification(false, "Jordan has accepted your ask", 0L, null),
-        Notification(false, "Aziz just commented your timenote", 0L, null),
-        Notification(false, "Ronny wants to follow you, accept or decline", 0L, null),
-        Notification(false, "Samuel share a timenote with you", 0L, null),
-        Notification(false, "Jordan has accepted your ask", 0L, null),
-        Notification(false, "Aziz just commented your timenote", 0L, null),
-        Notification(false, "Ronny wants to follow you", 0L, null),
-        Notification(false, "Ronny wants to follow you", 0L, null),
-        Notification(false, "Ronny wants to follow you", 0L, null),
-        Notification(false, "Ronny wants to follow you", 0L, null),
-        Notification(false, "Ronny wants to follow you", 0L, null),
-        Notification(false, "Ronny wants to follow you", 0L, null),
-        Notification(false, "Ronny wants to follow you", 0L, null),
-        Notification(false, "Ronny wants to follow you", 0L, null),
-        Notification(false, "Ronny wants to follow you", 0L, null),
-        Notification(false, "Ronny wants to follow you", 0L, null),
-        Notification(false, "Ronny wants to follow you", 0L, null),
-        Notification(false, "Ronny wants to follow you", 0L, null),
-        Notification(false, "Ronny wants to follow you", 0L, null),
-        Notification(false, "Ronny wants to follow you", 0L, null),
-        Notification(false, "Ronny wants to follow you", 0L, null)
-    )
+    private lateinit var notifications: MutableList<Notification>
     private val timenoteViewModel : TimenoteViewModel by activityViewModels()
     val TOKEN: String = "TOKEN"
     private var tokenId: String? = null
@@ -89,10 +40,10 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val typeNotification: Type = object : TypeToken<MutableList<Notification?>>() {}.type
-        //notifications = Gson().fromJson<MutableList<Notification>>(prefs.getString("notifications", null), typeNotification)
-        notificationAdapter = NotificationAdapter(sortNotifications(), this)
+        notifications = Gson().fromJson<MutableList<Notification>>(prefs.getString("notifications", null), typeNotification) ?: mutableListOf()
+        notificationAdapter = NotificationAdapter(notifications, this)
         notifications_rv.apply {
-            setHasFixedSize(true)
+            //setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireContext())
             adapter = notificationAdapter
             addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
@@ -100,17 +51,18 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
         //refreshNotifications()
     }
 
-    fun sortNotifications(): MutableList<Notification> {
-        val notificationsUnread = notifications?.filter { !it.read }
-        val notificationReadedLastTen = notifications?.filter { it.read }?.takeLast(10)
-        val notifs = notificationsUnread?.plus(notificationReadedLastTen!!)
-        prefs.edit().putString("notifications", Gson().toJson(notifs?.toMutableList())).apply()
-        return notifs?.toMutableList()!!
+    private fun sortNotifications(): MutableList<Notification> {
+        val notificationsUnread = notifications.filter { !it.read }
+        val notificationReadedLastTen = notifications.filter { it.read }.takeLast(10)
+        val notifs = notificationsUnread.plus(notificationReadedLastTen)
+        prefs.edit().putString("notifications", Gson().toJson(notifs.toMutableList())).apply()
+        return notifs.toMutableList()
     }
 
-    fun refreshNotifications(){
-        val notifsNowReaden = notifications?.map { it.read = true }
-        prefs.edit().putString("notifications", Gson().toJson(notifsNowReaden?.toMutableList())).apply()
+    private fun refreshNotifications(){
+        val notifsNowReaden = notifications.map { it.read = true }
+        val i = notifications
+        prefs.edit().putString("notifications", Gson().toJson(notifsNowReaden.toMutableList())).apply()
     }
 
     override fun onNotificationClicked(notification: Notification) {

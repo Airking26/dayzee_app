@@ -14,7 +14,6 @@
         <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
 
             <TextView
-                android:text="Football"
                 android:id="@+id/search_explore_clicked_title_toolbar"
                 style="@style/AppTheme.Toolbar.Title"/>
 
@@ -27,7 +26,7 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/search_explore_clicked_rv"
-        tools:listitem="@layout/item_suggestion"
+        tools:listitem="@layout/item_user_send"
         app:layout_constraintTop_toBottomOf="@id/search_explore_clicked_ll"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -9,11 +9,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.timenoteco.timenote.R
+import com.timenoteco.timenote.model.UserInfoDTO
 import com.timenoteco.timenote.model.UserSuggested
 import kotlinx.android.synthetic.main.adapter_suggestion_card.view.*
 import kotlinx.android.synthetic.main.item_suggestion.view.*
 
-class SuggestionAdapter(private var suggestions: Map<String, List<UserSuggested>>,
+class SuggestionAdapter(private var suggestions: Map<String, List<UserInfoDTO>>,
                         private val listener: SuggestionItemListener,
                         private val picClicked: SuggestionItemPicListener):
     RecyclerView.Adapter<SuggestionAdapter.CardViewHolder>() {
@@ -39,7 +40,7 @@ class SuggestionAdapter(private var suggestions: Map<String, List<UserSuggested>
     class CardViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
         fun bindSuggestions(
-            suggestions: Map<String, List<UserSuggested>>,
+            suggestions: Map<String, List<UserInfoDTO>>,
             position: Int,
             listener: SuggestionItemListener,
             picClicked: SuggestionItemPicListener) {
@@ -57,7 +58,7 @@ class SuggestionAdapter(private var suggestions: Map<String, List<UserSuggested>
 }
 
 class SuggestionItemAdapter(
-    private val suggestions: List<UserSuggested>,
+    private val suggestions: List<UserInfoDTO>,
     private val listener: SuggestionAdapter.SuggestionItemListener,
     private val picClicked: SuggestionAdapter.SuggestionItemPicListener
 ):
@@ -75,14 +76,14 @@ class SuggestionItemAdapter(
     class ItemViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
         fun bindItemSuggestion(
-            suggestions: List<UserSuggested>,
+            suggestions: List<UserInfoDTO>,
             position: Int,
             listener: SuggestionAdapter.SuggestionItemListener,
             picClicked: SuggestionAdapter.SuggestionItemPicListener) {
-            itemView.suggestion_name_user.text = suggestions[position].name
+            itemView.suggestion_name_user.text = suggestions[position].userName
             Glide
                 .with(itemView)
-                .load(suggestions[position].picUrl)
+                .load(suggestions[position].picture)
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .circleCrop()
                 .into(itemView.suggestion_imageview)

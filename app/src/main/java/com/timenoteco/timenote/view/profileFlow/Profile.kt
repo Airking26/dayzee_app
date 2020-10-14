@@ -37,6 +37,7 @@ import com.timenoteco.timenote.model.UpdateUserInfoDTO
 import com.timenoteco.timenote.model.UserInfoDTO
 import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
+import com.timenoteco.timenote.viewModel.MeViewModel
 import com.timenoteco.timenote.viewModel.StringViewModel
 import com.timenoteco.timenote.webService.ProfileModifyData
 import kotlinx.android.synthetic.main.fragment_profile.*
@@ -54,6 +55,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
     private val loginViewModel : LoginViewModel by activityViewModels()
     private val followViewModel: FollowViewModel by activityViewModels()
     private val stringViewModel : StringViewModel by activityViewModels()
+    private val meViewModel : MeViewModel by activityViewModels()
     private var showFilterBar: Boolean = false
     private val args : ProfileArgs by navArgs()
     private lateinit var prefs: SharedPreferences
@@ -79,14 +81,14 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 }
             }
         })
+
     }
 
     override fun onResume() {
         super.onResume()
         arguments.let {
-            if(!it?.getString("userID").isNullOrBlank())
-                findNavController().navigate(ProfileDirections.actionProfileToNotifications())
-        }
+            if(!it?.getString("id").isNullOrBlank())
+                findNavController().navigate(ProfileDirections.actionProfileToNotifications()) }
         when(loginViewModel.getAuthenticationState().value){
             LoginViewModel.AuthenticationState.GUEST -> loginViewModel.markAsUnauthenticated()
         }
@@ -98,6 +100,16 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if(!tokenId.isNullOrBlank()) {
+
+            meViewModel.getMyProfile(tokenId!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                if(it.isSuccessful) {
+                    profile_nbr_followers.text = it.body()?.followers?.toString()
+                    profile_nbr_following.text = it.body()?.following?.toString()
+                    profileModifyData.setNbrFollowers(it.body()?.followers!!)
+                    profileModifyData.setNbrFollowing(it.body()?.following!!)
+                }
+            })
+
             val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
             userInfoDTO = if(args.whereFrom) args.userInfoDTO else Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
 

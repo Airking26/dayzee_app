@@ -33,7 +33,6 @@ class MyFirebaseNotificationService : FirebaseMessagingService() {
     override fun onCreate() {
         super.onCreate()
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
-//        prefs.edit().putString("notifications", Gson().toJson(prefs.getString("notifications", null))).apply()
     }
 
     override fun onNewToken(token: String)  = sendRegistrationToserver(token)
@@ -44,16 +43,23 @@ class MyFirebaseNotificationService : FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
 
+        val bundle = Bundle()
+        bundle.putString("id", message.data["userID"])
+        bundle.putString("type", message.data["type"])
+        bundle.putInt("key", 137)
+        val m = message.data["userID"]
+        val n = message.data["type"]
+
         val pi = NavDeepLinkBuilder(this)
             .setComponentName(MainActivity::class.java)
             .setGraph(R.navigation.navigation_graph_tab_profile)
             .setDestination(R.id.profile)
-            .setArguments(bundleOf("type" to message.data["type"], "id" to message.data["userID"]))
+            .setArguments(bundle)
             .createPendingIntent()
 
-        val typeNotification: Type = object : TypeToken<MutableList<Notification?>>() {}.type
-        //notifications = Gson().fromJson<MutableList<Notification>>(prefs.getString("notifications", null), typeNotification)
-        //notifications.add(Notification(false, message.messageId!!, System.currentTimeMillis(), null))
+        notifications.add(Notification(false, message.messageId!!, System.currentTimeMillis(),
+            message.data["type"]!!, message.data["userID"]!!, message.notification?.title!!, message.notification?.body!!))
+        prefs.edit().putString("notifications", Gson().toJson(notifications) ?: Gson().toJson(mutableListOf<Notification>())).apply()
 
         val builder = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.logo)

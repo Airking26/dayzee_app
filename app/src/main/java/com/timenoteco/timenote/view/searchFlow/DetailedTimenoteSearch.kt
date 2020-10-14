@@ -326,7 +326,7 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
 
                 })
                 val recyclerview = dial.getCustomView().shareWith_rv
-                val userAdapter = UsersShareWithPagingAdapter(UsersPagingAdapter.UserComparator, args.timenoteInfoDTO, this, this)
+                val userAdapter = UsersShareWithPagingAdapter(UsersPagingAdapter.UserComparator,this, this)
                 recyclerview.layoutManager = LinearLayoutManager(requireContext())
                 recyclerview.adapter = userAdapter
                 lifecycleScope.launch{

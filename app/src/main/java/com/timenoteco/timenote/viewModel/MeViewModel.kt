@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.timenoteco.timenote.model.FCMDTO
+import com.timenoteco.timenote.model.UpdateUserInfoDTO
 import com.timenoteco.timenote.webService.repo.DayzeeRepository
 import kotlinx.coroutines.flow.flow
 
@@ -13,4 +14,6 @@ class MeViewModel: ViewModel() {
 
     fun putFCMToken(token: String, fcmToken: FCMDTO) = flow { emit(meService.putFCMToken("Bearer $token", fcmToken)) }.asLiveData(viewModelScope.coroutineContext)
     fun getSpecificUser(token: String, id: String) = flow { emit(meService.getSpecificUser("Bearer $token", id))}.asLiveData(viewModelScope.coroutineContext)
+    fun modifyProfile(token: String, updateUserInfo: UpdateUserInfoDTO) = flow { emit(meService.modifyMyInfos("Bearer $token", updateUserInfo)) }.asLiveData(viewModelScope.coroutineContext)
+    fun getMyProfile(token: String) = flow { emit(meService.getMyInfos("Bearer $token")) }.asLiveData(viewModelScope.coroutineContext)
 }

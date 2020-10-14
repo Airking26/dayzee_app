@@ -35,8 +35,6 @@ import androidx.preference.PreferenceManager
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
-import com.afollestad.materialdialogs.customview.customView
-import com.afollestad.materialdialogs.customview.getCustomView
 import com.afollestad.materialdialogs.datetime.datePicker
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
@@ -60,23 +58,20 @@ import com.google.android.libraries.places.widget.AutocompleteActivity
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.theartofdev.edmodo.cropper.CropImageView
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.WebSearchAdapter
 import com.timenoteco.timenote.androidView.input
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.stringLiveData
 import com.timenoteco.timenote.listeners.RefreshPicBottomNavListener
-import com.timenoteco.timenote.model.AWSFile
 import com.timenoteco.timenote.model.STATUS
 import com.timenoteco.timenote.model.UpdateUserInfoDTO
 import com.timenoteco.timenote.model.UserInfoDTO
+import com.timenoteco.timenote.viewModel.MeViewModel
 import com.timenoteco.timenote.viewModel.ProfileModifyViewModel
 import com.timenoteco.timenote.viewModel.WebSearchViewModel
 import com.timenoteco.timenote.webService.ProfileModifyData
-import com.yalantis.ucrop.UCrop
 import com.zhihu.matisse.Matisse
-import kotlinx.android.synthetic.main.cropview_circle.view.*
 import kotlinx.android.synthetic.main.fragment_profil_modify.*
 import java.io.File
 import java.io.FileOutputStream
@@ -111,7 +106,8 @@ class ProfilModify: Fragment(), View.OnClickListener,
     private var tokenId: String? = null
     private lateinit var utils: Utils
     private lateinit var onRefreshPicBottomNavListener: RefreshPicBottomNavListener
-    private val profileModVieModel: ProfileModifyViewModel by activityViewModels()
+    private val profileModViewModel: ProfileModifyViewModel by activityViewModels()
+    private val meViewModel : MeViewModel by activityViewModels()
     private var placesList: List<Place.Field> = listOf(
         Place.Field.ID,
         Place.Field.NAME,
@@ -346,7 +342,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
                         ""
                     ) != Gson().toJson(profileModifyData.loadProfileModifyModel())
                 ) {
-                    profileModVieModel.modifyProfile(
+                    meViewModel.modifyProfile(
                         tokenId!!, UpdateUserInfoDTO(
                             profilModifyModel.givenName,
                             profilModifyModel.familyName,
@@ -785,7 +781,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
                 Activity.RESULT_OK -> {
                     data?.let {
                         val place = Autocomplete.getPlaceFromIntent(data)
-                        profileModVieModel.fetchLocation(place.id!!).observe(
+                        profileModViewModel.fetchLocation(place.id!!).observe(
                             viewLifecycleOwner,
                             Observer {
                                 val location = utils.setLocation(it.body()!!)

@@ -16,7 +16,6 @@ import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.list.listItems
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.RoundedCornersTransformation
@@ -62,13 +61,16 @@ class ItemTimenoteAdapter(
             isFromFuture: Boolean,
             utils: Utils
         ) {
-            if(isFromFuture) itemView.timenote_plus.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.ic_ajout_cal))
+            if(isFromFuture) {
+                itemView.timenote_plus.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.ic_ajout_cal))
+                if(timenote.isParticipating) itemView.timenote_plus.setImageDrawable(itemView.resources.getDrawable(R.drawable.ic_ajout_cal_plein_gradient))
+                else itemView.timenote_plus.setImageDrawable(itemView.resources.getDrawable(R.drawable.ic_ajout_cal))
+            }
             else itemView.timenote_plus.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.ic_like))
 
             itemView.timenote_title.text = timenote.title
 
-            if(timenote.isParticipating) itemView.timenote_plus.setImageDrawable(itemView.resources.getDrawable(R.drawable.ic_ajout_cal_plein_gradient))
-            else itemView.timenote_plus.setImageDrawable(itemView.resources.getDrawable(R.drawable.ic_ajout_cal))
+
 
             Glide
                 .with(itemView)
@@ -205,7 +207,7 @@ class ItemTimenoteAdapter(
                 itemView.timenote_time.visibility = View.INVISIBLE
                 itemView.timenote_year.visibility = View.INVISIBLE
                 itemView.timenote_in_label.visibility = View.VISIBLE
-                itemView.timenote_in_label.text = utils.calculateDecountTime(timenote.startingAt)
+                itemView.timenote_in_label.text = utils.inTime(timenote.startingAt)
             }
 
             itemView.timenote_in_label.setOnClickListener {
@@ -225,12 +227,17 @@ class ItemTimenoteAdapter(
             itemView.timenote_pic_user_imageview.setOnClickListener { timenoteListenerListener.onPictureClicked(timenote.createdBy) }
             itemView.timenote_comment.setOnClickListener { timenoteListenerListener.onCommentClicked(timenote) }
             itemView.timenote_plus.setOnClickListener {
-                if(itemView.timenote_plus.drawable.constantState == itemView.context.getDrawable(R.drawable.ic_ajout_cal)?.constantState){
-                    itemView.timenote_plus.setImageDrawable(itemView.context.getDrawable(R.drawable.ic_ajout_cal_plein_gradient))
-                    timenoteListenerListener.onPlusClicked(timenote, true)
-                } else if(itemView.timenote_plus.drawable.constantState == itemView.context.getDrawable(R.drawable.ic_ajout_cal_plein_gradient)?.constantState) {
-                    itemView.timenote_plus.setImageDrawable(itemView.context.getDrawable(R.drawable.ic_ajout_cal))
-                    timenoteListenerListener.onPlusClicked(timenote, false)
+                if(isFromFuture) {
+                    if (itemView.timenote_plus.drawable.constantState == itemView.context.getDrawable(
+                            R.drawable.ic_ajout_cal
+                        )?.constantState
+                    ) {
+                        itemView.timenote_plus.setImageDrawable(itemView.context.getDrawable(R.drawable.ic_ajout_cal_plein_gradient))
+                        timenoteListenerListener.onPlusClicked(timenote, true)
+                    } else {
+                        itemView.timenote_plus.setImageDrawable(itemView.context.getDrawable(R.drawable.ic_ajout_cal))
+                        timenoteListenerListener.onPlusClicked(timenote, false)
+                    }
                 }
             }
             itemView.timenote_see_more.setOnClickListener { timenoteListenerListener.onSeeMoreClicked(timenote) }
