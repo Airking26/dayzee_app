@@ -125,7 +125,7 @@ class NearbyFilters : Fragment(), View.OnClickListener {
         prefs.stringLiveData("nearby", Gson().toJson(nearbyFilterData.loadNearbyFilter())).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             val type = object : TypeToken<NearbyRequestBody?>() {}.type
             val nearbyModifyModel : NearbyRequestBody? = Gson().fromJson<NearbyRequestBody>(prefs.getString("nearby", null), type)
-            if(nearbyModifyModel?.categories?.get(0)?.subcategory?.isEmpty()!!) nearby_filter_category_tv.text = getString(R.string.none) else nearby_filter_category_tv.text = nearbyModifyModel.categories[0].subcategory
+            if(nearbyModifyModel?.categories?.isNullOrEmpty()!!) nearby_filter_category_tv.text = getString(R.string.none) else nearby_filter_category_tv.text = nearbyModifyModel.categories?.get(0)!!.subcategory
             when (nearbyModifyModel.type) {
                 Type.ALL.ordinal -> nearby_filter_from_tv.text = getString(R.string.public_and_private)
                 Type.FROMFOLLOWER.ordinal -> nearby_filter_from_tv.text = getString(R.string.private_label)

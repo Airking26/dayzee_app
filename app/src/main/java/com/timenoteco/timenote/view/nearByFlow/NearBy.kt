@@ -190,7 +190,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
                 nearby_time.text = dateFormat.format(System.currentTimeMillis())
             else nearby_time.text = SimpleDateFormat(DATE_FORMAT, Locale.getDefault()).format(SimpleDateFormat(ISO, Locale.getDefault()).parse(nearbyModifyModel.date).time)
 
-            loadData(nearbyModifyModel)
+            if(nearbyModifyModel?.location?.latitude != 0.0 && nearbyModifyModel?.location?.longitude != 0.0) loadData(nearbyModifyModel)
 
             nearbyToCompare = Gson().toJson(nearbyFilterData.loadNearbyFilter())
         })

@@ -10,13 +10,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
+import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.model.Notification
+import com.timenoteco.timenote.model.TypeOfNotification
 import kotlinx.android.synthetic.main.item_notification.view.*
+import java.util.*
 
 class NotificationAdapter(private val notifications: MutableList<Notification>, private val notificationClickListener: NotificationClickListener): RecyclerView.Adapter<NotificationAdapter.NotificationViewHolder>() {
 
     interface NotificationClickListener{
         fun onNotificationClicked(notification: Notification)
+        fun onAcceptedRequestClicked()
+        fun onDeclinedRequestClicked()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotificationViewHolder =
@@ -35,10 +40,15 @@ class NotificationAdapter(private val notifications: MutableList<Notification>, 
             notificationClickListener: NotificationClickListener
         ) {
 
+            if(notification.type.toInt() == TypeOfNotification.ASKEDTOFOLLOW.ordinal){
+                itemView.notification_item_user_accept.visibility =View.VISIBLE
+                itemView.notification_item_user_decline.visibility =  View.VISIBLE
+            }
+
             if(!notification.read){
                 itemView.setBackgroundColor(Color.parseColor("#20aaaaaa"))
             } else {
-                itemView.setBackgroundColor(Color.parseColor("#ffffff"))
+                itemView.setBackgroundColor(itemView.context.getColor(R.color.colorBackground))
             }
 
             Glide
@@ -49,9 +59,52 @@ class NotificationAdapter(private val notifications: MutableList<Notification>, 
                 .into(itemView.notification_user_pic_imageview)
 
             itemView.notification_annoucement.text = notification.body
-            itemView.notification_time.text = "17 minutes"
+            itemView.notification_time.text = calculateTimeSinceNotif(notification.time)
             itemView.setOnClickListener{notificationClickListener.onNotificationClicked(notification)}
+            itemView.notification_item_user_accept.setOnClickListener { notificationClickListener.onAcceptedRequestClicked() }
+            itemView.notification_item_user_decline.setOnClickListener { notificationClickListener.onDeclinedRequestClicked() }
         }
+
+        private fun calculateTimeSinceNotif(receivedAt: Long): String{
+            val c: Calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"))
+            c.timeInMillis = System.currentTimeMillis() + 5000 - receivedAt
+            val mYear: Int = c.get(Calendar.YEAR) - 1970
+            val mMonth: Int = c.get(Calendar.MONTH)
+            val mDay: Int = c.get(Calendar.DAY_OF_MONTH) - 1
+            val mHours: Int = c.get(Calendar.HOUR)
+            val mMin : Int = c.get(Calendar.MINUTE)
+
+            val timeSince: String
+            if(mYear <= 0){
+                if(mMonth <= 0){
+                    if(mDay <=0){
+                        if(mHours <= 0){
+                            if(mMin <= 0){
+                                timeSince = "few seconds ago"
+                            } else {
+                                if(mMin > 1) timeSince = "$mMin minutes"
+                                else timeSince = "$mMin minute"
+                            }
+                        } else {
+                            if(mHours > 1) timeSince = "$mHours hours"
+                            else timeSince = "$mHours hour"
+                        }
+                    } else {
+                        if(mDay > 1) timeSince = "$mDay days"
+                        else timeSince = "$mDay day"
+                    }
+                } else {
+                    if(mMonth > 1) timeSince = "$mMonth months"
+                    else timeSince = "$mMonth month"
+                }
+            } else {
+                if(mYear > 1) timeSince = "$mYear years"
+                else timeSince = "$mYear year"
+            }
+
+            return timeSince
+        }
+
 
     }
 }

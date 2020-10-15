@@ -1,9 +1,12 @@
 package com.timenoteco.timenote.webService.service
 
 import android.app.PendingIntent
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -33,9 +36,12 @@ class MyFirebaseNotificationService : FirebaseMessagingService() {
     override fun onCreate() {
         super.onCreate()
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        val typeNotification: Type = object : TypeToken<MutableList<Notification?>>() {}.type
+        notifications = Gson().fromJson<MutableList<Notification>>(prefs.getString("notifications", null), typeNotification) ?: mutableListOf()
     }
 
-    override fun onNewToken(token: String)  = sendRegistrationToserver(token)
+    override fun onNewToken(token: String)  =
+        sendRegistrationToserver(token)
 
     private fun sendRegistrationToserver(token: String) {
     }
@@ -43,12 +49,14 @@ class MyFirebaseNotificationService : FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
 
+        val n = message.notification
+        val m  = message.data
+
+        Log.d(TAG, "onMessageReceived: RECEIVED!!!!!!!!!!!!!!!!!")
+
         val bundle = Bundle()
         bundle.putString("id", message.data["userID"])
         bundle.putString("type", message.data["type"])
-        bundle.putInt("key", 137)
-        val m = message.data["userID"]
-        val n = message.data["type"]
 
         val pi = NavDeepLinkBuilder(this)
             .setComponentName(MainActivity::class.java)
@@ -57,16 +65,15 @@ class MyFirebaseNotificationService : FirebaseMessagingService() {
             .setArguments(bundle)
             .createPendingIntent()
 
-        notifications.add(Notification(false, message.messageId!!, System.currentTimeMillis(),
-            message.data["type"]!!, message.data["userID"]!!, message.notification?.title!!, message.notification?.body!!))
-        prefs.edit().putString("notifications", Gson().toJson(notifications) ?: Gson().toJson(mutableListOf<Notification>())).apply()
+        //notifications.add(Notification(false, message.messageId!!, message.sentTime, message.data["type"]!!, message.data["userID"]!!, message.notification?.title!!, message.notification?.body!!))
+        //prefs.edit().putString("notifications", Gson().toJson(notifications) ?: Gson().toJson(mutableListOf<Notification>())).apply()
 
         val builder = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.logo)
             .setContentTitle(message.notification?.title)
             .setContentText(message.notification?.body)
             .setStyle(NotificationCompat.BigTextStyle().bigText(message.notification?.body))
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pi)
             .setAutoCancel(true)
 

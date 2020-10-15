@@ -526,10 +526,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                     toTv.visibility = View.GONE
                     fromTv.visibility = View.GONE
                     fixedDate.text = dateFormatDateAndTime.format(datetime.time.time)
-                    creationTimenoteViewModel.setStartDate(
-                        datetime.time.time,
-                        ISO
-                    )
+                    creationTimenoteViewModel.setStartDate(datetime.time.time, ISO)
                     startDate = datetime.time.time
                     creationTimenoteViewModel.setEndDate(datetime.time.time)
                     addEndDateTv.visibility = View.VISIBLE

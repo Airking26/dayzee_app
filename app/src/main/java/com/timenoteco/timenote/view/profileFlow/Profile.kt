@@ -82,15 +82,18 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
             }
         })
 
+
     }
 
     override fun onResume() {
         super.onResume()
-        arguments.let {
-            if(!it?.getString("id").isNullOrBlank())
-                findNavController().navigate(ProfileDirections.actionProfileToNotifications()) }
         when(loginViewModel.getAuthenticationState().value){
             LoginViewModel.AuthenticationState.GUEST -> loginViewModel.markAsUnauthenticated()
+        }
+
+        arguments.let {
+            if(!it?.getString("type").isNullOrBlank())
+                findNavController().navigate(ProfileDirections.actionProfileToNotifications())
         }
     }
 

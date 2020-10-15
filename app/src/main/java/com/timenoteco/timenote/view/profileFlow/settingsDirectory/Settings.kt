@@ -23,8 +23,7 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.androidView.input
 import com.timenoteco.timenote.common.intLiveData
 import com.timenoteco.timenote.common.stringLiveData
-import com.timenoteco.timenote.model.STATUS
-import com.timenoteco.timenote.model.UpdateUserInfoDTO
+import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.MeViewModel
@@ -179,7 +178,9 @@ class Settings : Fragment(), View.OnClickListener {
                     lifecycleOwner(this@Settings)
                 }
             }
-            profile_settings_disconnect -> loginViewModel.markAsUnauthenticated()
+            profile_settings_disconnect ->{
+                prefs.edit().putString("nearby",  Gson().toJson(NearbyRequestBody(Location(0.0, 0.0, Address("","", "","")), 10, listOf(), "2020-10-12T15:51:53.448Z", Price(0, ""), 2))).apply()
+                loginViewModel.markAsUnauthenticated()}
             profile_settings_asked_sent -> findNavController().navigate(
                 SettingsDirections.actionSettingsToFollowPage().setFollowers(3))
             profile_settings_awaiting -> findNavController().navigate(SettingsDirections.actionSettingsToFollowPage().setFollowers(2))
