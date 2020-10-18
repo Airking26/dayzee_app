@@ -104,7 +104,7 @@
         android:name="com.timenoteco.timenote.view.profileFlow.Profile"
         android:label="Profile" >
         <argument
-            android:name="whereFrom"
+            android:name="isNotMine"
             app:argType="boolean"/>
         <action
             android:id="@+id/action_profile_to_createTimenote"
@@ -125,6 +125,9 @@
             android:name="userInfoDTO"
             app:argType="com.timenoteco.timenote.model.UserInfoDTO"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_profile_to_profilModify"
+            app:destination="@id/profilModify" />
     </fragment>
     <fragment
         android:id="@+id/timenoteAddress"
@@ -182,8 +185,15 @@
         android:name="com.timenoteco.timenote.view.profileFlow.ProfileCalendar"
         android:label="ProfileCalendar" /><action android:id="@+id/action_global_detailedTimenote" app:destination="@id/detailedTimenote"/>
     <fragment
-        android:id="@+id/notifications"
-        android:name="com.timenoteco.timenote.view.profileFlow.Notifications"
-        android:label="fragment_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/profilModify"
+        android:name="com.timenoteco.timenote.view.profileFlow.ProfilModify"
+        android:label="ProfilModify" >
+        <argument
+            android:name="isNotMine"
+            app:argType="boolean" />
+        <argument
+            android:name="userInfoDTO"
+            app:argType="com.timenoteco.timenote.model.UserInfoDTO"
+            app:nullable="true" />
+    </fragment>
 </navigation>

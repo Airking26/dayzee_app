@@ -150,6 +150,10 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
         }
     }
 
+    override fun onAddMarker(timenoteInfoDTO: TimenoteInfoDTO) {
+
+    }
+
 
     override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {

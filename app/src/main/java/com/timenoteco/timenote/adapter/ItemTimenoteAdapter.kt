@@ -48,8 +48,7 @@ class ItemTimenoteAdapter(
                 timenoteListenerListener,
                 fragment,
                 isFromFuture,
-                utils
-            )
+                utils)
 
     }
 
@@ -70,7 +69,7 @@ class ItemTimenoteAdapter(
 
             itemView.timenote_title.text = timenote.title
 
-
+            timenoteListenerListener.onAddMarker(timenote)
 
             Glide
                 .with(itemView)
@@ -161,9 +160,9 @@ class ItemTimenoteAdapter(
 
             val screenSlideCreationTimenotePagerAdapter =  ScreenSlideTimenotePagerAdapter(fragment, timenote.pictures, true){ _ : Int, i1: Int ->
                 if(i1 == 0) {
-                    if (timenote.price.price >= 0 || (timenote.price.price >= 0 && !timenote.url.isNullOrBlank())) {
+                    if (timenote.price.price >= 0 && !timenote.url.isNullOrBlank()) {
                         itemView.timenote_buy.visibility = View.VISIBLE
-                        if (timenote.price .price> 0) itemView.timenote_buy.text = timenote.price.price.toString().plus(timenote.price.currency)
+                        if (timenote.price .price > 0) itemView.timenote_buy.text = timenote.price.price.toString().plus(timenote.price.currency ?: "$")
                     }
                 } else {
                     timenoteListenerListener.onDoubleClick()

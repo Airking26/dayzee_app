@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-        <LinearLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:background="@color/colorBackground"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/colorBackground"
+    android:orientation="vertical"
+    android:nestedScrollingEnabled="true"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
         <ProgressBar
             android:id="@+id/profile_pb"
@@ -30,7 +31,6 @@
                     android:id="@+id/profile_filter_rv_chips_in_rv"
                     android:layout_width="match_parent"
              android:layout_height="wrap_content"/>
-
 
 
                 <TextView
@@ -57,7 +57,7 @@
                     android:clipToPadding="false"
                     tools:listitem="@layout/item_profile_timenote_list_style"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="match_parent"/>
 
 
         </LinearLayout>

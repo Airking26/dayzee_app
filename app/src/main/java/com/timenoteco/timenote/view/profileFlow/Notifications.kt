@@ -1,11 +1,13 @@
 package com.timenoteco.timenote.view.profileFlow
 
 import android.content.SharedPreferences
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.preference.PreferenceManager
@@ -16,6 +18,7 @@ import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.NotificationAdapter
 import com.timenoteco.timenote.model.Notification
+import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.MeViewModel
 import com.timenoteco.timenote.viewModel.TimenoteViewModel
 import kotlinx.android.synthetic.main.fragment_notifications.*
@@ -28,6 +31,7 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
     private lateinit var notifications: MutableList<Notification>
     private val timenoteViewModel : TimenoteViewModel by activityViewModels()
     private val meViewModel : MeViewModel by activityViewModels()
+    private val followViewModel: FollowViewModel by activityViewModels()
     val TOKEN: String = "TOKEN"
     private var tokenId: String? = null
 
@@ -53,7 +57,7 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
 
     private fun sortNotifications(): MutableList<Notification> {
         val notificationsUnread = notifications.filter { !it.read }.sortedBy { notification -> notification.time }.asReversed()
-        val notificationReadedLastTen = notifications.filter { it.read }.takeLast(10)
+        val notificationReadedLastTen = notifications.filter { it.read }.sortedBy { notification -> notification.time }.takeLast(10).asReversed()
         val notifs = notificationsUnread.plus(notificationReadedLastTen)
         prefs.edit().putString("notifications", Gson().toJson(notifs.toMutableList())).apply()
         return notifs.toMutableList()
@@ -71,16 +75,31 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
             })
         } else {
             meViewModel.getSpecificUser(tokenId!!, notification.id).observe(viewLifecycleOwner, Observer {
-                NotificationsDirections.actionNotificationsToProfile().setFrom(4).setWhereFrom(false).setUserInfoDTO(it.body())
+                NotificationsDirections.actionNotificationsToProfile().setFrom(4).setIsNotMine(false).setUserInfoDTO(it.body())
             })
         }
     }
 
-    override fun onAcceptedRequestClicked() {
-
+    @RequiresApi(Build.VERSION_CODES.N)
+    override fun onAcceptedRequestClicked(id: String) {
+        followViewModel.acceptFollowingRequest(tokenId!!, id).observe(viewLifecycleOwner, Observer {
+            notifications.removeIf{ it.id == id }
+            notificationAdapter.notifyDataSetChanged()
+        })
     }
 
-    override fun onDeclinedRequestClicked() {
+    @RequiresApi(Build.VERSION_CODES.N)
+    override fun onDeclinedRequestClicked(id: String) {
+        followViewModel.declineFollowingRequest(tokenId!!, id).observe(viewLifecycleOwner, Observer {
+            notifications.removeIf{ it.id == id }
+            notificationAdapter.notifyDataSetChanged()
+        })
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        refreshNotifications()
     }
 
 

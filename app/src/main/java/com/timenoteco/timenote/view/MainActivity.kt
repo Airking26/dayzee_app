@@ -45,6 +45,7 @@ import com.timenoteco.timenote.listeners.ExitCreationTimenote
 import com.timenoteco.timenote.listeners.RefreshPicBottomNavListener
 import com.timenoteco.timenote.listeners.ShowBarListener
 import com.timenoteco.timenote.model.FCMDTO
+import com.timenoteco.timenote.model.Notification
 import com.timenoteco.timenote.model.TimenoteInfoDTO
 import com.timenoteco.timenote.model.UserInfoDTO
 import com.timenoteco.timenote.view.homeFlow.DetailedTimenoteArgs
@@ -67,11 +68,11 @@ import java.lang.reflect.Type
 
 class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby, ShowBarListener, ExitCreationTimenote, RefreshPicBottomNavListener {
 
-    private var fromNotification: String?= null
     private lateinit var control: NavController
     private val CHANNEL_ID: String = "dayzee_channel"
     private var currentNavController: LiveData<NavController>? = null
     private val utils = Utils()
+    private var notifications: MutableList<Notification> = mutableListOf()
     private lateinit var prefs : SharedPreferences
     private val meViewModel : MeViewModel by viewModels()
 
@@ -80,7 +81,8 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
-
+        val typeNotification: Type = object : TypeToken<MutableList<Notification?>>() {}.type
+        notifications = Gson().fromJson<MutableList<Notification>>(prefs.getString("notifications", null), typeNotification) ?: mutableListOf()
         setupController()
     }
 
@@ -114,22 +116,6 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
         }.reInit()
     }
 
-    @SuppressLint("StringFormatInvalid")
-    fun retrieveCurrentRegistrationToken(){
-        FirebaseInstanceId.getInstance().instanceId
-            .addOnCompleteListener(OnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val token = task.result?.token
-                    var tokenID = prefs.getString("TOKEN", null)
-                    if (prefs.getString("TOKEN", null) != null)
-                        meViewModel.putFCMToken(tokenID!!, FCMDTO(token!!)).observe(this, Observer {
-                           if(it.isSuccessful) Toast.makeText(this, "successPostingToken", Toast.LENGTH_SHORT).show()
-                        })
-                    return@OnCompleteListener
-                }
-            })
-    }
-
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
@@ -139,10 +125,15 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
     override fun onResume() {
         super.onResume()
         if(!intent.getStringExtra("type").isNullOrBlank()){
-            val m = intent.data
-            val o = intent.extras
-            val u = intent.extras?.keySet()
-            val k = intent.component
+            notifications.add(Notification(
+                false,
+                intent.getStringExtra("google.message_id")!!,
+                intent.getLongExtra("google.sent_time", 0),
+                intent.getStringExtra("type")!!,
+                intent.getStringExtra("id")!!,
+                intent.getStringExtra("title")!!,
+                intent.getStringExtra("body")!!))
+            prefs.edit().putString("notifications", Gson().toJson(notifications) ?: Gson().toJson(mutableListOf<Notification>())).apply()
             bottomNavView.selectedItemId = R.id.navigation_graph_tab_4
             ViewModelProviders.of(this, object : ViewModelProvider.Factory {
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -160,7 +151,6 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
         val userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
 
-        retrieveCurrentRegistrationToken()
         val view = this.currentFocus
         view?.let { v ->
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager

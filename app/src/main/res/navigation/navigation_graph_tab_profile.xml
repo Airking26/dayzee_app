@@ -76,7 +76,7 @@
             app:destination="@id/notifications" />
         <argument
             android:defaultValue="false"
-            android:name="whereFrom"
+            android:name="isNotMine"
             app:argType="boolean"/>
         <action
             android:id="@+id/action_profile_to_followPage"
@@ -109,7 +109,15 @@
     <fragment
         android:id="@+id/profilModify"
         android:name="com.timenoteco.timenote.view.profileFlow.ProfilModify"
-        android:label="ProfilModify" />
+        android:label="ProfilModify" >
+        <argument
+            android:name="isNotMine"
+            app:argType="boolean" />
+        <argument
+            android:name="userInfoDTO"
+            app:argType="com.timenoteco.timenote.model.UserInfoDTO"
+            app:nullable="true" />
+    </fragment>
     <fragment
         android:id="@+id/profileCalendar"
         android:name="com.timenoteco.timenote.view.profileFlow.ProfileCalendar"

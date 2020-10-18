@@ -72,7 +72,7 @@ class Menu : Fragment(), View.OnClickListener {
                         requestPermissions(PERMISSIONS_STORAGE, 10)
                     }
             }
-            profile_menu_modify -> findNavController().navigate(MenuDirections.actionMenuToProfilModify())
+            profile_menu_modify -> findNavController().navigate(MenuDirections.actionMenuToProfilModify(false, null))
         }
     }
 

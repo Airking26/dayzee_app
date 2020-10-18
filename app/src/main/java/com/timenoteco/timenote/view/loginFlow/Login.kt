@@ -22,7 +22,6 @@ import kotlinx.android.synthetic.main.fragment_login.*
 class Login : Fragment() {
 
     private val viewModel: LoginViewModel by activityViewModels()
-    private val args: LoginArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
             =  inflater.inflate(R.layout.fragment_login, container, false)
@@ -34,9 +33,5 @@ class Login : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             viewModel.refuseAuthentication()
         }
-    }
-
-    private fun displayMainOrLoginScreen() {
-        val j  = args.x
     }
 }

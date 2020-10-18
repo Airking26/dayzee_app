@@ -1,4 +1,4 @@
-package com.timenoteco.timenote.view.profileFlow
+package com.timenoteco.timenote.view.searchFlow
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -84,39 +84,19 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class ProfilModify: Fragment(), View.OnClickListener,
-    WebSearchAdapter.ImageChoosedListener, WebSearchAdapter.MoreImagesClicked{
+class ProfilModifySearch: Fragment(), View.OnClickListener {
 
-    private var imagesUrl: String = ""
-    val amazonClient = AmazonS3Client(
-        BasicAWSCredentials(
-            "AKIA5JWTNYVYJQIE5GWS",
-            "pVf9Wxd/rK4r81FsOsNDaaOJIKE5AGbq96Lh4RB9"
-        )
-    )
     private lateinit var prefs : SharedPreferences
-    private val AUTOCOMPLETE_REQUEST_CODE: Int = 12
     private lateinit var profileModifyPicIv : ImageView
     private lateinit var profileModifyPb: ProgressBar
     private lateinit var profileModifyData: ProfileModifyData
     private var dateFormat : SimpleDateFormat
     private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
-    private val webSearchViewModel : WebSearchViewModel by activityViewModels()
-    private val args : ProfilModifyArgs by navArgs()
+    private val args : ProfilModifySearchArgs by navArgs()
     val TOKEN: String = "TOKEN"
-    private var images: String? = null
     private var tokenId: String? = null
     private lateinit var utils: Utils
     private lateinit var onRefreshPicBottomNavListener: RefreshPicBottomNavListener
-    private val profileModViewModel: ProfileModifyViewModel by activityViewModels()
-    private val meViewModel : MeViewModel by activityViewModels()
-    private var placesList: List<Place.Field> = listOf(
-        Place.Field.ID,
-        Place.Field.NAME,
-        Place.Field.ADDRESS,
-        Place.Field.LAT_LNG
-    )
-    private lateinit var placesClient: PlacesClient
 
     init {
         dateFormat = SimpleDateFormat(ISO, Locale.getDefault())
@@ -127,10 +107,6 @@ class ProfilModify: Fragment(), View.OnClickListener,
         AWSMobileClient.getInstance().initialize(requireContext()).execute()
         prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         tokenId = prefs.getString(TOKEN, null)
-        if(prefs.getString("pmtc", "") == "")
-        prefs.edit().putString("pmtc", "").apply()
-        Places.initialize(requireContext(), "AIzaSyBhM9HQo1fzDlwkIVqobfmrRmEMCWTU1CA")
-        placesClient = Places.createClient(requireContext())
     }
 
     override fun onAttach(context: Context) {
@@ -157,9 +133,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
 
         setListeners(args.isNotMine)
         setSwitchs(args.isNotMine)
-        if(args.isNotMine){
-            setUserInfoDTO(args.userInfoDTO)
-        } else setProfilModifyViewModel()
+        if(args.isNotMine) setUserInfoDTO(args.userInfoDTO)
     }
 
     private fun setSwitchs(isNotMine: Boolean) {
@@ -209,96 +183,6 @@ class ProfilModify: Fragment(), View.OnClickListener,
         }
 
 
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun setProfilModifyViewModel() {
-        profileModifyData = ProfileModifyData(requireContext())
-        prefs.stringLiveData(
-            "UserInfoDTO",
-            Gson().toJson(profileModifyData.loadProfileModifyModel())
-        ).observe(
-            viewLifecycleOwner,
-            Observer {
-                val type: Type = object : TypeToken<UserInfoDTO?>() {}.type
-                val profilModifyModel: UserInfoDTO? = Gson().fromJson<UserInfoDTO>(it, type)
-                setUserInfoDTO(profilModifyModel)
-
-                if (profilModifyModel?.socialMedias?.youtube?.enabled!!)
-                    setStateSwitch(
-                        profile_modify_youtube_switch,
-                        profile_modify_facebook_switch,
-                        profile_modify_insta_switch,
-                        profile_modify_whatsapp_switch,
-                        profile_modify_linkedin_switch
-                    )
-                else if (profilModifyModel.socialMedias.facebook.enabled)
-                    setStateSwitch(
-                        profile_modify_facebook_switch,
-                        profile_modify_youtube_switch,
-                        profile_modify_insta_switch,
-                        profile_modify_whatsapp_switch,
-                        profile_modify_linkedin_switch
-                    )
-                else if (profilModifyModel.socialMedias.instagram.enabled)
-                    setStateSwitch(
-                        profile_modify_insta_switch,
-                        profile_modify_facebook_switch,
-                        profile_modify_youtube_switch,
-                        profile_modify_whatsapp_switch,
-                        profile_modify_linkedin_switch
-                    )
-                else if (profilModifyModel.socialMedias.whatsApp.enabled)
-                    setStateSwitch(
-                        profile_modify_whatsapp_switch,
-                        profile_modify_insta_switch,
-                        profile_modify_facebook_switch,
-                        profile_modify_youtube_switch,
-                        profile_modify_linkedin_switch
-                    )
-                else if (profilModifyModel.socialMedias.linkedIn.enabled)
-                    setStateSwitch(
-                        profile_modify_linkedin_switch,
-                        profile_modify_whatsapp_switch,
-                        profile_modify_insta_switch,
-                        profile_modify_facebook_switch,
-                        profile_modify_youtube_switch
-                    )
-                else {
-                    profile_modify_youtube_switch.isChecked = false
-                    profile_modify_facebook_switch.isChecked = false
-                    profile_modify_insta_switch.isChecked = false
-                    profile_modify_whatsapp_switch.isChecked = false
-                    profile_modify_linkedin_switch.isChecked = false
-                }
-
-                if (prefs.getString("pmtc", "") != Gson().toJson(profileModifyData.loadProfileModifyModel())) {
-                    meViewModel.modifyProfile(
-                        tokenId!!, UpdateUserInfoDTO(
-                            profilModifyModel.givenName,
-                            profilModifyModel.familyName,
-                            profilModifyModel.picture,
-                            profilModifyModel.location,
-                            profilModifyModel.birthday,
-                            profilModifyModel.description,
-                            profilModifyModel.gender,
-                            if (profilModifyModel.status == 0) STATUS.PUBLIC.ordinal else STATUS.PRIVATE.ordinal,
-                            if (profilModifyModel.dateFormat == 0) STATUS.PUBLIC.ordinal else STATUS.PRIVATE.ordinal,
-                            profilModifyModel.socialMedias
-                        )
-                    ).observe(viewLifecycleOwner, Observer { usr ->
-                        onRefreshPicBottomNavListener.onrefreshPicBottomNav(usr.body())
-                        prefs.edit().putString("UserInfoDTO", Gson().toJson(usr.body())).apply()
-                        prefs.edit().putInt("followers", usr.body()?.followers!!).apply()
-                        prefs.edit().putInt("following", usr.body()?.following!!).apply()
-                    })
-                }
-
-                prefs.edit().putString(
-                    "pmtc",
-                    Gson().toJson(profileModifyData.loadProfileModifyModel())
-                ).apply()
-            })
     }
 
     private fun setUserInfoDTO(profilModifyModel: UserInfoDTO?) {
@@ -421,7 +305,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
                 ) { dialog, index, text ->
                     profileModifyData.setGender(text.toString())
                 }
-                lifecycleOwner(this@ProfilModify)
+                lifecycleOwner(this@ProfilModifySearch)
             }
             profile_modify_birthday -> MaterialDialog(
                 requireContext(),
@@ -444,7 +328,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
                 ) { dialog, index, text ->
                     profileModifyData.setStatusAccount(index)
                 }
-                lifecycleOwner(this@ProfilModify)
+                lifecycleOwner(this@ProfilModifySearch)
             }
             profile_modify_format_timenote -> MaterialDialog(
                 requireContext(), BottomSheet(
@@ -462,7 +346,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
                     }
 
                 }
-                lifecycleOwner(this@ProfilModify)
+                lifecycleOwner(this@ProfilModifySearch)
             }
             profile_modify_name -> MaterialDialog(
                 requireContext(),
@@ -476,13 +360,9 @@ class ProfilModify: Fragment(), View.OnClickListener,
                     profileModifyData.setName(text.toString())
                 }
                 positiveButton(R.string.done)
-                lifecycleOwner(this@ProfilModify)
+                lifecycleOwner(this@ProfilModifySearch)
             }
-            profile_modify_from -> startActivityForResult(
-                Autocomplete.IntentBuilder(
-                    AutocompleteActivityMode.OVERLAY, placesList
-                ).build(requireContext()), AUTOCOMPLETE_REQUEST_CODE
-            )
+            profile_modify_from -> {}
             profile_modify_youtube_channel -> {
                 if(!args.isNotMine) {
                     MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
@@ -494,7 +374,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
                             profileModifyData.setYoutubeLink(text.toString())
                         }
                         positiveButton(R.string.done)
-                        lifecycleOwner(this@ProfilModify)
+                        lifecycleOwner(this@ProfilModifySearch)
                     }
                 } else {
 
@@ -512,7 +392,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
                     profileModifyData.setFacebookLink(text.toString())
                 }
                 positiveButton(R.string.done)
-                lifecycleOwner(this@ProfilModify)
+                lifecycleOwner(this@ProfilModifySearch)
             }
             profile_modify_instagram -> MaterialDialog(
                 requireContext(),
@@ -526,7 +406,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
                     profileModifyData.setInstaLink(text.toString())
                 }
                 positiveButton(R.string.done)
-                lifecycleOwner(this@ProfilModify)
+                lifecycleOwner(this@ProfilModifySearch)
             }
             profile_modify_whatsapp -> MaterialDialog(
                 requireContext(),
@@ -540,7 +420,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
                     profileModifyData.setWhatsappLink(text.toString())
                 }
                 positiveButton(R.string.done)
-                lifecycleOwner(this@ProfilModify)
+                lifecycleOwner(this@ProfilModifySearch)
             }
             profile_modify_linkedin -> MaterialDialog(
                 requireContext(),
@@ -554,7 +434,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
                     profileModifyData.setLinkedinLink(text.toString())
                 }
                 positiveButton(R.string.done)
-                lifecycleOwner(this@ProfilModify)
+                lifecycleOwner(this@ProfilModifySearch)
             }
 
             profile_modify_description -> MaterialDialog(
@@ -569,263 +449,11 @@ class ProfilModify: Fragment(), View.OnClickListener,
                     profileModifyData.setDescription(text.toString())
                 }
                 positiveButton(R.string.done)
-                lifecycleOwner(this@ProfilModify)
+                lifecycleOwner(this@ProfilModifySearch)
             }
             profile_modify_pic_imageview -> {
-                picturePickerUser()
             }
             profile_modify_done_btn -> findNavController().popBackStack()
         }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        if(requestCode == 2){
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                picturePickerUser()
-            }
-        }
-    }
-
-    fun pushPic(file: File, bitmap: Bitmap){
-        amazonClient.setRegion(Region.getRegion(Regions.EU_WEST_3))
-        val transferUtiliy = TransferUtility(amazonClient, requireContext())
-        compressFile(file, bitmap)
-        val key = "timenote/${UUID.randomUUID().mostSignificantBits}"
-        val transferObserver = transferUtiliy.upload(
-            "timenote-dev-images", key,
-            file, CannedAccessControlList.Private
-        )
-        transferObserver.setTransferListener(object : TransferListener {
-            override fun onStateChanged(id: Int, state: TransferState?) {
-                Log.d(ContentValues.TAG, "onStateChanged: ${state?.name}")
-                if (state == TransferState.COMPLETED) {
-                    profileModifyPb.visibility = View.GONE
-                    profileModifyPicIv.visibility = View.VISIBLE
-                    imagesUrl = amazonClient.getResourceUrl("timenote-dev-images", key).toString()
-                    profileModifyData.setPicture(imagesUrl)
-                }
-
-            }
-
-            override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {
-                Log.d(ContentValues.TAG, "onProgressChanged: ")
-            }
-
-            override fun onError(id: Int, ex: java.lang.Exception?) {
-                Log.d(ContentValues.TAG, "onError: ${ex?.message}")
-                Toast.makeText(requireContext(), ex?.message, Toast.LENGTH_LONG).show()
-            }
-
-        })
-
-    }
-
-    private fun compressFile(imageFile: File, image: Bitmap) {
-        try {
-            val fOut: OutputStream = FileOutputStream(imageFile)
-            image.compress(Bitmap.CompressFormat.JPEG, 100, fOut)
-            fOut.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    private fun setStateSwitch(
-        switchActive: Switch,
-        switchInactive1: Switch,
-        switchInactive2: Switch,
-        switchInactive3: Switch,
-        switchInactive4: Switch
-    ){
-        switchActive.isChecked = true
-        switchInactive1.isChecked = false
-        switchInactive2.isChecked = false
-        switchInactive3.isChecked = false
-        switchInactive4.isChecked = false
-    }
-
-    fun picturePickerUser() {
-        val PERMISSIONS_STORAGE = arrayOf(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
-
-        MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-            title(R.string.take_add_a_picture)
-            listItems(
-                items = listOf(
-                    getString(R.string.add_a_picture), getString(R.string.search_on_web), getString(R.string.delete)
-                )
-            ) { _, index, text ->
-                if (ContextCompat.checkSelfPermission(
-                        requireContext(),
-                        Manifest.permission.READ_EXTERNAL_STORAGE
-                    ) == PackageManager.PERMISSION_GRANTED
-                    && ContextCompat.checkSelfPermission(
-                        requireContext(),
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    ) == PackageManager.PERMISSION_GRANTED) {
-                    when (index) {
-                        0 -> {
-                            utils.createImagePicker(this@ProfilModify, requireContext())
-                            profileModifyPicIv.visibility = View.GONE
-                            profileModifyPb.visibility = View.VISIBLE
-                        }
-                        1 -> utils.createWebSearchDialog(
-                            requireContext(),
-                            webSearchViewModel,
-                            this@ProfilModify,
-                            profileModifyPicIv,
-                            profileModifyPb
-                        )
-                        2 -> {
-                            images = null
-
-                        }
-                    }
-                } else requestPermissions(PERMISSIONS_STORAGE, 2)
-            }
-            lifecycleOwner(this@ProfilModify)
-        }
-    }
-
-    private fun cropImage(uri: Uri?) {
-        /*var cropView: CropImageView? = null
-        val dialog = MaterialDialog(requireContext()).show {
-            customView(R.layout.cropview_circle)
-            title(R.string.resize)
-            positiveButton(R.string.done) {
-                profileModifyPb.visibility = View.GONE
-                profileModifyPicIv.visibility = View.VISIBLE
-                if(awsFile == null)
-                    images = AWSFile(Uri.parse(""), cropView?.croppedImage)
-                else
-                    awsFile.bitmap = cropView?.croppedImage!!
-            }
-            pushPic(File(getPath(awsFile?.uri)!!), awsFile?.bitmap!!)
-            lifecycleOwner(this@ProfilModify)
-        }
-        cropView = dialog.getCustomView().crop_view_circle as CropImageView
-        cropView.setImageBitmap(awsFile?.bitmap)*/
-    }
-
-    private fun saveImage(image: Bitmap, dialog: MaterialDialog): String? {
-        var savedImagePath: String? = null
-        val imageFileName = "JPEG_${Timestamp(System.currentTimeMillis())}.jpg"
-        val storageDir = File(
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-                .toString() + "/TIMENOTE_PICTURES"
-        )
-        var success = true
-        if (!storageDir.exists()) {
-            success = storageDir.mkdirs()
-        }
-        if (success) {
-            val imageFile = File(storageDir, imageFileName)
-            savedImagePath = imageFile.absolutePath
-            compressFile(imageFile, image)
-
-            galleryAddPic(savedImagePath, dialog)
-        }
-
-
-        return savedImagePath
-    }
-
-    private fun galleryAddPic(imagePath: String?, dialog: MaterialDialog) {
-        val mediaScanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
-        val f = File(imagePath!!)
-        val contentUri = Uri.fromFile(f)
-        mediaScanIntent.data = contentUri
-        requireActivity().sendBroadcast(mediaScanIntent)
-        dialog.dismiss()
-        utils.createImagePicker(this, requireContext())
-    }
-
-    private fun getPath(uri: Uri?): String? {
-        val projection = arrayOf(MediaStore.Images.Media.DATA)
-        val cursor: Cursor = requireActivity().managedQuery(uri, projection, null, null, null)
-        requireActivity().startManagingCursor(cursor)
-        val column_index: Int = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-        cursor.moveToFirst()
-        return cursor.getString(column_index)
-    }
-
-    fun getImageContentUri(context: Context, imageFile: File): Uri? {
-        val filePath = imageFile.absolutePath
-        val cursor = context.contentResolver.query(
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, arrayOf(MediaStore.Images.Media._ID),
-            MediaStore.Images.Media.DATA + "=? ", arrayOf(filePath), null
-        )
-        return if (cursor != null && cursor.moveToFirst()) {
-            val id = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns._ID))
-            cursor.close()
-            Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "" + id)
-        } else {
-            if (imageFile.exists()) {
-                val values = ContentValues()
-                values.put(MediaStore.Images.Media.DATA, filePath)
-                context.contentResolver.insert(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values
-                )
-            } else {
-                null
-            }
-        }
-    }
-
-    override fun onImageSelectedFromWeb(bitmap: String, dialog: MaterialDialog) {
-        webSearchViewModel.getBitmap().removeObservers(viewLifecycleOwner)
-        webSearchViewModel.decodeSampledBitmapFromResource(URL(bitmap), Rect(), 100, 100)
-        webSearchViewModel.getBitmap().observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            if (it != null) {
-                saveImage(it, dialog)
-                webSearchViewModel.clearBitmap()
-                webSearchViewModel.getBitmap().removeObservers(viewLifecycleOwner)
-            }
-        })
-    }
-
-    override fun onMoreImagesClicked(position: Int, query: String) {
-        webSearchViewModel.search(query, requireContext(), (position).toLong())
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
-            when (resultCode) {
-                Activity.RESULT_OK -> {
-                    data?.let {
-                        val place = Autocomplete.getPlaceFromIntent(data)
-                        profileModViewModel.fetchLocation(place.id!!).observe(
-                            viewLifecycleOwner,
-                            Observer {
-                                val location = utils.setLocation(it.body()!!)
-                                profileModifyData.setLocation(location)
-                            })
-                    }
-                }
-                AutocompleteActivity.RESULT_ERROR -> {
-                    data?.let {
-                        val status = Autocomplete.getStatusFromIntent(data)
-                        Log.i(ContentValues.TAG, status.statusMessage!!)
-                    }
-                }
-                Activity.RESULT_CANCELED -> {
-                    // The user canceled the operation.
-                }
-            }
-            return
-        } else if(requestCode == 2){
-            if (resultCode == Activity.RESULT_OK){
-                picturePickerUser()
-            }
-        } else if(requestCode == 112 && resultCode == Activity.RESULT_OK){
-            pushPic(File(getPath(Matisse.obtainResult(data)[0])!!), MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, Matisse.obtainResult(data)[0]))
-        }
-        super.onActivityResult(requestCode, resultCode, data)
     }
 }

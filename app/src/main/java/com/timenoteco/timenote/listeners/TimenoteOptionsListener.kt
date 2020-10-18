@@ -19,4 +19,5 @@ interface TimenoteOptionsListener {
     fun onDoubleClick()
     fun onSeeParticipants(timenoteInfoDTO: TimenoteInfoDTO)
     fun onShareClicked(timenoteInfoDTO: TimenoteInfoDTO)
+    fun onAddMarker(timenoteInfoDTO: TimenoteInfoDTO)
 }

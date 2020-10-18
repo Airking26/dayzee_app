@@ -56,7 +56,7 @@ private const val ARG_PARAM2 = "from"
 private const val ARG_PARAM3 = "id"
 private const val ARG_PARAM4 = "is_future"
 
-class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarListener,
+class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarListener,
     ItemProfileCardListener, UsersPagingAdapter.SearchPeopleListener,
     UsersShareWithPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.AddToSend{
 
@@ -76,7 +76,7 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
     private val followViewModel: FollowViewModel by activityViewModels()
     private val profileViewModel : ProfileViewModel by activityViewModels()
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
-    private lateinit var profileEventPagingAdapter : ProfileEventPagingAdapter
+    private var profileEventPagingAdapter : ProfileEventPagingAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -151,11 +151,11 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
 
         lifecycleScope.launch {
             profileViewModel.getEventProfile(tokenId!!, id, isFuture).collectLatest {
-                profileEventPagingAdapter.submitData(it)
+                profileEventPagingAdapter?.submitData(it)
             }
         }
 
-        profileEventPagingAdapter.addDataRefreshListener {
+        profileEventPagingAdapter?.addDataRefreshListener {
             profile_pb?.visibility = View.GONE
             if (it) {
                 profile_nothing_to_display?.visibility = View.VISIBLE
@@ -186,13 +186,13 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
             datePicker { dialog, datetime ->
 
             }
-            lifecycleOwner(this@ProfileFutureEvents)
+            lifecycleOwner(this@ProfileEvents)
         }
     }
 
     override fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {
-            profileEventPagingAdapter.notifyDataSetChanged()
+            profileEventPagingAdapter?.notifyDataSetChanged()
         })
     }
 
@@ -214,7 +214,7 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
     override fun onSeeParticipants(timenoteInfoDTO: TimenoteInfoDTO) {
         val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
             customView(R.layout.users_participating)
-            lifecycleOwner(this@ProfileFutureEvents)
+            lifecycleOwner(this@ProfileEvents)
         }
 
         val recyclerview = dial.getCustomView().users_participating_rv
@@ -232,7 +232,7 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
         sendTo.clear()
         val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
             customView(R.layout.friends_search)
-            lifecycleOwner(this@ProfileFutureEvents)
+            lifecycleOwner(this@ProfileEvents)
             positiveButton(R.string.send){
                 timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo))
             }
@@ -262,6 +262,10 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
         }
     }
 
+    override fun onAddMarker(timenoteInfoDTO: TimenoteInfoDTO) {
+
+    }
+
     override fun onAdd(userInfoDTO: UserInfoDTO) {
         sendTo.add(userInfoDTO.id!!)
     }
@@ -279,9 +283,8 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
     }
 
     fun setShowFilterBar(b: Boolean) {
-        //profileEventPagingAdapter.showHideFilterBar(b)
-        if(b) profile_filter_rv_chips_in_rv.visibility = View.VISIBLE
-        else profile_filter_rv_chips_in_rv.visibility = View.GONE
+        if(b) profile_filter_rv_chips_in_rv?.visibility = View.VISIBLE
+        else profile_filter_rv_chips_in_rv?.visibility = View.GONE
     }
 
     override fun onCardClicked(event: TimenoteInfoDTO) {
@@ -304,25 +307,35 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
                                 sharedWith = false
                             )
                         ).collectLatest {
-                            profileEventPagingAdapter.submitData(it)
+                            profileEventPagingAdapter?.submitData(it)
                         }
                     }
                 }
                 1 -> lifecycleScope.launch {
-                    profileViewModel.getTimenotesFiltered(tokenId!!, TimenoteFilteredDTO(isFuture, false, false, true, false)).collectLatest { profileEventPagingAdapter.submitData(it) }
+                    profileViewModel.getTimenotesFiltered(tokenId!!, TimenoteFilteredDTO(isFuture, false, false, true, false)).collectLatest { profileEventPagingAdapter?.submitData(it) }
                 }
                 2 -> lifecycleScope.launch {
-                    profileViewModel.getTimenotesFiltered(tokenId!!, TimenoteFilteredDTO(isFuture, true, false, false, false)).collectLatest { profileEventPagingAdapter.submitData(it) }
+                    profileViewModel.getTimenotesFiltered(tokenId!!, TimenoteFilteredDTO(isFuture, true, false, false, false)).collectLatest { profileEventPagingAdapter?.submitData(it) }
                 }
                 3 -> lifecycleScope.launch {
-                    profileViewModel.getTimenotesFiltered(tokenId!!, TimenoteFilteredDTO(isFuture, false, false, false, true)).collectLatest { profileEventPagingAdapter.submitData(it) }
+                    profileViewModel.getTimenotesFiltered(tokenId!!, TimenoteFilteredDTO(isFuture, false, false, false, true)).collectLatest { profileEventPagingAdapter?.submitData(it) }
                 }
             }
         } else {
             loadData(userInfoDTO!!)
         }
+
     }
 
+    fun notifyAdapterUpdate(){
+        if(profileEventPagingAdapter!= null)
+            profileEventPagingAdapter?.notifyDataSetChanged()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        notifyAdapterUpdate()
+    }
 
     @ExperimentalPagingApi
     fun switchFilters(
@@ -372,7 +385,7 @@ class ProfileFutureEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterB
             id: String,
             isFuture : Boolean
         ) =
-            ProfileFutureEvents().apply {
+            ProfileEvents().apply {
                 arguments = Bundle().apply {
                     putBoolean(ARG_PARAM1, showHideFilterBar)
                     putInt(ARG_PARAM2, from)

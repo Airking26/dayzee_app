@@ -49,14 +49,15 @@ class MyFirebaseNotificationService : FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
 
-        val n = message.notification
-        val m  = message.data
-
         Log.d(TAG, "onMessageReceived: RECEIVED!!!!!!!!!!!!!!!!!")
 
         val bundle = Bundle()
-        bundle.putString("id", message.data["userID"])
+        bundle.putString("id", message.data["id"])
         bundle.putString("type", message.data["type"])
+        bundle.putString("google.sent_time", message.sentTime.toString())
+        bundle.putString("google.message_id", message.messageId)
+        bundle.putString("title", message.notification?.title)
+        bundle.putString("body", message.notification?.body)
 
         val pi = NavDeepLinkBuilder(this)
             .setComponentName(MainActivity::class.java)
@@ -65,8 +66,8 @@ class MyFirebaseNotificationService : FirebaseMessagingService() {
             .setArguments(bundle)
             .createPendingIntent()
 
-        //notifications.add(Notification(false, message.messageId!!, message.sentTime, message.data["type"]!!, message.data["userID"]!!, message.notification?.title!!, message.notification?.body!!))
-        //prefs.edit().putString("notifications", Gson().toJson(notifications) ?: Gson().toJson(mutableListOf<Notification>())).apply()
+        notifications.add(Notification(false, message.messageId!!, message.sentTime, message.data["type"]!!, message.data["id"]!!, message.notification?.title!!, message.notification?.body!!))
+        prefs.edit().putString("notifications", Gson().toJson(notifications) ?: Gson().toJson(mutableListOf<Notification>())).apply()
 
         val builder = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.logo)

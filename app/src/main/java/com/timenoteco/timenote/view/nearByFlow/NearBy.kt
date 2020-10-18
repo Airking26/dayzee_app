@@ -18,6 +18,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -140,6 +141,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         Utils().hideStatusBar(requireActivity())
 
+        nearby_swipe_refresh.isEnabled = false
         nearby_swipe_refresh.isRefreshing = true
         nearby_swipe_refresh.setColorSchemeResources(R.color.colorStartGradient, R.color.colorEndGradient)
 
@@ -415,6 +417,10 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
                 userAdapter.submitData(it)
             }
         }
+    }
+
+    override fun onAddMarker(timenoteInfoDTO: TimenoteInfoDTO) {
+        this.googleMap?.addMarker(MarkerOptions().position(LatLng(timenoteInfoDTO.location?.latitude!!, timenoteInfoDTO.location.longitude)))
     }
 
     override fun onAdd(userInfoDTO: UserInfoDTO) {

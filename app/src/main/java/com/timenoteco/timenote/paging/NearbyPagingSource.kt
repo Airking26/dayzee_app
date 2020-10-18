@@ -6,7 +6,7 @@ import com.timenoteco.timenote.model.TimenoteInfoDTO
 import com.timenoteco.timenote.webService.service.NearbyService
 import java.lang.Error
 
-class NearbyPagingSource(val token : String, val nearbyRequestBody: NearbyRequestBody, val nearbyService: NearbyService) : PagingSource<Int, TimenoteInfoDTO>(){
+class NearbyPagingSource(val token : String, private val nearbyRequestBody: NearbyRequestBody, private val nearbyService: NearbyService) : PagingSource<Int, TimenoteInfoDTO>(){
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, TimenoteInfoDTO> {
         return try {

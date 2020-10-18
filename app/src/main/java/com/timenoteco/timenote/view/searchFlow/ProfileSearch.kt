@@ -21,29 +21,21 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
-import com.timenoteco.timenote.adapter.ProfilePastFuturePagerAdapter
+import com.timenoteco.timenote.adapter.ProfileEventPagerAdapter
 import com.timenoteco.timenote.common.BaseThroughFragment
-import com.timenoteco.timenote.common.stringLiveData
 import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import com.timenoteco.timenote.model.STATUS
-import com.timenoteco.timenote.model.TimenoteInfoDTO
-import com.timenoteco.timenote.model.UpdateUserInfoDTO
-import com.timenoteco.timenote.model.UserInfoDTO
 import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
-import com.timenoteco.timenote.webService.ProfileModifyData
 import kotlinx.android.synthetic.main.fragment_profile.*
-import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
 
 class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarListener {
 
     private var stateSwitchUrl: String? = null
-    private var profilePastFuturePagerAdapter: ProfilePastFuturePagerAdapter? = null
+    private var profileEventPagerAdapter: ProfileEventPagerAdapter? = null
     private var isFollowed = false
     private val args : ProfileSearchArgs by navArgs()
     private val loginViewModel : LoginViewModel by activityViewModels()
@@ -137,9 +129,9 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
             scrollable.visibility = View.GONE
             profile_account_private.visibility = View.VISIBLE
         } else {
-            profilePastFuturePagerAdapter = ProfilePastFuturePagerAdapter(childFragmentManager, lifecycle, showFilterBar, this, 2, args.userInfoDTO?.id!!)
+            profileEventPagerAdapter = ProfileEventPagerAdapter(childFragmentManager, lifecycle, showFilterBar, this, 2, args.userInfoDTO?.id!!)
             profile_vp?.apply {
-                adapter = profilePastFuturePagerAdapter
+                adapter = profileEventPagerAdapter
                 isUserInputEnabled = false
                 isSaveEnabled = false
                 post {
@@ -150,11 +142,11 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
             profile_tablayout.setSelectedTabIndicatorColor(resources.getColor(android.R.color.darker_gray))
             profile_tablayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
                 override fun onTabReselected(tab: TabLayout.Tab?) {
-                    profilePastFuturePagerAdapter?.setShowFilterBar(true, tab?.position!!, true)
+                    profileEventPagerAdapter?.setShowFilterBar(true, tab?.position!!, true)
                 }
 
                 override fun onTabUnselected(tab: TabLayout.Tab?) {
-                    profilePastFuturePagerAdapter?.setShowFilterBar(true, tab?.position!!, false)
+                    profileEventPagerAdapter?.setShowFilterBar(true, tab?.position!!, false)
                 }
 
                 override fun onTabSelected(tab: TabLayout.Tab?) {
@@ -279,7 +271,7 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
     }
 
     override fun onHideFilterBarClicked(position:Int?) {
-        profilePastFuturePagerAdapter?.setShowFilterBar(false, position, null)
+        profileEventPagerAdapter?.setShowFilterBar(false, position, null)
     }
 
 }

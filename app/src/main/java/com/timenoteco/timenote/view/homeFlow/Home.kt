@@ -126,7 +126,10 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if(tokenId != null) {
             home_swipe_refresh.setColorSchemeResources(R.color.colorStartGradient, R.color.colorEndGradient)
-            home_swipe_refresh.setOnRefreshListener { loadUpcomingData() }
+            home_swipe_refresh.setOnRefreshListener {
+                if(home_future_timeline.drawable.constantState == resources.getDrawable(R.drawable.ic_futur_ok).constantState) loadPastData()
+                else if(home_past_timeline.drawable.constantState == resources.getDrawable(R.drawable.ic_passe_ok).constantState) loadUpcomingData()
+            }
 
             if(timenoteRecentPagingAdapter == null || timenotePagingAdapter == null || home_nothing_to_display?.visibility == View.VISIBLE) {
                 loadUpcomingData()
@@ -354,6 +357,10 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                 userAdapter.submitData(it)
             }
         }
+    }
+
+    override fun onAddMarker(timenoteInfoDTO: TimenoteInfoDTO) {
+
     }
 
     override fun onAdd(userInfoDTO: UserInfoDTO) {

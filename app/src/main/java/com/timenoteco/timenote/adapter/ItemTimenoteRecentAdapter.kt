@@ -46,7 +46,7 @@ class ItemTimenoteRecentAdapter(private val timenotesToCome: List<TimenoteInfoDT
                     .load(timenote.pictures[0])
                     .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                     .centerCrop()
-                    .placeholder(R.drawable.circle_pic)
+                    .placeholder(R.drawable.loader)
                     .into(itemView.timenote_recent_pic_imageview)
             }
 

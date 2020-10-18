@@ -150,6 +150,9 @@
             android:name="userInfoDTO"
             app:argType="com.timenoteco.timenote.model.UserInfoDTO"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_profileSearch_to_profilModifySearch"
+            app:destination="@id/profilModifySearch" />
     </fragment>
     <fragment
         android:id="@+id/followPageSearch"
@@ -200,6 +203,18 @@
         <argument
             android:name="timenoteInfoDTO"
             app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/profilModifySearch"
+        android:name="com.timenoteco.timenote.view.searchFlow.ProfilModifySearch"
+        android:label="ProfilModifySearch" >
+        <argument
+            android:name="isNotMine"
+            app:argType="boolean" />
+        <argument
+            android:name="userInfoDTO"
+            app:argType="com.timenoteco.timenote.model.UserInfoDTO"
             app:nullable="true" />
     </fragment>
 </navigation>

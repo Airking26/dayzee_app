@@ -10,7 +10,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.timenoteco.timenote.R
-import com.timenoteco.timenote.adapter.ProfilePastFuturePagerAdapter
+import com.timenoteco.timenote.adapter.ProfileEventPagerAdapter
 import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import kotlinx.android.synthetic.main.fragment_profile.*
 import java.text.SimpleDateFormat
@@ -18,7 +18,7 @@ import java.util.*
 
 class ProfilePreview: Fragment(), OnRemoveFilterBarListener {
 
-    private var profilePastFuturePagerAdapter: ProfilePastFuturePagerAdapter? = null
+    private var profileEventPagerAdapter: ProfileEventPagerAdapter? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_profile_preview, container, false)
@@ -41,7 +41,7 @@ class ProfilePreview: Fragment(), OnRemoveFilterBarListener {
 
        // profilePastFuturePagerAdapter = ProfilePastFuturePagerAdapter(childFragmentManager, lifecycle, false, this, 4)
         profile_vp?.apply {
-            adapter = profilePastFuturePagerAdapter
+            adapter = profileEventPagerAdapter
             isUserInputEnabled = false
             isSaveEnabled = false
             post {
@@ -52,11 +52,11 @@ class ProfilePreview: Fragment(), OnRemoveFilterBarListener {
         profile_tablayout.setSelectedTabIndicatorColor(resources.getColor(android.R.color.darker_gray))
         profile_tablayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
             override fun onTabReselected(tab: TabLayout.Tab?) {
-                profilePastFuturePagerAdapter?.setShowFilterBar(true, tab?.position!!, true)
+                profileEventPagerAdapter?.setShowFilterBar(true, tab?.position!!, true)
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
-                profilePastFuturePagerAdapter?.setShowFilterBar(true, tab?.position!!, false)
+                profileEventPagerAdapter?.setShowFilterBar(true, tab?.position!!, false)
             }
 
             override fun onTabSelected(tab: TabLayout.Tab?) {

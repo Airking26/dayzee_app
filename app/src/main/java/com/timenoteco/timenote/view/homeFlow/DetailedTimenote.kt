@@ -50,6 +50,7 @@ import kotlinx.android.synthetic.main.fragment_detailed_fragment.*
 import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.friends_search.view.*
 import kotlinx.android.synthetic.main.item_timenote_root.*
+import kotlinx.android.synthetic.main.item_timenote_root.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -111,7 +112,13 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         timenote_title.text = args.event?.title
 
         screenSlideCreationTimenotePagerAdapter = if(!args.event?.pictures.isNullOrEmpty()){
-            ScreenSlideTimenotePagerAdapter(this, args.event?.pictures, true){ i: Int, i1: Int -> }
+            if(args.event?.pictures?.size == 1) timenote_indicator.visibility = View.GONE
+            ScreenSlideTimenotePagerAdapter(this, args.event?.pictures, true){ i: Int, i1: Int ->
+                if (args.event?.price?.price!! >= 0 && !args.event?.url.isNullOrBlank()) {
+                    timenote_buy.visibility = View.VISIBLE
+                    if (args.event?.price?.price!! > 0) timenote_buy.text = args.event?.price?.price!!.toString().plus(args.event?.price?.currency ?: "$")
+                }
+            }
         } else {
             ScreenSlideTimenotePagerAdapter(this, mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
                 "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
@@ -367,7 +374,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     }
 
     override fun onPicUserCommentClicked(userInfoDTO: UserInfoDTO) {
-        findNavController().navigate(DetailedTimenoteDirections.actionDetailedTimenoteToProfile().setWhereFrom(true).setFrom(args.from).setUserInfoDTO(userInfoDTO))
+        findNavController().navigate(DetailedTimenoteDirections.actionDetailedTimenoteToProfile().setIsNotMine(true).setFrom(args.from).setUserInfoDTO(userInfoDTO))
     }
 
     override fun onCommentMoreClicked() {

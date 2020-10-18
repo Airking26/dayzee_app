@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.view.loginFlow
 
+import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
@@ -15,10 +16,14 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.iid.FirebaseInstanceId
 import com.google.gson.Gson
 import com.timenoteco.timenote.R
+import com.timenoteco.timenote.model.FCMDTO
 import com.timenoteco.timenote.model.UserSignUpBody
 import com.timenoteco.timenote.viewModel.LoginViewModel
+import com.timenoteco.timenote.viewModel.MeViewModel
 import kotlinx.android.synthetic.main.fragment_signup.*
 
 
@@ -30,6 +35,7 @@ class Signup: Fragment(), View.OnClickListener {
     val TOKEN: String = "TOKEN"
     private var availableMail : Boolean? = null
     private val viewModel: LoginViewModel by activityViewModels()
+    private val meViewModel: MeViewModel by activityViewModels()
     private var isOnLogin: Boolean = true
     private val TRIGGER_AUTO_COMPLETE = 200
     private val AUTO_COMPLETE_DELAY: Long = 200
@@ -170,6 +176,7 @@ class Signup: Fragment(), View.OnClickListener {
                                 prefs.edit().putString("UserInfoDTO", Gson().toJson(it.body()?.user)).apply()
                                 prefs.edit().putInt("followers", it.body()?.user?.followers!!).apply()
                                 prefs.edit().putInt("following", it.body()?.user?.following!!).apply()
+                                retrieveCurrentRegistrationToken(it.body()?.token!!)
                             }
                             else -> {
                                 Toast.makeText(requireContext(), "Invalid Authentication", Toast.LENGTH_SHORT).show()
@@ -222,6 +229,7 @@ class Signup: Fragment(), View.OnClickListener {
                                     prefs.edit().putString("UserInfoDTO", Gson().toJson(it.body()?.user)).apply()
                                     prefs.edit().putInt("followers", it.body()?.user?.followers!!).apply()
                                     prefs.edit().putInt("following", it.body()?.user?.following!!).apply()
+                                    retrieveCurrentRegistrationToken(it.body()?.token!!)
                                 }
                                 409 -> {
                                     Toast.makeText(requireContext(), "Invalid Authentication", Toast.LENGTH_SHORT).show()
@@ -250,5 +258,16 @@ class Signup: Fragment(), View.OnClickListener {
 
 
         }
+    }
+
+    @SuppressLint("StringFormatInvalid")
+    fun retrieveCurrentRegistrationToken(tokenId: String){
+        FirebaseInstanceId.getInstance().instanceId
+            .addOnCompleteListener(OnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    meViewModel.putFCMToken(tokenId, FCMDTO(task.result?.token!!)).observe(viewLifecycleOwner, Observer {})
+                    return@OnCompleteListener
+                }
+            })
     }
 }

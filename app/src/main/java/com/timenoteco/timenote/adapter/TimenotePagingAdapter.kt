@@ -43,15 +43,3 @@ object TimenoteComparator : DiffUtil.ItemCallback<TimenoteInfoDTO>(){
     }
 
 }
-
-object TimenoteRecentComparator : DiffUtil.ItemCallback<TimenoteInfoDTO>(){
-
-    override fun areItemsTheSame(oldItem: TimenoteInfoDTO, newItem: TimenoteInfoDTO): Boolean {
-        return oldItem.createdAt == newItem.createdAt
-    }
-
-    override fun areContentsTheSame(oldItem: TimenoteInfoDTO, newItem: TimenoteInfoDTO): Boolean {
-        return oldItem == newItem
-    }
-
-}

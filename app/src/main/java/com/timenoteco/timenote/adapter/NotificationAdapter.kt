@@ -20,8 +20,8 @@ class NotificationAdapter(private val notifications: MutableList<Notification>, 
 
     interface NotificationClickListener{
         fun onNotificationClicked(notification: Notification)
-        fun onAcceptedRequestClicked()
-        fun onDeclinedRequestClicked()
+        fun onAcceptedRequestClicked(id: String)
+        fun onDeclinedRequestClicked(id: String)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotificationViewHolder =
@@ -61,8 +61,8 @@ class NotificationAdapter(private val notifications: MutableList<Notification>, 
             itemView.notification_annoucement.text = notification.body
             itemView.notification_time.text = calculateTimeSinceNotif(notification.time)
             itemView.setOnClickListener{notificationClickListener.onNotificationClicked(notification)}
-            itemView.notification_item_user_accept.setOnClickListener { notificationClickListener.onAcceptedRequestClicked() }
-            itemView.notification_item_user_decline.setOnClickListener { notificationClickListener.onDeclinedRequestClicked() }
+            itemView.notification_item_user_accept.setOnClickListener { notificationClickListener.onAcceptedRequestClicked(notification.id) }
+            itemView.notification_item_user_decline.setOnClickListener { notificationClickListener.onDeclinedRequestClicked(notification.id) }
         }
 
         private fun calculateTimeSinceNotif(receivedAt: Long): String{
