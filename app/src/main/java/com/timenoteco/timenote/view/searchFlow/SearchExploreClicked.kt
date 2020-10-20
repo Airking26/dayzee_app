@@ -26,8 +26,7 @@ import kotlinx.android.synthetic.main.fragment_search_explore_clicked.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class SearchExploreClicked: Fragment(), SuggestionAdapter.SuggestionItemListener,
-    SuggestionAdapter.SuggestionItemPicListener, UsersShareWithPagingAdapter.AddToSend,
+class SearchExploreClicked: Fragment(), UsersShareWithPagingAdapter.AddToSend,
     UsersShareWithPagingAdapter.SearchPeopleListener {
 
     private val followViewModel : FollowViewModel by activityViewModels()
@@ -64,22 +63,37 @@ class SearchExploreClicked: Fragment(), SuggestionAdapter.SuggestionItemListener
         }
     }
 
-    override fun onItemSelected(follow: Boolean) {
-        //followViewModel.followPublicUser("", 0).observe(viewLifecycleOwner, Observer {})
+    /*override fun onItemSelected(follow: Boolean, userInfoDTO: UserInfoDTO) {
+        if(follow) {
+            followViewModel.followPublicUser(tokenId!!, userInfoDTO.id!!)
+                .observe(viewLifecycleOwner, Observer {
+                    if(it.isSuccessful) ""
+                })
+        } else {
+            followViewModel.unfollowUser(tokenId!!, userInfoDTO.id!!).observe(viewLifecycleOwner, Observer {
+                if(it.isSuccessful) ""
+            })
+        }
     }
 
-    override fun onPicClicked() {
-        //findNavController().navigate(SearchExploreClickedDirections.actionSearchExploreClickedToProfileSearch())
-    }
+    override fun onPicClicked(userInfoDTO: UserInfoDTO) {
+        findNavController().navigate(SearchExploreClickedDirections.actionSearchExploreClickedToProfileSearch(userInfoDTO))
+    }*/
 
     override fun onAdd(userInfoDTO: UserInfoDTO) {
-
+        followViewModel.followPublicUser(tokenId!!, userInfoDTO.id!!)
+            .observe(viewLifecycleOwner, Observer {
+                if(it.isSuccessful) ""
+            })
     }
 
     override fun onRemove(userInfoDTO: UserInfoDTO) {
+        followViewModel.unfollowUser(tokenId!!, userInfoDTO.id!!).observe(viewLifecycleOwner, Observer {
+            if(it.isSuccessful) ""
+        })
     }
 
     override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
-
+        findNavController().navigate(SearchExploreClickedDirections.actionSearchExploreClickedToProfileSearch(userInfoDTO))
     }
 }

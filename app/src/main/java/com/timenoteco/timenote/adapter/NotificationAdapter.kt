@@ -20,8 +20,8 @@ class NotificationAdapter(private val notifications: MutableList<Notification>, 
 
     interface NotificationClickListener{
         fun onNotificationClicked(notification: Notification)
-        fun onAcceptedRequestClicked(id: String)
-        fun onDeclinedRequestClicked(id: String)
+        fun onAcceptedRequestClicked(notification: Notification)
+        fun onDeclinedRequestClicked(notification: Notification)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotificationViewHolder =
@@ -53,7 +53,7 @@ class NotificationAdapter(private val notifications: MutableList<Notification>, 
 
             Glide
                 .with(itemView)
-                .load("https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260")
+                .load(notification.pictureUrl)
                 .apply(RequestOptions.circleCropTransform())
                 .placeholder(R.drawable.circle_pic)
                 .into(itemView.notification_user_pic_imageview)
@@ -61,8 +61,8 @@ class NotificationAdapter(private val notifications: MutableList<Notification>, 
             itemView.notification_annoucement.text = notification.body
             itemView.notification_time.text = calculateTimeSinceNotif(notification.time)
             itemView.setOnClickListener{notificationClickListener.onNotificationClicked(notification)}
-            itemView.notification_item_user_accept.setOnClickListener { notificationClickListener.onAcceptedRequestClicked(notification.id) }
-            itemView.notification_item_user_decline.setOnClickListener { notificationClickListener.onDeclinedRequestClicked(notification.id) }
+            itemView.notification_item_user_accept.setOnClickListener { notificationClickListener.onAcceptedRequestClicked(notification) }
+            itemView.notification_item_user_decline.setOnClickListener { notificationClickListener.onDeclinedRequestClicked(notification) }
         }
 
         private fun calculateTimeSinceNotif(receivedAt: Long): String{

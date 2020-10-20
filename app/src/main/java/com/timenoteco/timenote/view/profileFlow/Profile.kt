@@ -71,6 +71,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
             when (it) {
                 LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(ProfileDirections.actionProfileToNavigation())
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> {
+                    tokenId = prefs.getString(TOKEN, null)
                     if(arguments?.isEmpty!!)
                         findNavController().popBackStack(R.id.profile, false)
                     else arguments.let { bundle ->
@@ -122,7 +123,6 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
 
 
             if(!args.isNotMine) {
-
                 prefs.intLiveData("followers", userInfoDTO?.followers!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                     profile_nbr_followers.text = it.toString()
                 })

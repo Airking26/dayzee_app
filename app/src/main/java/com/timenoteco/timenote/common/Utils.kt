@@ -8,12 +8,10 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.Resources
-import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.location.Address
 import android.location.Geocoder
-import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.text.Editable
@@ -27,13 +25,10 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
@@ -49,7 +44,6 @@ import com.timenoteco.timenote.adapter.AutoSuggestAdapter
 import com.timenoteco.timenote.adapter.WebSearchAdapter
 import com.timenoteco.timenote.androidView.input
 import com.timenoteco.timenote.listeners.PlacePickerListener
-import com.timenoteco.timenote.model.AWSFile
 import com.timenoteco.timenote.model.DetailedPlace
 import com.timenoteco.timenote.model.Location
 import com.timenoteco.timenote.viewModel.WebSearchViewModel
@@ -60,9 +54,8 @@ import com.zhihu.matisse.filter.Filter
 import com.zhihu.matisse.internal.entity.CaptureStrategy
 import kotlinx.android.synthetic.main.autocomplete_search_address.view.*
 import kotlinx.android.synthetic.main.web_search_rv.view.*
-import org.apache.http.impl.cookie.DateUtils.formatDate
 import java.text.SimpleDateFormat
-import java.time.Instant
+import java.time.*
 import java.time.format.DateTimeFormatter
 import java.util.*
 
@@ -288,6 +281,7 @@ class Utils {
         else dateFormat.format(timestamp)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun setFormatedStartDate(startDate: String, endDate: String) : String{
         val DATE_FORMAT_DAY = "d MMM yyyy"
         val DATE_FORMAT_TIME = "hh:mm aaa"
@@ -295,24 +289,30 @@ class Utils {
         val DATE_FORMAT_TIME_FORMATED = "d\nMMM"
         val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = "d MMM.\nhh:mm"
 
-        var formatedStartDate = ""
+        val formatedStartDate: String
+
 
         val startingAt = SimpleDateFormat(ISO, Locale.getDefault()).parse(startDate).time
         val endingAt = SimpleDateFormat(ISO, Locale.getDefault()).parse(endDate).time
 
-        if(formatDate(DATE_FORMAT_DAY, startingAt) == formatDate(DATE_FORMAT_DAY, endingAt)){
-            if(formatDate(DATE_FORMAT_TIME, startingAt) == formatDate(DATE_FORMAT_TIME, endingAt)){
-                formatedStartDate = formatDate(DATE_FORMAT_TIME_FORMATED, startingAt)
+        val starting = Instant.parse(startDate).epochSecond * 1000
+        val ending = Instant.parse(endDate).epochSecond * 1000
+
+
+        if(formatDate(DATE_FORMAT_DAY, starting) == formatDate(DATE_FORMAT_DAY, ending)){
+            if(formatDate(DATE_FORMAT_TIME, starting) == formatDate(DATE_FORMAT_TIME, ending)){
+                formatedStartDate = formatDate(DATE_FORMAT_TIME_FORMATED, starting)
             } else {
-                formatedStartDate = formatDate(DATE_FORMAT_TIME_FORMATED, startingAt)
+                formatedStartDate = formatDate(DATE_FORMAT_TIME_FORMATED, starting)
             }
         } else {
-            formatedStartDate = formatDate(DATE_FORMAT_SAME_DAY_DIFFERENT_TIME, startingAt)
+            formatedStartDate = formatDate(DATE_FORMAT_SAME_DAY_DIFFERENT_TIME, starting)
         }
 
         return formatedStartDate
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun setFormatedEndDate(startDate: String, endDate: String): String{
         val DATE_FORMAT_DAY = "d MMM yyyy"
         val DATE_FORMAT_TIME = "hh:mm aaa"
@@ -321,28 +321,34 @@ class Utils {
         val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = "d MMM\nhh:mm"
 
 
-        var formatedEndDate = ""
+        var formatedEndDate: String
 
         val startingAt = SimpleDateFormat(ISO, Locale.getDefault()).parse(startDate).time
         val endingAt = SimpleDateFormat(ISO, Locale.getDefault()).parse(endDate).time
 
+        val starting = Instant.parse(startDate).epochSecond * 1000
+        val ending = Instant.parse(endDate).epochSecond * 1000
+
         formatedEndDate =
-            if(formatDate(DATE_FORMAT_DAY, startingAt) == formatDate(DATE_FORMAT_DAY, endingAt)){
-                if(formatDate(DATE_FORMAT_TIME, startingAt) == formatDate(DATE_FORMAT_TIME, endingAt)){
-                    formatDate(DATE_FORMAT_TIME, startingAt)
+            if(formatDate(DATE_FORMAT_DAY, starting) == formatDate(DATE_FORMAT_DAY, ending)){
+                if(formatDate(DATE_FORMAT_TIME, starting) == formatDate(DATE_FORMAT_TIME, ending)){
+                    formatDate(DATE_FORMAT_TIME, starting)
                 } else {
-                    formatDate(DATE_FORMAT_TIME, startingAt) + "\n" + formatDate(DATE_FORMAT_TIME, endingAt)
+                    formatDate(DATE_FORMAT_TIME, starting) + "\n" + formatDate(DATE_FORMAT_TIME, ending)
                 }
             } else {
-                formatDate(DATE_FORMAT_SAME_DAY_DIFFERENT_TIME, endingAt)
+                formatDate(DATE_FORMAT_SAME_DAY_DIFFERENT_TIME, ending)
             }
 
         return formatedEndDate
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun setYear(startDate: String): String {
         val YEAR = "yyyy"
         val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+
+
 
         val startingAt = SimpleDateFormat(ISO, Locale.getDefault()).parse(startDate).time
 
@@ -351,78 +357,81 @@ class Utils {
 
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun inTime(startDate: String): String {
-        val d = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Date.from(Instant.from(DateTimeFormatter.ISO_INSTANT.parse(startDate)))
-        } else {
-            TODO("VERSION.SDK_INT < O")
-        }
-        val time = d.time - System.currentTimeMillis()
-        val c: Calendar = Calendar.getInstance(Locale.getDefault())
-        c.timeInMillis = time
-        val mYear: Int = c.get(Calendar.YEAR) - 1970
-        val mMonth: Int = c.get(Calendar.MONTH)
-        val mDay: Int = c.get(Calendar.DAY_OF_MONTH) - 1
-        val mHours: Int = c.get(Calendar.HOUR)
-        val mMin : Int = c.get(Calendar.MINUTE)
+        val period = Period.between(LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC).toLocalDate()
+            , LocalDateTime.ofInstant(Instant.parse(startDate), ZoneOffset.UTC).toLocalDate())
+        val nbrYear = period.years
+        val nbrMonth = period.minusYears(nbrYear.toLong()).months
+        val nbrDay = period.minusYears(nbrYear.toLong()).minusMonths(nbrMonth.toLong()).days
+
+        val duration = Duration.between(Instant.now(), Instant.parse(startDate))
+        val nbrHours = duration.minusDays(duration.toDays()).toHours()
+        val nbrMin = duration.minusDays(duration.toDays()).minusHours(nbrHours).toMinutes()
+
+        return formatInTime(nbrYear, nbrMonth, nbrDay, nbrHours.toInt(), nbrMin.toInt())
+    }
+
+    fun formatInTime(nbrYear: Int, nbrMonth: Int, nbrDay: Int, nbrHour: Int, nbrMin: Int): String {
 
         val decountTime: String
-        if(mYear == 0){
-            if(mMonth == 0){
-                if(mDay == 0){
-                    if(mHours > 1){
-                        if(mMin > 1){
-                            decountTime = "In $mHours hours and $mMin minutes"
+        if(nbrYear == 0){
+            if(nbrMonth == 0){
+                if(nbrDay == 0){
+                    if(nbrHour > 1){
+                        if(nbrMin > 1){
+                            decountTime = "In $nbrHour hours and $nbrMin minutes"
                         } else {
-                            decountTime = "In $mHours hours and $mMin minute"
+                            decountTime = "In $nbrHour hours and $nbrMin minute"
                         }
                     } else {
-                        if(mMin > 1){
-                            decountTime = "In $mHours hour and $mMin minutes"
+                        if(nbrMin > 1){
+                            decountTime = "In $nbrHour hour and $nbrMin minutes"
                         } else {
-                            decountTime = "In $mHours hour and $mMin minute"
+                            decountTime = "In $nbrHour hour and $nbrMin minute"
                         }
                     }
                 } else {
-                    if(mDay > 1){
-                        if(mHours > 1) decountTime = "In $mDay days and $mHours hours"
-                        else decountTime = "In $mDay days and $mHours hour"
+                    if(nbrDay > 1){
+                        if(nbrHour > 1) decountTime = "In $nbrDay days and $nbrHour hours"
+                        else decountTime = "In $nbrDay days and $nbrHour hour"
                     } else {
-                        if(mHours > 1) decountTime = "In $mDay day and $mHours hours"
-                        else decountTime = "In $mDay day and $mHours hour"
+                        if(nbrHour > 1) decountTime = "In $nbrDay day and $nbrHour hours"
+                        else decountTime = "In $nbrDay day and $nbrHour hour"
                     }
 
                 }
             } else {
-                if(mMonth > 1){
-                    if(mDay > 1){
-                        decountTime = "In $mMonth months and $mDay days"
+                if(nbrMonth > 1){
+                    if(nbrDay > 1){
+                        decountTime = "In $nbrMonth months and $nbrDay days"
                     } else {
-                        decountTime = "In $mMonth months and $mDay day"
+                        decountTime = "In $nbrMonth months and $nbrDay day"
                     }
                 } else {
-                    if(mDay >1){
-                        decountTime = "In $mMonth month and $mDay days"
+                    if(nbrDay >1){
+                        decountTime = "In $nbrMonth month and $nbrDay days"
                     } else {
-                        decountTime = "In $mMonth month and $mDay day"
+                        decountTime = "In $nbrMonth month and $nbrDay day"
                     }
                 }
             }
         } else {
-            if(mYear > 1){
-                if(mMonth > 1) {
-                    decountTime = "In $mYear years and $mMonth months"
+            if(nbrYear > 1){
+                if(nbrMonth > 1) {
+                    decountTime = "In $nbrYear years and $nbrMonth months"
                 } else {
-                    decountTime = "In $mYear years and $mMonth month"
+                    decountTime = "In $nbrYear years and $nbrMonth month"
                 }
             } else {
-                if(mMonth > 1){
-                    decountTime = "In $mYear year and $mMonth months"
+                if(nbrMonth > 1){
+                    decountTime = "In $nbrYear year and $nbrMonth months"
                 } else {
-                    decountTime = "In $mYear year and $mMonth month"
+                    decountTime = "In $nbrYear year and $nbrMonth month"
                 }
             }
         }
+
         return decountTime
     }
 

@@ -123,7 +123,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
             "pVf9Wxd/rK4r81FsOsNDaaOJIKE5AGbq96Lh4RB9"
         )
     )
-    private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+    private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
     private val args : CreateTimenoteArgs by navArgs()
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
     private val AUTOCOMPLETE_REQUEST_CODE: Int = 11

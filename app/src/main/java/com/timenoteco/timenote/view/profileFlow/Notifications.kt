@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,6 +18,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.NotificationAdapter
+import com.timenoteco.timenote.common.stringLiveData
 import com.timenoteco.timenote.model.Notification
 import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.MeViewModel
@@ -45,14 +47,19 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
         inflater.inflate(R.layout.fragment_notifications, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val typeNotification: Type = object : TypeToken<MutableList<Notification?>>() {}.type
-        notifications = Gson().fromJson<MutableList<Notification>>(prefs.getString("notifications", null), typeNotification) ?: mutableListOf()
-        notificationAdapter = NotificationAdapter(sortNotifications(), this)
-        notifications_rv.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = notificationAdapter
-            addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
-        }
+        prefs.stringLiveData("notifications", Gson().toJson(prefs.getString("notifications", null))).observe(viewLifecycleOwner, Observer {
+            val typeNotification: Type = object : TypeToken<MutableList<Notification?>>() {}.type
+            notifications = Gson().fromJson<MutableList<Notification>>(it, typeNotification) ?: mutableListOf()
+
+            notificationAdapter = NotificationAdapter(sortNotifications(), this)
+            notifications_rv.apply {
+                layoutManager = LinearLayoutManager(requireContext())
+                adapter = notificationAdapter
+                addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
+            }
+        })
+
+
     }
 
     private fun sortNotifications(): MutableList<Notification> {
@@ -64,35 +71,40 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
     }
 
     private fun refreshNotifications(){
+        val notification = notifications
         notifications.map { it.read = true }
         prefs.edit().putString("notifications", Gson().toJson(notifications)).apply()
     }
 
     override fun onNotificationClicked(notification: Notification) {
-        if(true){
+        if(notification.type.toInt() == 0 || notification.type.toInt() == 1){
             timenoteViewModel.getSpecificTimenote(tokenId!!, notification.id).observe(viewLifecycleOwner, Observer {
-                NotificationsDirections.actionNotificationsToDetailedTimenote(1, it.body())
+                findNavController().navigate(NotificationsDirections.actionNotificationsToDetailedTimenote(1, it.body()))
             })
         } else {
             meViewModel.getSpecificUser(tokenId!!, notification.id).observe(viewLifecycleOwner, Observer {
-                NotificationsDirections.actionNotificationsToProfile().setFrom(4).setIsNotMine(false).setUserInfoDTO(it.body())
+                findNavController().navigate(NotificationsDirections.actionNotificationsToProfile().setFrom(4).setIsNotMine(true).setUserInfoDTO(it.body()))
             })
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
-    override fun onAcceptedRequestClicked(id: String) {
-        followViewModel.acceptFollowingRequest(tokenId!!, id).observe(viewLifecycleOwner, Observer {
-            notifications.removeIf{ it.id == id }
-            notificationAdapter.notifyDataSetChanged()
+    override fun onAcceptedRequestClicked(notification: Notification) {
+        followViewModel.acceptFollowingRequest(tokenId!!, notification.id).observe(viewLifecycleOwner, Observer {
+            notifications.remove(notification)
+            prefs.edit().putString("notifications", Gson().toJson(notifications)).apply()
+
+            //notificationAdapter.notifyDataSetChanged()
         })
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
-    override fun onDeclinedRequestClicked(id: String) {
-        followViewModel.declineFollowingRequest(tokenId!!, id).observe(viewLifecycleOwner, Observer {
-            notifications.removeIf{ it.id == id }
-            notificationAdapter.notifyDataSetChanged()
+    override fun onDeclinedRequestClicked(notification: Notification) {
+        followViewModel.declineFollowingRequest(tokenId!!, notification.id).observe(viewLifecycleOwner, Observer {
+            notifications.remove(notification)
+            prefs.edit().putString("notifications", Gson().toJson(notifications)).apply()
+
+            //notificationAdapter.notifyDataSetChanged()
         })
     }
 

@@ -60,11 +60,11 @@ class SearchTop: Fragment(), SuggestionAdapter.SuggestionItemListener,
 
     }
 
-    override fun onItemSelected(follow: Boolean) {
+    override fun onItemSelected(follow: Boolean, userInfoDTO: UserInfoDTO) {
         //followViewModel.followPublicUser("", 0).observe(viewLifecycleOwner, Observer {})
     }
 
-    override fun onPicClicked() {
+    override fun onPicClicked(userInfoDTO: UserInfoDTO) {
         //findNavController().navigate(SearchDirections.actionSearchToProfileSearch())
     }
 }

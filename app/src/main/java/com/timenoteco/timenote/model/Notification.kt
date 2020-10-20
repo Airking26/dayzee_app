@@ -11,5 +11,6 @@ data class Notification (
     var type: String,
     var id: String,
     var title: String,
-    var body: String
+    var body: String,
+    var pictureUrl: String
 ) : Parcelable

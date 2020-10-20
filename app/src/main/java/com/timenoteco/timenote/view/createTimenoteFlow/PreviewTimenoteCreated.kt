@@ -94,7 +94,7 @@ class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
             }
 
             preview_created_timenote_title.text = it.title
-            if (!it.startingAt.isBlank()) preview_created_timenote_year.text =
+            /*if (!it.startingAt.isBlank()) preview_created_timenote_year.text =
                 utils.setYear(it.startingAt)
             if (!it.startingAt.isBlank() && !it.endingAt.isBlank()) preview_created_timenote_day_month.text =
                 utils.setFormatedStartDate(
@@ -105,7 +105,7 @@ class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
                 utils.setFormatedEndDate(
                     it.startingAt,
                     it.endingAt
-                )
+                )*/
             if (it.location != null) preview_created_timenote_place.text =
                 it.location?.address?.address?.plus(", ")?.plus(it.location?.address?.city)?.plus(" ")?.plus(it.location?.address?.country)
             else preview_created_timenote_place.visibility = View.GONE

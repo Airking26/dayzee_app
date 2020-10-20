@@ -2,7 +2,9 @@ package com.timenoteco.timenote.adapter
 
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Typeface
+import android.net.Uri
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
@@ -169,6 +171,12 @@ class ItemTimenoteAdapter(
                 }
             }
 
+            itemView.timenote_buy.setOnClickListener {
+                val i = Intent(Intent.ACTION_VIEW)
+                i.data = Uri.parse(if(timenote.url?.contains("https://")!!) timenote.url else "https://" + timenote.url)
+                itemView.context.startActivity(i)
+            }
+
             itemView.timenote_vp.adapter = screenSlideCreationTimenotePagerAdapter
             itemView.timenote_indicator.setViewPager(itemView.timenote_vp)
             if(timenote.pictures?.size == 1) itemView.timenote_indicator.visibility = View.GONE
@@ -250,7 +258,7 @@ class ItemTimenoteAdapter(
             timenote: TimenoteInfoDTO
         ){
             val dateFormat = SimpleDateFormat("dd.MM.yyyy")
-            val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+            val ISO =  "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
             val listItems: MutableList<String> = mutableListOf(context.getString(R.string.duplicate), context.getString(R.string.alarm), context.getString(R.string.report))
             MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(text = "Posted : " + dateFormat.format(SimpleDateFormat(ISO).parse(timenote.createdAt).time))

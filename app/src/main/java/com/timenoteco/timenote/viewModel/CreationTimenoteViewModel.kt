@@ -13,7 +13,7 @@ import java.util.*
 
 class CreationTimenoteViewModel: ViewModel() {
 
-    private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+    private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
 
     private val timenoteLiveData = MutableLiveData<CreationTimenoteDTO>()
     private val createTimenoteData: CreationTimenoteData = CreationTimenoteData()
@@ -50,6 +50,7 @@ class CreationTimenoteViewModel: ViewModel() {
 
     private fun formatDate(format: String, timestamp: Long): String {
         val dateFormat = SimpleDateFormat(format, Locale.getDefault())
+        val l = dateFormat.format(timestamp)
         return if(timestamp == 0L) ""
         else dateFormat.format(timestamp)
     }

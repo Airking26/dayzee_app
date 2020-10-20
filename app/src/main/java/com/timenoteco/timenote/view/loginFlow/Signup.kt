@@ -54,7 +54,6 @@ class Signup: Fragment(), View.OnClickListener {
         guest_btn.setOnClickListener(this)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
 
-
         handlerMailUsername = Handler {
             if (it.what == TRIGGER_AUTO_COMPLETE) {
                 if (!TextUtils.isEmpty(signin_mail_username.text)) {
@@ -176,7 +175,7 @@ class Signup: Fragment(), View.OnClickListener {
                                 prefs.edit().putString("UserInfoDTO", Gson().toJson(it.body()?.user)).apply()
                                 prefs.edit().putInt("followers", it.body()?.user?.followers!!).apply()
                                 prefs.edit().putInt("following", it.body()?.user?.following!!).apply()
-                                retrieveCurrentRegistrationToken(it.body()?.token!!)
+                                //retrieveCurrentRegistrationToken(it.body()?.token!!)
                             }
                             else -> {
                                 Toast.makeText(requireContext(), "Invalid Authentication", Toast.LENGTH_SHORT).show()
@@ -229,7 +228,7 @@ class Signup: Fragment(), View.OnClickListener {
                                     prefs.edit().putString("UserInfoDTO", Gson().toJson(it.body()?.user)).apply()
                                     prefs.edit().putInt("followers", it.body()?.user?.followers!!).apply()
                                     prefs.edit().putInt("following", it.body()?.user?.following!!).apply()
-                                    retrieveCurrentRegistrationToken(it.body()?.token!!)
+                                    //retrieveCurrentRegistrationToken(it.body()?.token!!)
                                 }
                                 409 -> {
                                     Toast.makeText(requireContext(), "Invalid Authentication", Toast.LENGTH_SHORT).show()
@@ -265,7 +264,14 @@ class Signup: Fragment(), View.OnClickListener {
         FirebaseInstanceId.getInstance().instanceId
             .addOnCompleteListener(OnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    meViewModel.putFCMToken(tokenId, FCMDTO(task.result?.token!!)).observe(viewLifecycleOwner, Observer {})
+                    meViewModel.putFCMToken(tokenId, FCMDTO(task.result?.token!!)).observe(viewLifecycleOwner, Observer {
+                        if(it.isSuccessful)
+                            Toast.makeText(
+                            requireContext(),
+                            "DONE",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    })
                     return@OnCompleteListener
                 }
             })

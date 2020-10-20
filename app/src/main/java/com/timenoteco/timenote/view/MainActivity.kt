@@ -1,16 +1,12 @@
 package com.timenoteco.timenote.view
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Context
-import android.content.Intent
-import android.content.SharedPreferences
+import android.content.*
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -21,13 +17,9 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.*
-import androidx.navigation.*
-import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.NavController
 import androidx.preference.PreferenceManager
-import com.amazonaws.auth.BasicAWSCredentials
-import com.amazonaws.auth.BasicSessionCredentials
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
@@ -48,22 +40,12 @@ import com.timenoteco.timenote.model.FCMDTO
 import com.timenoteco.timenote.model.Notification
 import com.timenoteco.timenote.model.TimenoteInfoDTO
 import com.timenoteco.timenote.model.UserInfoDTO
-import com.timenoteco.timenote.view.homeFlow.DetailedTimenoteArgs
-import com.timenoteco.timenote.view.homeFlow.DetailedTimenoteDirections
 import com.timenoteco.timenote.view.homeFlow.Home
 import com.timenoteco.timenote.view.homeFlow.HomeDirections
-import com.timenoteco.timenote.view.searchFlow.ProfileSearchDirections
-import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.MeViewModel
 import com.timenoteco.timenote.viewModel.StringViewModel
-import com.timenoteco.timenote.viewModel.ViewModelFactory
-import io.branch.indexing.BranchUniversalObject
 import io.branch.referral.Branch
-import io.branch.referral.BranchError
-import io.branch.referral.util.BranchEvent
-import io.branch.referral.util.LinkProperties
 import kotlinx.android.synthetic.main.activity_main.*
-import org.json.JSONObject
 import java.lang.reflect.Type
 
 class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby, ShowBarListener, ExitCreationTimenote, RefreshPicBottomNavListener {
@@ -75,15 +57,31 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
     private var notifications: MutableList<Notification> = mutableListOf()
     private lateinit var prefs : SharedPreferences
     private val meViewModel : MeViewModel by viewModels()
+    var myReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent) {
+            val token = intent.getStringExtra("token")
+        }
+    }
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
-        val typeNotification: Type = object : TypeToken<MutableList<Notification?>>() {}.type
-        notifications = Gson().fromJson<MutableList<Notification>>(prefs.getString("notifications", null), typeNotification) ?: mutableListOf()
         setupController()
+    }
+
+    @SuppressLint("StringFormatInvalid")
+    fun retrieveCurrentRegistrationToken(tokenId: String){
+        FirebaseInstanceId.getInstance().instanceId
+            .addOnCompleteListener(OnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    meViewModel.putFCMToken(tokenId, FCMDTO(task.result?.token!!)).observe(this, Observer {
+                        if(it.isSuccessful) Toast.makeText(this, "ok", Toast.LENGTH_SHORT).show()
+                    })
+                    return@OnCompleteListener
+                }
+            })
     }
 
     override fun onStart() {
@@ -124,15 +122,21 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
 
     override fun onResume() {
         super.onResume()
+        registerReceiver(myReceiver, IntentFilter("FBR-IMAGE"))
         if(!intent.getStringExtra("type").isNullOrBlank()){
+            val typeNotification: Type = object : TypeToken<MutableList<Notification?>>() {}.type
+            notifications = Gson().fromJson<MutableList<Notification>>(prefs.getString("notifications", null), typeNotification) ?: mutableListOf()
+            val keys = intent.extras?.keySet()
             notifications.add(Notification(
                 false,
                 intent.getStringExtra("google.message_id")!!,
                 intent.getLongExtra("google.sent_time", 0),
                 intent.getStringExtra("type")!!,
-                intent.getStringExtra("id")!!,
+                if(intent.getStringExtra("type")?.toInt() == 2 || intent.getStringExtra("type")?.toInt() == 3 || intent.getStringExtra("type")?.toInt() == 4) intent.getStringExtra("userID") else intent.getStringExtra("timenoteID")!!,
                 intent.getStringExtra("title")!!,
-                intent.getStringExtra("body")!!))
+                intent.getStringExtra("body")!!,
+                intent.getStringExtra("userPictureURL") ?: ""))
+
             prefs.edit().putString("notifications", Gson().toJson(notifications) ?: Gson().toJson(mutableListOf<Notification>())).apply()
             bottomNavView.selectedItemId = R.id.navigation_graph_tab_4
             ViewModelProviders.of(this, object : ViewModelProvider.Factory {
@@ -144,8 +148,16 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        unregisterReceiver(myReceiver)
+    }
+
     @RequiresApi(Build.VERSION_CODES.M)
     private fun setupController() {
+
+
+        //if(prefs.getString("TOKEN", null) != null ) retrieveCurrentRegistrationToken(prefs.getString("TOKEN", null)!!)
 
         createNotificationChannel()
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
@@ -188,8 +200,6 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
             it.addOnDestinationChangedListener { navController, destination, arguments ->
 
                 control = navController
-                val u = destination
-
                 when (destination.id) {
                     R.id.login -> {
                         utils.hideStatusBar(this)

@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.view.homeFlow
 
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -7,6 +8,7 @@ import android.os.Handler
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -54,7 +56,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     private lateinit var handler: Handler
     private val TRIGGER_AUTO_COMPLETE = 200
     private val AUTO_COMPLETE_DELAY: Long = 200
-    private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+    private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
     private val loginViewModel: LoginViewModel by activityViewModels()
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
     private val alarmViewModel : AlarmViewModel by activityViewModels()
@@ -331,7 +333,11 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
             customView(R.layout.friends_search)
             lifecycleOwner(this@Home)
             positiveButton(R.string.send){
-                timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo))
+                timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo)).observe(viewLifecycleOwner, Observer {
+                    if(it.isSuccessful) {
+                        Log.d(TAG, "onShareClicked: ")
+                    }
+                })
             }
             negativeButton(R.string.cancel)
         }

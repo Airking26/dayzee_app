@@ -66,7 +66,7 @@ class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
                 .load(event.pictures[0])
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .into(itemView.profile_item_pic_event_imageview)
-        } else itemView.profile_item_pic_event_imageview.setBackgroundColor(Color.parseColor(event.colorHex))
+        } else itemView.profile_item_pic_event_imageview.setBackgroundColor(Color.parseColor(if(event.colorHex?.contains("#")!!) event.colorHex else "#${event.colorHex}"))
 
         Glide
             .with(itemView)

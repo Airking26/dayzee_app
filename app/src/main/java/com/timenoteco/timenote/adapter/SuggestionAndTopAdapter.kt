@@ -20,11 +20,11 @@ class SuggestionAdapter(private var suggestions: Map<String, List<UserInfoDTO>>,
     RecyclerView.Adapter<SuggestionAdapter.CardViewHolder>() {
 
     interface SuggestionItemListener{
-        fun onItemSelected(follow: Boolean)
+        fun onItemSelected(follow: Boolean, userInfoDTO: UserInfoDTO)
     }
 
     interface SuggestionItemPicListener{
-        fun onPicClicked()
+        fun onPicClicked(userInfoDTO: UserInfoDTO)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder =
@@ -88,15 +88,15 @@ class SuggestionItemAdapter(
                 .circleCrop()
                 .into(itemView.suggestion_imageview)
 
-            itemView.suggestion_imageview.setOnClickListener { picClicked.onPicClicked() }
+            itemView.suggestion_imageview.setOnClickListener { picClicked.onPicClicked(suggestions[position]) }
 
             itemView.suggestion_follow_btn.setOnClickListener {
                 if(itemView.suggestion_follow_btn.drawable.constantState == itemView.resources.getDrawable(R.drawable.ic_add_circle_black_24dp).constantState){
                     itemView.suggestion_follow_btn.setImageDrawable(itemView.resources.getDrawable(R.drawable.ic_baseline_remove_circle_outline_24))
-                    listener.onItemSelected(true)
+                    listener.onItemSelected(true, suggestions[position])
                 } else {
                     itemView.suggestion_follow_btn.setImageDrawable(itemView.resources.getDrawable(R.drawable.ic_add_circle_black_24dp))
-                    listener.onItemSelected(false)
+                    listener.onItemSelected(false, suggestions[position])
                 }
 
             }
