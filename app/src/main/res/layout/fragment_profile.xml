@@ -308,13 +308,18 @@
 
 
                     <TextView
+                        android:maxLines="2"
+                        android:ellipsize="end"
+                        android:gravity="center"
                         android:id="@+id/profile_desc"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:fontFamily="sans-serif-light"
                         android:textColor="@color/colorText"
+                        android:layout_marginHorizontal="16dp"
                         android:textSize="15sp"
+                        tools:text="Hello this is a very long description and i need to fix it so it won't be bullshit lets see what we can do if we type a very very long desc"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/profile_modify_btn" />

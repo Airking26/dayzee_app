@@ -2,9 +2,11 @@ package com.timenoteco.timenote.adapter
 
 import android.content.Context
 import android.graphics.Color
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -34,6 +36,7 @@ class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<Timenote
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             (holder as TimenoteListHolder).bindListStyleItem(
                 getItem(position)!!,
@@ -50,6 +53,7 @@ class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<Timenote
 }
 
 class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    @RequiresApi(Build.VERSION_CODES.O)
     fun bindListStyleItem(event: TimenoteInfoDTO, timenoteOptionsListener: TimenoteOptionsListener, onCardClicked: ItemProfileCardListener, isMine: String?, isUpcoming: Boolean) {
 
         itemView.setOnClickListener { onCardClicked.onCardClicked(event) }

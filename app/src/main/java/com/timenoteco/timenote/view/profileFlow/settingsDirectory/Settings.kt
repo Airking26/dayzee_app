@@ -180,6 +180,7 @@ class Settings : Fragment(), View.OnClickListener {
             }
             profile_settings_disconnect ->{
                 prefs.edit().putString("nearby",  Gson().toJson(NearbyRequestBody(Location(0.0, 0.0, Address("","", "","")), 10, listOf(), "2020-10-12T15:51:53.448Z", Price(0, ""), 2))).apply()
+                prefs.edit().putString(TOKEN, null).apply()
                 loginViewModel.markAsUnauthenticated()}
             profile_settings_asked_sent -> findNavController().navigate(
                 SettingsDirections.actionSettingsToFollowPage().setFollowers(3))

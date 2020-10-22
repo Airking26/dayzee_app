@@ -10,7 +10,6 @@ import androidx.paging.cachedIn
 import com.timenoteco.timenote.model.DetailedPlace
 import com.timenoteco.timenote.model.NearbyRequestBody
 import com.timenoteco.timenote.paging.NearbyPagingSource
-import com.timenoteco.timenote.paging.TimenoteRemotePagingSource
 import com.timenoteco.timenote.webService.repo.DayzeeRepository
 import com.timenoteco.timenote.webService.repo.PlaceRepository
 import kotlinx.coroutines.flow.flow

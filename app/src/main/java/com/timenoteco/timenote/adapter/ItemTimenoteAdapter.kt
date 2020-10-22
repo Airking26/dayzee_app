@@ -5,11 +5,13 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Typeface
 import android.net.Uri
+import android.os.Build
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.afollestad.materialdialogs.LayoutMode
@@ -44,6 +46,7 @@ class ItemTimenoteAdapter(
 
     override fun getItemCount(): Int = timenotes.size
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: TimenoteViewHolder, position: Int) {
             holder.bindTimenote(
                 timenotes[position],
@@ -55,6 +58,7 @@ class ItemTimenoteAdapter(
     }
 
     class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
+        @RequiresApi(Build.VERSION_CODES.O)
         fun bindTimenote(
             timenote: TimenoteInfoDTO,
             timenoteListenerListener: TimenoteOptionsListener,
@@ -203,6 +207,7 @@ class ItemTimenoteAdapter(
                 completeDesc.setSpan(light, hashtags.length, completeDesc.toString().length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
                 itemView.timenote_username_desc.text = completeDesc
             }
+
             itemView.timenote_year.text = utils.setYear(timenote.startingAt)
             itemView.timenote_day_month.text = utils.setFormatedStartDate(timenote.startingAt, timenote.endingAt)
             itemView.timenote_time.text = utils.setFormatedEndDate(timenote.startingAt, timenote.endingAt)
@@ -214,7 +219,8 @@ class ItemTimenoteAdapter(
                 itemView.timenote_time.visibility = View.INVISIBLE
                 itemView.timenote_year.visibility = View.INVISIBLE
                 itemView.timenote_in_label.visibility = View.VISIBLE
-                itemView.timenote_in_label.text = utils.inTime(timenote.startingAt)
+                if(isFromFuture) itemView.timenote_in_label.text = utils.inTime(timenote.startingAt)
+                else itemView.timenote_in_label.text = utils.sinceTime(timenote.endingAt)
             }
 
             itemView.timenote_in_label.setOnClickListener {

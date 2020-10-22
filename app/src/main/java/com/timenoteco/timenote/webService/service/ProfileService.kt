@@ -22,7 +22,7 @@ interface ProfileService {
     suspend fun deleteGroup(@Header("Authorization") token: String, @Path("id") id: String) : Response<UserGroupDTO>
 
     @GET("profile/groups")
-    suspend fun getAllGroups(@Header("Authorization") token: String) : Response<UserGroupDTO>
+    suspend fun getAllGroups(@Header("Authorization") token: String) : Response<List<UserGroupDTO>>
 
     @POST("profile/timenotes/filtered/{offset}")
     suspend fun getTimenotesFiltered(@Header("Authorization") token: String, @Path("offset") offset: Int, @Body timenoteFilteredDTO: TimenoteFilteredDTO) : Response<List<TimenoteInfoDTO>>

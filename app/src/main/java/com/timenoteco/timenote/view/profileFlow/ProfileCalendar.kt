@@ -1,11 +1,13 @@
 package com.timenoteco.timenote.view.profileFlow
 
 import android.content.SharedPreferences
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.preference.PreferenceManager
@@ -51,6 +53,7 @@ class ProfileCalendar: Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_profile_calendar, container, false)
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         simpleDateFormatYear = SimpleDateFormat("yyyy", Locale.getDefault())
         simpleDateFormatMonth = SimpleDateFormat("M", Locale.getDefault())
@@ -63,7 +66,7 @@ class ProfileCalendar: Fragment() {
 
 
         val day = calendarView.selectedDay
-        val nbrDays = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) YearMonth.of(day?.year!!, day.month).lengthOfMonth()
+        val nbrDays = if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) YearMonth.of(day?.year!!, day.month).lengthOfMonth()
          else GregorianCalendar(day?.year!!, day.month, day.day).getActualMaximum(Calendar.DAY_OF_MONTH)
 
         val startDate = SimpleDateFormat(ISO).format(GregorianCalendar(day.year, day.month - 1, 1).timeInMillis)
@@ -156,6 +159,7 @@ class ProfileCalendar: Fragment() {
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun loadData(
         startDate: String,
         endDate: String,

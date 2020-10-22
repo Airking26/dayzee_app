@@ -204,6 +204,15 @@
             android:name="timenoteInfoDTO"
             app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_timenoteAddressSearch_to_detailedTimenoteSearch"
+            app:destination="@id/detailedTimenoteSearch" />
+        <action
+            android:id="@+id/action_timenoteAddressSearch_to_createTimenoteSearch"
+            app:destination="@id/createTimenoteSearch" />
+        <action
+            android:id="@+id/action_timenoteAddressSearch_to_profileSearch"
+            app:destination="@id/profileSearch" />
     </fragment>
     <fragment
         android:id="@+id/profilModifySearch"

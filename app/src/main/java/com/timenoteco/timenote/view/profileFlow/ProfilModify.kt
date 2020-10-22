@@ -693,26 +693,6 @@ class ProfilModify: Fragment(), View.OnClickListener,
         }
     }
 
-    private fun cropImage(uri: Uri?) {
-        /*var cropView: CropImageView? = null
-        val dialog = MaterialDialog(requireContext()).show {
-            customView(R.layout.cropview_circle)
-            title(R.string.resize)
-            positiveButton(R.string.done) {
-                profileModifyPb.visibility = View.GONE
-                profileModifyPicIv.visibility = View.VISIBLE
-                if(awsFile == null)
-                    images = AWSFile(Uri.parse(""), cropView?.croppedImage)
-                else
-                    awsFile.bitmap = cropView?.croppedImage!!
-            }
-            pushPic(File(getPath(awsFile?.uri)!!), awsFile?.bitmap!!)
-            lifecycleOwner(this@ProfilModify)
-        }
-        cropView = dialog.getCustomView().crop_view_circle as CropImageView
-        cropView.setImageBitmap(awsFile?.bitmap)*/
-    }
-
     private fun saveImage(image: Bitmap, dialog: MaterialDialog): String? {
         var savedImagePath: String? = null
         val imageFileName = "JPEG_${Timestamp(System.currentTimeMillis())}.jpg"
@@ -746,38 +726,6 @@ class ProfilModify: Fragment(), View.OnClickListener,
         utils.createImagePicker(this, requireContext())
     }
 
-    private fun getPath(uri: Uri?): String? {
-        val projection = arrayOf(MediaStore.Images.Media.DATA)
-        val cursor: Cursor = requireActivity().managedQuery(uri, projection, null, null, null)
-        requireActivity().startManagingCursor(cursor)
-        val column_index: Int = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-        cursor.moveToFirst()
-        return cursor.getString(column_index)
-    }
-
-    fun getImageContentUri(context: Context, imageFile: File): Uri? {
-        val filePath = imageFile.absolutePath
-        val cursor = context.contentResolver.query(
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, arrayOf(MediaStore.Images.Media._ID),
-            MediaStore.Images.Media.DATA + "=? ", arrayOf(filePath), null
-        )
-        return if (cursor != null && cursor.moveToFirst()) {
-            val id = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns._ID))
-            cursor.close()
-            Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "" + id)
-        } else {
-            if (imageFile.exists()) {
-                val values = ContentValues()
-                values.put(MediaStore.Images.Media.DATA, filePath)
-                context.contentResolver.insert(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values
-                )
-            } else {
-                null
-            }
-        }
-    }
-
     override fun onImageSelectedFromWeb(bitmap: String, dialog: MaterialDialog) {
         webSearchViewModel.getBitmap().removeObservers(viewLifecycleOwner)
         webSearchViewModel.decodeSampledBitmapFromResource(URL(bitmap), Rect(), 100, 100)
@@ -791,8 +739,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
     }
 
     override fun onMoreImagesClicked(position: Int, query: String) {
-        webSearchViewModel.search(query, requireContext(), (position).toLong())
-    }
+        webSearchViewModel.search(query, requireContext(), (position).toLong()) }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
@@ -824,7 +771,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
                 picturePickerUser()
             }
         } else if(requestCode == 112 && resultCode == Activity.RESULT_OK){
-            pushPic(File(getPath(Matisse.obtainResult(data)[0])!!), MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, Matisse.obtainResult(data)[0]))
+            pushPic(File(Matisse.obtainPathResult(data)[0]), MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, Matisse.obtainResult(data)[0]))
         }
         super.onActivityResult(requestCode, resultCode, data)
     }

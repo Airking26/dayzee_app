@@ -16,6 +16,7 @@
         <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
 
             <TextView
+                android:gravity="center"
                 android:id="@+id/timenote_address_toolbar"
                 style="@style/AppTheme.Toolbar.Title"/>
 
@@ -36,6 +37,7 @@
         tools:context=".MapsFragment" />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/timenote_around_rv"
         tools:listitem="@layout/item_timenote"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

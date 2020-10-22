@@ -267,4 +267,5 @@
     <string name="nothing_to_show_profile">Nothing Planned</string>
     <string name="add_a_picture">Add a picture</string>
     <string name="default_notification_channel_id">dayzee_channel</string>
+    <string name="visibility">Visibility</string>
 </resources>

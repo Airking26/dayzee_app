@@ -25,7 +25,7 @@ interface TimenoteService {
     suspend fun modifyTimenote(@Header("Authorization") token: String, @Path("id") id: String, @Body timenote: CreationTimenoteDTO) : Response<TimenoteInfoDTO>
 
     @DELETE("timenote/{id}")
-    suspend fun deleteTimenote(@Header("Authorization") token: String, @Path("id") id: String) : Response<Any>
+    suspend fun deleteTimenote(@Header("Authorization") token: String, @Path("id") id: String) : Response<TimenoteInfoDTO>
 
     @POST("timenote")
     suspend fun createTimenote(@Header("Authorization") token: String, @Body timenoteModel: CreationTimenoteDTO) : Response<TimenoteInfoDTO>

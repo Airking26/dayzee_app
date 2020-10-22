@@ -56,12 +56,6 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
     private val utils = Utils()
     private var notifications: MutableList<Notification> = mutableListOf()
     private lateinit var prefs : SharedPreferences
-    private val meViewModel : MeViewModel by viewModels()
-    var myReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent) {
-            val token = intent.getStringExtra("token")
-        }
-    }
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,19 +63,6 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
         setContentView(R.layout.activity_main)
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
         setupController()
-    }
-
-    @SuppressLint("StringFormatInvalid")
-    fun retrieveCurrentRegistrationToken(tokenId: String){
-        FirebaseInstanceId.getInstance().instanceId
-            .addOnCompleteListener(OnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    meViewModel.putFCMToken(tokenId, FCMDTO(task.result?.token!!)).observe(this, Observer {
-                        if(it.isSuccessful) Toast.makeText(this, "ok", Toast.LENGTH_SHORT).show()
-                    })
-                    return@OnCompleteListener
-                }
-            })
     }
 
     override fun onStart() {
@@ -122,7 +103,6 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
 
     override fun onResume() {
         super.onResume()
-        registerReceiver(myReceiver, IntentFilter("FBR-IMAGE"))
         if(!intent.getStringExtra("type").isNullOrBlank()){
             val typeNotification: Type = object : TypeToken<MutableList<Notification?>>() {}.type
             notifications = Gson().fromJson<MutableList<Notification>>(prefs.getString("notifications", null), typeNotification) ?: mutableListOf()
@@ -150,14 +130,12 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
 
     override fun onPause() {
         super.onPause()
-        unregisterReceiver(myReceiver)
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun setupController() {
 
 
-        //if(prefs.getString("TOKEN", null) != null ) retrieveCurrentRegistrationToken(prefs.getString("TOKEN", null)!!)
 
         createNotificationChannel()
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type

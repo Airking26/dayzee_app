@@ -112,6 +112,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     HashTagHelper.OnHashTagClickListener, UsersPagingAdapter.SearchPeopleListener,
     UsersShareWithPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.AddToSend {
 
+    private var accountType: Int = -1
     private var sendTo: MutableList<String> = mutableListOf()
     private lateinit var handler: Handler
     private val TRIGGER_AUTO_COMPLETE = 200
@@ -163,7 +164,6 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     private lateinit var descCv: CardView
     private lateinit var titleError : ImageView
     private lateinit var whenError: ImageView
-    private var listSharedWith: MutableList<String> = mutableListOf()
     private val DATE_FORMAT_DAY_AND_TIME = "EEE, d MMM yyyy hh:mm aaa"
     private lateinit var dateFormatDateAndTime: SimpleDateFormat
     private var placesList: List<Place.Field> = listOf(
@@ -230,14 +230,11 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if(!tokenId.isNullOrBlank()) {
             setUp()
-            visibilityTimenote = prefs.getInt("default_settings_at_creation_time", -1)
-            when (visibilityTimenote) {
-                0 -> shareWithTv.text = getString(R.string.only_me)
-                1 -> shareWithTv.text = getString(R.string.all)
-            }
+
             val type: Type = object : TypeToken<UserInfoDTO?>() {}.type
             val userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), type)
             creationTimenoteViewModel.setCreatedBy(userInfoDTO.id!!)
+            accountType = userInfoDTO.status
 
             //creationTimenoteViewModel.clear()
             if (args.modify == 0) creationTimenoteViewModel.getCreateTimeNoteLiveData().observe(
@@ -249,7 +246,21 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                 creationTimenoteViewModel.setCreatedBy(userInfoDTO.id!!)
                 populateModel(args.timenoteBody!!)
             }
+
+            visibilityTimenote = prefs.getInt("default_settings_at_creation_time", 0)
+            when (visibilityTimenote) {
+                0 -> {
+                    shareWithTv.text = getString(R.string.only_me)
+                    creationTimenoteViewModel.setSharedWith(listOf(userInfoDTO.id!!))
+                }
+                1 -> {
+                    shareWithTv.text = if(accountType == 1) "Followers" else "Everyone"
+                    creationTimenoteViewModel.setSharedWith(listOf())
+                }
+            }
         }
+
+
 
         handler = Handler { msg ->
             if (msg.what == TRIGGER_AUTO_COMPLETE) {
@@ -374,8 +385,13 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         }
         if(it.organizers.isNullOrEmpty()) create_timenote_organizers_btn.hint = getString(R.string.organizers) else create_timenote_organizers_btn.hint =
             "${it.organizers?.size.toString()} Organizers"
-        if(it.sharedWith.isNullOrEmpty()) create_timenote_share_with_btn.hint = getString(R.string.share_with) else create_timenote_share_with_btn.hint =
-            "Shared with ${it.sharedWith?.size.toString()} people"
+        when {
+            it.sharedWith?.isEmpty()!! -> create_timenote_share_with.text = if(accountType == 1) "Followers" else "Everyone"
+            else -> {
+                if(it.sharedWith?.size == 1 && it.sharedWith?.get(0) == it.createdBy) create_timenote_share_with.text = "Only Me"
+                else create_timenote_share_with.text = "Shared"
+            }
+        }
     }
 
     private fun setUp() {
@@ -392,7 +408,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         categoryTv = create_timenote_category
         titleTv = create_timenote_title_btn
         noAnswer = create_timenote_paid_timenote_status_no_answer
-        shareWithTv = create_timenote_share_with_btn
+        shareWithTv = create_timenote_share_with
         moreColorTv = create_timenote_fifth_color
         firstColorTv = create_timenote_first_color
         secondColorTv = create_timenote_second_color
@@ -571,11 +587,6 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                             ).observe(
                                 viewLifecycleOwner,
                                 androidx.lifecycle.Observer {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        it.errorBody().toString(),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
                                     if (it.isSuccessful) {
                                         progressDialog.hide()
                                         findNavController().navigate(
@@ -879,42 +890,43 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     private fun shareWith() {
         MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             title(R.string.share_with)
-            listItems(
-                items = listOf("All", "Only me", "Groups", "Friends", "Create a new group")
-            ) { _, index, text ->
+            val all = if(accountType == 1) "Followers" else "Everyone"
+            listItems(items = listOf(all, "Only me", "Groups", "Friends", "Create a new group")) { _, index, text ->
                 when (index) {
-                    2 -> MaterialDialog(
-                        requireContext(),
-                        BottomSheet(LayoutMode.WRAP_CONTENT)
-                    ).show {
+                    0 -> creationTimenoteViewModel.setSharedWith(listOf())
+                    1 -> creationTimenoteViewModel.setSharedWith(listOf(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.createdBy!!))
+                    2 -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
                         title(R.string.share_with)
-                        profileViewModel.getAllGroups(tokenId!!).observe(
-                            viewLifecycleOwner,
-                            androidx.lifecycle.Observer {
+                        profileViewModel.getAllGroups(tokenId!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {response ->
+                                val listGroups : MutableList<String> = mutableListOf()
+                                if(response.isSuccessful) response.body()!!.forEach{ group -> listGroups.add(group.name) }
+                                listItemsMultiChoice(items = listGroups) { _, index, text ->
+                                    index.forEach { indexes ->
+                                        response.body()?.get(indexes)?.users?.forEach {user ->
+                                            if(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.sharedWith != null &&
+                                                !creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.sharedWith?.contains(user.id)!!) {
+                                                sendTo.add(user.id!!)
+                                            } else if(!sendTo.contains(user.id))
+                                                sendTo.add(user.id!!)
+                                        }
+                                    }
 
+
+                                    if(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.sharedWith.isNullOrEmpty() && sendTo.size > 0)
+                                        creationTimenoteViewModel.setSharedWith(sendTo)
+                                    else if(sendTo.size > 0)
+                                        creationTimenoteViewModel.setSharedWith(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.sharedWith?.plus(sendTo)!!)
+                                    sendTo.clear()
+                                }
                             })
-                        listItemsMultiChoice(
-                            items = listOf("LeFramboisier", "La Famille")
-                        ) { _, index, text ->
-                            listSharedWith.add(text.joinToString())
-                            shareWithTv.text = listSharedWith.joinToString()
-                        }
+
                         positiveButton(R.string.done)
                         lifecycleOwner(this@CreateTimenote)
                     }
-                    3 -> {
-                        createFriendsBottomSheet(0, null)
-                    }
-                    4 ->
-                        MaterialDialog(
-                            requireContext(),
-                            BottomSheet(LayoutMode.WRAP_CONTENT)
-                        ).show {
+                    3 -> createFriendsBottomSheet(0, null)
+                    4 -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                             title(R.string.name_group)
-                            input(
-                                inputType = InputType.TYPE_CLASS_TEXT,
-                                maxLength = 20
-                            ) { materialDialog, charSequence ->
+                            input(inputType = InputType.TYPE_CLASS_TEXT, maxLength = 20) { _, charSequence ->
                                 createFriendsBottomSheet(1, charSequence.toString())
                             }
                             positiveButton(R.string.confirm)
@@ -934,15 +946,20 @@ class CreateTimenote : Fragment(), View.OnClickListener,
             positiveButton(R.string.confirm) {
                 when (createGroup) {
                     0 -> {
-                        creationTimenoteViewModel.setSharedWith(sendTo)
+                        creationTimenoteViewModel.setSharedWith(if(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.sharedWith.isNullOrEmpty()) sendTo
+                        else creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.sharedWith?.plus(sendTo)!!)
 
                     }
                     1 -> {
-                        profileViewModel.createGroup(tokenId!!, CreateGroupDTO(groupName!!, sendTo))
-                        creationTimenoteViewModel.setSharedWith(sendTo)
+                        profileViewModel.createGroup(tokenId!!, CreateGroupDTO(groupName!!, sendTo)).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                            if(it.isSuccessful)
+                            creationTimenoteViewModel.setSharedWith(if(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.sharedWith.isNullOrEmpty()) sendTo
+                            else creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.sharedWith?.plus(sendTo)!!)
+                        })
                     }
                     2 -> {
-                        creationTimenoteViewModel.setOrganizers(sendTo)
+                        creationTimenoteViewModel.setOrganizers(if(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.organizers.isNullOrEmpty()) sendTo
+                        else creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.organizers?.plus(sendTo)!!)
                     }
                 }
             }
@@ -1259,15 +1276,16 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     }
 
     override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
-        listSharedWith.add(userInfoDTO.id!!)
     }
 
     override fun onAdd(userInfoDTO: UserInfoDTO) {
-        sendTo.add(userInfoDTO.id!!)
+        if(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.sharedWith?.contains(userInfoDTO.id) != null) {
+            if (!creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.sharedWith?.contains(userInfoDTO.id)!!) sendTo.add(userInfoDTO.id!!)
+        } else sendTo.add(userInfoDTO.id!!)
     }
 
     override fun onRemove(userInfoDTO: UserInfoDTO) {
-        sendTo.remove(userInfoDTO.id!!)
+        sendTo.remove(userInfoDTO.id)
     }
 
 }

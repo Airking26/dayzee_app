@@ -489,7 +489,7 @@
                         android:drawableStart="@drawable/ic_new_timenote_share_with"
                         android:textColor="@android:color/darker_gray"
                         android:textSize="14sp"
-                        android:hint="@string/share_with"
+                        android:hint="@string/visibility"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         android:layout_width="wrap_content"

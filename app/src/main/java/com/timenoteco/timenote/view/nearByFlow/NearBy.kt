@@ -441,7 +441,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     }
 
     override fun onAddressClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(NearByDirections.actionNearByToTimenoteAddress())
+        findNavController().navigate(NearByDirections.actionNearByToTimenoteAddress(timenoteInfoDTO, 3))
     }
 
     override fun onSearchClicked(userInfoDTO: UserInfoDTO) {

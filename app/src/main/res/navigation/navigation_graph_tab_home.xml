@@ -60,6 +60,9 @@
                 android:id="@+id/action_signup_to_preferenceCategory"
                 app:destination="@id/preferenceCategory" />
         </fragment>
+        <action
+            android:id="@+id/action_navigation_self"
+            app:destination="@id/navigation" />
     </navigation>
     <fragment
         android:id="@+id/home"
@@ -138,6 +141,16 @@
             android:name="timenoteInfoDTO"
             app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_timenoteAddress_to_createTimenote"
+            app:destination="@id/createTimenote" />
+        <action
+            android:id="@+id/action_timenoteAddress_to_profile"
+            app:destination="@id/profile" />
+        <argument
+            android:name="from"
+            app:argType="integer"
+            android:defaultValue="1" />
     </fragment>
     <fragment
         android:id="@+id/createTimenote"

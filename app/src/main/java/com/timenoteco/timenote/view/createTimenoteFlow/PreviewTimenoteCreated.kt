@@ -4,11 +4,13 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -54,6 +56,7 @@ class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
     ): View? =
         inflater.inflate(R.layout.fragment_preview_timenote_created, container, false)
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         creationTimenoteViewModel.getCreateTimeNoteLiveData().observe(viewLifecycleOwner, Observer {
             if (it.price.price == 0) {
@@ -94,18 +97,17 @@ class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
             }
 
             preview_created_timenote_title.text = it.title
-            /*if (!it.startingAt.isBlank()) preview_created_timenote_year.text =
-                utils.setYear(it.startingAt)
+            if (!it.startingAt.isBlank()) preview_created_timenote_year.text = utils.setYearPreview(it.startingAt)
             if (!it.startingAt.isBlank() && !it.endingAt.isBlank()) preview_created_timenote_day_month.text =
-                utils.setFormatedStartDate(
+                utils.setFormatedStartDatePreview(
                     it.startingAt,
                     it.endingAt
                 )
             if (!it.startingAt.isBlank() && !it.endingAt.isBlank()) preview_created_timenote_time.text =
-                utils.setFormatedEndDate(
+                utils.setFormatedEndDatePreview(
                     it.startingAt,
                     it.endingAt
-                )*/
+                )
             if (it.location != null) preview_created_timenote_place.text =
                 it.location?.address?.address?.plus(", ")?.plus(it.location?.address?.city)?.plus(" ")?.plus(it.location?.address?.country)
             else preview_created_timenote_place.visibility = View.GONE

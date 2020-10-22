@@ -146,7 +146,24 @@
         android:id="@+id/timenoteAddress"
         android:name="com.timenoteco.timenote.view.homeFlow.TimenoteAddress"
         android:label="fragment_timenote_address"
-        tools:layout="@layout/fragment_timenote_address" />
+        tools:layout="@layout/fragment_timenote_address" >
+        <action
+            android:id="@+id/action_timenoteAddress_to_detailedTimenote"
+            app:destination="@id/detailedTimenote" />
+        <action
+            android:id="@+id/action_timenoteAddress_to_createTimenote2"
+            app:destination="@id/createTimenote" />
+        <action
+            android:id="@+id/action_timenoteAddress_to_profile2"
+            app:destination="@id/profile" />
+        <argument
+            android:name="timenoteInfoDTO"
+            app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
+            app:nullable="true" />
+        <argument
+            android:name="from"
+            app:argType="integer" />
+    </fragment>
     <fragment
         android:id="@+id/createTimenote"
         android:name="com.timenoteco.timenote.view.createTimenoteFlow.CreateTimenote"

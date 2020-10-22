@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.view.homeFlow
 
+import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.SharedPreferences
@@ -13,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
@@ -29,6 +31,8 @@ import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
 import com.afollestad.materialdialogs.datetime.dateTimePicker
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.iid.FirebaseInstanceId
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
@@ -61,6 +65,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
     private val alarmViewModel : AlarmViewModel by activityViewModels()
     private val followViewModel: FollowViewModel by activityViewModels()
+    private val meViewModel : MeViewModel by activityViewModels()
     private var timenotePagingAdapter: TimenotePagingAdapter? = null
     private var timenoteRecentPagingAdapter: TimenoteRecentPagingAdapter? = null
     private lateinit var onGoToNearby: OnGoToNearby
@@ -109,6 +114,8 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
     override fun onResume() {
         super.onResume()
+        if(tokenId != null )
+            retrieveCurrentRegistrationToken(prefs.getString("TOKEN", null)!!)
         when(loginViewModel.getAuthenticationState().value){
             LoginViewModel.AuthenticationState.GUEST -> loginViewModel.markAsUnauthenticated()
             LoginViewModel.AuthenticationState.UNAUTHENTICATED -> loginViewModel.markAsUnauthenticated()
@@ -118,6 +125,20 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         val userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
 
         onRefreshPicBottomNavListener.onrefreshPicBottomNav(userInfoDTO)
+    }
+
+
+    @SuppressLint("StringFormatInvalid")
+    fun retrieveCurrentRegistrationToken(tokenId: String){
+        FirebaseInstanceId.getInstance().instanceId
+            .addOnCompleteListener(OnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    meViewModel.putFCMToken(tokenId, FCMDTO(task.result?.token!!)).observe(this, Observer {
+                        if(it.isSuccessful) ""
+                    })
+                    return@OnCompleteListener
+                }
+            })
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -302,7 +323,6 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     }
 
     override fun onReportClicked() {
-        timenoteViewModel.deleteTimenote(tokenId!!, "")
     }
 
     override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO) {
@@ -324,7 +344,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     }
 
     override fun onAddressClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(HomeDirections.actionHomeToTimenoteAddress(timenoteInfoDTO))
+        findNavController().navigate(HomeDirections.actionHomeToTimenoteAddress(timenoteInfoDTO).setFrom(1))
     }
 
     override fun onShareClicked(timenoteInfoDTO: TimenoteInfoDTO) {

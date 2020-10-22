@@ -33,6 +33,7 @@ class ItemTimenoteRecentAdapter(private val timenotesToCome: List<TimenoteInfoDT
         return timenotesToCome.size
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: TimenoteToComeViewHolder, position: Int) {
         holder.bindItem(timenotesToCome[position], timenoteRecentClicked)
     }

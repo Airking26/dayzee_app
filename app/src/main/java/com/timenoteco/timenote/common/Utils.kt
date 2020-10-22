@@ -281,19 +281,70 @@ class Utils {
         else dateFormat.format(timestamp)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun setFormatedStartDate(startDate: String, endDate: String) : String{
+    fun setFormatedStartDatePreview(startDate: String, endDate: String): String{
         val DATE_FORMAT_DAY = "d MMM yyyy"
         val DATE_FORMAT_TIME = "hh:mm aaa"
-        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
         val DATE_FORMAT_TIME_FORMATED = "d\nMMM"
         val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = "d MMM.\nhh:mm"
+        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
 
         val formatedStartDate: String
 
 
         val startingAt = SimpleDateFormat(ISO, Locale.getDefault()).parse(startDate).time
         val endingAt = SimpleDateFormat(ISO, Locale.getDefault()).parse(endDate).time
+
+
+        if(formatDate(DATE_FORMAT_DAY, startingAt) == formatDate(DATE_FORMAT_DAY, endingAt)){
+            if(formatDate(DATE_FORMAT_TIME, startingAt) == formatDate(DATE_FORMAT_TIME, endingAt)){
+                formatedStartDate = formatDate(DATE_FORMAT_TIME_FORMATED, startingAt)
+            } else {
+                formatedStartDate = formatDate(DATE_FORMAT_TIME_FORMATED, startingAt)
+            }
+        } else {
+            formatedStartDate = formatDate(DATE_FORMAT_SAME_DAY_DIFFERENT_TIME, startingAt)
+        }
+
+        return formatedStartDate
+    }
+
+    fun setFormatedEndDatePreview(startDate: String, endDate: String):String{
+
+        val DATE_FORMAT_DAY = "d MMM yyyy"
+        val DATE_FORMAT_TIME = "hh:mm aaa"
+        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
+        val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = "d MMM\nhh:mm"
+
+
+        var formatedEndDate: String
+
+        val startingAt = SimpleDateFormat(ISO, Locale.getDefault()).parse(startDate).time
+        val endingAt = SimpleDateFormat(ISO, Locale.getDefault()).parse(endDate).time
+
+
+        formatedEndDate =
+            if(formatDate(DATE_FORMAT_DAY, startingAt) == formatDate(DATE_FORMAT_DAY, endingAt)){
+                if(formatDate(DATE_FORMAT_TIME, startingAt) == formatDate(DATE_FORMAT_TIME, endingAt)){
+                    formatDate(DATE_FORMAT_TIME, startingAt)
+                } else {
+                    formatDate(DATE_FORMAT_TIME, startingAt) + "\n" + formatDate(DATE_FORMAT_TIME, endingAt)
+                }
+            } else {
+                formatDate(DATE_FORMAT_SAME_DAY_DIFFERENT_TIME, endingAt)
+            }
+
+        return formatedEndDate
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun setFormatedStartDate(startDate: String, endDate: String) : String{
+        val DATE_FORMAT_DAY = "d MMM yyyy"
+        val DATE_FORMAT_TIME = "hh:mm aaa"
+        val DATE_FORMAT_TIME_FORMATED = "d\nMMM"
+        val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = "d MMM.\nhh:mm"
+
+        val formatedStartDate: String
 
         val starting = Instant.parse(startDate).epochSecond * 1000
         val ending = Instant.parse(endDate).epochSecond * 1000
@@ -316,15 +367,10 @@ class Utils {
     fun setFormatedEndDate(startDate: String, endDate: String): String{
         val DATE_FORMAT_DAY = "d MMM yyyy"
         val DATE_FORMAT_TIME = "hh:mm aaa"
-        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
-        val DATE_FORMAT_TIME_FORMATED = "d\nMMM"
         val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = "d MMM\nhh:mm"
 
 
         var formatedEndDate: String
-
-        val startingAt = SimpleDateFormat(ISO, Locale.getDefault()).parse(startDate).time
-        val endingAt = SimpleDateFormat(ISO, Locale.getDefault()).parse(endDate).time
 
         val starting = Instant.parse(startDate).epochSecond * 1000
         val ending = Instant.parse(endDate).epochSecond * 1000
@@ -346,13 +392,17 @@ class Utils {
     @RequiresApi(Build.VERSION_CODES.O)
     fun setYear(startDate: String): String {
         val YEAR = "yyyy"
-        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+        val starting = Instant.parse(startDate).epochSecond * 1000
+        return formatDate(YEAR, starting)
+    }
 
+    fun setYearPreview(startDate: String): String{
+        val YEAR = "yyyy"
+        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
 
-
-        val startingAt = SimpleDateFormat(ISO, Locale.getDefault()).parse(startDate).time
-
+        val startingAt = SimpleDateFormat(ISO).parse(startDate).time
         return formatDate(YEAR, startingAt)
+
     }
 
 
@@ -378,56 +428,56 @@ class Utils {
         if(nbrYear == 0){
             if(nbrMonth == 0){
                 if(nbrDay == 0){
-                    if(nbrHour > 1){
+                    decountTime = if(nbrHour > 1){
                         if(nbrMin > 1){
-                            decountTime = "In $nbrHour hours and $nbrMin minutes"
+                            "In $nbrHour hours and $nbrMin minutes"
                         } else {
-                            decountTime = "In $nbrHour hours and $nbrMin minute"
+                            "In $nbrHour hours and $nbrMin minute"
                         }
                     } else {
                         if(nbrMin > 1){
-                            decountTime = "In $nbrHour hour and $nbrMin minutes"
+                            "In $nbrHour hour and $nbrMin minutes"
                         } else {
-                            decountTime = "In $nbrHour hour and $nbrMin minute"
+                            "In $nbrHour hour and $nbrMin minute"
                         }
                     }
                 } else {
-                    if(nbrDay > 1){
-                        if(nbrHour > 1) decountTime = "In $nbrDay days and $nbrHour hours"
-                        else decountTime = "In $nbrDay days and $nbrHour hour"
+                    decountTime = if(nbrDay > 1){
+                        if(nbrHour > 1) "In $nbrDay days and $nbrHour hours"
+                        else "In $nbrDay days and $nbrHour hour"
                     } else {
-                        if(nbrHour > 1) decountTime = "In $nbrDay day and $nbrHour hours"
-                        else decountTime = "In $nbrDay day and $nbrHour hour"
+                        if(nbrHour > 1) "In $nbrDay day and $nbrHour hours"
+                        else "In $nbrDay day and $nbrHour hour"
                     }
 
                 }
             } else {
-                if(nbrMonth > 1){
+                decountTime = if(nbrMonth > 1){
                     if(nbrDay > 1){
-                        decountTime = "In $nbrMonth months and $nbrDay days"
+                        "In $nbrMonth months and $nbrDay days"
                     } else {
-                        decountTime = "In $nbrMonth months and $nbrDay day"
+                        "In $nbrMonth months and $nbrDay day"
                     }
                 } else {
                     if(nbrDay >1){
-                        decountTime = "In $nbrMonth month and $nbrDay days"
+                        "In $nbrMonth month and $nbrDay days"
                     } else {
-                        decountTime = "In $nbrMonth month and $nbrDay day"
+                        "In $nbrMonth month and $nbrDay day"
                     }
                 }
             }
         } else {
-            if(nbrYear > 1){
+            decountTime = if(nbrYear > 1){
                 if(nbrMonth > 1) {
-                    decountTime = "In $nbrYear years and $nbrMonth months"
+                    "In $nbrYear years and $nbrMonth months"
                 } else {
-                    decountTime = "In $nbrYear years and $nbrMonth month"
+                    "In $nbrYear years and $nbrMonth month"
                 }
             } else {
                 if(nbrMonth > 1){
-                    decountTime = "In $nbrYear year and $nbrMonth months"
+                    "In $nbrYear year and $nbrMonth months"
                 } else {
-                    decountTime = "In $nbrYear year and $nbrMonth month"
+                    "In $nbrYear year and $nbrMonth month"
                 }
             }
         }
@@ -435,79 +485,87 @@ class Utils {
         return decountTime
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun sinceTime(startDate: String): String {
-        val d = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Date.from(Instant.from(DateTimeFormatter.ISO_INSTANT.parse(startDate)))
-        } else {
-            TODO("VERSION.SDK_INT < O")
-        }
-        val time = System.currentTimeMillis() - d.time
-        val c: Calendar = Calendar.getInstance(Locale.getDefault())
-        c.timeInMillis = time
-        val mYear: Int = c.get(Calendar.YEAR) - 1970
-        val mMonth: Int = c.get(Calendar.MONTH)
-        val mDay: Int = c.get(Calendar.DAY_OF_MONTH) - 1
-        val mHours: Int = c.get(Calendar.HOUR)
-        val mMin : Int = c.get(Calendar.MINUTE)
+        val period = Period.between(LocalDateTime.ofInstant(Instant.parse(startDate), ZoneOffset.UTC).toLocalDate(),
+            LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC).toLocalDate())
+        val nbrYear = period.years
+        val nbrMonth = period.minusYears(nbrYear.toLong()).months
+        val nbrDay = period.minusYears(nbrYear.toLong()).minusMonths(nbrMonth.toLong()).days
 
+        val duration = Duration.between(Instant.now(), Instant.parse(startDate))
+        val nbrHours = duration.minusDays(duration.toDays()).toHours()
+        val nbrMin = duration.minusDays(duration.toDays()).minusHours(nbrHours).toMinutes()
+
+        return formatSinceTime(nbrYear, nbrMonth, nbrDay, nbrHours, nbrMin) }
+
+    private fun formatSinceTime(
+        nbrYear: Int,
+        nbrMonth: Int,
+        nbrDay: Int,
+        nbrHours: Long,
+        nbrMin: Long
+    ): String {
         val decountTime: String
-        if(mYear == 0){
-            if(mMonth == 0){
-                if(mDay == 0){
-                    if(mHours > 1){
-                        if(mMin > 1){
-                            decountTime = "Since $mHours hours and $mMin minutes"
+        if(nbrYear == 0){
+            if(nbrMonth == 0){
+                if(nbrDay == 0){
+                    decountTime = if(nbrHours > 1){
+                        if(nbrMin > 1){
+                            "Since $nbrHours hours and $nbrMin minutes"
                         } else {
-                            decountTime = "Since $mHours hours and $mMin minute"
+                            "Since $nbrHours hours and $nbrMin minute"
                         }
                     } else {
-                        if(mMin > 1){
-                            decountTime = "Since $mHours hour and $mMin minutes"
+                        if(nbrMin > 1){
+                            "Since $nbrHours hour and $nbrMin minutes"
                         } else {
-                            decountTime = "Since $mHours hour and $mMin minute"
+                            "Since $nbrHours hour and $nbrMin minute"
                         }
                     }
                 } else {
-                    if(mDay > 1){
-                        if(mHours > 1) decountTime = "Since $mDay days and $mHours hours"
-                        else decountTime = "Since $mDay days and $mHours hour"
+                    decountTime = if(nbrDay > 1){
+                        if(nbrHours > 1) "Since $nbrDay days and $nbrHours hours"
+                        else "Since $nbrDay days and $nbrHours hour"
                     } else {
-                        if(mHours > 1) decountTime = "Since $mDay day and $mHours hours"
-                        else decountTime = "Since $mDay day and $mHours hour"
+                        if(nbrHours > 1) "Since $nbrDay day and $nbrHours hours"
+                        else "Since $nbrDay day and $nbrHours hour"
                     }
 
                 }
             } else {
-                if(mMonth > 1){
-                    if(mDay > 1){
-                        decountTime = "Since $mMonth months and $mDay days"
+                decountTime = if(nbrMonth > 1){
+                    if(nbrDay > 1){
+                        "Since $nbrMonth months and $nbrDay days"
                     } else {
-                        decountTime = "Since $mMonth months and $mDay day"
+                        "Since $nbrMonth months and $nbrDay day"
                     }
                 } else {
-                    if(mDay >1){
-                        decountTime = "Since $mMonth month and $mDay days"
+                    if(nbrDay >1){
+                        "Since $nbrMonth month and $nbrDay days"
                     } else {
-                        decountTime = "Since $mMonth month and $mDay day"
+                        "Since $nbrMonth month and $nbrDay day"
                     }
                 }
             }
         } else {
-            if(mYear > 1){
-                if(mMonth > 1) {
-                    decountTime = "Since $mYear years and $mMonth months"
+            decountTime = if(nbrYear > 1){
+                if(nbrMonth > 1) {
+                    "Since $nbrYear years and $nbrMonth months"
                 } else {
-                    decountTime = "Since $mYear years and $mMonth month"
+                    "Since $nbrYear years and $nbrMonth month"
                 }
             } else {
-                if(mMonth > 1){
-                    decountTime = "Since $mYear year and $mMonth months"
+                if(nbrMonth > 1){
+                    "Since $nbrYear year and $nbrMonth months"
                 } else {
-                    decountTime = "Since $mYear year and $mMonth month"
+                    "Since $nbrYear year and $nbrMonth month"
                 }
             }
         }
         return decountTime
+
+
     }
 
     fun setLocation(detailedPlace: DetailedPlace): Location {

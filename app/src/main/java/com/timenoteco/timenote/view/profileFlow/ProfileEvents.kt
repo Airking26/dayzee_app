@@ -192,6 +192,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
 
     override fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {
+            if(it.isSuccessful) Toast.makeText(requireContext(), "Deleted", Toast.LENGTH_SHORT).show()
             profileEventPagingAdapter?.notifyDataSetChanged()
         })
     }
@@ -208,7 +209,9 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
     }
 
     override fun onHideToOthersClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        timenoteViewModel.hideToOthers(tokenId!!, timenoteInfoDTO.id)
+        timenoteViewModel.hideToOthers(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {
+            if(it.isSuccessful) Toast.makeText(requireContext(), "Hided", Toast.LENGTH_SHORT).show()
+        })
     }
 
     override fun onSeeParticipants(timenoteInfoDTO: TimenoteInfoDTO) {
