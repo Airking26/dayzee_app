@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.viewModel
 
+import android.content.SharedPreferences
 import androidx.lifecycle.*
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -24,12 +25,12 @@ class SearchViewModel : ViewModel() {
     private val searchUserLiveData = MutableLiveData<Flow<PagingData<UserInfoDTO>>>()
     private val searchTagLiveData = MutableLiveData<Flow<PagingData<TimenoteInfoDTO>>>()
 
-    fun searchUser(token: String, search: String) {
-        searchUserLiveData.postValue(Pager(PagingConfig(pageSize = 1)){SearchUserPagingSource(token, search, searchService)}.flow.cachedIn(viewModelScope))
+    fun searchUser(token: String, search: String, sharedPreferences: SharedPreferences) {
+        searchUserLiveData.postValue(Pager(PagingConfig(pageSize = 1)){SearchUserPagingSource(token, search, searchService, sharedPreferences)}.flow.cachedIn(viewModelScope))
     }
 
-    fun searchTag(token: String, search: String){
-        searchTagLiveData.postValue(Pager(PagingConfig(pageSize = 1)){SearchTagPagingSource(token, search, searchService)}.flow.cachedIn(viewModelScope))
+    fun searchTag(token: String, search: String, sharedPreferences: SharedPreferences){
+        searchTagLiveData.postValue(Pager(PagingConfig(pageSize = 1)){SearchTagPagingSource(token, search, searchService, sharedPreferences)}.flow.cachedIn(viewModelScope))
     }
 
     fun getUserSearchLiveData(): LiveData<Flow<PagingData<UserInfoDTO>>> {
@@ -43,9 +44,9 @@ class SearchViewModel : ViewModel() {
     fun getTop(token: String) = flow { emit(searchService.getTop("Bearer $token")) }.asLiveData(viewModelScope.coroutineContext)
     fun searchBasedOnCategory(token: String, category: Category) = Pager(PagingConfig(pageSize = 1)){SearchUserByCategoryPagingSource(token, category, searchService)}.flow.cachedIn(viewModelScope)
 
-    fun searchChanged(token: String, search: String){
-        searchUser(token, search)
-        searchTag(token, search)
+    fun searchChanged(token: String, search: String, sharedPreferences: SharedPreferences){
+        searchUser(token, search, sharedPreferences)
+        searchTag(token, search, sharedPreferences)
     }
 
 }

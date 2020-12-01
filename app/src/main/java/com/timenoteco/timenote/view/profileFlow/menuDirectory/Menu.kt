@@ -17,20 +17,18 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.model.UserInfoDTO
+import com.timenoteco.timenote.model.accessToken
 import kotlinx.android.synthetic.main.fragment_menu.*
 import kotlinx.android.synthetic.main.fragment_profile.*
 import java.lang.reflect.Type
 
 class Menu : Fragment(), View.OnClickListener {
 
-    val TOKEN: String = "TOKEN"
-    private var tokenId: String? = null
     private lateinit var prefs : SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        tokenId = prefs.getString(TOKEN, null)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =

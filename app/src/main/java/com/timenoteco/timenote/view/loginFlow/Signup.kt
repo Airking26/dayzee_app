@@ -1,6 +1,5 @@
 package com.timenoteco.timenote.view.loginFlow
 
-import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
@@ -14,14 +13,12 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.iid.FirebaseInstanceId
 import com.google.gson.Gson
 import com.timenoteco.timenote.R
-import com.timenoteco.timenote.model.FCMDTO
 import com.timenoteco.timenote.model.UserSignUpBody
+import com.timenoteco.timenote.model.accessToken
+import com.timenoteco.timenote.model.refreshToken
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.MeViewModel
 import kotlinx.android.synthetic.main.fragment_signup.*
@@ -32,7 +29,6 @@ class Signup: Fragment(), View.OnClickListener {
     private var availableIdentifiant: Boolean? = null
     private var emailValidForm : Boolean = false
     private var usernameValidForm: Boolean = false
-    val TOKEN: String = "TOKEN"
     private var availableMail : Boolean? = null
     private val viewModel: LoginViewModel by activityViewModels()
     private val meViewModel: MeViewModel by activityViewModels()
@@ -171,7 +167,8 @@ class Signup: Fragment(), View.OnClickListener {
                         when(it.code()){
                             201 -> {
                                 viewModel.markAsAuthenticated()
-                                prefs.edit().putString(TOKEN, it.body()?.token).apply()
+                                prefs.edit().putString(accessToken, it.body()?.token).apply()
+                                prefs.edit().putString(refreshToken, it.body()?.refreshToken).apply()
                                 prefs.edit().putString("UserInfoDTO", Gson().toJson(it.body()?.user)).apply()
                                 prefs.edit().putInt("followers", it.body()?.user?.followers!!).apply()
                                 prefs.edit().putInt("following", it.body()?.user?.following!!).apply()
@@ -223,7 +220,8 @@ class Signup: Fragment(), View.OnClickListener {
                                 201 -> {
                                     viewModel.markAsAuthenticated()
                                     //findNavController().navigate(SignupDirections.actionSignupToPreferenceCategory(true))
-                                    prefs.edit().putString(TOKEN, it.body()?.token).apply()
+                                    prefs.edit().putString(accessToken, it.body()?.token).apply()
+                                    prefs.edit().putString(refreshToken, it.body()?.refreshToken).apply()
                                     prefs.edit().putString("UserInfoDTO", Gson().toJson(it.body()?.user)).apply()
                                     prefs.edit().putInt("followers", it.body()?.user?.followers!!).apply()
                                     prefs.edit().putInt("following", it.body()?.user?.following!!).apply()

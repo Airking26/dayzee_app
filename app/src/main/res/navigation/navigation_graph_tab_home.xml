@@ -192,11 +192,23 @@
         android:id="@+id/followPage"
         android:name="com.timenoteco.timenote.view.profileFlow.FollowPage"
         android:label="fragment_follow_page"
-        tools:layout="@layout/fragment_follow_page" />
+        tools:layout="@layout/fragment_follow_page" >
+        <argument
+            android:name="followers"
+            app:argType="integer"
+            android:defaultValue="-1" />
+        <argument
+            android:name="id"
+            app:argType="string" />
+    </fragment>
     <fragment
         android:id="@+id/profileCalendar"
         android:name="com.timenoteco.timenote.view.profileFlow.ProfileCalendar"
-        android:label="ProfileCalendar" /><action android:id="@+id/action_global_detailedTimenote" app:destination="@id/detailedTimenote"/>
+        android:label="ProfileCalendar" >
+        <argument
+            android:name="id"
+            app:argType="string" />
+    </fragment><action android:id="@+id/action_global_detailedTimenote" app:destination="@id/detailedTimenote"/>
     <fragment
         android:id="@+id/profilModify"
         android:name="com.timenoteco.timenote.view.profileFlow.ProfilModify"

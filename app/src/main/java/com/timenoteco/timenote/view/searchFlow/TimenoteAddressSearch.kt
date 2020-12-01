@@ -34,6 +34,8 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.TimenoteComparator
 import com.timenoteco.timenote.adapter.TimenotePagingAdapter
@@ -46,6 +48,7 @@ import com.timenoteco.timenote.view.homeFlow.TimenoteAddressArgs
 import com.timenoteco.timenote.view.homeFlow.TimenoteAddressDirections
 import com.timenoteco.timenote.viewModel.AlarmViewModel
 import com.timenoteco.timenote.viewModel.FollowViewModel
+import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.TimenoteViewModel
 import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.fragment_timenote_address.*
@@ -53,6 +56,7 @@ import kotlinx.android.synthetic.main.friends_search.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 
 class TimenoteAddressSearch : Fragment(), UsersShareWithPagingAdapter.SearchPeopleListener,
@@ -64,20 +68,24 @@ class TimenoteAddressSearch : Fragment(), UsersShareWithPagingAdapter.SearchPeop
     private var timenotePagingAdapter: TimenotePagingAdapter? = null
     private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
     private lateinit var prefs: SharedPreferences
-    val TOKEN: String = "TOKEN"
     private var tokenId : String? = null
     private val followViewModel: FollowViewModel by activityViewModels()
     private val alarmViewModel : AlarmViewModel by activityViewModels()
+    private val authViewModel: LoginViewModel by activityViewModels()
     private val utils = Utils()
     private var sendTo: MutableList<String> = mutableListOf()
     private lateinit var handler: Handler
     private val TRIGGER_AUTO_COMPLETE = 200
     private val AUTO_COMPLETE_DELAY: Long = 200
+    private lateinit var userInfoDTO: UserInfoDTO
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        tokenId = prefs.getString(TOKEN, null)
+        tokenId = prefs.getString(accessToken, null)
+        val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
+        userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
+
     }
 
     private var googleMap: GoogleMap? = null
@@ -104,7 +112,7 @@ class TimenoteAddressSearch : Fragment(), UsersShareWithPagingAdapter.SearchPeop
         }
 
         lifecycleScope.launch {
-            timenoteViewModel.getAroundTimenotePagingFlow(tokenId!!).collectLatest {
+            timenoteViewModel.getAroundTimenotePagingFlow(tokenId!!, prefs).collectLatest {
                 timenotePagingAdapter?.submitData(it)
             }
         }
@@ -128,7 +136,12 @@ class TimenoteAddressSearch : Fragment(), UsersShareWithPagingAdapter.SearchPeop
         MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             dateTimePicker { dialog, datetime ->
                 alarmViewModel.createAlarm(tokenId!!, AlarmCreationDTO(timenoteInfoDTO.createdBy.id!!, timenoteInfoDTO.id, SimpleDateFormat(ISO).format(datetime.time.time))).observe(viewLifecycleOwner, Observer {
-                    if (it.isSuccessful) ""
+                    if(it.code() == 401){
+                        authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
+                            tokenId = newAccessToken
+                            alarmViewModel.createAlarm(tokenId!!, AlarmCreationDTO(timenoteInfoDTO.createdBy.id!!, timenoteInfoDTO.id, SimpleDateFormat(ISO).format(datetime.time.time)))
+                        })
+                    }
                 })
             }
             lifecycleOwner(this@TimenoteAddressSearch)
@@ -156,9 +169,21 @@ class TimenoteAddressSearch : Fragment(), UsersShareWithPagingAdapter.SearchPeop
             timenoteViewModel.joinTimenote(tokenId!!, timenoteInfoDTO.id).observe(
                 viewLifecycleOwner,
                 Observer {
+                    if(it.code() == 401) {
+                        authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
+                            tokenId = newAccessToken
+                            timenoteViewModel.joinTimenote(tokenId!!, timenoteInfoDTO.id)
+                        })
+                    }
                 })
         } else {
             timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {
+                if(it.code() == 401) {
+                    authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
+                        tokenId = newAccessToken
+                        timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id)
+                    })
+                }
             })
         }
     }
@@ -179,7 +204,7 @@ class TimenoteAddressSearch : Fragment(), UsersShareWithPagingAdapter.SearchPeop
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
-            timenoteViewModel.getUsersParticipating(tokenId!!, timenoteInfoDTO.id).collectLatest {
+            timenoteViewModel.getUsersParticipating(tokenId!!, timenoteInfoDTO.id, prefs).collectLatest {
                 userAdapter.submitData(it)
             }
         }
@@ -192,8 +217,11 @@ class TimenoteAddressSearch : Fragment(), UsersShareWithPagingAdapter.SearchPeop
             lifecycleOwner(this@TimenoteAddressSearch)
             positiveButton(R.string.send){
                 timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo)).observe(viewLifecycleOwner, Observer {
-                    if(it.isSuccessful) {
-                        Log.d(ContentValues.TAG, "onShareClicked: ")
+                    if(it.code() == 401) {
+                        authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
+                            tokenId = newAccessToken
+                            timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo))
+                        })
                     }
                 })
             }
@@ -217,7 +245,7 @@ class TimenoteAddressSearch : Fragment(), UsersShareWithPagingAdapter.SearchPeop
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
-            followViewModel.getUsers(tokenId!!, 0).collectLatest {
+            followViewModel.getUsers(tokenId!!, userInfoDTO.id!!, 0, prefs).collectLatest {
                 userAdapter.submitData(it)
             }
         }

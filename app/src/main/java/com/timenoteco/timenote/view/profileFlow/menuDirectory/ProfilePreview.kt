@@ -52,11 +52,11 @@ class ProfilePreview: Fragment(), OnRemoveFilterBarListener {
         profile_tablayout.setSelectedTabIndicatorColor(resources.getColor(android.R.color.darker_gray))
         profile_tablayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
             override fun onTabReselected(tab: TabLayout.Tab?) {
-                profileEventPagerAdapter?.setShowFilterBar(true, tab?.position!!, true)
+                profileEventPagerAdapter?.setShowFilterBar(true, tab?.position!!, true, false)
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
-                profileEventPagerAdapter?.setShowFilterBar(true, tab?.position!!, false)
+                profileEventPagerAdapter?.setShowFilterBar(true, tab?.position!!, false, false)
             }
 
             override fun onTabSelected(tab: TabLayout.Tab?) {

@@ -20,6 +20,7 @@ import com.timenoteco.timenote.adapter.UsersShareWithPagingAdapter
 import com.timenoteco.timenote.model.Category
 import com.timenoteco.timenote.model.UserInfoDTO
 import com.timenoteco.timenote.model.UserSuggested
+import com.timenoteco.timenote.model.accessToken
 import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.SearchViewModel
 import kotlinx.android.synthetic.main.fragment_search_explore_clicked.*
@@ -33,14 +34,13 @@ class SearchExploreClicked: Fragment(), UsersShareWithPagingAdapter.AddToSend,
     private val searchViewModel : SearchViewModel by activityViewModels()
     private lateinit var prefs: SharedPreferences
     private val args : SearchExploreClickedArgs by navArgs()
-    val TOKEN: String = "TOKEN"
     private var tokenId: String? = null
     private lateinit var userByCategoryAdapter : UsersShareWithPagingAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        tokenId = prefs.getString(TOKEN, null)
+        tokenId = prefs.getString(accessToken, null)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =

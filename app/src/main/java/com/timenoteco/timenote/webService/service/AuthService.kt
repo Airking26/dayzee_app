@@ -2,10 +2,7 @@ package com.timenoteco.timenote.webService.service
 
 import com.timenoteco.timenote.model.*
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
+import retrofit2.http.*
 
 interface AuthService {
 
@@ -23,5 +20,8 @@ interface AuthService {
 
     @GET("auth/availability/userName/{userName}")
     suspend fun checkUsernameAvailability(@Path("userName") username: String): Response<IsAvailable>
+
+    @GET("auth/refresh")
+    suspend fun refreshAccessToken(@Header("Refresh") refreshToken: String) : Response<RefreshTokenDTO>
 
 }

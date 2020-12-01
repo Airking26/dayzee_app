@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.viewModel
 
+import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -24,8 +25,8 @@ class FollowViewModel: ViewModel() {
     fun declineFollowingRequest(token: String, id: String) = flow { emit(followService.declineFollowingRequest("Bearer $token", id))}.asLiveData(viewModelScope.coroutineContext)
     fun unfollowUser(token: String, id: String) = flow { emit(followService.unfollowUser("Bearer $token", id))}.asLiveData(viewModelScope.coroutineContext)
     fun removeUserFromFollower(token: String, id: String) = flow { emit(followService.removeUserFromFollowers("Bearer $token", id))}.asLiveData(viewModelScope.coroutineContext)
-    fun getUsersWaitingForApproval(token: String) = Pager(PagingConfig(pageSize = 1)){FollowPagingSource(token, followService, true)}.flow.cachedIn(viewModelScope)
-    fun getUsersAskedToFollow(token: String) = Pager(PagingConfig(pageSize = 1)){FollowPagingSource(token, followService, false)}.flow.cachedIn(viewModelScope)
-    fun getUsers(token: String, followers: Int): Flow<PagingData<UserInfoDTO>>  = Pager(PagingConfig(pageSize = 1)){ UserPagingSource(token, followService, followers) }.flow.cachedIn(viewModelScope)
+    fun getUsersWaitingForApproval(token: String, sharedPreferences: SharedPreferences) = Pager(PagingConfig(pageSize = 1)){FollowPagingSource(token, followService, true, sharedPreferences)}.flow.cachedIn(viewModelScope)
+    fun getUsersAskedToFollow(token: String, sharedPreferences: SharedPreferences) = Pager(PagingConfig(pageSize = 1)){FollowPagingSource(token, followService, false, sharedPreferences)}.flow.cachedIn(viewModelScope)
+    fun getUsers(token: String, id: String, followers: Int, sharedPreferences: SharedPreferences): Flow<PagingData<UserInfoDTO>>  = Pager(PagingConfig(pageSize = 1)){ UserPagingSource(token, id, followService, followers, sharedPreferences) }.flow.cachedIn(viewModelScope)
 
 }

@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.viewModel
 
+import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -19,9 +20,9 @@ class TimenoteViewModel: ViewModel() {
 
     private val timenoteService = DayzeeRepository().getTimenoteService()
 
-    fun getRecentTimenotePagingFlow(token: String) = Pager(PagingConfig(pageSize = 1)){ TimenoteRecentPagingSource(token, timenoteService)}.flow.cachedIn(viewModelScope)
-    fun getUpcomingTimenotePagingFlow(token: String, upcoming: Boolean) = Pager(PagingConfig(pageSize = 1)){ TimenotePagingSource(token, timenoteService, upcoming) }.flow.cachedIn(viewModelScope)
-    fun getAroundTimenotePagingFlow(token: String) = Pager(PagingConfig(pageSize = 1)){ TimenoteAroundPagingSource(token, timenoteService) }.flow.cachedIn(viewModelScope)
+    fun getRecentTimenotePagingFlow(token: String, sharedPreferences: SharedPreferences) = Pager(PagingConfig(pageSize = 1)){ TimenoteRecentPagingSource(token, timenoteService, sharedPreferences)}.flow.cachedIn(viewModelScope)
+    fun getUpcomingTimenotePagingFlow(token: String, upcoming: Boolean, sharedPreferences: SharedPreferences) = Pager(PagingConfig(pageSize = 1)){ TimenotePagingSource(token, timenoteService, upcoming, sharedPreferences) }.flow.cachedIn(viewModelScope)
+    fun getAroundTimenotePagingFlow(token: String, sharedPreferences: SharedPreferences) = Pager(PagingConfig(pageSize = 1)){ TimenoteAroundPagingSource(token, timenoteService, sharedPreferences) }.flow.cachedIn(viewModelScope)
     fun getSpecificTimenote(token: String, id: String) = flow { emit(timenoteService.getTimenoteId("Bearer $token",id)) }.asLiveData(viewModelScope.coroutineContext)
     fun modifySpecificTimenote(token: String, id: String, timenoteBody: CreationTimenoteDTO) =  flow {emit(timenoteService.modifyTimenote("Bearer $token",id, timenoteBody))}.asLiveData(viewModelScope.coroutineContext)
     fun deleteTimenote(token: String, id: String) = flow {emit(timenoteService.deleteTimenote("Bearer $token",id))}.asLiveData(viewModelScope.coroutineContext)
@@ -29,7 +30,7 @@ class TimenoteViewModel: ViewModel() {
     fun leaveTimenote(token: String, id: String) = flow { emit(timenoteService.leaveTimenote("Bearer $token",id)) }.asLiveData(viewModelScope.coroutineContext)
     fun hideToOthers(token: String, id: String) = flow { emit(timenoteService.joinPrivateTimenote("Bearer $token",id)) }.asLiveData(viewModelScope.coroutineContext)
     fun createTimenote(token: String, creationTimenoteDTO: CreationTimenoteDTO) = flow { emit(timenoteService.createTimenote("Bearer $token", creationTimenoteDTO)) }.asLiveData(viewModelScope.coroutineContext)
-    fun getUsersParticipating(token: String, id: String) = Pager(PagingConfig(pageSize = 1)){UsersParticipatingPagingSource(token, id, timenoteService)}.flow.cachedIn(viewModelScope)
+    fun getUsersParticipating(token: String, id: String, sharedPreferences: SharedPreferences) = Pager(PagingConfig(pageSize = 1)){UsersParticipatingPagingSource(token, id, timenoteService, sharedPreferences)}.flow.cachedIn(viewModelScope)
     fun shareWith(token: String, shareTimenoteDTO: ShareTimenoteDTO) = flow { emit(timenoteService.shareWith("Bearer $token", shareTimenoteDTO)) }.asLiveData(viewModelScope.coroutineContext)
 
 

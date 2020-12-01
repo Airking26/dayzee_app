@@ -40,9 +40,7 @@ import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.view.searchFlow.ProfileSearchDirections
 import com.timenoteco.timenote.view.searchFlow.SearchDirections
-import com.timenoteco.timenote.viewModel.FollowViewModel
-import com.timenoteco.timenote.viewModel.ProfileViewModel
-import com.timenoteco.timenote.viewModel.TimenoteViewModel
+import com.timenoteco.timenote.viewModel.*
 import kotlinx.android.synthetic.main.fragment_profile_future_events.*
 import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.friends_search.view.*
@@ -50,6 +48,8 @@ import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type
+import java.text.SimpleDateFormat
+import java.time.temporal.WeekFields.ISO
 
 private const val ARG_PARAM1 = "showHideFilterBar"
 private const val ARG_PARAM2 = "from"
@@ -66,22 +66,24 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
     private val TRIGGER_AUTO_COMPLETE = 200
     private val AUTO_COMPLETE_DELAY: Long = 200
     private lateinit var prefs: SharedPreferences
-    val TOKEN: String = "TOKEN"
     private var tokenId: String? = null
     private var showHideFilterBar: Boolean = false
     private var from: Int? = null
     private lateinit var id: String
+    private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
     private var isFuture = true
     private lateinit var onRemoveFilterBarListener: OnRemoveFilterBarListener
     private val followViewModel: FollowViewModel by activityViewModels()
     private val profileViewModel : ProfileViewModel by activityViewModels()
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
+    private val alarmViewModel: AlarmViewModel by activityViewModels()
+    private val authViewModel: LoginViewModel by activityViewModels()
     private var profileEventPagingAdapter : ProfileEventPagingAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        tokenId = prefs.getString(TOKEN, null)
+        tokenId = prefs.getString(accessToken, null)
         arguments?.let {
             showHideFilterBar = it.getBoolean(ARG_PARAM1)
             from = it.getInt(ARG_PARAM2)
@@ -150,7 +152,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
         }
 
         lifecycleScope.launch {
-            profileViewModel.getEventProfile(tokenId!!, id, isFuture).collectLatest {
+            profileViewModel.getEventProfile(tokenId!!, id, isFuture, prefs).collectLatest {
                 profileEventPagingAdapter?.submitData(it)
             }
         }
@@ -173,7 +175,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
 
     override fun onEditClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         if(from == 2){
-            findNavController().navigate(SearchDirections.actionSearchToCreateTimenoteSearch(1, "", CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
+            findNavController().navigate(SearchDirections.actionSearchToCreateTimenoteSearch(2, timenoteInfoDTO.id, CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
                 timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
                 timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null), from!!))
         } else findNavController().navigate(ProfileDirections.actionProfileToCreateTimenote(2, timenoteInfoDTO.id, CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
@@ -184,7 +186,14 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
     override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             datePicker { dialog, datetime ->
-
+                alarmViewModel.createAlarm(tokenId!!, AlarmCreationDTO(timenoteInfoDTO.createdBy.id!!, timenoteInfoDTO.id, SimpleDateFormat(ISO).format(datetime.time.time))).observe(viewLifecycleOwner, Observer {
+                    if(it.code() == 401){
+                        authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
+                            tokenId = newAccessToken
+                            alarmViewModel.createAlarm(tokenId!!, AlarmCreationDTO(timenoteInfoDTO.createdBy.id!!, timenoteInfoDTO.id, SimpleDateFormat(ISO).format(datetime.time.time)))
+                        })
+                    }
+                })
             }
             lifecycleOwner(this@ProfileEvents)
         }
@@ -192,24 +201,38 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
 
     override fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {
-            if(it.isSuccessful) Toast.makeText(requireContext(), "Deleted", Toast.LENGTH_SHORT).show()
-            profileEventPagingAdapter?.notifyDataSetChanged()
+            if(it.code() == 401) {
+                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer { newAccessToken ->
+                    tokenId = newAccessToken
+                    timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {tid ->
+                        if(tid.isSuccessful) profileEventPagingAdapter?.notifyDataSetChanged()
+                    })
+                })
+            }
+            if(it.isSuccessful) profileEventPagingAdapter?.notifyDataSetChanged()
         })
     }
 
     override fun onDuplicateClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         if(from == 2){
-        findNavController().navigate(ProfileSearchDirections.actionProfileSearchToCreateTimenoteSearch(1, "", CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
+        findNavController().navigate(ProfileSearchDirections.actionProfileSearchToCreateTimenoteSearch(1, timenoteInfoDTO.id, CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
             timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
             timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null), from!!))
         }
-        else findNavController().navigate(ProfileDirections.actionProfileToCreateTimenote(1, "", CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
+        else findNavController().navigate(ProfileDirections.actionProfileToCreateTimenote(1, timenoteInfoDTO.id, CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
             timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
             timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null), from!!))
     }
 
     override fun onHideToOthersClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         timenoteViewModel.hideToOthers(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {
+            if(it.code() == 401) {
+                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer { newAccessToken ->
+                    tokenId = newAccessToken
+                    timenoteViewModel.hideToOthers(tokenId!!, timenoteInfoDTO.id)
+                    Toast.makeText(requireContext(), "Hided", Toast.LENGTH_SHORT).show()
+                })
+            }
             if(it.isSuccessful) Toast.makeText(requireContext(), "Hided", Toast.LENGTH_SHORT).show()
         })
     }
@@ -225,7 +248,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
-            timenoteViewModel.getUsersParticipating(tokenId!!, timenoteInfoDTO.id).collectLatest {
+            timenoteViewModel.getUsersParticipating(tokenId!!, timenoteInfoDTO.id, prefs).collectLatest {
                 userAdapter.submitData(it)
             }
         }
@@ -237,7 +260,14 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
             customView(R.layout.friends_search)
             lifecycleOwner(this@ProfileEvents)
             positiveButton(R.string.send){
-                timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo))
+                timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo)).observe(viewLifecycleOwner, Observer {
+                    if(it.code() == 401){
+                        authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer { newAccessToken ->
+                            tokenId = newAccessToken
+                            timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo))
+                        })
+                    }
+                })
             }
             negativeButton(R.string.cancel)
         }
@@ -259,7 +289,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
-            followViewModel.getUsers(tokenId!!, 0).collectLatest {
+            followViewModel.getUsers(tokenId!!, userInfoDTO?.id!!, 0, prefs).collectLatest {
                 userAdapter.submitData(it)
             }
         }
@@ -309,19 +339,19 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
                                 joined = false,
                                 sharedWith = false
                             )
-                        ).collectLatest {
+                        , prefs).collectLatest {
                             profileEventPagingAdapter?.submitData(it)
                         }
                     }
                 }
                 1 -> lifecycleScope.launch {
-                    profileViewModel.getTimenotesFiltered(tokenId!!, TimenoteFilteredDTO(isFuture, false, false, true, false)).collectLatest { profileEventPagingAdapter?.submitData(it) }
+                    profileViewModel.getTimenotesFiltered(tokenId!!, TimenoteFilteredDTO(isFuture, false, false, true, false), prefs).collectLatest { profileEventPagingAdapter?.submitData(it) }
                 }
                 2 -> lifecycleScope.launch {
-                    profileViewModel.getTimenotesFiltered(tokenId!!, TimenoteFilteredDTO(isFuture, true, false, false, false)).collectLatest { profileEventPagingAdapter?.submitData(it) }
+                    profileViewModel.getTimenotesFiltered(tokenId!!, TimenoteFilteredDTO(isFuture, true, false, false, false), prefs).collectLatest { profileEventPagingAdapter?.submitData(it) }
                 }
                 3 -> lifecycleScope.launch {
-                    profileViewModel.getTimenotesFiltered(tokenId!!, TimenoteFilteredDTO(isFuture, false, false, false, true)).collectLatest { profileEventPagingAdapter?.submitData(it) }
+                    profileViewModel.getTimenotesFiltered(tokenId!!, TimenoteFilteredDTO(isFuture, false, false, false, true), prefs).collectLatest { profileEventPagingAdapter?.submitData(it) }
                 }
             }
         } else {

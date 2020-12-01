@@ -24,6 +24,7 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.SearchViewTopExplorePagerAdapter
 import com.timenoteco.timenote.adapter.SearchViewPeopleTagPagerAdapter
 import com.timenoteco.timenote.common.BaseThroughFragment
+import com.timenoteco.timenote.model.accessToken
 import com.timenoteco.timenote.view.profileFlow.ProfileDirections
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.SearchViewModel
@@ -44,19 +45,18 @@ class Search : BaseThroughFragment() {
     private lateinit var viewPeopleTagPagerAdapter: SearchViewPeopleTagPagerAdapter
     private val loginViewModel : LoginViewModel by activityViewModels()
     private lateinit var prefs: SharedPreferences
-    val TOKEN: String = "TOKEN"
     private val searchViewModel : SearchViewModel by activityViewModels()
     private var tokenId : String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        tokenId = prefs.getString(TOKEN, null)
+        tokenId = prefs.getString(accessToken, null)
         loginViewModel.getAuthenticationState().observe(requireActivity(), androidx.lifecycle.Observer {
             when (it) {
                 LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(SearchDirections.actionSearchToNavigation())
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> {
-                    tokenId = prefs.getString(TOKEN, null)
+                    tokenId = prefs.getString(accessToken, null)
                     findNavController().popBackStack(R.id.search, false)
                 }
                 LoginViewModel.AuthenticationState.GUEST -> findNavController().popBackStack(R.id.search, false)
@@ -98,7 +98,7 @@ class Search : BaseThroughFragment() {
             handler = Handler { msg ->
                 if (msg.what == TRIGGER_AUTO_COMPLETE) {
                     if (!TextUtils.isEmpty(searchBar.text)) {
-                        searchViewModel.searchChanged(tokenId!!, searchBar.text)
+                        searchViewModel.searchChanged(tokenId!!, searchBar.text, prefs)
                     }
                 }
                 false

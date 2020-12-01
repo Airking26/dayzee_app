@@ -70,9 +70,26 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
         Branch.sessionBuilder(this).withCallback { referringParams, error ->
             if (error == null) {
                 if (referringParams?.getBoolean("+clicked_branch_link")!!) {
-                    val typeTimenoteInfo: Type = object : TypeToken<TimenoteInfoDTO?>() {}.type
-                    val timenoteInfoDTO = Gson().fromJson<TimenoteInfoDTO>(referringParams.getString("timenoteInfoDTO"), typeTimenoteInfo)
-                    control.navigate(HomeDirections.actionGlobalDetailedTimenote(1, timenoteInfoDTO))
+                    if(referringParams.has("timenoteInfoDTO")) {
+                        val typeTimenoteInfo: Type = object : TypeToken<TimenoteInfoDTO?>() {}.type
+                        val timenoteInfoDTO = Gson().fromJson<TimenoteInfoDTO>(
+                            referringParams.getString("timenoteInfoDTO"),
+                            typeTimenoteInfo
+                        )
+                        control.navigate(
+                            HomeDirections.actionGlobalDetailedTimenote(
+                                1,
+                                timenoteInfoDTO
+                            )
+                        )
+                    } else {
+                        val typeUserInfoDTO: Type = object : TypeToken<UserInfoDTO?>() {}.type
+                        val userInfoDTO = Gson().fromJson<UserInfoDTO>(referringParams.getString("userInfoDTO"), typeUserInfoDTO)
+
+                        control.navigate(
+                            HomeDirections.actionHomeToProfile(true, 1, userInfoDTO)
+                        )
+                    }
                 }
             }
         }.withData(this.intent?.data).init()
@@ -85,9 +102,29 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
             if (error == null) {
                 Log.i("BRANCH SDK START", referringParams.toString())
                 if (referringParams?.getBoolean("+clicked_branch_link")!!) {
-                    val typeTimenoteInfo: Type = object : TypeToken<TimenoteInfoDTO?>() {}.type
-                    val timenoteInfoDTO = Gson().fromJson<TimenoteInfoDTO>(referringParams.getString("timenoteInfoDTO"), typeTimenoteInfo)
-                    control.navigate(HomeDirections.actionGlobalDetailedTimenote(1, timenoteInfoDTO))
+                    if(referringParams.has("timenoteInfoDTO")) {
+                        val typeTimenoteInfo: Type = object : TypeToken<TimenoteInfoDTO?>() {}.type
+                        val timenoteInfoDTO = Gson().fromJson<TimenoteInfoDTO>(
+                            referringParams.getString("timenoteInfoDTO"),
+                            typeTimenoteInfo
+                        )
+                        control.navigate(
+                            HomeDirections.actionGlobalDetailedTimenote(
+                                1,
+                                timenoteInfoDTO
+                            )
+                        )
+                    } else {
+                        val typeUserInfoDTO: Type = object : TypeToken<UserInfoDTO?>() {}.type
+                        val userInfoDTO = Gson().fromJson<UserInfoDTO>(
+                            referringParams.getString("userInfoDTO"),
+                            typeUserInfoDTO
+                        )
+
+                        control.navigate(
+                            HomeDirections.actionHomeToProfile(true, 1, userInfoDTO)
+                        )
+                    }
                 }
             } else {
                 Log.e("BRANCH SDK START", error.message)

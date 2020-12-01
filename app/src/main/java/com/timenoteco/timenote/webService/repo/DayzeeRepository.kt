@@ -1,6 +1,7 @@
 package com.timenoteco.timenote.webService.repo
 
 import com.timenoteco.timenote.webService.service.*
+import okhttp3.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

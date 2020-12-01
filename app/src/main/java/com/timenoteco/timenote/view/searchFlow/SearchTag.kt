@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.view.searchFlow
 
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
@@ -25,6 +26,8 @@ import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
 import com.afollestad.materialdialogs.datetime.dateTimePicker
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.TimenoteComparator
 import com.timenoteco.timenote.adapter.TimenotePagingAdapter
@@ -34,10 +37,11 @@ import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.view.homeFlow.HomeDirections
-import com.timenoteco.timenote.viewModel.AlarmViewModel
-import com.timenoteco.timenote.viewModel.FollowViewModel
-import com.timenoteco.timenote.viewModel.SearchViewModel
-import com.timenoteco.timenote.viewModel.TimenoteViewModel
+import com.timenoteco.timenote.viewModel.*
+import io.branch.indexing.BranchUniversalObject
+import io.branch.referral.util.BranchEvent
+import io.branch.referral.util.ContentMetadata
+import io.branch.referral.util.LinkProperties
 import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.fragment_search_people.*
 import kotlinx.android.synthetic.main.fragment_search_tag.*
@@ -45,6 +49,7 @@ import kotlinx.android.synthetic.main.friends_search.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.time.temporal.WeekFields.ISO
 
@@ -56,6 +61,7 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
     private val followViewModel : FollowViewModel by activityViewModels()
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
     private val alarmViewModel: AlarmViewModel by activityViewModels()
+    private val loginViewModel: LoginViewModel by activityViewModels()
     private val utils = Utils()
     private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     private lateinit var prefs : SharedPreferences
@@ -63,11 +69,15 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
     private val TRIGGER_AUTO_COMPLETE = 200
     private val AUTO_COMPLETE_DELAY: Long = 200
     private var tokenId: String? = ""
+    private lateinit var userInfoDTO: UserInfoDTO
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        tokenId = prefs.getString("TOKEN", null)
+        tokenId = prefs.getString(accessToken, null)
+        val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
+        userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
@@ -122,7 +132,14 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
             customView(R.layout.friends_search)
             lifecycleOwner(this@SearchTag)
             positiveButton(R.string.send){
-                timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo))
+                timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo)).observe(viewLifecycleOwner, Observer {
+                    if(it.code() == 401) {
+                        loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
+                            tokenId = newAccessToken
+                            timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo))
+                        })
+                    }
+                })
             }
             negativeButton(R.string.cancel)
         }
@@ -144,7 +161,7 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
-            followViewModel.getUsers(tokenId!!, 0).collectLatest {
+            followViewModel.getUsers(tokenId!!, userInfoDTO.id!!,  0, prefs).collectLatest {
                 userAdapter.submitData(it)
             }
         }
@@ -156,21 +173,41 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
 
 
     override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-            dateTimePicker { dialog, datetime ->
-                alarmViewModel.createAlarm(tokenId!!, AlarmCreationDTO(timenoteInfoDTO.createdBy.id!!, timenoteInfoDTO.id, SimpleDateFormat(ISO).format(datetime.time.time))).observe(viewLifecycleOwner, Observer {
-                    if (it.isSuccessful) ""
-                })
-            }
-            lifecycleOwner(this@SearchTag)
+        share(timenoteInfoDTO)
+    }
+
+    private fun share(timenoteInfoDTO: TimenoteInfoDTO) {
+
+        val linkProperties: LinkProperties = LinkProperties().setChannel("whatsapp").setFeature("sharing")
+
+        val branchUniversalObject = if(!timenoteInfoDTO.pictures?.isNullOrEmpty()!!) BranchUniversalObject()
+            .setTitle(timenoteInfoDTO.title)
+            .setContentDescription(timenoteInfoDTO.description)
+            .setContentImageUrl(timenoteInfoDTO.pictures[0])
+            .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
+            .setContentMetadata(ContentMetadata().addCustomMetadata("timenoteInfoDTO", Gson().toJson(timenoteInfoDTO)))
+        else BranchUniversalObject()
+            .setTitle(timenoteInfoDTO.title)
+            .setContentDescription(timenoteInfoDTO.description)
+            .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
+            .setContentMetadata(ContentMetadata().addCustomMetadata("timenoteInfoDTO", Gson().toJson(timenoteInfoDTO)))
+
+        branchUniversalObject.generateShortUrl(requireContext(), linkProperties) { url, error ->
+            BranchEvent("branch_url_created").logEvent(requireContext())
+            val i = Intent(Intent.ACTION_SEND)
+            i.type = "text/plain"
+            i.putExtra(Intent.EXTRA_TEXT, String.format("Dayzee : %s at %s", timenoteInfoDTO.title, url))
+            startActivityForResult(i, 111)
         }
+
+
     }
 
     override fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO) {
     }
 
     override fun onDuplicateClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(SearchDirections.actionSearchToCreateTimenoteSearch(2, timenoteInfoDTO.id, CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
+        findNavController().navigate(SearchDirections.actionSearchToCreateTimenoteSearch(1, timenoteInfoDTO.id, CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
             timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
             timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null), 2))
     }
@@ -189,9 +226,25 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
 
     override fun onPlusClicked(timenoteInfoDTO: TimenoteInfoDTO, isAdded: Boolean) {
         if(isAdded){
-            timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {})
+            timenoteViewModel.joinTimenote(tokenId!!, timenoteInfoDTO.id).observe(
+                viewLifecycleOwner,
+                Observer {
+                    if(it.code() == 401) {
+                        loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
+                            tokenId = newAccessToken
+                            timenoteViewModel.joinTimenote(tokenId!!, timenoteInfoDTO.id)
+                        })
+                    }
+                })
         } else {
-            timenoteViewModel.joinTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {})
+            timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {
+                if(it.code() == 401) {
+                    loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
+                        tokenId = newAccessToken
+                        timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id)
+                    })
+                }
+            })
         }
     }
 
@@ -219,7 +272,7 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
-            timenoteViewModel.getUsersParticipating(tokenId!!, timenoteInfoDTO.id).collectLatest {
+            timenoteViewModel.getUsersParticipating(tokenId!!, timenoteInfoDTO.id, prefs).collectLatest {
                 userAdapter.submitData(it)
             }
         }

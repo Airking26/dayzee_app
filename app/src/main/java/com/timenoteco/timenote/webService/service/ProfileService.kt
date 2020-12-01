@@ -27,7 +27,7 @@ interface ProfileService {
     @POST("profile/timenotes/filtered/{offset}")
     suspend fun getTimenotesFiltered(@Header("Authorization") token: String, @Path("offset") offset: Int, @Body timenoteFilteredDTO: TimenoteFilteredDTO) : Response<List<TimenoteInfoDTO>>
 
-    @POST("profile/timenotes/date")
-    suspend fun getTimenoteByDate(@Header("Authorization") token: String, @Body timenoteDateFilteredDTO: TimenoteDateFilteredDTO) : Response<List<TimenoteInfoDTO>>
+    @POST("profile/{id}/timenotes/date")
+    suspend fun getTimenoteByDate(@Header("Authorization") token: String, @Path("id") id: String, @Body timenoteDateFilteredDTO: TimenoteDateFilteredDTO) : Response<List<TimenoteInfoDTO>>
 
 }

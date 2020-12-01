@@ -68,6 +68,7 @@ import com.timenoteco.timenote.listeners.RefreshPicBottomNavListener
 import com.timenoteco.timenote.model.STATUS
 import com.timenoteco.timenote.model.UpdateUserInfoDTO
 import com.timenoteco.timenote.model.UserInfoDTO
+import com.timenoteco.timenote.model.accessToken
 import com.timenoteco.timenote.viewModel.MeViewModel
 import com.timenoteco.timenote.viewModel.ProfileModifyViewModel
 import com.timenoteco.timenote.viewModel.WebSearchViewModel
@@ -93,7 +94,6 @@ class ProfilModifySearch: Fragment(), View.OnClickListener {
     private var dateFormat : SimpleDateFormat
     private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     private val args : ProfilModifySearchArgs by navArgs()
-    val TOKEN: String = "TOKEN"
     private var tokenId: String? = null
     private lateinit var utils: Utils
     private lateinit var onRefreshPicBottomNavListener: RefreshPicBottomNavListener
@@ -106,7 +106,7 @@ class ProfilModifySearch: Fragment(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         AWSMobileClient.getInstance().initialize(requireContext()).execute()
         prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        tokenId = prefs.getString(TOKEN, null)
+        tokenId = prefs.getString(accessToken, null)
     }
 
     override fun onAttach(context: Context) {

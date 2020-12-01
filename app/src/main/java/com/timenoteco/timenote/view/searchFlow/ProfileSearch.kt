@@ -21,13 +21,21 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.gson.Gson
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ProfileEventPagerAdapter
 import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import com.timenoteco.timenote.model.STATUS
+import com.timenoteco.timenote.model.UserInfoDTO
+import com.timenoteco.timenote.model.accessToken
+import com.timenoteco.timenote.view.profileFlow.ProfileDirections
 import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
+import io.branch.indexing.BranchUniversalObject
+import io.branch.referral.util.BranchEvent
+import io.branch.referral.util.ContentMetadata
+import io.branch.referral.util.LinkProperties
 import kotlinx.android.synthetic.main.fragment_profile.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -42,13 +50,12 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
     private val followViewModel : FollowViewModel by activityViewModels()
     private var showFilterBar: Boolean = false
     private lateinit var prefs: SharedPreferences
-    val TOKEN: String = "TOKEN"
     private var tokenId : String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        tokenId = prefs.getString(TOKEN, null)
+        tokenId = prefs.getString(accessToken, null)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -59,6 +66,7 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
         val simpleDateFormatDayName= SimpleDateFormat("EEE.", Locale.getDefault())
         val simpleDateFormatDayNumber = SimpleDateFormat("dd", Locale.getDefault())
 
+        profile_location.visibility = View.GONE
         profile_day_name_calendar.text = simpleDateFormatDayName.format(System.currentTimeMillis())
         profile_day_number_calendar.text = simpleDateFormatDayNumber.format(System.currentTimeMillis())
 
@@ -142,11 +150,11 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
             profile_tablayout.setSelectedTabIndicatorColor(resources.getColor(android.R.color.darker_gray))
             profile_tablayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
                 override fun onTabReselected(tab: TabLayout.Tab?) {
-                    profileEventPagerAdapter?.setShowFilterBar(true, tab?.position!!, true)
+                    profileEventPagerAdapter?.setShowFilterBar(true, tab?.position!!, true, false)
                 }
 
                 override fun onTabUnselected(tab: TabLayout.Tab?) {
-                    profileEventPagerAdapter?.setShowFilterBar(true, tab?.position!!, false)
+                    profileEventPagerAdapter?.setShowFilterBar(true, tab?.position!!, false, false)
                 }
 
                 override fun onTabSelected(tab: TabLayout.Tab?) {
@@ -184,66 +192,40 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
         when(v){
             profile_modify_btn -> {
             }
-            profile_calendar_btn -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToProfileCalendarSearch())
+            profile_calendar_btn -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToProfileCalendarSearch(args.userInfoDTO?.id!!))
             profile_notif_btn -> {
                 findNavController().popBackStack()
             }
-            profile_followers_label -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToFollowPageSearch())
-            profile_following_label -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToFollowPageSearch())
-            profile_nbr_followers -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToFollowPageSearch())
-            profile_nbr_following -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToFollowPageSearch())
+            profile_settings_btn ->
+                MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                    title(text = args.userInfoDTO?.userName)
+                    val listItems: MutableList<String> = mutableListOf(context.getString(R.string.share_to) , context.getString(R.string.report))
+                    listItems (items = listItems){ _, _, text ->
+                        when(text.toString()){
+                            context.getString(R.string.report) -> Toast.makeText(
+                                requireContext(),
+                                "Reported",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            context.getString(R.string.share_to) -> share(args.userInfoDTO!!)
+                        }
+                    }
+                }
+                profile_followers_label -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToFollowPageSearch(args.userInfoDTO?.id!!).setFollowers(1))
+            profile_following_label -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToFollowPageSearch(args.userInfoDTO?.id!!).setFollowers(0))
+            profile_nbr_followers -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToFollowPageSearch(args.userInfoDTO?.id!!).setFollowers(1))
+            profile_nbr_following -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToFollowPageSearch(args.userInfoDTO?.id!!).setFollowers(0))
             profile_follow_btn -> {
                 if (!isFollowed) {
-                    if (args.userInfoDTO?.status == 0) {
-                        followViewModel.followPublicUser(tokenId!!, args.userInfoDTO?.id!!).observe(
-                            viewLifecycleOwner,
-                            androidx.lifecycle.Observer {
-                                prefs.edit().putInt("following", prefs.getInt("following", 0) + 1).apply()
-                                profile_follow_btn.apply {
-                                    setBorderColor(resources.getColor(android.R.color.darker_gray))
-                                    setBorderWidth(1)
-                                    setText(resources.getString(R.string.unfollow))
-                                    setBackgroundColor(resources.getColor(android.R.color.transparent))
-                                    setTextColor(resources.getColor(android.R.color.darker_gray))
-                                }
-
-                                isFollowed = true
-
-                            })
-                    } else if (!isFollowed && (args.userInfoDTO?.status == 1)) {
-                        followViewModel.followPrivateUser(tokenId!!, args.userInfoDTO?.id!!)
-                            .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-                                profile_follow_btn.apply {
-                                    setBorderColor(resources.getColor(android.R.color.darker_gray))
-                                    setBorderWidth(1)
-                                    setText(resources.getString(R.string.unfollow))
-                                    setBackgroundColor(resources.getColor(android.R.color.transparent))
-                                    setTextColor(resources.getColor(android.R.color.darker_gray))
-                                }
-
-                                isFollowed = true
-
-                            })
+                    if (args.userInfoDTO?.status == STATUS.PUBLIC.ordinal) {
+                        followPublicUser()
+                    } else if (!isFollowed && (args.userInfoDTO?.status == STATUS.PRIVATE.ordinal)) {
+                        followPrivateUser()
                     }
                 } else if(isFollowed){
-                    followViewModel.unfollowUser(tokenId!!, args.userInfoDTO?.id!!).observe(
-                        viewLifecycleOwner,
-                        androidx.lifecycle.Observer {
-                            prefs.edit().putInt("following", prefs.getInt("following", 0) - 1).apply()
-                            profile_follow_btn.apply {
-                                setBorderColor(resources.getColor(android.R.color.transparent))
-                                setBorderWidth(0)
-                                setText(resources.getString(R.string.follow))
-                                setBackgroundColor(resources.getColor(R.color.colorYellow))
-                                setTextColor(resources.getColor(R.color.colorBackground))
-                            }
-
-                            isFollowed = false
-                        })
+                    unfollowUser()
                 }
-
-            }
-            profile_location -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            }            profile_location -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.location)
                 listItems(items = listOf(getString(R.string.no_location), getString(R.string.city), getString(
                                     R.string.address))) { dialog, index, text ->
@@ -270,8 +252,108 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
         }
     }
 
+    private fun share(userInfoDTO: UserInfoDTO) {
+
+        val linkProperties: LinkProperties = LinkProperties().setChannel("whatsapp").setFeature("sharing")
+
+        val branchUniversalObject = if(!userInfoDTO.picture.isNullOrEmpty()) BranchUniversalObject()
+            .setTitle(userInfoDTO.userName!!)
+            .setContentDescription(userInfoDTO.givenName ?: "")
+            .setContentImageUrl(userInfoDTO.picture!!)
+            .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
+            .setContentMetadata(ContentMetadata().addCustomMetadata("timenoteInfoDTO", Gson().toJson(userInfoDTO)))
+        else BranchUniversalObject()
+            .setTitle(userInfoDTO.userName!!)
+            .setContentDescription(userInfoDTO.givenName ?: "")
+            .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
+            .setContentMetadata(ContentMetadata().addCustomMetadata("timenoteInfoDTO", Gson().toJson(userInfoDTO)))
+
+        branchUniversalObject.generateShortUrl(requireContext(), linkProperties) { url, error ->
+            BranchEvent("branch_url_created").logEvent(requireContext())
+            val i = Intent(Intent.ACTION_SEND)
+            i.type = "text/plain"
+            i.putExtra(Intent.EXTRA_TEXT, String.format("Dayzee : %s at %s", userInfoDTO.userName, url))
+            startActivityForResult(i, 111)
+        }
+
+
+    }
+
+    private fun unfollowUser() {
+        followViewModel.unfollowUser(tokenId!!, args.userInfoDTO?.id!!).observe(
+            viewLifecycleOwner,
+            androidx.lifecycle.Observer {
+                if(it.code() == 401){
+                    loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer { newAccessToken ->
+                        tokenId = newAccessToken
+                        unfollowUser()
+                    })
+                }
+                if(it.isSuccessful) {
+                    prefs.edit().putInt("following", prefs.getInt("following", 0) - 1).apply()
+                    profile_follow_btn.apply {
+                        setBorderColor(resources.getColor(android.R.color.transparent))
+                        setBorderWidth(0)
+                        setText(resources.getString(R.string.follow))
+                        setBackgroundColor(resources.getColor(R.color.colorYellow))
+                        setTextColor(resources.getColor(R.color.colorBackground))
+                    }
+
+                    isFollowed = false
+                }
+            })
+    }
+
+    private fun followPrivateUser() {
+        followViewModel.followPrivateUser(tokenId!!, args.userInfoDTO?.id!!)
+            .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                if(it.code() == 401){
+                    loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer { newAccessToken ->
+                        tokenId = newAccessToken
+                        followPrivateUser()
+                    })
+                }
+                if(it.isSuccessful) {
+                    profile_follow_btn.apply {
+                        setBorderColor(resources.getColor(android.R.color.darker_gray))
+                        setBorderWidth(1)
+                        setText(resources.getString(R.string.unfollow))
+                        setBackgroundColor(resources.getColor(android.R.color.transparent))
+                        setTextColor(resources.getColor(android.R.color.darker_gray))
+                    }
+
+                    isFollowed = true
+                }
+
+            })
+    }
+
+    private fun followPublicUser() {
+        followViewModel.followPublicUser(tokenId!!, args.userInfoDTO?.id!!).observe(
+            viewLifecycleOwner,
+            androidx.lifecycle.Observer {
+                if(it.code() == 401) loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer { newAccessToken ->
+                    tokenId = newAccessToken
+                    followPublicUser()
+                })
+                if(it.isSuccessful) {
+                    prefs.edit().putInt("following", prefs.getInt("following", 0) + 1).apply()
+                    profile_follow_btn.apply {
+                        setBorderColor(resources.getColor(android.R.color.darker_gray))
+                        setBorderWidth(1)
+                        setText(resources.getString(R.string.unfollow))
+                        setBackgroundColor(resources.getColor(android.R.color.transparent))
+                        setTextColor(resources.getColor(android.R.color.darker_gray))
+                    }
+
+                    isFollowed = true
+
+                }
+            })
+    }
+
     override fun onHideFilterBarClicked(position:Int?) {
-        profileEventPagerAdapter?.setShowFilterBar(false, position, null)
+        profileEventPagerAdapter?.setShowFilterBar(false, position, null, false)
     }
 
 }

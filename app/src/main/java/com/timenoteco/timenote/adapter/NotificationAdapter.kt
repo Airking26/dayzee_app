@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -48,7 +49,7 @@ class NotificationAdapter(private val notifications: MutableList<Notification>, 
             if(!notification.read){
                 itemView.setBackgroundColor(Color.parseColor("#20aaaaaa"))
             } else {
-                itemView.setBackgroundColor(itemView.context.getColor(R.color.colorBackground))
+                itemView.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.colorBackground))
             }
 
             Glide

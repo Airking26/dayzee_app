@@ -9,7 +9,8 @@
 
     <LinearLayout
         android:id="@+id/nearby_filters_ll"
-        style="@style/AppTheme.Toolbar.LinearLayout">
+        style="@style/AppTheme.Toolbar.LinearLayout"
+        tools:ignore="MissingConstraints">
 
         <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
 
@@ -204,11 +205,10 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:isb_max="100"
-                app:isb_min="10"
-                app:isb_progress="20"
+                app:isb_max="250"
+                app:isb_min="1"
+                app:isb_progress="1"
                 app:isb_seek_smoothly="false"
-                app:isb_ticks_count="10"
                 app:isb_thumb_color="@color/colorAccent"
                 app:isb_thumb_size="10dp"
                 app:isb_show_indicator="rounded_rectangle"

@@ -121,7 +121,11 @@
     <fragment
         android:id="@+id/profileCalendar"
         android:name="com.timenoteco.timenote.view.profileFlow.ProfileCalendar"
-        android:label="ProfileCalendar" />
+        android:label="ProfileCalendar" >
+        <argument
+            android:name="id"
+            app:argType="string" />
+    </fragment>
     <fragment
         android:id="@+id/settings"
         android:name="com.timenoteco.timenote.view.profileFlow.settingsDirectory.Settings"
@@ -166,6 +170,9 @@
         <action
             android:id="@+id/action_followPage_to_profile"
             app:destination="@id/profile" />
+        <argument
+            android:name="id"
+            app:argType="string" />
     </fragment>
     <fragment
         android:name="com.timenoteco.timenote.view.profileFlow.menuDirectory.Menu"

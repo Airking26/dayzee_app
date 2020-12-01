@@ -9,6 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.timenoteco.timenote.R
+import com.timenoteco.timenote.common.bytesEqualTo
+import com.timenoteco.timenote.common.pixelsEqualTo
 import com.timenoteco.timenote.model.UserInfoDTO
 import com.timenoteco.timenote.model.UserSuggested
 import kotlinx.android.synthetic.main.adapter_suggestion_card.view.*
@@ -91,7 +93,7 @@ class SuggestionItemAdapter(
             itemView.suggestion_imageview.setOnClickListener { picClicked.onPicClicked(suggestions[position]) }
 
             itemView.suggestion_follow_btn.setOnClickListener {
-                if(itemView.suggestion_follow_btn.drawable.constantState == itemView.resources.getDrawable(R.drawable.ic_add_circle_black_24dp).constantState){
+                if(itemView.suggestion_follow_btn.drawable.bytesEqualTo(itemView.resources.getDrawable(R.drawable.ic_add_circle_black_24dp)) && itemView.suggestion_follow_btn.drawable.pixelsEqualTo(itemView.resources.getDrawable(R.drawable.ic_add_circle_black_24dp))){
                     itemView.suggestion_follow_btn.setImageDrawable(itemView.resources.getDrawable(R.drawable.ic_baseline_remove_circle_outline_24))
                     listener.onItemSelected(true, suggestions[position])
                 } else {

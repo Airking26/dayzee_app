@@ -17,6 +17,7 @@ import com.timenoteco.timenote.model.UserInfoDTO
 import kotlinx.android.synthetic.main.item_comment.view.*
 import java.text.SimpleDateFormat
 import java.time.Instant
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAccessor
 import java.util.*
@@ -86,13 +87,17 @@ class CommentAdapter(
         }
 
         private fun calculateTimeSinceComment(createdAt: String): String{
+            val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+
             val d = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                Date.from(Instant.from(DateTimeFormatter.ISO_INSTANT.parse(createdAt)))
+                Date.from(Instant.from(DateTimeFormatter.ISO_INSTANT.parse(createdAt))).time
             } else {
-                TODO("VERSION.SDK_INT < O")
+                val sdf = SimpleDateFormat(ISO, Locale.getDefault())
+                sdf.timeZone = TimeZone.getTimeZone("GMT")
+                sdf.parse(createdAt).time
             }
             val c: Calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"))
-            c.timeInMillis = System.currentTimeMillis() + 5000 - d.time
+            c.timeInMillis = System.currentTimeMillis() + 5000 - d
             val mYear: Int = c.get(Calendar.YEAR) - 1970
             val mMonth: Int = c.get(Calendar.MONTH)
             val mDay: Int = c.get(Calendar.DAY_OF_MONTH) - 1

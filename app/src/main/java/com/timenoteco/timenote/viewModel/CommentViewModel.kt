@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.viewModel
 
+import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -15,7 +16,7 @@ class CommentViewModel : ViewModel() {
 
     private val commentService = DayzeeRepository().getCommentService()
 
-    fun getComments(token: String, id : String) = Pager(PagingConfig(pageSize = 1)){CommentPagingSource(token, id, commentService)}.flow.cachedIn(viewModelScope)
+    fun getComments(token: String, id : String, sharedPreferences: SharedPreferences) = Pager(PagingConfig(pageSize = 1)){CommentPagingSource(token, id, commentService, sharedPreferences)}.flow.cachedIn(viewModelScope)
     fun postComment(token: String, commentCreationDTO: CommentCreationDTO) = flow { emit(commentService.postComment("Bearer $token", commentCreationDTO))}.asLiveData(viewModelScope.coroutineContext)
 
 }

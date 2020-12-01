@@ -10,6 +10,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
+import com.timenoteco.timenote.common.bytesEqualTo
+import com.timenoteco.timenote.common.pixelsEqualTo
 import com.timenoteco.timenote.model.TimenoteInfoDTO
 import com.timenoteco.timenote.model.UserInfoDTO
 import kotlinx.android.synthetic.main.item_user.view.givenName
@@ -55,7 +57,7 @@ class UsersShareWithPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDT
             itemView.name_user.setOnClickListener { searchPeopleListener.onSearchClicked(userInfoDTO!!) }
             itemView.givenName.setOnClickListener { searchPeopleListener.onSearchClicked(userInfoDTO!!) }
             itemView.item_user_send.setOnClickListener {
-                if(itemView.item_user_send.drawable.constantState == itemView.context.resources.getDrawable(R.drawable.ic_add_circle_yellow_send).constantState){
+                if(itemView.item_user_send.drawable.bytesEqualTo(itemView.context.resources.getDrawable(R.drawable.ic_add_circle_yellow_send)) && itemView.item_user_send.drawable.pixelsEqualTo(itemView.context.resources.getDrawable(R.drawable.ic_add_circle_yellow_send))){
                     addToSend.onAdd(userInfoDTO!!)
                     itemView.item_user_send.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.ic_baseline_remove_send))
                 } else {

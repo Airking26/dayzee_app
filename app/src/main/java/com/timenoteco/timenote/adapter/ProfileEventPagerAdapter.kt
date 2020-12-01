@@ -22,19 +22,22 @@ class ProfileEventPagerAdapter(fragmentManager: FragmentManager, lifecycle: Life
         }
     }
 
-    fun setShowFilterBar(showFilterBar: Boolean, position: Int?, isReselected: Boolean?){
-        if(isReselected != null && isReselected){
-            if(position == 0) profilePastEvents.setShowFilterBar(showFilterBar)
-            else profileFutureEvents.setShowFilterBar(showFilterBar)
-        } else if(isReselected != null && !isReselected){
-            if(position == 1){
-                profilePastEvents.setShowFilterBar(showFilterBar)
-                profileFutureEvents.setShowFilterBar(showFilterBar)
+    fun setShowFilterBar(showFilterBar: Boolean, position: Int?, isReselected: Boolean?, isMine: Boolean){
+        if(isMine){
+            if(isReselected != null && isReselected){
+                if(position == 0) profilePastEvents.setShowFilterBar(showFilterBar)
+                else profileFutureEvents.setShowFilterBar(showFilterBar)
+            } else if(isReselected != null && !isReselected){
+                if(position == 1){
+                    profilePastEvents.setShowFilterBar(showFilterBar)
+                    profileFutureEvents.setShowFilterBar(showFilterBar)
+                }
+            } else {
+                if(position == 0) profilePastEvents.setShowFilterBar(showFilterBar)
+                else profileFutureEvents.setShowFilterBar(showFilterBar)
             }
-        } else {
-            if(position == 0) profilePastEvents.setShowFilterBar(showFilterBar)
-            else profileFutureEvents.setShowFilterBar(showFilterBar)
         }
+
     }
 
 }

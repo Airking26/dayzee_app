@@ -21,6 +21,8 @@ import com.timenoteco.timenote.adapter.SearchExploreCategoryAdapter
 import com.timenoteco.timenote.adapter.UsersShareWithPagingAdapter
 import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.model.Category
+import com.timenoteco.timenote.model.accessToken
+import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.PreferencesViewModel
 import com.timenoteco.timenote.viewModel.SearchViewModel
 import kotlinx.android.synthetic.main.fragment_search_explore.*
@@ -30,14 +32,14 @@ class SearchExplore : Fragment(), SearchExploreCategoryAdapter.SearchSubCategory
     private lateinit var searchExploreAdapter : SearchExploreCategoryAdapter
     private var explores: MutableMap<String, MutableList<String>> = mutableMapOf()
     private lateinit var prefs: SharedPreferences
-    val TOKEN: String = "TOKEN"
     private var tokenId: String? = null
     private val prefrenceViewModel : PreferencesViewModel by activityViewModels()
+    private val authViewModel : LoginViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        tokenId = prefs.getString(TOKEN, null)
+        tokenId = prefs.getString(accessToken, null)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
@@ -52,6 +54,17 @@ class SearchExplore : Fragment(), SearchExploreCategoryAdapter.SearchSubCategory
         }
 
         prefrenceViewModel.getCategories().observe(viewLifecycleOwner, Observer { response ->
+            if(response.code() == 401){
+                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
+                    tokenId = newAccessToken
+                    prefrenceViewModel.getCategories().observe(viewLifecycleOwner, Observer {lc ->
+                        if(lc.isSuccessful){
+                            response.body()?.groupBy { it.category }?.entries?.map { (name, group) -> explores.put(name, group.map { it.subcategory }.toMutableList()) }
+                            searchExploreAdapter.notifyDataSetChanged()
+                        }
+                    })
+                })
+            }
             if(response.isSuccessful){
             response.body()?.groupBy { it.category }?.entries?.map { (name, group) -> explores.put(name, group.map { it.subcategory }.toMutableList()) }
                 searchExploreAdapter.notifyDataSetChanged()

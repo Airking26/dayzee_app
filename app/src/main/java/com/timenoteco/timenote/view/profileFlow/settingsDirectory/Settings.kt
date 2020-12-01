@@ -39,20 +39,22 @@ import java.lang.reflect.Type
 class Settings : Fragment(), View.OnClickListener {
 
     private lateinit var prefs : SharedPreferences
-    val TOKEN: String = "TOKEN"
     private var tokenId: String? = null
     private val loginViewModel: LoginViewModel by activityViewModels()
     private val meViewModel : MeViewModel by activityViewModels()
     private lateinit var profileModifyData: ProfileModifyData
-    private val profileModVieModel: ProfileModifyViewModel by activityViewModels()
     private lateinit var dsactv : TextView
+    private lateinit var userInfoDTO: UserInfoDTO
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        tokenId = prefs.getString(TOKEN, null)
+        tokenId = prefs.getString(accessToken, null)
         if(prefs.getString("pmtc", "") == "") prefs.edit().putString("pmtc", "").apply()
         if(prefs.getInt("default_settings_at_creation_time", -1) == -1) prefs.edit().putInt("default_settings_at_creation_time", 0).apply()
+        val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
+        userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
@@ -62,7 +64,7 @@ class Settings : Fragment(), View.OnClickListener {
 
         dsactv = profile_settings_default_settings_at_creation_time
 
-        when(prefs.getInt("default_settings_at_creation_time", -1)){
+        when(prefs.getInt("default_settings_at_creation_time", 1)){
             0 -> profile_settings_default_settings_at_creation_time.text = getString(R.string.only_me)
             1 -> profile_settings_default_settings_at_creation_time.text = getString(R.string.public_label)
         }
@@ -89,8 +91,17 @@ class Settings : Fragment(), View.OnClickListener {
                     profilModifyModel?.givenName, profilModifyModel?.familyName, profilModifyModel?.picture,
                     profilModifyModel?.location, profilModifyModel?.birthday, profilModifyModel?.description,
                     profilModifyModel?.gender, profilModifyModel?.status!!, profilModifyModel.dateFormat, profilModifyModel.socialMedias
-                )!!).observe(viewLifecycleOwner, Observer {
-
+                )).observe(viewLifecycleOwner, Observer { usrInfoDTO ->
+                    if(usrInfoDTO.code() == 401){
+                        loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer { newAccessToken ->
+                            tokenId = newAccessToken
+                            meViewModel.modifyProfile(tokenId!!, UpdateUserInfoDTO(
+                                profilModifyModel?.givenName, profilModifyModel?.familyName, profilModifyModel?.picture,
+                                profilModifyModel?.location, profilModifyModel?.birthday, profilModifyModel?.description,
+                                profilModifyModel?.gender, profilModifyModel?.status!!, profilModifyModel.dateFormat, profilModifyModel.socialMedias
+                            ))
+                        })
+                    }
                 })
             }
 
@@ -180,11 +191,11 @@ class Settings : Fragment(), View.OnClickListener {
             }
             profile_settings_disconnect ->{
                 prefs.edit().putString("nearby",  Gson().toJson(NearbyRequestBody(Location(0.0, 0.0, Address("","", "","")), 10, listOf(), "2020-10-12T15:51:53.448Z", Price(0, ""), 2))).apply()
-                prefs.edit().putString(TOKEN, null).apply()
+                prefs.edit().putString(accessToken, null).apply()
                 loginViewModel.markAsUnauthenticated()}
             profile_settings_asked_sent -> findNavController().navigate(
-                SettingsDirections.actionSettingsToFollowPage().setFollowers(3))
-            profile_settings_awaiting -> findNavController().navigate(SettingsDirections.actionSettingsToFollowPage().setFollowers(2))
+                SettingsDirections.actionSettingsToFollowPage(userInfoDTO.id!!).setFollowers(3))
+            profile_settings_awaiting -> findNavController().navigate(SettingsDirections.actionSettingsToFollowPage(userInfoDTO?.id!!).setFollowers(2))
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.viewModel
 
+import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
@@ -26,6 +27,6 @@ class NearbyViewModel: ViewModel() {
         }.asLiveData(viewModelScope.coroutineContext)
     }
 
-    fun getNearbyResults(token: String, nearbyRequestBody: NearbyRequestBody) = Pager(PagingConfig(pageSize = 1)){NearbyPagingSource("Bearer $token", nearbyRequestBody, nearbyService)}.flow.cachedIn(viewModelScope)
+    fun getNearbyResults(token: String, nearbyRequestBody: NearbyRequestBody, sharedPreferences: SharedPreferences) = Pager(PagingConfig(pageSize = 1)){NearbyPagingSource(token, nearbyRequestBody, nearbyService, sharedPreferences)}.flow.cachedIn(viewModelScope)
 
 }

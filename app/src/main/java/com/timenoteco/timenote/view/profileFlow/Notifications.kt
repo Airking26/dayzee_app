@@ -20,7 +20,9 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.NotificationAdapter
 import com.timenoteco.timenote.common.stringLiveData
 import com.timenoteco.timenote.model.Notification
+import com.timenoteco.timenote.model.accessToken
 import com.timenoteco.timenote.viewModel.FollowViewModel
+import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.MeViewModel
 import com.timenoteco.timenote.viewModel.TimenoteViewModel
 import kotlinx.android.synthetic.main.fragment_notifications.*
@@ -32,15 +34,15 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
     private lateinit var notificationAdapter: NotificationAdapter
     private lateinit var notifications: MutableList<Notification>
     private val timenoteViewModel : TimenoteViewModel by activityViewModels()
+    private val authViewModel : LoginViewModel by activityViewModels()
     private val meViewModel : MeViewModel by activityViewModels()
     private val followViewModel: FollowViewModel by activityViewModels()
-    val TOKEN: String = "TOKEN"
     private var tokenId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        tokenId = prefs.getString(TOKEN, null)
+        tokenId = prefs.getString(accessToken, null)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
@@ -79,10 +81,30 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
     override fun onNotificationClicked(notification: Notification) {
         if(notification.type.toInt() == 0 || notification.type.toInt() == 1){
             timenoteViewModel.getSpecificTimenote(tokenId!!, notification.id).observe(viewLifecycleOwner, Observer {
+                if(it.code() == 401){
+                    authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer { newAccessToken ->
+                        tokenId = newAccessToken
+                        timenoteViewModel.getSpecificTimenote(tokenId!!, notification.id).observe(viewLifecycleOwner, Observer {timenoteInfoDTO ->
+                            if(timenoteInfoDTO.isSuccessful) findNavController().navigate(NotificationsDirections.actionNotificationsToDetailedTimenote(1, it.body()))
+
+                        })
+                    })
+                }
+                if(it.isSuccessful)
                 findNavController().navigate(NotificationsDirections.actionNotificationsToDetailedTimenote(1, it.body()))
             })
         } else {
             meViewModel.getSpecificUser(tokenId!!, notification.id).observe(viewLifecycleOwner, Observer {
+                if(it.code() == 401){
+                    authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
+                        tokenId = newAccessToken
+                        meViewModel.getSpecificUser(tokenId!!, notification.id).observe(viewLifecycleOwner, Observer {userInfoDTO ->
+                            if(userInfoDTO.isSuccessful) findNavController().navigate(NotificationsDirections.actionNotificationsToProfile().setFrom(4).setIsNotMine(true).setUserInfoDTO(it.body()))
+
+                        })
+                    })
+                }
+                if(it.isSuccessful)
                 findNavController().navigate(NotificationsDirections.actionNotificationsToProfile().setFrom(4).setIsNotMine(true).setUserInfoDTO(it.body()))
             })
         }
@@ -91,20 +113,46 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onAcceptedRequestClicked(notification: Notification) {
         followViewModel.acceptFollowingRequest(tokenId!!, notification.id).observe(viewLifecycleOwner, Observer {
-            notifications.remove(notification)
-            prefs.edit().putString("notifications", Gson().toJson(notifications)).apply()
+            if(it.code() == 401){
+                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
+                    tokenId = newAccessToken
+                    followViewModel.acceptFollowingRequest(tokenId!!, notification.id).observe(viewLifecycleOwner, Observer { userInfoDTO ->
+                        if(userInfoDTO.isSuccessful) {
+                            notifications.remove(notification)
+                            prefs.edit().putString("notifications", Gson().toJson(notifications))
+                                .apply()
+                        }
+                    })
+                })
+            }
+            if(it.isSuccessful) {
+                notifications.remove(notification)
+                prefs.edit().putString("notifications", Gson().toJson(notifications)).apply()
+            }
 
-            //notificationAdapter.notifyDataSetChanged()
         })
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onDeclinedRequestClicked(notification: Notification) {
         followViewModel.declineFollowingRequest(tokenId!!, notification.id).observe(viewLifecycleOwner, Observer {
-            notifications.remove(notification)
-            prefs.edit().putString("notifications", Gson().toJson(notifications)).apply()
+            if(it.code() == 401){
+                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer { newAccessToken ->
+                    tokenId = newAccessToken
+                    followViewModel.declineFollowingRequest(tokenId!!, notification.id).observe(viewLifecycleOwner, Observer { userInfoDTO ->
+                        if(userInfoDTO.isSuccessful){
+                            notifications.remove(notification)
+                            prefs.edit().putString("notifications", Gson().toJson(notifications)).apply()
+                        }
+                    })
+                })
+            }
 
-            //notificationAdapter.notifyDataSetChanged()
+            if(it.isSuccessful) {
+                notifications.remove(notification)
+                prefs.edit().putString("notifications", Gson().toJson(notifications)).apply()
+            }
+
         })
     }
 

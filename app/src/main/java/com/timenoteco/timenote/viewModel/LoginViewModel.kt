@@ -1,8 +1,10 @@
 package com.timenoteco.timenote.viewModel
 
+import android.content.SharedPreferences
 import android.text.TextUtils
 import android.util.Patterns
 import androidx.lifecycle.*
+import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.webService.repo.DayzeeRepository
 import kotlinx.coroutines.flow.flow
@@ -60,6 +62,8 @@ class LoginViewModel: ViewModel() {
          emit(authService.checkUsernameAvailability(username))
         }.asLiveData(viewModelScope.coroutineContext)
     }
+
+    fun refreshToken(prefs : SharedPreferences) = flow { emit(Utils().refreshToken(prefs)) }.asLiveData(viewModelScope.coroutineContext)
 
     fun markAsGuest() = authenticationState.postValue(AuthenticationState.GUEST)
     fun markAsAuthenticated() = authenticationState.postValue(AuthenticationState.AUTHENTICATED)

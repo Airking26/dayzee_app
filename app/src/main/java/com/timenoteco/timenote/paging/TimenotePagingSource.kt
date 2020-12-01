@@ -1,15 +1,20 @@
 package com.timenoteco.timenote.paging
 
+import android.content.SharedPreferences
 import androidx.paging.PagingSource
+import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.model.TimenoteInfoDTO
 import com.timenoteco.timenote.webService.service.TimenoteService
 
-class TimenotePagingSource(val token: String?, val timenoteService: TimenoteService, val upcoming : Boolean): PagingSource<Int, TimenoteInfoDTO>() {
+class TimenotePagingSource(val token: String?, val timenoteService: TimenoteService, val upcoming : Boolean, val sharedPreferences: SharedPreferences): PagingSource<Int, TimenoteInfoDTO>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, TimenoteInfoDTO> {
         return try {
             val nextPageNumber = params.key ?: 0
-            val response = if(upcoming) timenoteService.getUpcomingTimenotes("Bearer $token", nextPageNumber) else timenoteService.getPastTimenotes("Bearer $token", nextPageNumber)
+            var response = if(upcoming) timenoteService.getUpcomingTimenotes("Bearer $token", nextPageNumber) else timenoteService.getPastTimenotes("Bearer $token", nextPageNumber)
+            if(response.code() == 401) {
+                response = if(upcoming) timenoteService.getUpcomingTimenotes("Bearer ${Utils().refreshToken(sharedPreferences)}", nextPageNumber) else timenoteService.getPastTimenotes("Bearer ${Utils().refreshToken(sharedPreferences)}", nextPageNumber)
+            }
             LoadResult.Page(
                 data = response.body()!!,
                 prevKey = null,

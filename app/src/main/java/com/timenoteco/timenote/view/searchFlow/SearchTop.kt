@@ -20,6 +20,7 @@ import com.timenoteco.timenote.adapter.SuggestionAdapter
 import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.model.UserInfoDTO
 import com.timenoteco.timenote.model.UserSuggested
+import com.timenoteco.timenote.model.accessToken
 import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.SearchViewModel
@@ -34,13 +35,12 @@ class SearchTop: Fragment(), SuggestionAdapter.SuggestionItemListener,
     private val followViewModel : FollowViewModel by activityViewModels()
     private val searchViewModel : SearchViewModel by activityViewModels()
     private lateinit var prefs: SharedPreferences
-    val TOKEN: String = "TOKEN"
     private var tokenId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        tokenId = prefs.getString(TOKEN, null)
+        tokenId = prefs.getString(accessToken, null)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =

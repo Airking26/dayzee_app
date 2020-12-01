@@ -12,11 +12,11 @@ interface FollowService {
     @GET("follow/me/requested/{offset}")
     suspend fun getUsersRequestedToFollow(@Header("Authorization") token: String, @Path("offset") offset: Int) : Response<List<UserInfoDTO>>
 
-    @GET("follow/me/following/{offset}")
-    suspend fun getFollowingUsers(@Header("Authorization") token: String, @Path("offset") offset: Int) : Response<List<UserInfoDTO>>
+    @GET("follow/{id}/following/{offset}")
+    suspend fun getFollowingUsers(@Header("Authorization") token: String,@Path("id") id: String,  @Path("offset") offset: Int) : Response<List<UserInfoDTO>>
 
-    @GET("follow/me/followers/{offset}")
-    suspend fun getFollowedUsers(@Header("Authorization") token: String, @Path("offset") offset: Int) : Response<List<UserInfoDTO>>
+    @GET("follow/{id}/followers/{offset}")
+    suspend fun getFollowedUsers(@Header("Authorization") token: String,@Path("id") id: String, @Path("offset") offset: Int) : Response<List<UserInfoDTO>>
 
     @PUT("follow/me/{id}")
     suspend fun followPublicUser(@Header("Authorization") token: String, @Path("id") id: String) : Response<Any>

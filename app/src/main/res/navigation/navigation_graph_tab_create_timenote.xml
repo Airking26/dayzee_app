@@ -103,5 +103,8 @@
             android:name="timenoteInfoDTO"
             app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
             app:nullable="true" />
+        <argument
+            android:name="modify"
+            app:argType="integer" />
     </fragment>
 </navigation>
