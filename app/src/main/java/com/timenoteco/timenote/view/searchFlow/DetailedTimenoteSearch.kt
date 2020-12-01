@@ -2,8 +2,10 @@ package com.timenoteco.timenote.view.searchFlow
 
 import android.content.Context
 import android.content.Context.INPUT_METHOD_SERVICE
+import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Typeface
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.text.*
@@ -38,9 +40,12 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.*
 import com.timenoteco.timenote.common.RoundedCornersTransformation
 import com.timenoteco.timenote.common.Utils
+import com.timenoteco.timenote.common.bytesEqualTo
+import com.timenoteco.timenote.common.pixelsEqualTo
 import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.viewModel.CommentViewModel
 import com.timenoteco.timenote.viewModel.FollowViewModel
+import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.TimenoteViewModel
 import kotlinx.android.synthetic.main.fragment_detailed_fragment.*
 import kotlinx.android.synthetic.main.fragment_search.*
@@ -66,7 +71,7 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
     private lateinit var prefs: SharedPreferences
     private lateinit var commentAdapter: CommentPagingAdapter
     private val commentViewModel: CommentViewModel by activityViewModels()
-    val TOKEN: String = "TOKEN"
+    private val authViewModel: LoginViewModel by activityViewModels()
     private lateinit var screenSlideCreationTimenotePagerAdapter : ScreenSlideTimenotePagerAdapter
     private val args : DetailedTimenoteSearchArgs by navArgs()
     private var tokenId: String? = null
@@ -75,7 +80,7 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        tokenId = prefs.getString(TOKEN, null)
+        tokenId = prefs.getString(accessToken, null)
 
     }
 
@@ -87,7 +92,8 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
         userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
 
-        timenote_see_more.visibility = View.GONE
+        timenote_username_desc.maxLines = Int.MAX_VALUE
+        timenote_comment_account.visibility = View.GONE
         comments_edittext.requestFocus()
 
         commentAdapter = CommentPagingAdapter(CommentComparator, this, this)
@@ -98,19 +104,20 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
         }
 
         lifecycleScope.launch {
-            commentViewModel.getComments(tokenId!!, args.timenoteInfoDTO?.id!!).collectLatest {
+            commentViewModel.getComments(tokenId!!, args.timenoteInfoDTO?.id!!, prefs).collectLatest {
                 commentAdapter.submitData(it)
             }
         }
 
         timenote_title.text = args.timenoteInfoDTO?.title
+        if(args.timenoteInfoDTO?.pictures?.size == 1 || args.timenoteInfoDTO?.pictures.isNullOrEmpty()) timenote_indicator.visibility = View.GONE
 
-        screenSlideCreationTimenotePagerAdapter = if(!args.timenoteInfoDTO?.pictures.isNullOrEmpty()){
-            ScreenSlideTimenotePagerAdapter(this, args.timenoteInfoDTO?.pictures, true){ _: Int, _: Int -> }
-        } else {
-            ScreenSlideTimenotePagerAdapter(this, mutableListOf("https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg",
-                "https://www.canalvie.com/polopoly_fs/1.9529622.1564082230!/image/plages-pres-quebec.jpg_gen/derivatives/cvlandscape_670_377/plages-pres-quebec.jpg"), true){ i: Int, i1: Int -> }
+
+        screenSlideCreationTimenotePagerAdapter = ScreenSlideTimenotePagerAdapter(this, if(args.timenoteInfoDTO?.pictures.isNullOrEmpty()) listOf(args.timenoteInfoDTO?.colorHex!!) else args.timenoteInfoDTO?.pictures, true, args.timenoteInfoDTO?.pictures.isNullOrEmpty()){ i: Int, i1: Int ->
+            if (args.timenoteInfoDTO?.price?.price!! >= 0 && !args.timenoteInfoDTO?.url.isNullOrBlank()) {
+                timenote_buy_cl.visibility = View.VISIBLE
+                if (args.timenoteInfoDTO?.price?.price!! > 0) timenote_buy.text = args.timenoteInfoDTO?.price?.price!!.toString().plus(args.timenoteInfoDTO?.price?.currency ?: "$")
+            }
         }
 
 
@@ -130,6 +137,10 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
             }
             false
         }
+
+        timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal))
+        if(args.timenoteInfoDTO?.isParticipating!!) timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal_plein_gradient))
+        else timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal))
 
         timenote_year.text = utils.setYear(args.timenoteInfoDTO?.startingAt!!)
         timenote_day_month.text = utils.setFormatedStartDate(args.timenoteInfoDTO?.startingAt!!, args.timenoteInfoDTO?.endingAt!!)
@@ -164,8 +175,8 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
                         .load(args.timenoteInfoDTO?.joinedBy?.users!![0].picture)
                         .apply(RequestOptions.circleCropTransform())
                         .into(timenote_pic_participant_three)
-                    timenote_pic_participant_two.visibility = View.GONE
-                    timenote_pic_participant_one.visibility = View.GONE
+                    timenote_pic_participant_two_rl.visibility = View.GONE
+                    timenote_pic_participant_one_rl.visibility = View.GONE
                 }
                 2 -> {
                     Glide
@@ -179,7 +190,7 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
                         .load(args.timenoteInfoDTO?.joinedBy?.users!![1].picture)
                         .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(context, 90, 0, getString(0 + R.color.colorBackground), 4)))
                         .into(timenote_pic_participant_two)
-                    timenote_pic_participant_one.visibility = View.GONE
+                    timenote_pic_participant_one_rl.visibility = View.GONE
                 }
                 else -> {
                     Glide
@@ -203,31 +214,43 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
             }
         }
         else {
-            timenote_pic_participant_one.visibility = View.GONE
-            timenote_pic_participant_two.visibility = View.GONE
-            timenote_pic_participant_three.visibility = View.GONE
-            timenote_fl.visibility = View.GONE
+            if(args.timenoteInfoDTO?.joinedBy?.count!! > 0){
+                addedBy = "Saved by ${args.timenoteInfoDTO?.joinedBy?.count!!} people"
+                addedByFormated.setSpan(light, 0, 8, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+                addedByFormated.setSpan(bold, 9, addedBy.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+                timenote_added_by.text = addedByFormated
+                timenote_pic_participant_two_rl.visibility = View.GONE
+                timenote_pic_participant_three_rl.visibility = View.GONE
+                timenote_pic_participant_one_rl.visibility = View.GONE
+            } else {
+                timenote_pic_participant_three_rl.visibility = View.GONE
+                timenote_pic_participant_two_rl.visibility = View.GONE
+                timenote_pic_participant_one_rl.visibility = View.GONE
+                timenote_fl.visibility = View.GONE
+            }
         }
 
         timenote_added_by.text = addedByFormated
 
+        val username = SpannableStringBuilder(args.timenoteInfoDTO?.createdBy?.userName)
+        username.setSpan(bold, 0, args.timenoteInfoDTO?.createdBy?.userName?.length!!, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+
         if(args.timenoteInfoDTO?.hashtags.isNullOrEmpty() && args.timenoteInfoDTO?.description.isNullOrBlank()){
             timenote_username_desc.visibility = View.GONE
-            if(args.timenoteInfoDTO?.joinedBy?.count == 0){
-                timenote_see_more.visibility = View.GONE
-            }
         } else if(args.timenoteInfoDTO?.hashtags.isNullOrEmpty() && !args.timenoteInfoDTO?.description.isNullOrBlank()){
-            timenote_username_desc.text = args.timenoteInfoDTO?.description
+            val desc = SpannableStringBuilder(args.timenoteInfoDTO?.description)
+            desc.setSpan(light, 0, args.timenoteInfoDTO?.description?.length!!, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+            timenote_username_desc.text = username.append(" ").append(desc)
         } else if(!args.timenoteInfoDTO?.hashtags.isNullOrEmpty() && args.timenoteInfoDTO?.description.isNullOrBlank()){
             val hashtags = SpannableStringBuilder(args.timenoteInfoDTO?.hashtags?.joinToString(separator = ""))
             hashtags.setSpan(bold, 0, hashtags.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
-            timenote_username_desc.text = hashtags
+            timenote_username_desc.text = username.append(" ").append(hashtags)
         } else {
             val hashtags = SpannableStringBuilder(args.timenoteInfoDTO?.hashtags?.joinToString(separator = ""))
             val completeDesc = SpannableStringBuilder(args.timenoteInfoDTO?.hashtags?.joinToString(separator = "")).append(" ${args.timenoteInfoDTO?.description}")
             completeDesc.setSpan(bold, 0, hashtags.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
             completeDesc.setSpan(light, hashtags.length, completeDesc.toString().length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
-            timenote_username_desc.text = completeDesc
+            timenote_username_desc.text = username.append(" ").append(completeDesc)
         }
 
         Glide
@@ -245,6 +268,7 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
         timenote_share.setOnClickListener(this)
         timenote_plus.setOnClickListener(this)
         timenote_fl.setOnClickListener(this)
+        timenote_buy_cl.setOnClickListener(this)
 
         detailed_timenote_btn_back.setOnClickListener { findNavController().popBackStack() }
     }
@@ -296,7 +320,7 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
                     comments_edittext.text.clear()
 
                     lifecycleScope.launch {
-                        commentViewModel.getComments(tokenId!!, args.timenoteInfoDTO?.id!!).collectLatest { data ->
+                        commentViewModel.getComments(tokenId!!, args.timenoteInfoDTO?.id!!, prefs).collectLatest { data ->
                             commentAdapter.submitData(data)
                         }
                     }
@@ -308,7 +332,14 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
                     customView(R.layout.friends_search)
                     lifecycleOwner(this@DetailedTimenoteSearch)
                     positiveButton(R.string.send){
-                        timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(args.timenoteInfoDTO?.id!!, sendTo))
+                        timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(args.timenoteInfoDTO?.id!!, sendTo)).observe(viewLifecycleOwner, Observer {
+                            if(it.code() == 401) {
+                                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
+                                    tokenId = newAccessToken
+                                    timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(args.timenoteInfoDTO?.id!!, sendTo))
+                                })
+                            }
+                        })
                     }
                     negativeButton(R.string.cancel)
                 }
@@ -326,18 +357,39 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
 
                 })
                 val recyclerview = dial.getCustomView().shareWith_rv
-                val userAdapter = UsersShareWithPagingAdapter(UsersPagingAdapter.UserComparator,this, this)
+                val userAdapter = UsersShareWithPagingAdapter(UsersPagingAdapter.UserComparator, this, this)
                 recyclerview.layoutManager = LinearLayoutManager(requireContext())
                 recyclerview.adapter = userAdapter
                 lifecycleScope.launch{
-                    followViewModel.getUsers(tokenId!!, 0).collectLatest {
+                    followViewModel.getUsers(tokenId!!, userInfoDTO.id!!, 0, prefs).collectLatest {
                         userAdapter.submitData(it)
                     }
                 }
             }
             timenote_plus ->
-                if(false)timenoteViewModel.leaveTimenote(tokenId!!, args.timenoteInfoDTO?.id!!).observe(viewLifecycleOwner, Observer {})else
-                    timenoteViewModel.joinTimenote(tokenId!!, args.timenoteInfoDTO?.id!!).observe(viewLifecycleOwner, Observer {})
+                if(timenote_plus.drawable.bytesEqualTo(resources.getDrawable(R.drawable.ic_ajout_cal)) && timenote_plus.drawable.pixelsEqualTo(resources.getDrawable(R.drawable.ic_ajout_cal))){
+                    timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal_plein_gradient))
+                    timenoteViewModel.joinTimenote(tokenId!!, args.timenoteInfoDTO?.id!!).observe(
+                        viewLifecycleOwner,
+                        Observer {
+                            if(it.code() == 401) {
+                                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
+                                    tokenId = newAccessToken
+                                    timenoteViewModel.joinTimenote(tokenId!!, args.timenoteInfoDTO?.id!!)
+                                })
+                            }
+                        })
+                } else {
+                    timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal))
+                    timenoteViewModel.leaveTimenote(tokenId!!, args.timenoteInfoDTO?.id!!).observe(viewLifecycleOwner, Observer {
+                        if(it.code() == 401) {
+                            authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
+                                tokenId = newAccessToken
+                                timenoteViewModel.leaveTimenote(tokenId!!, args.timenoteInfoDTO?.id!!)
+                            })
+                        }
+                    })
+                }
             timenote_fl -> {
                 val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
                     customView(R.layout.users_participating)
@@ -349,10 +401,15 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
                 recyclerview.layoutManager = LinearLayoutManager(requireContext())
                 recyclerview.adapter = userAdapter
                 lifecycleScope.launch{
-                    timenoteViewModel.getUsersParticipating(tokenId!!, args.timenoteInfoDTO?.id!!).collectLatest {
+                    timenoteViewModel.getUsersParticipating(tokenId!!, args.timenoteInfoDTO?.id!!, prefs).collectLatest {
                         userAdapter.submitData(it)
                     }
                 }
+            }
+            timenote_buy_cl -> {
+                val i = Intent(Intent.ACTION_VIEW)
+                i.data = Uri.parse(if (args.timenoteInfoDTO?.url?.contains("https://")!!) args.timenoteInfoDTO?.url else "https://" + args.timenoteInfoDTO?.url)
+                startActivity(i)
             }
         }
     }
@@ -365,10 +422,10 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
     }
 
     override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
-        TODO("Not yet implemented")
     }
 
     override fun onPicUserCommentClicked(userInfoDTO: UserInfoDTO) {
+        findNavController().navigate(DetailedTimenoteSearchDirections.actionDetailedTimenoteSearchToProfileSearch(args.timenoteInfoDTO?.createdBy))
     }
 
     override fun onAdd(userInfoDTO: UserInfoDTO) {

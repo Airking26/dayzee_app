@@ -28,6 +28,7 @@ import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
 import io.branch.referral.util.LinkProperties
 import kotlinx.android.synthetic.main.fragment_preview_timenote_created.*
+import kotlinx.android.synthetic.main.item_timenote_root.view.*
 
 
 class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
@@ -59,16 +60,9 @@ class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         creationTimenoteViewModel.getCreateTimeNoteLiveData().observe(viewLifecycleOwner, Observer {
-            if (it.price.price == 0) {
-                if (it.url.isNullOrBlank()) preview_created_timenote_buy.visibility = View.GONE
-                else {
-                    preview_created_timenote_buy.visibility = View.VISIBLE
-                }
-            } else if (it.price.price > 0) {
-                preview_created_timenote_buy.visibility = View.VISIBLE
-                preview_created_timenote_buy.text = """${it.price}$"""
-            } else {
-                preview_created_timenote_buy.visibility = View.GONE
+            if (it.price.price >= 0 && !it.url.isNullOrBlank()) {
+                preview_timenote_buy_cl.visibility = View.VISIBLE
+                if (it.price .price > 0) preview_created_timenote_buy.text = it.price.price.toString().plus(it.price.currency)
             }
             if (it.pictures?.size == 1) preview_created_timenote_indicator.visibility = View.GONE
             mutableList.clear()
@@ -89,25 +83,26 @@ class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
                     preview_created_timenote_indicator.adapterDataObserver
                 )
             } else {
-                if (!it.colorHex.isNullOrBlank()) preview_created_timenote_vp.setBackgroundColor(
-                    Color.parseColor(
-                        it.colorHex
-                    )
-                )
+                if (!it.colorHex.isNullOrBlank()) preview_created_timenote_vp.setBackgroundColor(Color.parseColor(if(it.colorHex?.contains("#")!!) it.colorHex else  "#${it.colorHex}"))
             }
 
             preview_created_timenote_title.text = it.title
-            if (!it.startingAt.isBlank()) preview_created_timenote_year.text = utils.setYearPreview(it.startingAt)
-            if (!it.startingAt.isBlank() && !it.endingAt.isBlank()) preview_created_timenote_day_month.text =
-                utils.setFormatedStartDatePreview(
-                    it.startingAt,
-                    it.endingAt
-                )
-            if (!it.startingAt.isBlank() && !it.endingAt.isBlank()) preview_created_timenote_time.text =
-                utils.setFormatedEndDatePreview(
-                    it.startingAt,
-                    it.endingAt
-                )
+            if (!it.startingAt.isBlank()) {
+                if(args.modify == 0) preview_created_timenote_year.text = utils.setYearPreview(it.startingAt)
+                else preview_created_timenote_year.text = utils.setYear(it.startingAt)
+            }
+            if (!it.startingAt.isBlank() && !it.endingAt.isBlank()) {
+                if (args.modify == 0) preview_created_timenote_day_month.text =
+                    utils.setFormatedStartDatePreview(it.startingAt, it.endingAt)
+                else preview_created_timenote_day_month.text =
+                    utils.setFormatedStartDate(it.startingAt, it.endingAt)
+            }
+            if (!it.startingAt.isBlank() && !it.endingAt.isBlank()) {
+                if (args.modify == 0) preview_created_timenote_time.text =
+                    utils.setFormatedEndDatePreview(it.startingAt, it.endingAt)
+                else preview_created_timenote_time.text =
+                    utils.setFormatedEndDate(it.startingAt, it.endingAt)
+            }
             if (it.location != null) preview_created_timenote_place.text =
                 it.location?.address?.address?.plus(", ")?.plus(it.location?.address?.city)?.plus(" ")?.plus(it.location?.address?.country)
             else preview_created_timenote_place.visibility = View.GONE
@@ -128,16 +123,20 @@ class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
 
         val linkProperties: LinkProperties = LinkProperties().setChannel("whatsapp").setFeature("sharing")
 
-        val branchUniversalObject = BranchUniversalObject()
+        val branchUniversalObject = if(!args.timenoteInfoDTO?.pictures?.isNullOrEmpty()!!) BranchUniversalObject()
             .setTitle(args.timenoteInfoDTO?.title!!)
             .setContentDescription(args.timenoteInfoDTO?.description)
             .setContentImageUrl(args.timenoteInfoDTO?.pictures?.get(0)!!)
             .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
             .setContentMetadata(ContentMetadata().addCustomMetadata("timenoteInfoDTO", Gson().toJson(args.timenoteInfoDTO)))
+        else BranchUniversalObject()
+            .setTitle(args.timenoteInfoDTO?.title!!)
+            .setContentDescription(args.timenoteInfoDTO?.description)
+            .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
+            .setContentMetadata(ContentMetadata().addCustomMetadata("timenoteInfoDTO", Gson().toJson(args.timenoteInfoDTO)))
 
         branchUniversalObject.generateShortUrl(requireContext(), linkProperties) { url, error ->
             BranchEvent("branch_url_created").logEvent(requireContext())
-            Toast.makeText(requireContext(), url, Toast.LENGTH_SHORT).show()
             val i = Intent(Intent.ACTION_SEND)
             i.type = "text/plain"
             i.putExtra(Intent.EXTRA_TEXT, String.format("Dayzee : %s at %s", args.timenoteInfoDTO?.title, url))

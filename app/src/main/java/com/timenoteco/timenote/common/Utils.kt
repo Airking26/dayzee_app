@@ -5,11 +5,16 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.location.Address
 import android.location.Geocoder
 import android.os.Build
@@ -21,6 +26,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.widget.AutoCompleteTextView
+import android.widget.SimpleAdapter
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
@@ -46,7 +52,9 @@ import com.timenoteco.timenote.androidView.input
 import com.timenoteco.timenote.listeners.PlacePickerListener
 import com.timenoteco.timenote.model.DetailedPlace
 import com.timenoteco.timenote.model.Location
+import com.timenoteco.timenote.model.accessToken
 import com.timenoteco.timenote.viewModel.WebSearchViewModel
+import com.timenoteco.timenote.webService.repo.DayzeeRepository
 import com.zhihu.matisse.Matisse
 import com.zhihu.matisse.MimeType
 import com.zhihu.matisse.engine.impl.GlideEngine
@@ -54,10 +62,13 @@ import com.zhihu.matisse.filter.Filter
 import com.zhihu.matisse.internal.entity.CaptureStrategy
 import kotlinx.android.synthetic.main.autocomplete_search_address.view.*
 import kotlinx.android.synthetic.main.web_search_rv.view.*
+import java.io.ByteArrayOutputStream
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.time.*
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.math.abs
 
 class Utils {
 
@@ -274,7 +285,6 @@ class Utils {
         return dialog
     }
 
-
     fun formatDate(format: String, timestamp: Long): String {
         val dateFormat = SimpleDateFormat(format, Locale.getDefault())
         return if(timestamp == 0L) ""
@@ -286,7 +296,7 @@ class Utils {
         val DATE_FORMAT_TIME = "hh:mm aaa"
         val DATE_FORMAT_TIME_FORMATED = "d\nMMM"
         val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = "d MMM.\nhh:mm"
-        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
+        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
 
         val formatedStartDate: String
 
@@ -312,7 +322,7 @@ class Utils {
 
         val DATE_FORMAT_DAY = "d MMM yyyy"
         val DATE_FORMAT_TIME = "hh:mm aaa"
-        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
+        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
         val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = "d MMM\nhh:mm"
 
 
@@ -337,17 +347,59 @@ class Utils {
 
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun setFormatedStartDate(startDate: String, endDate: String) : String{
         val DATE_FORMAT_DAY = "d MMM yyyy"
         val DATE_FORMAT_TIME = "hh:mm aaa"
         val DATE_FORMAT_TIME_FORMATED = "d\nMMM"
         val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = "d MMM.\nhh:mm"
+        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+
+        val test = "2020-11-13T12:00:00.000-04:00"
+        val isoTest = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
+        val formatedStartDateTest: String
+
+        val startingTest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val ldt = OffsetDateTime.parse(test).toEpochSecond()
+            ldt * 1000
+            //Instant.parse(test).epochSecond * 1000
+        } else {
+            SimpleDateFormat(isoTest, Locale.getDefault()).parse(test).time
+        }
+
+        val endingTest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val ldt = OffsetDateTime.parse(test).toEpochSecond()
+            ldt * 1000
+            //Instant.parse(test).epochSecond * 1000
+        } else {
+            SimpleDateFormat(isoTest, Locale.getDefault()).parse(test).time
+        }
+
+        if(formatDate(DATE_FORMAT_DAY, startingTest) == formatDate(DATE_FORMAT_DAY, endingTest)){
+            if(formatDate(DATE_FORMAT_TIME, startingTest) == formatDate(DATE_FORMAT_TIME, endingTest)){
+                formatedStartDateTest = formatDate(DATE_FORMAT_TIME_FORMATED, startingTest)
+            } else {
+                formatedStartDateTest = formatDate(DATE_FORMAT_TIME_FORMATED, startingTest)
+            }
+        } else {
+            formatedStartDateTest = formatDate(DATE_FORMAT_SAME_DAY_DIFFERENT_TIME, startingTest)
+        }
+
+        val m = formatedStartDateTest
 
         val formatedStartDate: String
 
-        val starting = Instant.parse(startDate).epochSecond * 1000
-        val ending = Instant.parse(endDate).epochSecond * 1000
+        val starting = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Instant.parse(startDate).epochSecond * 1000
+        } else {
+            SimpleDateFormat(ISO, Locale.getDefault()).parse(startDate).time
+        }
+
+        val ending = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Instant.parse(endDate).epochSecond * 1000
+        } else {
+            SimpleDateFormat(ISO, Locale.getDefault()).parse(endDate).time
+        }
+
 
 
         if(formatDate(DATE_FORMAT_DAY, starting) == formatDate(DATE_FORMAT_DAY, ending)){
@@ -363,18 +415,57 @@ class Utils {
         return formatedStartDate
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun setFormatedEndDate(startDate: String, endDate: String): String{
         val DATE_FORMAT_DAY = "d MMM yyyy"
         val DATE_FORMAT_TIME = "hh:mm aaa"
         val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = "d MMM\nhh:mm"
+        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
+        val test = "2020-11-13T12:00:00.000-04:00"
+        val isoTest = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
+        val formatedStartDateTest: String
+
+        val startingTest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val ldt = OffsetDateTime.parse(test).toEpochSecond()
+            ldt * 1000
+            //Instant.parse(test).epochSecond * 1000
+        } else {
+            SimpleDateFormat(isoTest, Locale.getDefault()).parse(test).time
+        }
+
+        val endingTest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val ldt = OffsetDateTime.parse(test).toEpochSecond()
+            ldt * 1000
+            //Instant.parse(test).epochSecond * 1000
+        } else {
+            SimpleDateFormat(isoTest, Locale.getDefault()).parse(test).time
+        }
+
+        formatedStartDateTest = if(formatDate(DATE_FORMAT_DAY, startingTest) == formatDate(DATE_FORMAT_DAY, endingTest)){
+            if(formatDate(DATE_FORMAT_TIME, startingTest) == formatDate(DATE_FORMAT_TIME, endingTest)){
+                formatDate(DATE_FORMAT_TIME, startingTest)
+            } else {
+                formatDate(DATE_FORMAT_TIME, startingTest) + "\n" + formatDate(DATE_FORMAT_TIME, endingTest)
+            }
+        } else {
+            formatDate(DATE_FORMAT_SAME_DAY_DIFFERENT_TIME, endingTest)
+        }
+
+        val m = formatedStartDateTest
 
         var formatedEndDate: String
 
-        val starting = Instant.parse(startDate).epochSecond * 1000
-        val ending = Instant.parse(endDate).epochSecond * 1000
+        val starting = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Instant.parse(startDate).epochSecond * 1000
+        } else {
+            SimpleDateFormat(ISO, Locale.getDefault()).parse(startDate).time
+        }
 
+        val ending = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Instant.parse(endDate).epochSecond * 1000
+        } else {
+            SimpleDateFormat(ISO, Locale.getDefault()).parse(endDate).time
+        }
         formatedEndDate =
             if(formatDate(DATE_FORMAT_DAY, starting) == formatDate(DATE_FORMAT_DAY, ending)){
                 if(formatDate(DATE_FORMAT_TIME, starting) == formatDate(DATE_FORMAT_TIME, ending)){
@@ -389,45 +480,67 @@ class Utils {
         return formatedEndDate
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun setYear(startDate: String): String {
+        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
         val YEAR = "yyyy"
-        val starting = Instant.parse(startDate).epochSecond * 1000
+        val starting = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Instant.parse(startDate).epochSecond * 1000
+        } else {
+            SimpleDateFormat(ISO, Locale.getDefault()).parse(startDate).time
+        }
         return formatDate(YEAR, starting)
     }
 
     fun setYearPreview(startDate: String): String{
         val YEAR = "yyyy"
-        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
+        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
 
         val startingAt = SimpleDateFormat(ISO).parse(startDate).time
         return formatDate(YEAR, startingAt)
-
     }
 
-
-
-    @RequiresApi(Build.VERSION_CODES.O)
     fun inTime(startDate: String): String {
-        val period = Period.between(LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC).toLocalDate()
-            , LocalDateTime.ofInstant(Instant.parse(startDate), ZoneOffset.UTC).toLocalDate())
-        val nbrYear = period.years
-        val nbrMonth = period.minusYears(nbrYear.toLong()).months
-        val nbrDay = period.minusYears(nbrYear.toLong()).minusMonths(nbrMonth.toLong()).days
+        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+        val nbrYear : Int
+        val nbrMonth: Int
+        val nbrDay : Int
+        val nbrHours : Int
+        val nbrMin : Int
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val period = Period.between(LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC).toLocalDate()
+                , LocalDateTime.ofInstant(Instant.parse(startDate), ZoneOffset.UTC).toLocalDate())
 
-        val duration = Duration.between(Instant.now(), Instant.parse(startDate))
-        val nbrHours = duration.minusDays(duration.toDays()).toHours()
-        val nbrMin = duration.minusDays(duration.toDays()).minusHours(nbrHours).toMinutes()
+            nbrYear = period.years
+            nbrMonth = period.minusYears(nbrYear.toLong()).months
+            nbrDay = period.minusYears(nbrYear.toLong()).minusMonths(nbrMonth.toLong()).days - 1
 
-        return formatInTime(nbrYear, nbrMonth, nbrDay, nbrHours.toInt(), nbrMin.toInt())
+            val duration = Duration.between(Instant.now(), Instant.parse(startDate))
+            nbrHours = duration.minusDays(duration.toDays()).toHours().toInt()
+            nbrMin = duration.minusDays(duration.toDays()).minusHours(duration.minusDays(duration.toDays()).toHours()).toMinutes().toInt()
+
+        } else {
+            val time = SimpleDateFormat(ISO).parse(startDate).time - System.currentTimeMillis()
+            val c: Calendar = Calendar.getInstance(Locale.getDefault())
+            c.timeInMillis = time
+            nbrYear = c.get(Calendar.YEAR) - 1970
+            nbrMonth = c.get(Calendar.MONTH)
+            nbrDay = c.get(Calendar.DAY_OF_MONTH) - 1
+            nbrHours = c.get(Calendar.HOUR)
+            nbrMin = c.get(Calendar.MINUTE)
+        }
+
+        return formatInTime(nbrYear, nbrMonth, nbrDay, nbrHours, nbrMin)
     }
 
-    fun formatInTime(nbrYear: Int, nbrMonth: Int, nbrDay: Int, nbrHour: Int, nbrMin: Int): String {
+    private fun formatInTime(nbrYear: Int, nbrMonth: Int, nbrDay: Int, nbrHour: Int, nbrMin: Int): String {
 
         val decountTime: String
-        if(nbrYear == 0){
-            if(nbrMonth == 0){
-                if(nbrDay == 0){
+        if(nbrYear <= 0 && nbrMonth <= 0 && nbrDay <= 0 && nbrHour <= 0 && nbrMin < 0){
+            decountTime = "ONGOING"
+        }
+        else if(nbrYear <= 0){
+            if(nbrMonth <= 0){
+                if(nbrDay <= 0){
                     decountTime = if(nbrHour > 1){
                         if(nbrMin > 1){
                             "In $nbrHour hours and $nbrMin minutes"
@@ -487,24 +600,43 @@ class Utils {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun sinceTime(startDate: String): String {
-        val period = Period.between(LocalDateTime.ofInstant(Instant.parse(startDate), ZoneOffset.UTC).toLocalDate(),
-            LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC).toLocalDate())
-        val nbrYear = period.years
-        val nbrMonth = period.minusYears(nbrYear.toLong()).months
-        val nbrDay = period.minusYears(nbrYear.toLong()).minusMonths(nbrMonth.toLong()).days
+        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+        val nbrYear : Int
+        val nbrMonth: Int
+        val nbrDay : Int
+        val nbrHours : Int
+        val nbrMin : Int
 
-        val duration = Duration.between(Instant.now(), Instant.parse(startDate))
-        val nbrHours = duration.minusDays(duration.toDays()).toHours()
-        val nbrMin = duration.minusDays(duration.toDays()).minusHours(nbrHours).toMinutes()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val period = Period.between(LocalDateTime.ofInstant(Instant.parse(startDate), ZoneOffset.UTC).toLocalDate(), LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC).toLocalDate())
 
-        return formatSinceTime(nbrYear, nbrMonth, nbrDay, nbrHours, nbrMin) }
+            nbrYear = period.years
+            nbrMonth = period.minusYears(nbrYear.toLong()).months
+            nbrDay = period.minusYears(nbrYear.toLong()).minusMonths(nbrMonth.toLong()).days - 1
+
+            val duration = Duration.between(Instant.now(), Instant.parse(startDate))
+            nbrHours = duration.minusDays(duration.toDays()).toHours().toInt()
+            nbrMin = duration.minusDays(duration.toDays()).minusHours(duration.minusDays(duration.toDays()).toHours()).toMinutes().toInt()
+
+        } else {
+            val time = System.currentTimeMillis() - SimpleDateFormat(ISO).parse(startDate).time
+            val c: Calendar = Calendar.getInstance(Locale.getDefault())
+            c.timeInMillis = time
+            nbrYear = c.get(Calendar.YEAR) - 1970
+            nbrMonth = c.get(Calendar.MONTH)
+            nbrDay = c.get(Calendar.DAY_OF_MONTH) - 1
+            nbrHours = c.get(Calendar.HOUR)
+            nbrMin = c.get(Calendar.MINUTE)
+        }
+
+        return formatSinceTime(abs(nbrYear), abs(nbrMonth), abs(nbrDay), abs(nbrHours), abs(nbrMin)) }
 
     private fun formatSinceTime(
         nbrYear: Int,
         nbrMonth: Int,
         nbrDay: Int,
-        nbrHours: Long,
-        nbrMin: Long
+        nbrHours: Int,
+        nbrMin: Int
     ): String {
         val decountTime: String
         if(nbrYear == 0){
@@ -568,18 +700,95 @@ class Utils {
 
     }
 
-    fun setLocation(detailedPlace: DetailedPlace): Location {
+    fun setLocation(detailedPlace: DetailedPlace, isInCreation: Boolean, sharedPreferences: SharedPreferences?): Location {
         var zipcode = ""
         var city = ""
         var country = ""
+        if(isInCreation) formatOffset(detailedPlace.result.utc_offset / 60, detailedPlace.result.utc_offset % 60, sharedPreferences!!)
         for(n in detailedPlace.result.address_components){
             if(n.types.contains("locality")) city = n.long_name
             if(n.types.contains("postal_code")) zipcode = n.short_name
             if(n.types.contains("country")) country = n.long_name
         }
         return Location( detailedPlace.result.geometry.location.lng, detailedPlace.result.geometry.location.lat,
-            com.timenoteco.timenote.model.Address(detailedPlace.result.name, zipcode, city, country)
-        )
+            com.timenoteco.timenote.model.Address(detailedPlace.result.name, zipcode, city, country))
     }
 
+    private fun formatOffset(hours: Int, minutes: Int, sharedPreferences: SharedPreferences){
+        val offSetToSave = when (hours) {
+                in 0 downTo -9 -> {
+                    if(minutes == 0) "-0${abs(hours)}:00"
+                    else "-0$hours:$minutes"
+                }
+                in 0..9 -> {
+                    if(minutes == 0) "+0$hours:00"
+                    else "+0$hours:$minutes"
+                }
+                in 10..13 -> {
+                    if(minutes == 0) "+$hours:00"
+                    else  "+$hours:$minutes"
+                }
+                in -10 downTo -13 -> {
+                    if(minutes == 0)  "-0${abs(hours)}:00"
+                    else  "-$hours:$minutes"
+                }
+                else -> "+00:00"
+            }
+
+        sharedPreferences.edit().putString("offset", offSetToSave).apply()
+    }
+
+    suspend fun refreshToken(sharedPreferences: SharedPreferences): String? {
+        val authService = DayzeeRepository().getAuthService()
+        val newAccessToken = authService.refreshAccessToken(sharedPreferences.getString(com.timenoteco.timenote.model.refreshToken, null)!!)
+        sharedPreferences.edit().putString(accessToken, newAccessToken.body()?.accessToken).apply()
+        return newAccessToken.body()?.accessToken
+    }
 }
+
+
+fun <T : Drawable> T.bytesEqualTo(t: T?) = toBitmap().bytesEqualTo(t?.toBitmap(), true)
+
+fun <T : Drawable> T.pixelsEqualTo(t: T?) = toBitmap().pixelsEqualTo(t?.toBitmap(), true)
+
+fun Bitmap.bytesEqualTo(otherBitmap: Bitmap?, shouldRecycle: Boolean = false) = otherBitmap?.let { other ->
+    if (width == other.width && height == other.height) {
+        val res = toBytes().contentEquals(other.toBytes())
+        if (shouldRecycle) {
+            doRecycle().also { otherBitmap.doRecycle() }
+        }
+        res
+    } else false
+} ?: kotlin.run { false }
+
+fun Bitmap.pixelsEqualTo(otherBitmap: Bitmap?, shouldRecycle: Boolean = false) = otherBitmap?.let { other ->
+    if (width == other.width && height == other.height) {
+        val res = Arrays.equals(toPixels(), other.toPixels())
+        if (shouldRecycle) {
+            doRecycle().also { otherBitmap.doRecycle() }
+        }
+        res
+    } else false
+} ?: kotlin.run { false }
+
+fun Bitmap.doRecycle() {
+    if (!isRecycled) recycle()
+}
+
+fun <T : Drawable> T.toBitmap(): Bitmap {
+    if (this is BitmapDrawable) return bitmap
+
+    val drawable: Drawable = this
+    val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    drawable.setBounds(0, 0, canvas.width, canvas.height)
+    drawable.draw(canvas)
+    return bitmap
+}
+
+fun Bitmap.toBytes(): ByteArray = ByteArrayOutputStream().use { stream ->
+    compress(Bitmap.CompressFormat.JPEG, 100, stream)
+    stream.toByteArray()
+}
+
+fun Bitmap.toPixels() = IntArray(width * height).apply { getPixels(this, 0, width, 0, 0, width, height) }

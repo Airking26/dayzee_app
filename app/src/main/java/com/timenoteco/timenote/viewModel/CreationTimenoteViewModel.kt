@@ -1,6 +1,9 @@
 package com.timenoteco.timenote.viewModel
 
+import android.content.ContentValues.TAG
 import android.graphics.Bitmap
+import android.os.Build
+import android.util.Log
 import androidx.lifecycle.*
 import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.webService.CreationTimenoteData
@@ -9,11 +12,16 @@ import com.timenoteco.timenote.webService.repo.PlaceRepository
 import kotlinx.coroutines.flow.flow
 import retrofit2.Response
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.math.abs
 
 class CreationTimenoteViewModel: ViewModel() {
 
-    private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
+    private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
 
     private val timenoteLiveData = MutableLiveData<CreationTimenoteDTO>()
     private val createTimenoteData: CreationTimenoteData = CreationTimenoteData()
@@ -33,6 +41,8 @@ class CreationTimenoteViewModel: ViewModel() {
     fun setLocation(location: Location) = timenoteLiveData.postValue(createTimenoteData.setPlace(location))
     fun setCategory(category: Category) = timenoteLiveData.postValue(createTimenoteData.setCategory(category))
     fun setStartDate(startDate: Long, format: String) = timenoteLiveData.postValue(createTimenoteData.setStartDate(formatDate(format, startDate)))
+    fun setStartDateOffset(date: String) = timenoteLiveData.postValue(createTimenoteData.setStartDate(date))
+    fun setEndDateOffset(date: String) = timenoteLiveData.postValue(createTimenoteData.setEndDate(date))
     fun setEndDate(endDate: Long) = timenoteLiveData.postValue(createTimenoteData.setEndDate(formatDate(ISO, endDate)))
     fun setColor(color: String) = timenoteLiveData.postValue(createTimenoteData.setColor(color))
     fun setCreatedBy(id: String) = timenoteLiveData.postValue(createTimenoteData.setCreatedBy(id))
@@ -50,9 +60,15 @@ class CreationTimenoteViewModel: ViewModel() {
 
     private fun formatDate(format: String, timestamp: Long): String {
         val dateFormat = SimpleDateFormat(format, Locale.getDefault())
-        val l = dateFormat.format(timestamp)
         return if(timestamp == 0L) ""
         else dateFormat.format(timestamp)
+    }
+
+    fun setOffset(format: String, date: String, offset: String?): String{
+        val dateFormat = SimpleDateFormat(format, Locale.getDefault())
+        return if(offset != null){
+            date.replaceRange(date.length - 6, date.length, offset)
+        } else formatDate(format, dateFormat.parse(date).time)
     }
 
 }

@@ -157,7 +157,15 @@
     <fragment
         android:id="@+id/followPageSearch"
         android:name="com.timenoteco.timenote.view.searchFlow.FollowPageSearch"
-        android:label="FollowPageSearch" />
+        android:label="FollowPageSearch" >
+        <argument
+            android:name="followers"
+            app:argType="integer"
+            android:defaultValue="-1" />
+        <argument
+            android:name="id"
+            app:argType="string" />
+    </fragment>
     <fragment
         android:id="@+id/previewTimenoteCreatedSearch"
         android:name="com.timenoteco.timenote.view.searchFlow.PreviewTimenoteCreatedSearch"
@@ -173,10 +181,14 @@
     <fragment
         android:id="@+id/profileCalendarSearch"
         android:name="com.timenoteco.timenote.view.searchFlow.ProfileCalendarSearch"
-        android:label="ProfileCalendarSearch" />
+        android:label="ProfileCalendarSearch" >
+        <argument
+            android:name="id"
+            app:argType="string" />
+    </fragment>
     <fragment
         android:id="@+id/createTimenoteSearch"
-        android:name="com.timenoteco.timenote.view.createTimenoteSearchFlow.CreateTimenoteSearch"
+        android:name="com.timenoteco.timenote.view.searchFlow.CreateTimenoteSearch"
         android:label="CreateTimenoteSearch" >
         <action
             android:id="@+id/action_createTimenoteSearch_to_previewTimenoteCreatedSearch"

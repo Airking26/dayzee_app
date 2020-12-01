@@ -61,6 +61,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.WebSearchAdapter
+import com.timenoteco.timenote.androidView.getInputField
 import com.timenoteco.timenote.androidView.input
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.stringLiveData
@@ -68,11 +69,17 @@ import com.timenoteco.timenote.listeners.RefreshPicBottomNavListener
 import com.timenoteco.timenote.model.STATUS
 import com.timenoteco.timenote.model.UpdateUserInfoDTO
 import com.timenoteco.timenote.model.UserInfoDTO
+import com.timenoteco.timenote.model.accessToken
+import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.MeViewModel
 import com.timenoteco.timenote.viewModel.ProfileModifyViewModel
 import com.timenoteco.timenote.viewModel.WebSearchViewModel
 import com.timenoteco.timenote.webService.ProfileModifyData
 import com.zhihu.matisse.Matisse
+import io.branch.indexing.BranchUniversalObject
+import io.branch.referral.util.BranchEvent
+import io.branch.referral.util.ContentMetadata
+import io.branch.referral.util.LinkProperties
 import kotlinx.android.synthetic.main.fragment_profil_modify.*
 import java.io.File
 import java.io.FileOutputStream
@@ -87,6 +94,7 @@ import java.util.*
 class ProfilModify: Fragment(), View.OnClickListener,
     WebSearchAdapter.ImageChoosedListener, WebSearchAdapter.MoreImagesClicked{
 
+    private lateinit var profilModifyModel: UserInfoDTO
     private var imagesUrl: String = ""
     val amazonClient = AmazonS3Client(
         BasicAWSCredentials(
@@ -103,13 +111,13 @@ class ProfilModify: Fragment(), View.OnClickListener,
     private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     private val webSearchViewModel : WebSearchViewModel by activityViewModels()
     private val args : ProfilModifyArgs by navArgs()
-    val TOKEN: String = "TOKEN"
     private var images: String? = null
     private var tokenId: String? = null
     private lateinit var utils: Utils
     private lateinit var onRefreshPicBottomNavListener: RefreshPicBottomNavListener
     private val profileModViewModel: ProfileModifyViewModel by activityViewModels()
     private val meViewModel : MeViewModel by activityViewModels()
+    private val authViewModel : LoginViewModel by activityViewModels()
     private var placesList: List<Place.Field> = listOf(
         Place.Field.ID,
         Place.Field.NAME,
@@ -126,7 +134,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
         super.onCreate(savedInstanceState)
         AWSMobileClient.getInstance().initialize(requireContext()).execute()
         prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        tokenId = prefs.getString(TOKEN, null)
+        tokenId = prefs.getString(accessToken, null)
         if(prefs.getString("pmtc", "") == "")
         prefs.edit().putString("pmtc", "").apply()
         Places.initialize(requireContext(), "AIzaSyBhM9HQo1fzDlwkIVqobfmrRmEMCWTU1CA")
@@ -221,7 +229,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
             viewLifecycleOwner,
             Observer {
                 val type: Type = object : TypeToken<UserInfoDTO?>() {}.type
-                val profilModifyModel: UserInfoDTO? = Gson().fromJson<UserInfoDTO>(it, type)
+                profilModifyModel = Gson().fromJson<UserInfoDTO>(it, type)
                 setUserInfoDTO(profilModifyModel)
 
                 if (profilModifyModel?.socialMedias?.youtube?.enabled!!)
@@ -273,25 +281,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
                 }
 
                 if (prefs.getString("pmtc", "") != Gson().toJson(profileModifyData.loadProfileModifyModel())) {
-                    meViewModel.modifyProfile(
-                        tokenId!!, UpdateUserInfoDTO(
-                            profilModifyModel.givenName,
-                            profilModifyModel.familyName,
-                            profilModifyModel.picture,
-                            profilModifyModel.location,
-                            profilModifyModel.birthday,
-                            profilModifyModel.description,
-                            profilModifyModel.gender,
-                            if (profilModifyModel.status == 0) STATUS.PUBLIC.ordinal else STATUS.PRIVATE.ordinal,
-                            if (profilModifyModel.dateFormat == 0) STATUS.PUBLIC.ordinal else STATUS.PRIVATE.ordinal,
-                            profilModifyModel.socialMedias
-                        )
-                    ).observe(viewLifecycleOwner, Observer { usr ->
-                        onRefreshPicBottomNavListener.onrefreshPicBottomNav(usr.body())
-                        prefs.edit().putString("UserInfoDTO", Gson().toJson(usr.body())).apply()
-                        prefs.edit().putInt("followers", usr.body()?.followers!!).apply()
-                        prefs.edit().putInt("following", usr.body()?.following!!).apply()
-                    })
+                    modifyProfil(profilModifyModel)
                 }
 
                 prefs.edit().putString(
@@ -299,6 +289,36 @@ class ProfilModify: Fragment(), View.OnClickListener,
                     Gson().toJson(profileModifyData.loadProfileModifyModel())
                 ).apply()
             })
+    }
+
+    private fun modifyProfil(profilModifyModel: UserInfoDTO) {
+        meViewModel.modifyProfile(
+            tokenId!!, UpdateUserInfoDTO(
+                profilModifyModel.givenName,
+                profilModifyModel.familyName,
+                profilModifyModel.picture,
+                profilModifyModel.location,
+                profilModifyModel.birthday,
+                profilModifyModel.description,
+                profilModifyModel.gender,
+                if (profilModifyModel.status == 0) STATUS.PUBLIC.ordinal else STATUS.PRIVATE.ordinal,
+                if (profilModifyModel.dateFormat == 0) STATUS.PUBLIC.ordinal else STATUS.PRIVATE.ordinal,
+                profilModifyModel.socialMedias
+            )
+        ).observe(viewLifecycleOwner, Observer { usr ->
+            if(usr.code() == 401){
+                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer { newAccesssToken ->
+                    tokenId = newAccesssToken
+                    modifyProfil(profilModifyModel)
+                })
+            }
+            if(usr.isSuccessful) {
+                onRefreshPicBottomNavListener.onrefreshPicBottomNav(usr.body())
+                prefs.edit().putString("UserInfoDTO", Gson().toJson(usr.body())).apply()
+                prefs.edit().putInt("followers", usr.body()?.followers!!).apply()
+                prefs.edit().putInt("following", usr.body()?.following!!).apply()
+            }
+        })
     }
 
     private fun setUserInfoDTO(profilModifyModel: UserInfoDTO?) {
@@ -394,6 +414,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
             profile_modify_description.setOnClickListener(this)
             profile_modify_done_btn.setOnClickListener(this)
             profile_modify_pic_imageview.setOnClickListener(this)
+            profile_modify_share_btn.setOnClickListener(this)
         } else {
             profile_modify_done_btn.visibility = View.GONE
         }
@@ -427,7 +448,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
                 requireContext(),
                 BottomSheet(LayoutMode.WRAP_CONTENT)
             ).show {
-                datePicker() { dialog, datetime ->
+                datePicker(maxDate = Calendar.getInstance()) { _, datetime ->
                     profileModifyData.setBirthday(dateFormat.format(datetime.time.time))
                 }
             }
@@ -557,25 +578,50 @@ class ProfilModify: Fragment(), View.OnClickListener,
                 lifecycleOwner(this@ProfilModify)
             }
 
-            profile_modify_description -> MaterialDialog(
-                requireContext(),
-                BottomSheet(LayoutMode.WRAP_CONTENT)
-            ).show {
+            profile_modify_description -> {
+                val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.describe_yourself)
-                input(
-                    inputType = InputType.TYPE_CLASS_TEXT,
-                    prefill = profileModifyData.loadProfileModifyModel()?.description
-                ) { _, text ->
+                input(allowEmpty = true, inputType = InputType.TYPE_CLASS_TEXT, prefill = profileModifyData.loadProfileModifyModel()?.description) { _, text ->
                     profileModifyData.setDescription(text.toString())
                 }
                 positiveButton(R.string.done)
                 lifecycleOwner(this@ProfilModify)
             }
+            }
             profile_modify_pic_imageview -> {
                 picturePickerUser()
             }
+            profile_modify_share_btn -> share()
             profile_modify_done_btn -> findNavController().popBackStack()
         }
+    }
+
+
+    private fun share() {
+
+        val linkProperties: LinkProperties = LinkProperties().setChannel("whatsapp").setFeature("sharing")
+
+        val branchUniversalObject = if(!profilModifyModel.picture.isNullOrEmpty()) BranchUniversalObject()
+            .setTitle(profilModifyModel.userName!!)
+            .setContentDescription(profilModifyModel.givenName)
+            .setContentImageUrl(profilModifyModel.picture!!)
+            .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
+            .setContentMetadata(ContentMetadata().addCustomMetadata("userInfoDTO", Gson().toJson(profilModifyModel)))
+        else BranchUniversalObject()
+            .setTitle(profilModifyModel.userName!!)
+            .setContentDescription(profilModifyModel.givenName)
+            .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
+            .setContentMetadata(ContentMetadata().addCustomMetadata("userInfoDTO", Gson().toJson(profilModifyModel)))
+
+        branchUniversalObject.generateShortUrl(requireContext(), linkProperties) { url, error ->
+            BranchEvent("branch_url_created").logEvent(requireContext())
+            val i = Intent(Intent.ACTION_SEND)
+            i.type = "text/plain"
+            i.putExtra(Intent.EXTRA_TEXT, String.format("Dayzee : %s at %s", profilModifyModel.userName, url))
+            startActivityForResult(i, 111)
+        }
+
+
     }
 
     override fun onRequestPermissionsResult(
@@ -750,7 +796,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
                         profileModViewModel.fetchLocation(place.id!!).observe(
                             viewLifecycleOwner,
                             Observer {
-                                val location = utils.setLocation(it.body()!!)
+                                val location = utils.setLocation(it.body()!!, false, null)
                                 profileModifyData.setLocation(location)
                             })
                     }

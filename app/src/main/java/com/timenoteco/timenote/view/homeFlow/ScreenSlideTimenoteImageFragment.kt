@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.view.homeFlow
 
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,6 +16,7 @@ import kotlinx.android.synthetic.main.timenote_view_image.*
 private const val ARG_PARAM1 = "position"
 private const val ARG_PARAM2 = "url"
 private const val ARG_PARAM3 = "hideIcons"
+private const val ARG_PARAM4 = "isNullOrEmpty"
 
 
 class ScreenSlideTimenoteImageFragment : Fragment() {
@@ -22,6 +24,7 @@ class ScreenSlideTimenoteImageFragment : Fragment() {
     private var position: Int? = null
     private var url: String? = null
     private var hideIcons: Boolean? = null
+    private var isNullOrEmpty: Boolean? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,6 +33,7 @@ class ScreenSlideTimenoteImageFragment : Fragment() {
             position = it.getInt(ARG_PARAM1)
             url = it.getString(ARG_PARAM2)
             hideIcons = it.getBoolean(ARG_PARAM3)
+            isNullOrEmpty = it.getBoolean(ARG_PARAM4)
         }
     }
 
@@ -44,6 +48,10 @@ class ScreenSlideTimenoteImageFragment : Fragment() {
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        if(isNullOrEmpty!!){
+            if(!url.isNullOrEmpty() && !url.isNullOrBlank()) create_timenote_pic.setBackgroundColor((Color.parseColor(if(url?.contains("#")!!) url else  "#${url}")))
+        } else
         Glide.with(this)
             .load(Uri.parse(url))
             .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
@@ -81,6 +89,7 @@ class ScreenSlideTimenoteImageFragment : Fragment() {
             position: Int,
             url: String?,
             hideIcons: Boolean,
+            isNullOrEmpty: Boolean,
             itemClickListener: (Int, Int) -> Unit
         ) =
             ScreenSlideTimenoteImageFragment().apply {
@@ -88,6 +97,7 @@ class ScreenSlideTimenoteImageFragment : Fragment() {
                         putInt(ARG_PARAM1, position)
                         putString(ARG_PARAM2, url)
                         putBoolean(ARG_PARAM3, hideIcons)
+                        putBoolean(ARG_PARAM4, isNullOrEmpty)
                         setImageClickListener(itemClickListener)
                     }
                 }

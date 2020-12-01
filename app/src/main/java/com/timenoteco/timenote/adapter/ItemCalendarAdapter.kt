@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.adapter
 
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
@@ -56,13 +57,22 @@ class ItemCalendarAdapter(
 
         fun bindListStyleItem(event: TimenoteInfoDTO) {
             itemView.profile_calendar_item_name_event.text = event.title
-            itemView.profile_calendar_item_address_event.text = event.location?.address?.address?.plus(", ")?.plus(event.location?.address?.city)?.plus(" ")?.plus(event.location?.address?.country)
+            itemView.profile_calendar_item_address_event.text = event.location?.address?.address?.plus(", ")?.plus(event.location.address.city)?.plus(" ")?.plus(event.location.address.country)
 
-            Glide
+            itemView.profile_calendar_item_pic_event_imageview.setBackgroundColor(Color.parseColor("#FFFFFF"))
+            itemView.profile_calendar_item_pic_event_imageview.setImageDrawable(null)
+
+            if(event.pictures.isNullOrEmpty()) {
+                if (!event.colorHex.isNullOrBlank() && !event.colorHex.isNullOrEmpty()) itemView.profile_calendar_item_pic_event_imageview.setBackgroundColor(
+                    Color.parseColor(if (event.colorHex?.contains("#")!!) event.colorHex else "#${event.colorHex}")
+                )
+            }
+            else Glide
                 .with(itemView)
-                .load(event.pictures?.get(0))
+                .load(event.pictures[0])
                 .apply(RequestOptions.circleCropTransform())
                 .into(itemView.profile_calendar_item_pic_event_imageview)
+
         }
 
     }

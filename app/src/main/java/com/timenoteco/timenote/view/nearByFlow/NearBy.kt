@@ -22,6 +22,7 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
 import androidx.preference.PreferenceManager
@@ -57,8 +58,14 @@ import com.timenoteco.timenote.common.stringLiveData
 import com.timenoteco.timenote.listeners.ShowBarListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.*
+import com.timenoteco.timenote.model.Address
+import com.timenoteco.timenote.model.Location
 import com.timenoteco.timenote.viewModel.*
 import com.timenoteco.timenote.webService.NearbyFilterData
+import io.branch.indexing.BranchUniversalObject
+import io.branch.referral.util.BranchEvent
+import io.branch.referral.util.ContentMetadata
+import io.branch.referral.util.LinkProperties
 import kotlinx.android.synthetic.main.fragment_near_by.*
 import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.friends_search.view.*
@@ -96,20 +103,20 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     private lateinit var prefs : SharedPreferences
     private lateinit var nearbyFilterData: NearbyFilterData
     private val nearbyViewModel: NearbyViewModel by activityViewModels()
-    val TOKEN: String = "TOKEN"
     private var tokenId: String? = null
     private var nearbyToCompare: String = ""
     private val utils = Utils()
+    private lateinit var userInfoDTO: UserInfoDTO
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        tokenId = prefs.getString(TOKEN, null)
+        tokenId = prefs.getString(accessToken, null)
         loginViewModel.getAuthenticationState().observe(requireActivity(), androidx.lifecycle.Observer {
             when (it) {
                 //LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(NearByDirections.actionNearByToNavigation())
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> {
-                    tokenId = prefs.getString(TOKEN, null)
+                    tokenId = prefs.getString(accessToken, null)
                     findNavController().popBackStack(R.id.nearBy, false)
                 }
                 LoginViewModel.AuthenticationState.GUEST -> findNavController().popBackStack(R.id.nearBy, false)
@@ -140,6 +147,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     @OptIn(ExperimentalPagingApi::class)
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
         Utils().hideStatusBar(requireActivity())
 
         nearby_swipe_refresh.isEnabled = false
@@ -152,6 +160,9 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         nearby_place.setOnClickListener(this)
         nearby_time.setOnClickListener(this)
         nearby_filter_btn.setOnClickListener(this)
+
+        val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
+        userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
 
         //nearby_swipe_refresh.setOnRefreshListener { loadData(nearbyModifyModel) }
 
@@ -217,13 +228,13 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, Utils())
         nearby_rv.adapter = timenotePagingAdapter
         nearby_rv.layoutManager = LinearLayoutManager(requireContext())
-        //if(nearbyToCompare != Gson().toJson(nearbyFilterData.loadNearbyFilter()) && !tokenId.isNullOrBlank()){
+        if(nearbyToCompare != Gson().toJson(nearbyFilterData.loadNearbyFilter()) && !tokenId.isNullOrBlank()){
                 lifecycleScope.launch {
-                    nearbyViewModel.getNearbyResults(tokenId!!, nearbyModifyModel!!).collectLatest { pagingData ->
+                    nearbyViewModel.getNearbyResults(tokenId!!, nearbyModifyModel!!, prefs).collectLatest { pagingData ->
                         timenotePagingAdapter.submitData(pagingData)
                     }
                 }
-            //}
+            }
 
         timenotePagingAdapter.addDataRefreshListener { isEmpty ->
             nearby_swipe_refresh.isRefreshing = false
@@ -247,7 +258,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
                         this.googleMap?.addMarker(MarkerOptions().position(LatLng(place.latLng?.latitude!!, place.latLng?.longitude!!)))
                         this.googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(place.latLng?.latitude!!, place.latLng?.longitude!!), 15F))
                         nearbyViewModel.fetchLocation(place.id!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer { detailedPlace ->
-                            val location = Utils().setLocation(detailedPlace.body()!!)
+                            val location = Utils().setLocation(detailedPlace.body()!!, false, null)
                             if(detailedPlace.isSuccessful) nearbyFilterData.setWhere(location)
                         })
                     }
@@ -295,7 +306,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
                 googleMap?.addMarker(MarkerOptions().position(LatLng(place?.latLng?.latitude!!, place.latLng?.longitude!!)))
                 googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(place?.latLng?.latitude!!, place.latLng?.longitude!!), 15F))
                 nearbyViewModel.fetchLocation(place?.id!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer { detailedPlace ->
-                    if(detailedPlace.isSuccessful) nearbyFilterData.setWhere(Utils().setLocation(detailedPlace.body()!!))
+                    if(detailedPlace.isSuccessful) nearbyFilterData.setWhere(Utils().setLocation(detailedPlace.body()!!, false, null))
                     firstTime = false
                 })
             }
@@ -317,9 +328,23 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
 
     override fun onPlusClicked(timenoteInfoDTO: TimenoteInfoDTO, isAdded: Boolean) {
         if(isAdded){
-            timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id)
-        } else {
-            timenoteViewModel.joinTimenote(tokenId!!, timenoteInfoDTO.id)
+            timenoteViewModel.joinTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                    if(it.code() == 401) {
+                        loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer { newAccessToken ->
+                            tokenId = newAccessToken
+                            timenoteViewModel.joinTimenote(tokenId!!, timenoteInfoDTO.id)
+                        })
+                    }
+                })
+        }  else {
+            timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                if(it.code() == 401) {
+                    loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer { newAccessToken ->
+                        tokenId = newAccessToken
+                        timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id)
+                    })
+                }
+            })
         }
     }
 
@@ -366,7 +391,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
-            timenoteViewModel.getUsersParticipating(tokenId!!, infoDTO.id).collectLatest {
+            timenoteViewModel.getUsersParticipating(tokenId!!, infoDTO.id, prefs).collectLatest {
                 userAdapter.submitData(it)
             }
         }
@@ -377,23 +402,56 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     }
 
     override fun onReportClicked() {
-        timenoteViewModel.deleteTimenote(tokenId!!, "")
+        //timenoteViewModel.deleteTimenote(tokenId!!, )
     }
 
     override fun onEditClicked(timenoteInfoDTO: TimenoteInfoDTO) {
     }
 
     override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO) {
+        share(timenoteInfoDTO)
     }
 
+    private fun share(timenoteInfoDTO: TimenoteInfoDTO) {
+
+        val linkProperties: LinkProperties = LinkProperties().setChannel("whatsapp").setFeature("sharing")
+
+        val branchUniversalObject = if(!timenoteInfoDTO.pictures?.isNullOrEmpty()!!) BranchUniversalObject()
+            .setTitle(timenoteInfoDTO.title)
+            .setContentDescription(timenoteInfoDTO.description)
+            .setContentImageUrl(timenoteInfoDTO.pictures[0])
+            .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
+            .setContentMetadata(ContentMetadata().addCustomMetadata("timenoteInfoDTO", Gson().toJson(timenoteInfoDTO)))
+        else BranchUniversalObject()
+            .setTitle(timenoteInfoDTO.title)
+            .setContentDescription(timenoteInfoDTO.description)
+            .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
+            .setContentMetadata(ContentMetadata().addCustomMetadata("timenoteInfoDTO", Gson().toJson(timenoteInfoDTO)))
+
+        branchUniversalObject.generateShortUrl(requireContext(), linkProperties) { url, error ->
+            BranchEvent("branch_url_created").logEvent(requireContext())
+            val i = Intent(Intent.ACTION_SEND)
+            i.type = "text/plain"
+            i.putExtra(Intent.EXTRA_TEXT, String.format("Dayzee : %s at %s", timenoteInfoDTO.title, url))
+            startActivityForResult(i, 111)
+        }
+
+
+    }
     override fun onShareClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         sendTo.clear()
         val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
             customView(R.layout.friends_search)
             lifecycleOwner(this@NearBy)
             positiveButton(R.string.send){
-                timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo))
-            }
+                timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo)).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                    if(it.code() == 401) {
+                        loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer { newAccessToken ->
+                            tokenId = newAccessToken
+                            timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo))
+                        })
+                    }
+                })            }
             negativeButton(R.string.cancel)
         }
 
@@ -414,7 +472,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
-            followViewModel.getUsers(tokenId!!, 0).collectLatest {
+            followViewModel.getUsers(tokenId!!, userInfoDTO.id!!, 0, prefs).collectLatest {
                 userAdapter.submitData(it)
             }
         }
@@ -433,11 +491,20 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     }
 
     override fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        timenoteViewModel.deleteTimenote(tokenId!!, "")
+        timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            if(it.code() == 401) {
+                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer {newAccessToken ->
+                    tokenId = newAccessToken
+                    timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id)
+                })
+            }
+        })
     }
 
     override fun onDuplicateClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        //findNavController().navigate(NearByDirections.actionNearByToCreateTimenote(true, "", CreationTimenoteDTO(), 3))
+        findNavController().navigate(NearByDirections.actionNearByToCreateTimenote(1, timenoteInfoDTO.id, CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
+            timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
+            timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null), 3))
     }
 
     override fun onAddressClicked(timenoteInfoDTO: TimenoteInfoDTO) {

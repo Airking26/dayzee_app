@@ -138,8 +138,8 @@ class NearbyFilters : Fragment(), View.OnClickListener {
                 else -> nearby_filter_paid_timenote_tv.text = getText(R.string.free)
             }
             when(nearbyModifyModel.maxDistance){
-                in 1..100 -> nearby_distance_seekbar.setProgress(nearbyModifyModel.maxDistance.toFloat())
-                else -> nearby_distance_seekbar.setProgress(10F)
+                in 1..250 -> nearby_distance_seekbar.setProgress(nearbyModifyModel.maxDistance.toFloat())
+                else -> nearby_distance_seekbar.setProgress(1F)
             }
             if(nearbyModifyModel.date.isBlank()) nearby_filter_when_tv.text = SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis()) else nearby_filter_when_tv.text = SimpleDateFormat(DATE_FORMAT, Locale.getDefault()).format(SimpleDateFormat(ISO, Locale.getDefault()).parse(nearbyModifyModel.date).time)
             nearby_filter_where_tv.text = nearbyModifyModel.location.address.address
@@ -149,7 +149,7 @@ class NearbyFilters : Fragment(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when (v) {
-            nearby_filter_category -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            /*nearby_filter_category -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.category)
                 positiveButton(R.string.done)
                 listItemsMultiChoice(items = listOf(
@@ -175,7 +175,7 @@ class NearbyFilters : Fragment(), View.OnClickListener {
                     nearbyFilterData.setCategories(listOf(Categories("", text.toString())))
                 }
                 lifecycleOwner(this@NearbyFilters)
-            }
+            }*/
             nearby_filter_from -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.from)
                 listItems(null, listOf("Public", "Private", "Public and Private")) { dialog, index, text ->
@@ -229,7 +229,7 @@ class NearbyFilters : Fragment(), View.OnClickListener {
                         val place = Autocomplete.getPlaceFromIntent(data)
                         nearbyFilterWhereTv.text = place.address
                         nearbyViewModel.fetchLocation(place.id!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-                            if(it.isSuccessful) nearbyFilterData.setWhere(Utils().setLocation(it.body()!!))
+                            if(it.isSuccessful) nearbyFilterData.setWhere(Utils().setLocation(it.body()!!, false, null))
                         })
                     }
                 }

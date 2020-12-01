@@ -181,6 +181,27 @@
 
             <TextView
                 android:fontFamily="sans-serif-light"
+                android:id="@+id/profile_modify_description"
+                android:drawablePadding="8dp"
+                android:hint="@string/describe_yourself"
+                android:textColor="@color/colorText"
+                android:backgroundTint="#60000000"
+                android:textSize="15sp"
+                android:padding="16dp"
+                android:drawableStart="@drawable/ic_profile_description"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/from_cl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                app:layout_constraintTop_toBottomOf="@id/profile_modify_description"
+                style="@style/AppTheme.Divider.Toolbar"
+                tools:ignore="MissingConstraints" />
+
+            <TextView
+                android:fontFamily="sans-serif-light"
                 android:focusable="false"
                 android:id="@+id/profile_modify_birthday"
                 android:drawablePadding="8dp"
@@ -192,7 +213,7 @@
                 android:drawableStart="@drawable/ic_profile_birthday"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/from_cl"
+                app:layout_constraintTop_toBottomOf="@id/profile_modify_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
@@ -458,28 +479,6 @@
                     tools:ignore="MissingConstraints" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-            <TextView
-                android:fontFamily="sans-serif-light"
-                android:id="@+id/profile_modify_description"
-                android:drawablePadding="8dp"
-                android:hint="@string/describe_yourself"
-                android:textColor="@color/colorText"
-                android:backgroundTint="#60000000"
-                android:textSize="15sp"
-                android:padding="16dp"
-                android:drawableStart="@drawable/ic_profile_description"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/linkedin_cl"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-            <TextView
-                app:layout_constraintTop_toBottomOf="@id/profile_modify_description"
-                style="@style/AppTheme.Divider.Toolbar"
-                tools:ignore="MissingConstraints" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

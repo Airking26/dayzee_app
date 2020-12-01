@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.date.dayOfMonth
@@ -23,6 +24,8 @@ import com.timenoteco.timenote.androidView.calendar.widget.CollapsibleCalendar
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.model.TimenoteDateFilteredDTO
 import com.timenoteco.timenote.model.TimenoteInfoDTO
+import com.timenoteco.timenote.model.accessToken
+import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.ProfileViewModel
 import kotlinx.android.synthetic.main.fragment_profile_calendar.*
 import java.text.SimpleDateFormat
@@ -39,15 +42,16 @@ class ProfileCalendar: Fragment() {
     private var events: MutableList<TimenoteInfoDTO> = mutableListOf()
     private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     private val profilViewModel : ProfileViewModel by activityViewModels()
+    private val loginViewModel : LoginViewModel by activityViewModels()
+    private val args: ProfileCalendarArgs by navArgs()
     private lateinit var prefs: SharedPreferences
-    val TOKEN: String = "TOKEN"
     private var tokenId: String? = null
     private val utils = Utils()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        tokenId = prefs.getString(TOKEN, null)
+        tokenId = prefs.getString(accessToken, null)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
@@ -66,7 +70,7 @@ class ProfileCalendar: Fragment() {
 
 
         val day = calendarView.selectedDay
-        val nbrDays = if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) YearMonth.of(day?.year!!, day.month).lengthOfMonth()
+        val nbrDays = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) YearMonth.of(day?.year!!, day.month).lengthOfMonth()
          else GregorianCalendar(day?.year!!, day.month, day.day).getActualMaximum(Calendar.DAY_OF_MONTH)
 
         val startDate = SimpleDateFormat(ISO).format(GregorianCalendar(day.year, day.month - 1, 1).timeInMillis)
@@ -90,7 +94,7 @@ class ProfileCalendar: Fragment() {
                 val selectedMonth = datetime.month
                 calendarView.select(day)
                 val nbrOfDays =
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) YearMonth.of(
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) YearMonth.of(
                         day.year,
                         day.month
                     ).lengthOfMonth()
@@ -114,7 +118,6 @@ class ProfileCalendar: Fragment() {
                         nbrOfDays
                     ).timeInMillis
                 )
-
                 if (monthActual != selectedMonth) loadData(startDate, endDate, day)
             }
 
@@ -126,7 +129,7 @@ class ProfileCalendar: Fragment() {
 
             override fun onMonthChange(day: Day?) {
                 val nbrOfDays =
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) YearMonth.of(
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) YearMonth.of(
                         day?.year!!,
                         day.month
                     ).lengthOfMonth()
@@ -165,8 +168,22 @@ class ProfileCalendar: Fragment() {
         endDate: String,
         day: Day
     ) {
-        profilViewModel.getTimenotesByDate(tokenId!!, TimenoteDateFilteredDTO(startDate, endDate))
+        getTimenotesByDate(startDate, endDate, day)
+    }
+
+    private fun getTimenotesByDate(
+        startDate: String,
+        endDate: String,
+        day: Day
+    ) {
+        profilViewModel.getTimenotesByDate(tokenId!!,  TimenoteDateFilteredDTO(startDate, endDate), args.id)
             .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                if(it.code() == 401) {
+                    loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer { newAccessToken ->
+                        tokenId = newAccessToken
+                        getTimenotesByDate(startDate, endDate, day)
+                    })
+                }
                 if (it.isSuccessful) {
                     events.clear()
                     events.addAll(it.body() as List<TimenoteInfoDTO>)
