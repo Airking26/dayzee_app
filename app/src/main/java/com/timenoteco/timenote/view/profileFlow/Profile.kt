@@ -60,6 +60,8 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
     private val args : ProfileArgs by navArgs()
     private lateinit var prefs: SharedPreferences
     private var tokenId : String? = null
+    private var showFilterBarFutureEvents = false
+    private var showFilterBarPastEvents = false
     private var locaPref: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -291,14 +293,30 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 profile_tablayout.setSelectedTabIndicatorColor(resources.getColor(android.R.color.darker_gray))
                 profile_tablayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                     override fun onTabReselected(tab: TabLayout.Tab?) {
-                        profileEventPagerAdapter?.setShowFilterBar(true, tab?.position!!, true, !args.isNotMine)
+                        if(tab?.position == 0 && !showFilterBarPastEvents){
+                            profileEventPagerAdapter?.setShowFilterBar(true, 0, true, !args.isNotMine)
+                            showFilterBarPastEvents = true
+                        } else if(tab?.position == 0 && showFilterBarPastEvents){
+                            profileEventPagerAdapter?.setShowFilterBar(false, 0, true, !args.isNotMine)
+                            showFilterBarPastEvents = false
+                        } else if(tab?.position == 1 && !showFilterBarFutureEvents){
+                            profileEventPagerAdapter?.setShowFilterBar(true, 1, true, !args.isNotMine)
+                            showFilterBarFutureEvents = true
+                        } else {
+                            profileEventPagerAdapter?.setShowFilterBar(false, 1, true, !args.isNotMine)
+                            showFilterBarFutureEvents = false
+                        }
+
                     }
 
                     override fun onTabUnselected(tab: TabLayout.Tab?) {
-                        profileEventPagerAdapter?.setShowFilterBar(true, tab?.position!!, false,  !args.isNotMine)
+                        //profileEventPagerAdapter?.setShowFilterBar(true, tab?.position!!, false,  !args.isNotMine)
                     }
 
                     override fun onTabSelected(tab: TabLayout.Tab?) {
+                        profileEventPagerAdapter?.setShowFilterBar(false, tab?.position!!, false, !args.isNotMine)
+                        showFilterBarPastEvents = false
+                        showFilterBarFutureEvents = false
                         when (tab?.position) {
                             0 -> {
                                 profile_tablayout.getTabAt(1)?.icon = resources.getDrawable(R.drawable.ic_futur_ok)
@@ -317,15 +335,18 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
             }
 
             profile_modify_btn.setOnClickListener(this)
-            if(!args.isNotMine) profile_calendar_btn.setOnClickListener(this)
-            profile_settings_btn.setOnClickListener(this)
+            if ((userInfoDTO?.isInFollowers!! && args.isNotMine)  || !args.isNotMine){
+                profile_settings_btn.setOnClickListener(this)
+                profile_followers_label.setOnClickListener(this)
+                profile_nbr_followers.setOnClickListener(this)
+                profile_nbr_following.setOnClickListener(this)
+                profile_following_label.setOnClickListener(this)
+                profile_infos.setOnClickListener(this)
+                profile_calendar_btn.setOnClickListener(this)
+            }
             profile_notif_btn.setOnClickListener(this)
             profile_location.setOnClickListener(this)
-            profile_followers_label.setOnClickListener(this)
-            profile_nbr_followers.setOnClickListener(this)
-            profile_nbr_following.setOnClickListener(this)
-            profile_following_label.setOnClickListener(this)
-            profile_infos.setOnClickListener(this)
+
 
         }
 
@@ -356,10 +377,10 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 if(args.isNotMine)findNavController().popBackStack()
                 else findNavController().navigate(ProfileDirections.actionProfileToNotifications())
             }
-            profile_followers_label -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage(userInfoDTO?.id!!).setFollowers(1))
-            profile_following_label -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage(userInfoDTO?.id!!).setFollowers(0))
-            profile_nbr_followers -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage(userInfoDTO?.id!!).setFollowers(1))
-            profile_nbr_following -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage(userInfoDTO?.id!!).setFollowers(0))
+            profile_followers_label -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage(userInfoDTO?.id!!, args.isNotMine).setFollowers(1))
+            profile_following_label -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage(userInfoDTO?.id!!, args.isNotMine).setFollowers(0))
+            profile_nbr_followers -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage(userInfoDTO?.id!!, args.isNotMine).setFollowers(1))
+            profile_nbr_following -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage(userInfoDTO?.id!!, args.isNotMine).setFollowers(0))
             profile_infos -> {
                 if(stateSwitchUrl.isNullOrBlank()) {
                     if(args.isNotMine) findNavController().navigate(ProfileDirections.actionProfileToProfilModify(args.isNotMine, args.userInfoDTO))
@@ -459,6 +480,12 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
     private fun followPrivateUser() {
         followViewModel.followPrivateUser(tokenId!!, userInfoDTO?.id!!)
             .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                if(it.code() == 400) Toast.makeText(
+                    requireContext(),
+                    "Already Asked",
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
                 if(it.code() == 401){
                     loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer { newAccessToken ->
                         tokenId = newAccessToken

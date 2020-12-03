@@ -10,7 +10,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.text.*
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,19 +40,15 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.*
-import com.timenoteco.timenote.common.RoundedCornersTransformation
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.bytesEqualTo
 import com.timenoteco.timenote.common.pixelsEqualTo
 import com.timenoteco.timenote.model.*
-import com.timenoteco.timenote.view.MainActivity
 import com.timenoteco.timenote.viewModel.CommentViewModel
 import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.TimenoteViewModel
 import io.branch.indexing.BranchUniversalObject
-import io.branch.referral.Branch
-import io.branch.referral.BranchError
 import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
 import io.branch.referral.util.LinkProperties
@@ -65,7 +60,6 @@ import kotlinx.android.synthetic.main.item_timenote_root.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 
@@ -217,83 +211,33 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                         Glide
                             .with(requireContext())
                             .load(args.event?.joinedBy?.users!![0].picture)
-                            .apply(
-                                RequestOptions.bitmapTransform(
-                                    RoundedCornersTransformation(
-                                        context,
-                                        90,
-                                        0,
-                                        getString(0 + R.color.colorBackground),
-                                        4
-                                    )
-                                )
-                            )
+                            .apply(RequestOptions.circleCropTransform())
                             .into(timenote_pic_participant_two)
 
                         Glide
                             .with(requireContext())
                             .load(args.event?.joinedBy?.users!![1].picture)
-                            .apply(
-                                RequestOptions.bitmapTransform(
-                                    RoundedCornersTransformation(
-                                        context,
-                                        90,
-                                        0,
-                                        getString(0 + R.color.colorBackground),
-                                        4
-                                    )
-                                )
-                            )
-                            .into(timenote_pic_participant_two)
+                            .apply(RequestOptions.circleCropTransform())
+                            .into(timenote_pic_participant_three)
                         timenote_pic_participant_one_rl.visibility = View.GONE
                     }
                     else -> {
                         Glide
                             .with(requireContext())
                             .load(args.event?.joinedBy?.users!![0].picture)
-                            .apply(
-                                RequestOptions.bitmapTransform(
-                                    RoundedCornersTransformation(
-                                        context,
-                                        90,
-                                        0,
-                                        getString(0 + R.color.colorBackground),
-                                        4
-                                    )
-                                )
-                            )
+                            .apply(RequestOptions.circleCropTransform())
                             .into(timenote_pic_participant_one)
 
                         Glide
                             .with(requireContext())
                             .load(args.event?.joinedBy?.users!![1].picture)
-                            .apply(
-                                RequestOptions.bitmapTransform(
-                                    RoundedCornersTransformation(
-                                        context,
-                                        90,
-                                        0,
-                                        getString(0 + R.color.colorBackground),
-                                        4
-                                    )
-                                )
-                            )
+                            .apply(RequestOptions.circleCropTransform())
                             .into(timenote_pic_participant_two)
 
                         Glide
                             .with(requireContext())
                             .load(args.event?.joinedBy?.users!![3].picture)
-                            .apply(
-                                RequestOptions.bitmapTransform(
-                                    RoundedCornersTransformation(
-                                        context,
-                                        90,
-                                        0,
-                                        getString(0 + R.color.colorBackground),
-                                        4
-                                    )
-                                )
-                            )
+                            .apply(RequestOptions.circleCropTransform())
                             .into(timenote_pic_participant_three)
                     }
                 }
@@ -364,6 +308,8 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             timenote_plus.setOnClickListener(this)
             timenote_fl.setOnClickListener(this)
             timenote_buy_cl.setOnClickListener(this)
+        timenote_day_month.setOnClickListener(this)
+        timenote_in_label.setOnClickListener(this)
 
             detailed_timenote_btn_back.setOnClickListener { findNavController().popBackStack()
             }
@@ -464,7 +410,13 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                 }
 
                 val recyclerview = dial.getCustomView().users_participating_rv
-                val userAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, args.event, this)
+                val userAdapter = UsersPagingAdapter(
+                    UsersPagingAdapter.UserComparator,
+                    args.event,
+                    this,
+                    null,
+                    null
+                )
                 recyclerview.layoutManager = LinearLayoutManager(requireContext())
                 recyclerview.adapter = userAdapter
                 lifecycleScope.launch{
@@ -477,6 +429,27 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                 val i = Intent(Intent.ACTION_VIEW)
                 i.data = Uri.parse(if (args.event?.url?.contains("https://")!!) args.event?.url else "https://" + args.event?.url)
                 startActivity(i)
+            }
+            timenote_day_month -> {
+                separator_1.visibility = View.INVISIBLE
+                separator_2.visibility = View.INVISIBLE
+                timenote_day_month.visibility = View.INVISIBLE
+                timenote_time.visibility = View.INVISIBLE
+                timenote_year.visibility = View.INVISIBLE
+                timenote_in_label.visibility = View.VISIBLE
+                //if(isFromFuture)
+                    timenote_in_label.text = utils.inTime(args.event?.startingAt!!)
+                /*else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    timenote_in_label.text = utils.sinceTime(args.event?.endingAt!!)
+                }*/
+            }
+            timenote_in_label -> {
+                separator_1.visibility = View.VISIBLE
+                separator_2.visibility = View.VISIBLE
+                timenote_day_month.visibility = View.VISIBLE
+                timenote_time.visibility = View.VISIBLE
+                timenote_year.visibility = View.VISIBLE
+                timenote_in_label.visibility = View.INVISIBLE
             }
         }
     }
@@ -556,6 +529,13 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
 
     override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
 
+    }
+
+    override fun onUnfollow(id: String) {
+
+    }
+
+    override fun onRemove(id: String) {
     }
 
     override fun onAdd(userInfoDTO: UserInfoDTO) {

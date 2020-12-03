@@ -82,8 +82,14 @@ class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
                 screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(
                     preview_created_timenote_indicator.adapterDataObserver
                 )
-            } else {
-                if (!it.colorHex.isNullOrBlank()) preview_created_timenote_vp.setBackgroundColor(Color.parseColor(if(it.colorHex?.contains("#")!!) it.colorHex else  "#${it.colorHex}"))
+            }
+            else {
+                if (!it.colorHex.isNullOrBlank())
+                    preview_created_timenote_vp.setBackgroundColor(Color.parseColor(
+                        if(it.colorHex?.contains("#")!!)
+                            it.colorHex
+                        else
+                            "#${it.colorHex}"))
             }
 
             preview_created_timenote_title.text = it.title

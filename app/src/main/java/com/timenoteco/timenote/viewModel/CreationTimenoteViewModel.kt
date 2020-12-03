@@ -39,7 +39,7 @@ class CreationTimenoteViewModel: ViewModel() {
     fun setDescription(description: String) = timenoteLiveData.postValue(createTimenoteData.setDescription(description))
     fun setPicUser(pic: List<String>) = timenoteLiveData.postValue(createTimenoteData.setPic(pic))
     fun setLocation(location: Location) = timenoteLiveData.postValue(createTimenoteData.setPlace(location))
-    fun setCategory(category: Category) = timenoteLiveData.postValue(createTimenoteData.setCategory(category))
+    fun setCategory(category: Category?) = timenoteLiveData.postValue(createTimenoteData.setCategory(category))
     fun setStartDate(startDate: Long, format: String) = timenoteLiveData.postValue(createTimenoteData.setStartDate(formatDate(format, startDate)))
     fun setStartDateOffset(date: String) = timenoteLiveData.postValue(createTimenoteData.setStartDate(date))
     fun setEndDateOffset(date: String) = timenoteLiveData.postValue(createTimenoteData.setEndDate(date))

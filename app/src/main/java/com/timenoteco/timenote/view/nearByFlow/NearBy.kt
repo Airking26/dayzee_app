@@ -18,16 +18,13 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSnapHelper
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.WhichButton
@@ -58,8 +55,6 @@ import com.timenoteco.timenote.common.stringLiveData
 import com.timenoteco.timenote.listeners.ShowBarListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.*
-import com.timenoteco.timenote.model.Address
-import com.timenoteco.timenote.model.Location
 import com.timenoteco.timenote.viewModel.*
 import com.timenoteco.timenote.webService.NearbyFilterData
 import io.branch.indexing.BranchUniversalObject
@@ -387,7 +382,13 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         }
 
         val recyclerview = dial.getCustomView().users_participating_rv
-        val userAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, infoDTO,this)
+        val userAdapter = UsersPagingAdapter(
+            UsersPagingAdapter.UserComparator,
+            infoDTO,
+            this,
+            null,
+            null
+        )
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
@@ -513,6 +514,13 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
 
     override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
 
+    }
+
+    override fun onUnfollow(id: String) {
+
+    }
+
+    override fun onRemove(id: String) {
     }
 
 }

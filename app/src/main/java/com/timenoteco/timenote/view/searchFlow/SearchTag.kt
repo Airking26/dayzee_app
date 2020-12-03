@@ -24,7 +24,6 @@ import com.afollestad.materialdialogs.actions.getActionButton
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
-import com.afollestad.materialdialogs.datetime.dateTimePicker
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -36,22 +35,18 @@ import com.timenoteco.timenote.adapter.UsersShareWithPagingAdapter
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.*
-import com.timenoteco.timenote.view.homeFlow.HomeDirections
 import com.timenoteco.timenote.viewModel.*
 import io.branch.indexing.BranchUniversalObject
 import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
 import io.branch.referral.util.LinkProperties
 import kotlinx.android.synthetic.main.fragment_search.*
-import kotlinx.android.synthetic.main.fragment_search_people.*
 import kotlinx.android.synthetic.main.fragment_search_tag.*
 import kotlinx.android.synthetic.main.friends_search.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type
-import java.text.SimpleDateFormat
-import java.time.temporal.WeekFields.ISO
 
 class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.SearchPeopleListener,
     UsersShareWithPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.AddToSend {
@@ -268,7 +263,13 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
         }
 
         val recyclerview = dial.getCustomView().users_participating_rv
-        val userAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, timenoteInfoDTO, this)
+        val userAdapter = UsersPagingAdapter(
+            UsersPagingAdapter.UserComparator,
+            timenoteInfoDTO,
+            this,
+            null,
+            null
+        )
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
@@ -279,6 +280,14 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
     }
 
     override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
+    }
+
+    override fun onUnfollow(id: String) {
+
+    }
+
+    override fun onRemove(id: String) {
+
     }
 
     override fun onAdd(userInfoDTO: UserInfoDTO) {

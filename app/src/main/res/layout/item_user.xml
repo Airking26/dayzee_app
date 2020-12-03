@@ -43,5 +43,43 @@
         app:layout_constraintStart_toEndOf="@id/user_imageview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
+
+    <mehdi.sakout.fancybuttons.FancyButton
+        android:id="@+id/user_unfollow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="2dp"
+        android:visibility="gone"
+        app:fb_borderColor="@android:color/darker_gray"
+        app:fb_borderWidth="1dp"
+        app:fb_defaultColor="@android:color/transparent"
+        app:fb_radius="5dp"
+        android:layout_marginEnd="16dp"
+        app:fb_text="@string/unfollow"
+        app:fb_textColor="@android:color/darker_gray"
+        app:layout_constraintTop_toTopOf="@id/user_imageview"
+        app:layout_constraintBottom_toBottomOf="@id/user_imageview"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <mehdi.sakout.fancybuttons.FancyButton
+        android:id="@+id/user_remove"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="2dp"
+        android:visibility="gone"
+        app:fb_borderColor="@android:color/darker_gray"
+        app:fb_borderWidth="1dp"
+        app:fb_defaultColor="@android:color/transparent"
+        app:fb_radius="5dp"
+        android:layout_marginEnd="16dp"
+        app:fb_text="@string/remove"
+        app:fb_textColor="@android:color/darker_gray"
+        app:layout_constraintTop_toTopOf="@id/user_imageview"
+        app:layout_constraintBottom_toBottomOf="@id/user_imageview"
+        app:layout_constraintEnd_toEndOf="parent" />
     
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -220,6 +220,7 @@ class Utils {
     fun createImagePicker(fragment: Fragment, context: Context){
         Matisse.from(fragment)
             .choose(MimeType.ofImage())
+            .theme(R.style.Matisse_Dracula)
             .countable(false)
             .capture(true)
             .spanCount(4)

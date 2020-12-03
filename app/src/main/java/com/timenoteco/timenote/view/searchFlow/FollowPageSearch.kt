@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.paging.ExperimentalPagingApi
 import androidx.preference.PreferenceManager
@@ -17,13 +18,11 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.UsersAwaitingPagingAdapter
 import com.timenoteco.timenote.adapter.UsersPagingAdapter
 import com.timenoteco.timenote.adapter.UsersShareWithPagingAdapter
-import com.timenoteco.timenote.model.TimenoteInfoDTO
 import com.timenoteco.timenote.model.UserInfoDTO
 import com.timenoteco.timenote.model.accessToken
-import com.timenoteco.timenote.view.profileFlow.FollowPageArgs
+import com.timenoteco.timenote.view.profileFlow.FollowPageDirections
 import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
-import com.timenoteco.timenote.viewModel.ProfileViewModel
 import kotlinx.android.synthetic.main.fragment_follow_page.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -57,7 +56,13 @@ class FollowPageSearch : Fragment(), UsersPagingAdapter.SearchPeopleListener, Us
         }
 
         if(args.followers == 0 || args.followers == 1 || args.followers == 3){
-            usersPagingAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, null,this)
+            usersPagingAdapter = UsersPagingAdapter(
+                UsersPagingAdapter.UserComparator,
+                null,
+                this,
+                null,
+                args.followers
+            )
             users_rv.layoutManager = LinearLayoutManager(requireContext())
             users_rv.adapter = usersPagingAdapter
             if(args.followers == 3) {
@@ -88,6 +93,13 @@ class FollowPageSearch : Fragment(), UsersPagingAdapter.SearchPeopleListener, Us
     }
 
     override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
+        findNavController().navigate(FollowPageSearchDirections.actionFollowPageSearchToProfileSearch(userInfoDTO))
+    }
+
+    override fun onUnfollow(id: String) {
+    }
+
+    override fun onRemove(id: String) {
 
     }
 

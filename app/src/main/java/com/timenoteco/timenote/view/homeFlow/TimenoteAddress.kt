@@ -1,13 +1,11 @@
 package com.timenoteco.timenote.view.homeFlow
 
-import android.content.ContentValues
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -199,7 +197,13 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
         }
 
         val recyclerview = dial.getCustomView().users_participating_rv
-        val userAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, timenoteInfoDTO, this)
+        val userAdapter = UsersPagingAdapter(
+            UsersPagingAdapter.UserComparator,
+            timenoteInfoDTO,
+            this,
+            null,
+            null
+        )
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
@@ -268,6 +272,12 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
     override fun onEditClicked(timenoteInfoDTO: TimenoteInfoDTO) {}
     override fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO) {}
     override fun onSearchClicked(userInfoDTO: UserInfoDTO) {}
+    override fun onUnfollow(id: String) {
+
+    }
+
+    override fun onRemove(id: String) {
+    }
 
 
 }

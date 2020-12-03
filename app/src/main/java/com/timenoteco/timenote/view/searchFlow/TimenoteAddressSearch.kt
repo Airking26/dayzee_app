@@ -1,13 +1,11 @@
 package com.timenoteco.timenote.view.searchFlow
 
-import android.content.ContentValues
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -45,7 +43,6 @@ import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.view.homeFlow.TimenoteAddressArgs
-import com.timenoteco.timenote.view.homeFlow.TimenoteAddressDirections
 import com.timenoteco.timenote.viewModel.AlarmViewModel
 import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
@@ -200,7 +197,13 @@ class TimenoteAddressSearch : Fragment(), UsersShareWithPagingAdapter.SearchPeop
         }
 
         val recyclerview = dial.getCustomView().users_participating_rv
-        val userAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, timenoteInfoDTO, this)
+        val userAdapter = UsersPagingAdapter(
+            UsersPagingAdapter.UserComparator,
+            timenoteInfoDTO,
+            this,
+            null,
+            null
+        )
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
@@ -269,4 +272,10 @@ class TimenoteAddressSearch : Fragment(), UsersShareWithPagingAdapter.SearchPeop
     override fun onEditClicked(timenoteInfoDTO: TimenoteInfoDTO) {}
     override fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO) {}
     override fun onSearchClicked(userInfoDTO: UserInfoDTO) {}
+    override fun onUnfollow(id: String) {
+
+    }
+
+    override fun onRemove(id: String) {
+    }
 }

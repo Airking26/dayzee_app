@@ -125,6 +125,15 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
         profile_nbr_followers.text = args.userInfoDTO?.followers.toString()
         profile_nbr_following.text = args.userInfoDTO?.following.toString()
 
+        if(args.userInfoDTO?.description.isNullOrBlank()) profile_desc.visibility = View.GONE else {
+            profile_desc.visibility = View.VISIBLE
+            profile_desc.text = args.userInfoDTO?.description
+        }
+
+        if(args.userInfoDTO?.givenName.isNullOrBlank()) profile_name.visibility = View.GONE else {
+            profile_name.visibility = View.VISIBLE
+            profile_name.text = args.userInfoDTO?.givenName
+        }
 
         Glide
             .with(this)
@@ -175,16 +184,20 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
             TabLayoutMediator(profile_tablayout, profile_vp){ tab, position -> }.attach()
         }
 
-        profile_modify_btn.setOnClickListener(this)
-        profile_calendar_btn.setOnClickListener(this)
-        profile_settings_btn.setOnClickListener(this)
+
+        if(args.userInfoDTO?.isInFollowers!!){
+            profile_calendar_btn.setOnClickListener(this)
+            profile_settings_btn.setOnClickListener(this)
+            profile_location.setOnClickListener(this)
+            profile_followers_label.setOnClickListener(this)
+            profile_nbr_followers.setOnClickListener(this)
+            profile_nbr_following.setOnClickListener(this)
+            profile_following_label.setOnClickListener(this)
+            profile_infos.setOnClickListener(this)
+        }
         profile_notif_btn.setOnClickListener(this)
-        profile_location.setOnClickListener(this)
-        profile_followers_label.setOnClickListener(this)
-        profile_nbr_followers.setOnClickListener(this)
-        profile_nbr_following.setOnClickListener(this)
-        profile_following_label.setOnClickListener(this)
-        profile_infos.setOnClickListener(this)
+        profile_modify_btn.setOnClickListener(this)
+
 
     }
 
@@ -211,10 +224,10 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
                         }
                     }
                 }
-                profile_followers_label -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToFollowPageSearch(args.userInfoDTO?.id!!).setFollowers(1))
-            profile_following_label -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToFollowPageSearch(args.userInfoDTO?.id!!).setFollowers(0))
-            profile_nbr_followers -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToFollowPageSearch(args.userInfoDTO?.id!!).setFollowers(1))
-            profile_nbr_following -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToFollowPageSearch(args.userInfoDTO?.id!!).setFollowers(0))
+                profile_followers_label -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToFollowPageSearch(args.userInfoDTO?.id!!, true).setFollowers(1))
+            profile_following_label -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToFollowPageSearch(args.userInfoDTO?.id!!, true).setFollowers(0))
+            profile_nbr_followers -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToFollowPageSearch(args.userInfoDTO?.id!!, true).setFollowers(1))
+            profile_nbr_following -> findNavController().navigate(ProfileSearchDirections.actionProfileSearchToFollowPageSearch(args.userInfoDTO?.id!!, true).setFollowers(0))
             profile_follow_btn -> {
                 if (!isFollowed) {
                     if (args.userInfoDTO?.status == STATUS.PUBLIC.ordinal) {
@@ -235,7 +248,10 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
                 }
             }
             profile_infos -> {
-                if (true){
+                if(stateSwitchUrl.isNullOrBlank()) {
+                    findNavController().navigate(ProfileSearchDirections.actionProfileSearchToProfilModifySearch(true, args.userInfoDTO))
+                }
+                else {
                     val intent = Intent(Intent.ACTION_VIEW)
                     intent.data = Uri.parse(stateSwitchUrl)
                     try {
@@ -307,6 +323,12 @@ class ProfileSearch : BaseThroughFragment(), View.OnClickListener, OnRemoveFilte
     private fun followPrivateUser() {
         followViewModel.followPrivateUser(tokenId!!, args.userInfoDTO?.id!!)
             .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                if(it.code() == 400) Toast.makeText(
+                    requireContext(),
+                    "Already Asked",
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
                 if(it.code() == 401){
                     loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer { newAccessToken ->
                         tokenId = newAccessToken

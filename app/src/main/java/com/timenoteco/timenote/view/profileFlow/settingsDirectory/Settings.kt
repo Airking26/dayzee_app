@@ -194,8 +194,8 @@ class Settings : Fragment(), View.OnClickListener {
                 prefs.edit().putString(accessToken, null).apply()
                 loginViewModel.markAsUnauthenticated()}
             profile_settings_asked_sent -> findNavController().navigate(
-                SettingsDirections.actionSettingsToFollowPage(userInfoDTO.id!!).setFollowers(3))
-            profile_settings_awaiting -> findNavController().navigate(SettingsDirections.actionSettingsToFollowPage(userInfoDTO?.id!!).setFollowers(2))
+                SettingsDirections.actionSettingsToFollowPage(userInfoDTO.id!!, false).setFollowers(3))
+            profile_settings_awaiting -> findNavController().navigate(SettingsDirections.actionSettingsToFollowPage(userInfoDTO?.id!!, false).setFollowers(2))
         }
     }
 }

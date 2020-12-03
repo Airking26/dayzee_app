@@ -18,12 +18,10 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.UsersAwaitingPagingAdapter
 import com.timenoteco.timenote.adapter.UsersPagingAdapter
 import com.timenoteco.timenote.adapter.UsersShareWithPagingAdapter
-import com.timenoteco.timenote.model.TimenoteInfoDTO
 import com.timenoteco.timenote.model.UserInfoDTO
 import com.timenoteco.timenote.model.accessToken
 import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
-import com.timenoteco.timenote.viewModel.ProfileViewModel
 import kotlinx.android.synthetic.main.fragment_follow_page.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -57,7 +55,7 @@ class FollowPage : Fragment(), UsersPagingAdapter.SearchPeopleListener,
         }
 
         if(args.followers == 0 || args.followers == 1 || args.followers == 3){
-        usersPagingAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, null,this)
+        usersPagingAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, null,this, args.isNotMine, args.followers)
         users_rv.layoutManager = LinearLayoutManager(requireContext())
         users_rv.adapter = usersPagingAdapter
             if(args.followers == 3) {
@@ -89,6 +87,35 @@ class FollowPage : Fragment(), UsersPagingAdapter.SearchPeopleListener,
 
     override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
         findNavController().navigate(FollowPageDirections.actionFollowPageToProfile().setFrom(4).setIsNotMine(true).setUserInfoDTO(userInfoDTO))
+    }
+
+    override fun onUnfollow(id: String) {
+        followViewModel.unfollowUser(tokenId!!, id).observe(viewLifecycleOwner, Observer {
+            if(it.code() == 401){
+                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
+                    tokenId = newAccessToken
+                    followViewModel.unfollowUser(tokenId!!, id).observe(viewLifecycleOwner, Observer {resp ->
+                        if(resp.isSuccessful) usersPagingAdapter.refresh()
+                    })
+                })
+            }
+            if(it.isSuccessful) usersPagingAdapter.refresh()
+        })
+    }
+
+    override fun onRemove(id: String) {
+        followViewModel.removeUserFromFollower(tokenId!!, id).observe(viewLifecycleOwner, Observer {
+            if(it.code() == 401){
+                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer { newAccessToken ->
+                    tokenId = newAccessToken
+                    followViewModel.removeUserFromFollower(tokenId!!, id).observe(viewLifecycleOwner, Observer { rsp ->
+                        if(rsp.isSuccessful) usersPagingAdapter.refresh()
+
+                    })
+                })
+            }
+            if(it.isSuccessful) usersPagingAdapter.refresh()
+        })
     }
 
     @ExperimentalPagingApi

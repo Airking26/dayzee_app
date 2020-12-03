@@ -56,7 +56,7 @@ class CreationTimenoteData {
         return timenoteModel
     }
 
-    fun setCategory(category: Category): CreationTimenoteDTO{
+    fun setCategory(category: Category?): CreationTimenoteDTO{
         timenoteModel.category = category
         return timenoteModel
     }
@@ -82,7 +82,7 @@ class CreationTimenoteData {
     }
 
     fun clear(): CreationTimenoteDTO {
-        timenoteModel = CreationTimenoteDTO(createdBy = "", title = "", startingAt = "", endingAt = "", price = Price(0, ""))
+        timenoteModel = CreationTimenoteDTO(createdBy = "", title = "", startingAt = "", endingAt = "", price = Price(0, ""), pictures = listOf(), hashtags = listOf(), description = "", category = Category("", ""), colorHex = "")
         return timenoteModel
     }
 

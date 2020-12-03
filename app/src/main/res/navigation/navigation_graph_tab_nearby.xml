@@ -220,6 +220,9 @@
         <argument
             android:name="id"
             app:argType="string" />
+        <argument
+            android:name="isNotMine"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/profilModify"

@@ -268,4 +268,8 @@
     <string name="add_a_picture">Add a picture</string>
     <string name="default_notification_channel_id">dayzee_channel</string>
     <string name="visibility">Visibility</string>
+    <string name="subcategory">Subcategory</string>
+    <string name="create">Create</string>
+    <string name="clear_all_fields">Clear all fields</string>
+    <string name="remove">Remove</string>
 </resources>

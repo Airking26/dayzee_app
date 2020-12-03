@@ -49,7 +49,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
-import java.time.temporal.WeekFields.ISO
 
 private const val ARG_PARAM1 = "showHideFilterBar"
 private const val ARG_PARAM2 = "from"
@@ -205,11 +204,11 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
                 authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer { newAccessToken ->
                     tokenId = newAccessToken
                     timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {tid ->
-                        if(tid.isSuccessful) profileEventPagingAdapter?.notifyDataSetChanged()
+                        if(tid.isSuccessful) profileEventPagingAdapter?.refresh()
                     })
                 })
             }
-            if(it.isSuccessful) profileEventPagingAdapter?.notifyDataSetChanged()
+            if(it.isSuccessful) profileEventPagingAdapter?.refresh()
         })
     }
 
@@ -244,7 +243,13 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
         }
 
         val recyclerview = dial.getCustomView().users_participating_rv
-        val userAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, timenoteInfoDTO,this)
+        val userAdapter = UsersPagingAdapter(
+            UsersPagingAdapter.UserComparator,
+            timenoteInfoDTO,
+            this,
+            null,
+            null
+        )
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
@@ -431,6 +436,13 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
 
 
     override fun onSearchClicked(userInfoDTO: UserInfoDTO) {}
+    override fun onUnfollow(id: String) {
+
+    }
+
+    override fun onRemove(id: String) {
+    }
+
     override fun onAddressClicked(timenoteInfoDTO: TimenoteInfoDTO) {}
     override fun onSeeMoreClicked(event: TimenoteInfoDTO) {}
     override fun onCommentClicked(event: TimenoteInfoDTO) {}

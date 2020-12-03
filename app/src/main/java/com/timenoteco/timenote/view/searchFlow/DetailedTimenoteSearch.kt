@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Typeface
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.text.*
@@ -38,7 +39,6 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.*
-import com.timenoteco.timenote.common.RoundedCornersTransformation
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.bytesEqualTo
 import com.timenoteco.timenote.common.pixelsEqualTo
@@ -182,33 +182,33 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
                     Glide
                         .with(requireContext())
                         .load(args.timenoteInfoDTO?.joinedBy?.users!![0].picture)
-                        .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(context, 90, 0, getString(0 + R.color.colorBackground), 4)))
+                        .apply(RequestOptions.circleCropTransform())
                         .into(timenote_pic_participant_two)
 
                     Glide
                         .with(requireContext())
                         .load(args.timenoteInfoDTO?.joinedBy?.users!![1].picture)
-                        .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(context, 90, 0, getString(0 + R.color.colorBackground), 4)))
-                        .into(timenote_pic_participant_two)
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(timenote_pic_participant_three)
                     timenote_pic_participant_one_rl.visibility = View.GONE
                 }
                 else -> {
                     Glide
                         .with(requireContext())
                         .load(args.timenoteInfoDTO?.joinedBy?.users!![0].picture)
-                        .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(context, 90, 0,getString(0 + R.color.colorBackground), 4)))
+                        .apply(RequestOptions.circleCropTransform())
                         .into(timenote_pic_participant_one)
 
                     Glide
                         .with(requireContext())
                         .load(args.timenoteInfoDTO?.joinedBy?.users!![1].picture)
-                        .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(context, 90, 0, getString(0 + R.color.colorBackground), 4)))
+                        .apply(RequestOptions.circleCropTransform())
                         .into(timenote_pic_participant_two)
 
                     Glide
                         .with(requireContext())
                         .load(args.timenoteInfoDTO?.joinedBy?.users!![3].picture)
-                        .apply(RequestOptions.bitmapTransform(RoundedCornersTransformation(context, 90, 0, getString(0 + R.color.colorBackground), 4)))
+                        .apply(RequestOptions.circleCropTransform())
                         .into(timenote_pic_participant_three)
                 }
             }
@@ -269,6 +269,8 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
         timenote_plus.setOnClickListener(this)
         timenote_fl.setOnClickListener(this)
         timenote_buy_cl.setOnClickListener(this)
+        timenote_day_month.setOnClickListener(this)
+        timenote_in_label.setOnClickListener(this)
 
         detailed_timenote_btn_back.setOnClickListener { findNavController().popBackStack() }
     }
@@ -397,7 +399,13 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
                 }
 
                 val recyclerview = dial.getCustomView().users_participating_rv
-                val userAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, args.timenoteInfoDTO, this)
+                val userAdapter = UsersPagingAdapter(
+                    UsersPagingAdapter.UserComparator,
+                    args.timenoteInfoDTO,
+                    this,
+                    null,
+                    null
+                )
                 recyclerview.layoutManager = LinearLayoutManager(requireContext())
                 recyclerview.adapter = userAdapter
                 lifecycleScope.launch{
@@ -411,6 +419,23 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
                 i.data = Uri.parse(if (args.timenoteInfoDTO?.url?.contains("https://")!!) args.timenoteInfoDTO?.url else "https://" + args.timenoteInfoDTO?.url)
                 startActivity(i)
             }
+            timenote_day_month -> {
+                separator_1.visibility = View.INVISIBLE
+                separator_2.visibility = View.INVISIBLE
+                timenote_day_month.visibility = View.INVISIBLE
+                timenote_time.visibility = View.INVISIBLE
+                timenote_year.visibility = View.INVISIBLE
+                timenote_in_label.visibility = View.VISIBLE
+                timenote_in_label.text = utils.inTime(args.timenoteInfoDTO?.startingAt!!)
+            }
+            timenote_in_label -> {
+                separator_1.visibility = View.VISIBLE
+                separator_2.visibility = View.VISIBLE
+                timenote_day_month.visibility = View.VISIBLE
+                timenote_time.visibility = View.VISIBLE
+                timenote_year.visibility = View.VISIBLE
+                timenote_in_label.visibility = View.INVISIBLE
+            }
         }
     }
 
@@ -422,6 +447,13 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
     }
 
     override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
+    }
+
+    override fun onUnfollow(id: String) {
+
+    }
+
+    override fun onRemove(id: String) {
     }
 
     override fun onPicUserCommentClicked(userInfoDTO: UserInfoDTO) {

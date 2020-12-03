@@ -16,7 +16,6 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.UsersPagingAdapter
-import com.timenoteco.timenote.model.TimenoteInfoDTO
 import com.timenoteco.timenote.model.UserInfoDTO
 import com.timenoteco.timenote.viewModel.SearchViewModel
 import kotlinx.android.synthetic.main.fragment_search_people.*
@@ -41,7 +40,13 @@ class SearchPeople: Fragment(), UsersPagingAdapter.SearchPeopleListener {
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
         val userInfoDTOPref = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
 
-        val userAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, null, this)
+        val userAdapter = UsersPagingAdapter(
+            UsersPagingAdapter.UserComparator,
+            null,
+            this,
+            null,
+            null
+        )
         search_people_rv.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = userAdapter
@@ -59,5 +64,12 @@ class SearchPeople: Fragment(), UsersPagingAdapter.SearchPeopleListener {
 
     override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
         findNavController().navigate(SearchDirections.actionSearchToProfileSearch(userInfoDTO))
+    }
+
+    override fun onUnfollow(id: String) {
+
+    }
+
+    override fun onRemove(id: String) {
     }
 }

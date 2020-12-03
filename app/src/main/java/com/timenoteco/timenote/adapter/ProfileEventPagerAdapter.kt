@@ -28,14 +28,12 @@ class ProfileEventPagerAdapter(fragmentManager: FragmentManager, lifecycle: Life
                 if(position == 0) profilePastEvents.setShowFilterBar(showFilterBar)
                 else profileFutureEvents.setShowFilterBar(showFilterBar)
             } else if(isReselected != null && !isReselected){
-                if(position == 1){
-                    profilePastEvents.setShowFilterBar(showFilterBar)
-                    profileFutureEvents.setShowFilterBar(showFilterBar)
-                }
-            } else {
+                if(position == 0)profilePastEvents.setShowFilterBar(showFilterBar)
+                else profileFutureEvents.setShowFilterBar(showFilterBar)
+            } /*else {
                 if(position == 0) profilePastEvents.setShowFilterBar(showFilterBar)
                 else profileFutureEvents.setShowFilterBar(showFilterBar)
-            }
+            }*/
         }
 
     }
