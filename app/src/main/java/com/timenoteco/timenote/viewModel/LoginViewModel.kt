@@ -15,7 +15,8 @@ class LoginViewModel: ViewModel() {
     enum class AuthenticationState {
         UNAUTHENTICATED,
         AUTHENTICATED,
-        GUEST
+        GUEST,
+        DISCONNECTED
     }
 
     private val authService = DayzeeRepository().getAuthService()
@@ -66,6 +67,7 @@ class LoginViewModel: ViewModel() {
     fun refreshToken(prefs : SharedPreferences) = flow { emit(Utils().refreshToken(prefs)) }.asLiveData(viewModelScope.coroutineContext)
 
     fun markAsGuest() = authenticationState.postValue(AuthenticationState.GUEST)
+    fun markAsDisconnected() = authenticationState.postValue(AuthenticationState.DISCONNECTED)
     fun markAsAuthenticated() = authenticationState.postValue(AuthenticationState.AUTHENTICATED)
     fun markAsUnauthenticated() = authenticationState.postValue(AuthenticationState.UNAUTHENTICATED)
 

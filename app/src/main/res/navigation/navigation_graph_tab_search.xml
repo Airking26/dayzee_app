@@ -191,6 +191,9 @@
         <argument
             android:name="id"
             app:argType="string" />
+        <action
+            android:id="@+id/action_profileCalendarSearch_to_detailedTimenoteSearch"
+            app:destination="@id/detailedTimenoteSearch" />
     </fragment>
     <fragment
         android:id="@+id/createTimenoteSearch"

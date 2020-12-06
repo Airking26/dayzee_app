@@ -71,13 +71,13 @@
         <action
             android:id="@+id/action_profile_to_profileCalendar"
             app:destination="@id/profileCalendar" />
-        <action
-            android:id="@+id/action_profile_to_notifications"
-            app:destination="@id/notifications" />
         <argument
             android:defaultValue="false"
             android:name="isNotMine"
             app:argType="boolean"/>
+        <action
+            android:id="@+id/action_profile_to_notifications"
+            app:destination="@id/notifications" />
         <action
             android:id="@+id/action_profile_to_followPage"
             app:destination="@id/followPage" />
@@ -102,9 +102,6 @@
             app:argType="com.timenoteco.timenote.model.UserInfoDTO"
             app:nullable="true"
             android:defaultValue="@null" />
-        <action
-            android:id="@+id/action_profile_to_notifications2"
-            app:destination="@id/notifications" />
     </fragment>
     <fragment
         android:id="@+id/profilModify"
@@ -125,6 +122,21 @@
         <argument
             android:name="id"
             app:argType="string" />
+        <action
+            android:id="@+id/action_profileCalendar_to_detailedTimenote"
+            app:destination="@id/detailedTimenote" />
+    </fragment>
+    <fragment
+        android:id="@+id/notifications"
+        android:name="com.timenoteco.timenote.view.profileFlow.Notifications"
+        android:label="fragment_notifications"
+        tools:layout="@layout/fragment_notifications" >
+        <action
+            android:id="@+id/action_notifications_to_profile"
+            app:destination="@id/profile" />
+        <action
+            android:id="@+id/action_notifications_to_detailedTimenote"
+            app:destination="@id/detailedTimenote" />
     </fragment>
     <fragment
         android:id="@+id/settings"
@@ -140,18 +152,9 @@
         <action
             android:id="@+id/action_settings_to_followPage"
             app:destination="@id/followPage" />
-    </fragment>
-    <fragment
-        android:id="@+id/notifications"
-        android:name="com.timenoteco.timenote.view.profileFlow.Notifications"
-        android:label="fragment_notifications"
-        tools:layout="@layout/fragment_notifications" >
         <action
-            android:id="@+id/action_notifications_to_profile"
-            app:destination="@id/profile" />
-        <action
-            android:id="@+id/action_notifications_to_detailedTimenote"
-            app:destination="@id/detailedTimenote" />
+            android:id="@+id/action_settings_to_navigation3"
+            app:destination="@id/navigation" />
     </fragment>
     <fragment
         android:id="@+id/notificationManager"

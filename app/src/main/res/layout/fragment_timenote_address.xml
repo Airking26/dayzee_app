@@ -16,9 +16,25 @@
         <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
 
             <TextView
+                android:layout_width="300dp"
+                android:textSize="15sp"
+                android:layout_marginHorizontal="24dp"
+                android:maxLines="2"
+                android:ellipsize="end"
+                tools:text="233 rue de la frannolie, 13009 marseille ici c'est,pas la capitale c'est marseille bb encore pl"
                 android:gravity="center"
                 android:id="@+id/timenote_address_toolbar"
                 style="@style/AppTheme.Toolbar.Title"/>
+
+            <TextView
+                android:paddingVertical="8dp"
+                android:paddingEnd="8dp"
+                android:fontFamily="sans-serif-light"
+                android:drawableStart="@drawable/ic_back_thin"
+                android:id="@+id/timenote_address_btn_back"
+                style="@style/AppTheme.Toolbar.TextRight"
+                android:text=""
+                tools:ignore="RtlSymmetry" />
 
         </androidx.appcompat.widget.Toolbar>
 

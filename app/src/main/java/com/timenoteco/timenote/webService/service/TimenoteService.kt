@@ -44,4 +44,7 @@ interface TimenoteService {
 
     @POST("timenote/shareWith")
     suspend fun shareWith(@Header("Authorization") token: String, @Body shareTimenoteDTO: ShareTimenoteDTO) : Response<Any>
+
+    @POST("signalment/timenote")
+    suspend fun signaleTimenote(@Header("Authorization") token: String, @Body creationSignalementDTO: TimenoteCreationSignalementDTO) : Response<TimenoteInfoSignalementDTO>
 }

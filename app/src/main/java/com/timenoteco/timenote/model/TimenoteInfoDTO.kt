@@ -2,9 +2,6 @@ package com.timenoteco.timenote.model
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
-import com.timenoteco.timenote.model.Category
-import com.timenoteco.timenote.model.CreatedBy
-import com.timenoteco.timenote.model.Location
 import kotlinx.android.parcel.Parcelize
 
 

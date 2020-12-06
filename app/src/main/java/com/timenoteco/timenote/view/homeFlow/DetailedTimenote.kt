@@ -123,17 +123,35 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                 View.GONE
 
 
-            screenSlideCreationTimenotePagerAdapter = ScreenSlideTimenotePagerAdapter(
-                this,
-                if (args.event?.pictures.isNullOrEmpty()) listOf(args.event?.colorHex!!) else args.event?.pictures,
-                true,
-                args.event?.pictures.isNullOrEmpty()
-            ) { i: Int, i1: Int ->
+            screenSlideCreationTimenotePagerAdapter = ScreenSlideTimenotePagerAdapter(this, if (args.event?.pictures.isNullOrEmpty()) listOf(args.event?.colorHex!!) else args.event?.pictures, true, args.event?.pictures.isNullOrEmpty()) { i: Int, i1: Int ->
+                if(i1 == 0){
                 if (args.event?.price?.price!! >= 0 && !args.event?.url.isNullOrBlank()) {
                     timenote_buy_cl.visibility = View.VISIBLE
-                    if (args.event?.price?.price!! > 0) timenote_buy.text =
-                        args.event?.price?.price!!.toString()
-                            .plus(args.event?.price?.currency ?: "$")
+                    if (args.event?.price?.price!! > 0) timenote_buy.text = args.event?.price?.price!!.toString().plus(args.event?.price?.currency ?: "$") }
+                } else {
+                    if(timenote_plus.drawable.bytesEqualTo(resources.getDrawable(R.drawable.ic_ajout_cal)) && timenote_plus.drawable.pixelsEqualTo(resources.getDrawable(R.drawable.ic_ajout_cal))){
+                        timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal_plein_gradient))
+                        timenoteViewModel.joinTimenote(tokenId!!, args.event?.id!!).observe(
+                            viewLifecycleOwner,
+                            Observer {
+                                if(it.code() == 401) {
+                                    authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
+                                        tokenId = newAccessToken
+                                        timenoteViewModel.joinTimenote(tokenId!!, args.event?.id!!)
+                                    })
+                                }
+                            })
+                    } else {
+                        timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal))
+                        timenoteViewModel.leaveTimenote(tokenId!!, args.event?.id!!).observe(viewLifecycleOwner, Observer {
+                            if(it.code() == 401) {
+                                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
+                                    tokenId = newAccessToken
+                                    timenoteViewModel.leaveTimenote(tokenId!!, args.event?.id!!)
+                                })
+                            }
+                        })
+                    }
                 }
             }
 
@@ -141,19 +159,6 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             timenote_vp.adapter = screenSlideCreationTimenotePagerAdapter
             timenote_indicator.setViewPager(timenote_vp)
             screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(timenote_indicator.adapterDataObserver)
-
-            handler = Handler { msg ->
-                if (msg.what == TRIGGER_AUTO_COMPLETE) {
-                    if (!TextUtils.isEmpty(searchBar.text)) {
-                        //searchViewModel.searchChanged(tokenId!!, searchBar.text)
-                        lifecycleScope.launch {
-                            //searchViewModel.searchUser(tokenId!!, searchBar.text)
-                        }
-
-                    }
-                }
-                false
-            }
 
             timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal))
             if (args.event?.isParticipating!!) timenote_plus.setImageDrawable(
@@ -196,6 +201,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                 addedByFormated = SpannableStringBuilder(addedBy)
                 addedByFormated.setSpan(light, 0, 8, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
                 addedByFormated.setSpan(bold, 9, addedBy.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+                timenote_added_by.text = addedByFormated
 
                 when (args.event?.joinedBy?.users?.size) {
                     1 -> {
@@ -236,7 +242,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
 
                         Glide
                             .with(requireContext())
-                            .load(args.event?.joinedBy?.users!![3].picture)
+                            .load(args.event?.joinedBy?.users!![2].picture)
                             .apply(RequestOptions.circleCropTransform())
                             .into(timenote_pic_participant_three)
                     }
@@ -244,6 +250,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             } else {
                 if(args.event?.joinedBy?.count!! > 0){
                     addedBy = "Saved by ${args.event?.joinedBy?.count!!} people"
+                    val addedByFormated = SpannableStringBuilder(addedBy)
                     addedByFormated.setSpan(light, 0, 8, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
                     addedByFormated.setSpan(bold, 9, addedBy.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
                     timenote_added_by.text = addedByFormated
@@ -376,6 +383,28 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                 lifecycleScope.launch{
                     followViewModel.getUsers(tokenId!!, userInfoDTO.id!!, 0, prefs).collectLatest {
                         userAdapter.submitData(it)
+                    }
+                }
+                if(searchbar != null) {
+                    handler = Handler { msg ->
+                        if (msg.what == TRIGGER_AUTO_COMPLETE) {
+                            if (!TextUtils.isEmpty(searchbar.text)) {
+                                lifecycleScope.launch {
+                                    followViewModel.searchInFollowing(tokenId!!, searchbar.text, prefs)
+                                        .collectLatest {
+                                            userAdapter.submitData(it)
+                                        }
+                                }
+
+                            } else {
+                                lifecycleScope.launch{
+                                    followViewModel.getUsers(tokenId!!, userInfoDTO.id!!, 0, prefs).collectLatest {
+                                        userAdapter.submitData(it)
+                                    }
+                                }
+                            }
+                        }
+                        false
                     }
                 }
             }

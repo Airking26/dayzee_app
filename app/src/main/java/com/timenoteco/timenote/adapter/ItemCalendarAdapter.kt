@@ -1,18 +1,14 @@
 package com.timenoteco.timenote.adapter
 
 import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.ViewTarget
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.androidView.calendar.data.Day
-import com.timenoteco.timenote.model.EventCalendar
 import com.timenoteco.timenote.model.TimenoteInfoDTO
 import kotlinx.android.synthetic.main.item_profile_calendar.view.*
 import java.text.SimpleDateFormat
@@ -20,8 +16,13 @@ import java.util.*
 
 class ItemCalendarAdapter(
     private var events: MutableList<TimenoteInfoDTO>,
-    private val allEvents: MutableList<TimenoteInfoDTO>
+    private val allEvents: MutableList<TimenoteInfoDTO>,
+    private val calendarEventClicked: CalendarEventClicked
 ): RecyclerView.Adapter<ItemCalendarAdapter.TimenoteListHolder>() {
+
+    interface CalendarEventClicked{
+        fun onEventClicked(timenoteInfoDTO: TimenoteInfoDTO)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimenoteListHolder =
         TimenoteListHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_profile_calendar, parent, false))
@@ -29,7 +30,7 @@ class ItemCalendarAdapter(
     override fun getItemCount(): Int = events.size
 
     override fun onBindViewHolder(holder: TimenoteListHolder, position: Int) {
-        holder.bindListStyleItem(events[position])
+        holder.bindListStyleItem(events[position], calendarEventClicked)
     }
 
     fun checkEventForDay(day: Day) {
@@ -55,7 +56,10 @@ class ItemCalendarAdapter(
 
     class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
-        fun bindListStyleItem(event: TimenoteInfoDTO) {
+        fun bindListStyleItem(
+            event: TimenoteInfoDTO,
+            calendarEventClicked: CalendarEventClicked
+        ) {
             itemView.profile_calendar_item_name_event.text = event.title
             itemView.profile_calendar_item_address_event.text = event.location?.address?.address?.plus(", ")?.plus(event.location.address.city)?.plus(" ")?.plus(event.location.address.country)
 
@@ -73,6 +77,7 @@ class ItemCalendarAdapter(
                 .apply(RequestOptions.circleCropTransform())
                 .into(itemView.profile_calendar_item_pic_event_imageview)
 
+            itemView.setOnClickListener { calendarEventClicked.onEventClicked(event) }
         }
 
     }

@@ -30,6 +30,7 @@ import com.timenoteco.timenote.common.intLiveData
 import com.timenoteco.timenote.common.stringLiveData
 import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import com.timenoteco.timenote.model.*
+import com.timenoteco.timenote.view.profileFlow.settingsDirectory.SettingsDirections
 import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.MeViewModel
@@ -73,6 +74,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
         //if(!tokenId.isNullOrBlank()) loginViewModel.markAsAuthenticated() else findNavController().navigate(ProfileDirections.actionProfileToNavigation())
         loginViewModel.getAuthenticationState().observe(requireActivity(), androidx.lifecycle.Observer {
             when (it) {
+                LoginViewModel.AuthenticationState.DISCONNECTED -> findNavController().navigate(SettingsDirections.actionSettingsToNavigation3())
                 LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(ProfileDirections.actionProfileToNavigation())
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> {
                     tokenId = prefs.getString(accessToken, null)

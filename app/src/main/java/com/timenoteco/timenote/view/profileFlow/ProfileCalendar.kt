@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -33,7 +34,7 @@ import java.time.YearMonth
 import java.util.*
 
 
-class ProfileCalendar: Fragment() {
+class ProfileCalendar: Fragment(), ItemCalendarAdapter.CalendarEventClicked {
 
     private lateinit var simpleDateFormatDay: SimpleDateFormat
     private lateinit var simpleDateFormatMonth: SimpleDateFormat
@@ -187,7 +188,7 @@ class ProfileCalendar: Fragment() {
                 if (it.isSuccessful) {
                     events.clear()
                     events.addAll(it.body() as List<TimenoteInfoDTO>)
-                    calendarAdapter = ItemCalendarAdapter(mutableListOf(), events)
+                    calendarAdapter = ItemCalendarAdapter(mutableListOf(), events, this)
 
                     profile_calendar_rv.apply {
                         layoutManager = LinearLayoutManager(requireContext())
@@ -210,5 +211,9 @@ class ProfileCalendar: Fragment() {
 
 
             })
+    }
+
+    override fun onEventClicked(timenoteInfoDTO: TimenoteInfoDTO) {
+        findNavController().navigate(ProfileCalendarDirections.actionProfileCalendarToDetailedTimenote(4, timenoteInfoDTO))
     }
 }

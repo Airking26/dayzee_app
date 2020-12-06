@@ -24,6 +24,7 @@ import com.timenoteco.timenote.androidView.input
 import com.timenoteco.timenote.common.intLiveData
 import com.timenoteco.timenote.common.stringLiveData
 import com.timenoteco.timenote.model.*
+import com.timenoteco.timenote.view.profileFlow.ProfileDirections
 import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.MeViewModel
@@ -190,12 +191,14 @@ class Settings : Fragment(), View.OnClickListener {
                 }
             }
             profile_settings_disconnect ->{
-                prefs.edit().putString("nearby",  Gson().toJson(NearbyRequestBody(Location(0.0, 0.0, Address("","", "","")), 10, listOf(), "2020-10-12T15:51:53.448Z", Price(0, ""), 2))).apply()
+                //prefs.edit().putString("nearby",  Gson().toJson(NearbyRequestBody(Location(0.0, 0.0, Address("","", "","")), 10, listOf(), "2020-10-12T15:51:53.448Z", Price(0, ""), 2))).apply()
                 prefs.edit().putString(accessToken, null).apply()
-                loginViewModel.markAsUnauthenticated()}
+                //loginViewModel.markAsUnauthenticated()
+                loginViewModel.markAsDisconnected()
+            }
             profile_settings_asked_sent -> findNavController().navigate(
                 SettingsDirections.actionSettingsToFollowPage(userInfoDTO.id!!, false).setFollowers(3))
-            profile_settings_awaiting -> findNavController().navigate(SettingsDirections.actionSettingsToFollowPage(userInfoDTO?.id!!, false).setFollowers(2))
+            profile_settings_awaiting -> findNavController().navigate(SettingsDirections.actionSettingsToFollowPage(userInfoDTO.id!!, false).setFollowers(2))
         }
     }
 }

@@ -94,7 +94,7 @@ class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
                 when(text.toString()){
                     context.getString(R.string.duplicate) -> timenoteListenerListener.onDuplicateClicked(event)
                     context.getString(R.string.edit) -> timenoteListenerListener.onEditClicked(event)
-                    context.getString(R.string.report) -> timenoteListenerListener.onReportClicked()
+                    context.getString(R.string.report) -> timenoteListenerListener.onReportClicked(event)
                     context.getString(R.string.alarm) -> timenoteListenerListener.onAlarmClicked(event)
                     context.getString(R.string.delete) -> timenoteListenerListener.onDeleteClicked(event)
                     context.getString(R.string.hide_to_others) -> timenoteListenerListener.onHideToOthersClicked(event)

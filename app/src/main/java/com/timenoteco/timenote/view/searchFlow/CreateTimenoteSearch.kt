@@ -246,20 +246,6 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener,
             }
         }
 
-
-
-        handler = Handler { msg ->
-            if (msg.what == TRIGGER_AUTO_COMPLETE) {
-                if (!TextUtils.isEmpty(searchBar.text)) {
-                    //searchViewModel.searchChanged(tokenId!!, searchBar.text)
-                    lifecycleScope.launch {
-                        //searchViewModel.searchUser(tokenId!!, searchBar.text)
-                    }
-
-                }
-            }
-            false
-        }
     }
 
     private fun populateModel(it: CreationTimenoteDTO) {
@@ -547,7 +533,7 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener,
         subcategoryCv.setOnClickListener(this)
         create_timenote_btn_back.setOnClickListener(this)
         url_cardview.setOnClickListener(this)
-        create_timenote_organizers_btn.setOnClickListener(this)
+        organizers_cv.setOnClickListener(this)
         create_timenote_clear.setOnClickListener(this)
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -881,7 +867,7 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener,
                 lifecycleOwner(this@CreateTimenoteSearch)
             }
 
-            create_timenote_organizers_btn -> createFriendsBottomSheet(2, null)
+            organizers_cv -> createFriendsBottomSheet(2, null)
             create_timenote_clear -> {
                 creationTimenoteViewModel.clear()
                 images = mutableListOf()
@@ -1053,7 +1039,7 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener,
     private fun createFriendsBottomSheet(createGroup: Int, groupName: String?) {
         sendTo = mutableListOf()
         val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
-            customView(R.layout.friends_search)
+            customView(R.layout.friends_search_cl)
             lifecycleOwner(this@CreateTimenoteSearch)
             positiveButton(R.string.confirm) {
                 when (createGroup) {
@@ -1102,6 +1088,29 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener,
         lifecycleScope.launch {
             followViewModel.getUsers(tokenId!!, userInfoDTO.id!! ,0, prefs).collectLatest {
                 userAdapter.submitData(it)
+            }
+        }
+
+        if(searchbar != null) {
+            handler = Handler { msg ->
+                if (msg.what == TRIGGER_AUTO_COMPLETE) {
+                    if (!TextUtils.isEmpty(searchbar.text)) {
+                        lifecycleScope.launch {
+                            followViewModel.searchInFollowing(tokenId!!, searchbar.text, prefs)
+                                .collectLatest {
+                                    userAdapter.submitData(it)
+                                }
+                        }
+
+                    } else {
+                        lifecycleScope.launch{
+                            followViewModel.getUsers(tokenId!!, userInfoDTO.id!!, 0, prefs).collectLatest {
+                                userAdapter.submitData(it)
+                            }
+                        }
+                    }
+                }
+                false
             }
         }
     }

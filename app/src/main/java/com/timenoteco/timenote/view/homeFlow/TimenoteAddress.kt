@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
@@ -57,7 +58,7 @@ import java.text.SimpleDateFormat
 
 class TimenoteAddress : Fragment(), TimenoteOptionsListener,
     UsersShareWithPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.AddToSend,
-    UsersPagingAdapter.SearchPeopleListener {
+    UsersPagingAdapter.SearchPeopleListener, View.OnClickListener {
 
     private val args: TimenoteAddressArgs by navArgs()
     private val timenoteViewModel : TimenoteViewModel by activityViewModels()
@@ -112,20 +113,7 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
                 timenotePagingAdapter?.submitData(it)
             }
         }
-
-        handler = Handler { msg ->
-            if (msg.what == TRIGGER_AUTO_COMPLETE) {
-                if (!TextUtils.isEmpty(searchBar.text)) {
-                    //searchViewModel.searchChanged(tokenId!!, searchBar.text)
-                    lifecycleScope.launch {
-                        //searchViewModel.searchUser(tokenId!!, searchBar.text)
-                    }
-
-                }
-            }
-            false
-        }
-
+        timenote_address_btn_back.setOnClickListener(this)
     }
 
 
@@ -215,8 +203,8 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
 
     override fun onShareClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         sendTo.clear()
-        val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-            customView(R.layout.friends_search)
+        val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
+            customView(R.layout.friends_search_cl)
             lifecycleOwner(this@TimenoteAddress)
             positiveButton(R.string.send){
                 timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo)).observe(viewLifecycleOwner, Observer {
@@ -252,6 +240,29 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
                 userAdapter.submitData(it)
             }
         }
+
+        if(searchbar != null) {
+            handler = Handler { msg ->
+                if (msg.what == TRIGGER_AUTO_COMPLETE) {
+                    if (!TextUtils.isEmpty(searchbar.text)) {
+                        lifecycleScope.launch {
+                            followViewModel.searchInFollowing(tokenId!!, searchbar.text, prefs)
+                                .collectLatest {
+                                    userAdapter.submitData(it)
+                                }
+                        }
+
+                    } else {
+                        lifecycleScope.launch{
+                            followViewModel.getUsers(tokenId!!, userInfoDTO.id!!, 0, prefs).collectLatest {
+                                userAdapter.submitData(it)
+                            }
+                        }
+                    }
+                }
+                false
+            }
+        }
     }
 
     override fun onAdd(userInfoDTO: UserInfoDTO) {
@@ -263,7 +274,27 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
     }
 
     override fun onDoubleClick() {}
-    override fun onReportClicked() {
+    override fun onReportClicked(timenoteInfoDTO: TimenoteInfoDTO) {
+        timenoteViewModel.signalTimenote(tokenId!!, TimenoteCreationSignalementDTO(userInfoDTO.id!!, timenoteInfoDTO.id, "")).observe(viewLifecycleOwner, Observer {
+            if(it.code() == 401){
+                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
+                    tokenId = newAccessToken
+                    timenoteViewModel.signalTimenote(tokenId!!, TimenoteCreationSignalementDTO(userInfoDTO.id!!, timenoteInfoDTO.id, "")).observe(viewLifecycleOwner, Observer { rsp ->
+                        if(rsp.isSuccessful) Toast.makeText(
+                            requireContext(),
+                            "Reported",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    })
+                })
+            }
+
+            if(it.isSuccessful) Toast.makeText(
+                requireContext(),
+                "Reported",
+                Toast.LENGTH_SHORT
+            ).show()
+        })
     }
     override fun onAddMarker(timenoteInfoDTO: TimenoteInfoDTO) {}
     override fun onHideToOthersClicked(timenoteInfoDTO: TimenoteInfoDTO) {}
@@ -277,6 +308,12 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
     }
 
     override fun onRemove(id: String) {
+    }
+
+    override fun onClick(v: View?) {
+        when(v){
+            timenote_address_btn_back -> findNavController().popBackStack()
+        }
     }
 
 

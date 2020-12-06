@@ -35,4 +35,7 @@ interface FollowService {
 
     @POST("follow/me/ask/{id}")
     suspend fun followPrivateUser(@Header("Authorization") token: String, @Path("id") id: String) : Response<Any>
+
+    @GET("follow/search/following/{name}/{offset}")
+    suspend fun searchInFollowing(@Header("Authorization") token: String, @Path("name") name: String, @Path("offset") offset: Int) : Response<List<UserInfoDTO>>
 }

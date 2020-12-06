@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    android:background="@color/colorBackground"
     tools:context=".view.createTimenoteFlow.PreviewTimenoteCreated">
 
     <LinearLayout
@@ -225,7 +225,7 @@
         android:textColor="@color/colorText"
         android:text="@string/share_to"
         android:layout_marginTop="16dp"
-        android:backgroundTint="@color/colorYellow"
+        android:backgroundTint="@color/colorBackground"
         android:drawableLeft="@drawable/ic_partage_sans_fleche_preview"
         android:drawablePadding="-16dp"
         android:paddingVertical="6dp"

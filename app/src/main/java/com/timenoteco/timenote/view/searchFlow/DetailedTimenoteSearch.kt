@@ -51,6 +51,7 @@ import kotlinx.android.synthetic.main.fragment_detailed_fragment.*
 import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.friends_search.view.*
 import kotlinx.android.synthetic.main.item_timenote_root.*
+import kotlinx.android.synthetic.main.item_timenote_root.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -113,10 +114,35 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
         if(args.timenoteInfoDTO?.pictures?.size == 1 || args.timenoteInfoDTO?.pictures.isNullOrEmpty()) timenote_indicator.visibility = View.GONE
 
 
-        screenSlideCreationTimenotePagerAdapter = ScreenSlideTimenotePagerAdapter(this, if(args.timenoteInfoDTO?.pictures.isNullOrEmpty()) listOf(args.timenoteInfoDTO?.colorHex!!) else args.timenoteInfoDTO?.pictures, true, args.timenoteInfoDTO?.pictures.isNullOrEmpty()){ i: Int, i1: Int ->
-            if (args.timenoteInfoDTO?.price?.price!! >= 0 && !args.timenoteInfoDTO?.url.isNullOrBlank()) {
-                timenote_buy_cl.visibility = View.VISIBLE
-                if (args.timenoteInfoDTO?.price?.price!! > 0) timenote_buy.text = args.timenoteInfoDTO?.price?.price!!.toString().plus(args.timenoteInfoDTO?.price?.currency ?: "$")
+        screenSlideCreationTimenotePagerAdapter = ScreenSlideTimenotePagerAdapter(this, if (args.timenoteInfoDTO?.pictures.isNullOrEmpty()) listOf(args.timenoteInfoDTO?.colorHex!!) else args.timenoteInfoDTO?.pictures, true, args.timenoteInfoDTO?.pictures.isNullOrEmpty()) { i: Int, i1: Int ->
+            if(i1 == 0){
+                if (args.timenoteInfoDTO?.price?.price!! >= 0 && !args.timenoteInfoDTO?.url.isNullOrBlank()) {
+                    timenote_buy_cl.visibility = View.VISIBLE
+                    if (args.timenoteInfoDTO?.price?.price!! > 0) timenote_buy.text = args.timenoteInfoDTO?.price?.price!!.toString().plus(args.timenoteInfoDTO?.price?.currency ?: "$") }
+            } else {
+                if(timenote_plus.drawable.bytesEqualTo(resources.getDrawable(R.drawable.ic_ajout_cal)) && timenote_plus.drawable.pixelsEqualTo(resources.getDrawable(R.drawable.ic_ajout_cal))){
+                    timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal_plein_gradient))
+                    timenoteViewModel.joinTimenote(tokenId!!, args.timenoteInfoDTO?.id!!).observe(
+                        viewLifecycleOwner,
+                        Observer {
+                            if(it.code() == 401) {
+                                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
+                                    tokenId = newAccessToken
+                                    timenoteViewModel.joinTimenote(tokenId!!, args.timenoteInfoDTO?.id!!)
+                                })
+                            }
+                        })
+                } else {
+                    timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal))
+                    timenoteViewModel.leaveTimenote(tokenId!!, args.timenoteInfoDTO?.id!!).observe(viewLifecycleOwner, Observer {
+                        if(it.code() == 401) {
+                            authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
+                                tokenId = newAccessToken
+                                timenoteViewModel.leaveTimenote(tokenId!!, args.timenoteInfoDTO?.id!!)
+                            })
+                        }
+                    })
+                }
             }
         }
 
@@ -124,19 +150,6 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
         timenote_vp.adapter = screenSlideCreationTimenotePagerAdapter
         timenote_indicator.setViewPager(timenote_vp)
         screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(timenote_indicator.adapterDataObserver)
-
-        handler = Handler { msg ->
-            if (msg.what == TRIGGER_AUTO_COMPLETE) {
-                if (!TextUtils.isEmpty(searchBar.text)) {
-                    //searchViewModel.searchChanged(tokenId!!, searchBar.text)
-                    lifecycleScope.launch {
-                        //searchViewModel.searchUser(tokenId!!, searchBar.text)
-                    }
-
-                }
-            }
-            false
-        }
 
         timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal))
         if(args.timenoteInfoDTO?.isParticipating!!) timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal_plein_gradient))
@@ -167,6 +180,7 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
             addedByFormated = SpannableStringBuilder(addedBy)
             addedByFormated.setSpan(light, 0, 8, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
             addedByFormated.setSpan(bold, 9, addedBy.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+            timenote_added_by.text = addedByFormated
 
             when (args.timenoteInfoDTO?.joinedBy?.users?.size) {
                 1 -> {
@@ -207,7 +221,7 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
 
                     Glide
                         .with(requireContext())
-                        .load(args.timenoteInfoDTO?.joinedBy?.users!![3].picture)
+                        .load(args.timenoteInfoDTO?.joinedBy?.users!![2].picture)
                         .apply(RequestOptions.circleCropTransform())
                         .into(timenote_pic_participant_three)
                 }
@@ -216,6 +230,7 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
         else {
             if(args.timenoteInfoDTO?.joinedBy?.count!! > 0){
                 addedBy = "Saved by ${args.timenoteInfoDTO?.joinedBy?.count!!} people"
+                val addedByFormated = SpannableStringBuilder(addedBy)
                 addedByFormated.setSpan(light, 0, 8, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
                 addedByFormated.setSpan(bold, 9, addedBy.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
                 timenote_added_by.text = addedByFormated
@@ -331,7 +346,7 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
             timenote_share -> {
                 sendTo.clear()
                 val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
-                    customView(R.layout.friends_search)
+                    customView(R.layout.friends_search_cl)
                     lifecycleOwner(this@DetailedTimenoteSearch)
                     positiveButton(R.string.send){
                         timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(args.timenoteInfoDTO?.id!!, sendTo)).observe(viewLifecycleOwner, Observer {
@@ -365,6 +380,29 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
                 lifecycleScope.launch{
                     followViewModel.getUsers(tokenId!!, userInfoDTO.id!!, 0, prefs).collectLatest {
                         userAdapter.submitData(it)
+                    }
+                }
+
+                if(searchbar != null) {
+                    handler = Handler { msg ->
+                        if (msg.what == TRIGGER_AUTO_COMPLETE) {
+                            if (!TextUtils.isEmpty(searchbar.text)) {
+                                lifecycleScope.launch {
+                                    followViewModel.searchInFollowing(tokenId!!, searchbar.text, prefs)
+                                        .collectLatest {
+                                            userAdapter.submitData(it)
+                                        }
+                                }
+
+                            } else {
+                                lifecycleScope.launch{
+                                    followViewModel.getUsers(tokenId!!, userInfoDTO.id!!, 0, prefs).collectLatest {
+                                        userAdapter.submitData(it)
+                                    }
+                                }
+                            }
+                        }
+                        false
                     }
                 }
             }

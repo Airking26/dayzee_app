@@ -9,6 +9,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.timenoteco.timenote.model.CreationTimenoteDTO
 import com.timenoteco.timenote.model.ShareTimenoteDTO
+import com.timenoteco.timenote.model.TimenoteCreationSignalementDTO
 import com.timenoteco.timenote.paging.TimenoteAroundPagingSource
 import com.timenoteco.timenote.paging.TimenoteRecentPagingSource
 import com.timenoteco.timenote.paging.TimenotePagingSource
@@ -29,6 +30,7 @@ class TimenoteViewModel: ViewModel() {
     fun joinTimenote(token: String, id: String) = flow { emit(timenoteService.joinTimenote("Bearer $token",id)) }.asLiveData(viewModelScope.coroutineContext)
     fun leaveTimenote(token: String, id: String) = flow { emit(timenoteService.leaveTimenote("Bearer $token",id)) }.asLiveData(viewModelScope.coroutineContext)
     fun hideToOthers(token: String, id: String) = flow { emit(timenoteService.joinPrivateTimenote("Bearer $token",id)) }.asLiveData(viewModelScope.coroutineContext)
+    fun signalTimenote(token: String, timenoteCreationSignalementDTO: TimenoteCreationSignalementDTO) = flow { emit(timenoteService.signaleTimenote("Bearer $token",timenoteCreationSignalementDTO)) }.asLiveData(viewModelScope.coroutineContext)
     fun createTimenote(token: String, creationTimenoteDTO: CreationTimenoteDTO) = flow { emit(timenoteService.createTimenote("Bearer $token", creationTimenoteDTO)) }.asLiveData(viewModelScope.coroutineContext)
     fun getUsersParticipating(token: String, id: String, sharedPreferences: SharedPreferences) = Pager(PagingConfig(pageSize = 1)){UsersParticipatingPagingSource(token, id, timenoteService, sharedPreferences)}.flow.cachedIn(viewModelScope)
     fun shareWith(token: String, shareTimenoteDTO: ShareTimenoteDTO) = flow { emit(timenoteService.shareWith("Bearer $token", shareTimenoteDTO)) }.asLiveData(viewModelScope.coroutineContext)

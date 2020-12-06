@@ -18,9 +18,11 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
 import androidx.preference.PreferenceManager
@@ -203,19 +205,6 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
 
             nearbyToCompare = Gson().toJson(nearbyFilterData.loadNearbyFilter())
         })
-
-        handler = Handler { msg ->
-            if (msg.what == TRIGGER_AUTO_COMPLETE) {
-                if (!TextUtils.isEmpty(searchBar.text)) {
-                    //searchViewModel.searchChanged(tokenId!!, searchBar.text)
-                    lifecycleScope.launch {
-                        //searchViewModel.searchUser(tokenId!!, searchBar.text)
-                    }
-
-                }
-            }
-            false
-        }
      }
 
     @ExperimentalPagingApi
@@ -402,8 +391,27 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         findNavController().navigate(NearByDirections.actionNearByToDetailedTimenote(3, event))
     }
 
-    override fun onReportClicked() {
-        //timenoteViewModel.deleteTimenote(tokenId!!, )
+    override fun onReportClicked(timenoteInfoDTO: TimenoteInfoDTO) {
+        timenoteViewModel.signalTimenote(tokenId!!, TimenoteCreationSignalementDTO(userInfoDTO.id!!, timenoteInfoDTO.id, "")).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            if(it.code() == 401){
+                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer {newAccessToken ->
+                    tokenId = newAccessToken
+                    timenoteViewModel.signalTimenote(tokenId!!, TimenoteCreationSignalementDTO(userInfoDTO.id!!, timenoteInfoDTO.id, "")).observe(viewLifecycleOwner, androidx.lifecycle.Observer { rsp ->
+                        if(rsp.isSuccessful) Toast.makeText(
+                            requireContext(),
+                            "Reported",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    })
+                })
+            }
+
+            if(it.isSuccessful) Toast.makeText(
+                requireContext(),
+                "Reported",
+                Toast.LENGTH_SHORT
+            ).show()
+        })
     }
 
     override fun onEditClicked(timenoteInfoDTO: TimenoteInfoDTO) {
@@ -442,7 +450,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     override fun onShareClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         sendTo.clear()
         val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
-            customView(R.layout.friends_search)
+            customView(R.layout.friends_search_cl)
             lifecycleOwner(this@NearBy)
             positiveButton(R.string.send){
                 timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo)).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
@@ -475,6 +483,29 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         lifecycleScope.launch{
             followViewModel.getUsers(tokenId!!, userInfoDTO.id!!, 0, prefs).collectLatest {
                 userAdapter.submitData(it)
+            }
+        }
+
+        if(searchbar != null) {
+            handler = Handler { msg ->
+                if (msg.what == TRIGGER_AUTO_COMPLETE) {
+                    if (!TextUtils.isEmpty(searchbar.text)) {
+                        lifecycleScope.launch {
+                            followViewModel.searchInFollowing(tokenId!!, searchbar.text, prefs)
+                                .collectLatest {
+                                    userAdapter.submitData(it)
+                                }
+                        }
+
+                    } else {
+                        lifecycleScope.launch{
+                            followViewModel.getUsers(tokenId!!, userInfoDTO.id!!, 0, prefs).collectLatest {
+                                userAdapter.submitData(it)
+                            }
+                        }
+                    }
+                }
+                false
             }
         }
     }

@@ -4,7 +4,7 @@ import com.timenoteco.timenote.model.TimenoteInfoDTO
 import com.timenoteco.timenote.model.UserInfoDTO
 
 interface TimenoteOptionsListener {
-    fun onReportClicked()
+    fun onReportClicked(timenoteInfoDTO: TimenoteInfoDTO)
     fun onEditClicked(timenoteInfoDTO: TimenoteInfoDTO)
     fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO)
     fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO)

@@ -194,7 +194,15 @@ class ItemTimenoteAdapter(
                         if (timenote.price .price > 0) itemView.timenote_buy.text = timenote.price.price.toString().plus(timenote.price.currency)
                     }
                 } else {
-                    timenoteListenerListener.onDoubleClick()
+                    if(isFromFuture) {
+                        if(itemView.timenote_plus.drawable.bytesEqualTo(itemView.context.getDrawable(R.drawable.ic_ajout_cal)) && itemView.timenote_plus.drawable.pixelsEqualTo(itemView.context.getDrawable(R.drawable.ic_ajout_cal))){
+                            itemView.timenote_plus.setImageDrawable(itemView.context.getDrawable(R.drawable.ic_ajout_cal_plein_gradient))
+                            timenoteListenerListener.onPlusClicked(timenote, true)
+                        } else {
+                            itemView.timenote_plus.setImageDrawable(itemView.context.getDrawable(R.drawable.ic_ajout_cal))
+                            timenoteListenerListener.onPlusClicked(timenote, false)
+                        }
+                    }
                 }
             }
 
@@ -293,7 +301,7 @@ class ItemTimenoteAdapter(
                 listItems (items = listItems){ _, _, text ->
                     when(text.toString()){
                         context.getString(R.string.duplicate) -> timenoteListenerListener.onDuplicateClicked(timenote)
-                        context.getString(R.string.report) -> timenoteListenerListener.onReportClicked()
+                        context.getString(R.string.report) -> timenoteListenerListener.onReportClicked(timenote)
                         context.getString(R.string.share_to) -> timenoteListenerListener.onAlarmClicked(timenote)
                     }
                 }

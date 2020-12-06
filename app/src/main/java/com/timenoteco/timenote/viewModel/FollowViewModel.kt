@@ -10,6 +10,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.timenoteco.timenote.model.UserInfoDTO
 import com.timenoteco.timenote.paging.FollowPagingSource
+import com.timenoteco.timenote.paging.FollowSearchUserPagingSource
 import com.timenoteco.timenote.paging.UserPagingSource
 import com.timenoteco.timenote.webService.repo.DayzeeRepository
 import kotlinx.coroutines.flow.Flow
@@ -28,5 +29,6 @@ class FollowViewModel: ViewModel() {
     fun getUsersWaitingForApproval(token: String, sharedPreferences: SharedPreferences) = Pager(PagingConfig(pageSize = 1)){FollowPagingSource(token, followService, true, sharedPreferences)}.flow.cachedIn(viewModelScope)
     fun getUsersAskedToFollow(token: String, sharedPreferences: SharedPreferences) = Pager(PagingConfig(pageSize = 1)){FollowPagingSource(token, followService, false, sharedPreferences)}.flow.cachedIn(viewModelScope)
     fun getUsers(token: String, id: String, followers: Int, sharedPreferences: SharedPreferences): Flow<PagingData<UserInfoDTO>>  = Pager(PagingConfig(pageSize = 1)){ UserPagingSource(token, id, followService, followers, sharedPreferences) }.flow.cachedIn(viewModelScope)
+    fun searchInFollowing(token: String, search: String, sharedPreferences: SharedPreferences) = Pager(PagingConfig(pageSize = 1)){FollowSearchUserPagingSource(token, search, followService, sharedPreferences)}.flow.cachedIn(viewModelScope)
 
 }

@@ -32,7 +32,7 @@ import java.text.SimpleDateFormat
 import java.time.YearMonth
 import java.util.*
 
-class ProfileCalendarSearch: Fragment() {
+class ProfileCalendarSearch: Fragment(), ItemCalendarAdapter.CalendarEventClicked {
 
     private lateinit var simpleDateFormatDay: SimpleDateFormat
     private lateinit var simpleDateFormatMonth: SimpleDateFormat
@@ -187,7 +187,7 @@ class ProfileCalendarSearch: Fragment() {
                 if (it.isSuccessful) {
                     events.clear()
                     events.addAll(it.body() as List<TimenoteInfoDTO>)
-                    calendarAdapter = ItemCalendarAdapter(mutableListOf(), events)
+                    calendarAdapter = ItemCalendarAdapter(mutableListOf(), events, this)
 
                     profile_calendar_rv.apply {
                         layoutManager = LinearLayoutManager(requireContext())
@@ -210,5 +210,9 @@ class ProfileCalendarSearch: Fragment() {
 
 
             })
+    }
+
+    override fun onEventClicked(timenoteInfoDTO: TimenoteInfoDTO) {
+
     }
 }

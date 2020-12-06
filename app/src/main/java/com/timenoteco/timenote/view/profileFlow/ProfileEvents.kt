@@ -122,19 +122,6 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
 
         loadData(userInfoDTO!!)
 
-        handler = Handler { msg ->
-            if (msg.what == TRIGGER_AUTO_COMPLETE) {
-                if (!TextUtils.isEmpty(searchBar.text)) {
-                    //searchViewModel.searchChanged(tokenId!!, searchBar.text)
-                    lifecycleScope.launch {
-                        //searchViewModel.searchUser(tokenId!!, searchBar.text)
-                    }
-
-                }
-            }
-            false
-        }
-
     }
 
     @ExperimentalPagingApi
@@ -168,8 +155,27 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
         }
     }
 
-    override fun onReportClicked() {
-        Toast.makeText(requireContext(), "Reported", Toast.LENGTH_SHORT).show()
+    override fun onReportClicked(timenoteInfoDTO: TimenoteInfoDTO) {
+        timenoteViewModel.signalTimenote(tokenId!!, TimenoteCreationSignalementDTO(userInfoDTO?.id!!, timenoteInfoDTO.id, "")).observe(viewLifecycleOwner, Observer {
+            if(it.code() == 401){
+                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
+                    tokenId = newAccessToken
+                    timenoteViewModel.signalTimenote(tokenId!!, TimenoteCreationSignalementDTO(userInfoDTO?.id!!, timenoteInfoDTO.id, "")).observe(viewLifecycleOwner, Observer { rsp ->
+                        if(rsp.isSuccessful) Toast.makeText(
+                            requireContext(),
+                            "Reported",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    })
+                })
+            }
+
+            if(it.isSuccessful) Toast.makeText(
+                requireContext(),
+                "Reported",
+                Toast.LENGTH_SHORT
+            ).show()
+        })
     }
 
     override fun onEditClicked(timenoteInfoDTO: TimenoteInfoDTO) {
@@ -262,7 +268,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
     override fun onShareClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         sendTo.clear()
         val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
-            customView(R.layout.friends_search)
+            customView(R.layout.friends_search_cl)
             lifecycleOwner(this@ProfileEvents)
             positiveButton(R.string.send){
                 timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo)).observe(viewLifecycleOwner, Observer {
@@ -296,6 +302,29 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
         lifecycleScope.launch{
             followViewModel.getUsers(tokenId!!, userInfoDTO?.id!!, 0, prefs).collectLatest {
                 userAdapter.submitData(it)
+            }
+        }
+
+        if(searchbar != null) {
+            handler = Handler { msg ->
+                if (msg.what == TRIGGER_AUTO_COMPLETE) {
+                    if (!TextUtils.isEmpty(searchbar.text)) {
+                        lifecycleScope.launch {
+                            followViewModel.searchInFollowing(tokenId!!, searchbar.text, prefs)
+                                .collectLatest {
+                                    userAdapter.submitData(it)
+                                }
+                        }
+
+                    } else {
+                        lifecycleScope.launch{
+                            followViewModel.getUsers(tokenId!!, userInfoDTO?.id!!, 0, prefs).collectLatest {
+                                userAdapter.submitData(it)
+                            }
+                        }
+                    }
+                }
+                false
             }
         }
     }

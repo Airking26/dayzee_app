@@ -32,6 +32,7 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.mancj.materialsearchbar.MaterialSearchBar
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.*
 import com.timenoteco.timenote.common.BaseThroughFragment
@@ -98,7 +99,6 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                     findNavController().popBackStack(R.id.home, false)
                     onGoToNearby.onGuestMode()
                 }
-                else -> Toast.makeText(requireContext(), "tg", Toast.LENGTH_SHORT).show()
             }
         })
 
@@ -157,19 +157,6 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
             home_past_timeline.setOnClickListener(this)
             home_future_timeline.setOnClickListener(this)
-
-            handler = Handler { msg ->
-                if (msg.what == TRIGGER_AUTO_COMPLETE) {
-                    if (!TextUtils.isEmpty(searchBar.text)) {
-                        //searchViewModel.searchChanged(tokenId!!, searchBar.text)
-                        lifecycleScope.launch {
-                            //searchViewModel.searchUser(tokenId!!, searchBar.text)
-                        }
-
-                    }
-                }
-                false
-            }
         }
 
     }
@@ -338,9 +325,29 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         findNavController().navigate(HomeDirections.actionHomeToDetailedTimenote(1, event))
     }
 
-    override fun onReportClicked() {
-    }
+    override fun onReportClicked(timenoteInfoDTO: TimenoteInfoDTO) {
+        val i = timenoteInfoDTO.id
+        timenoteViewModel.signalTimenote(tokenId!!, TimenoteCreationSignalementDTO(userInfoDTO.id!!, timenoteInfoDTO.id, "essai")).observe(viewLifecycleOwner, Observer {
+            if(it.code() == 401){
+                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
+                    tokenId = newAccessToken
+                    timenoteViewModel.signalTimenote(tokenId!!, TimenoteCreationSignalementDTO(userInfoDTO.id!!, timenoteInfoDTO.id, "essai")).observe(viewLifecycleOwner, Observer { rsp ->
+                        if(rsp.isSuccessful) Toast.makeText(
+                            requireContext(),
+                            "Reported",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    })
+                })
+            }
 
+            if(it.isSuccessful) Toast.makeText(
+                requireContext(),
+                "Reported",
+                Toast.LENGTH_SHORT
+            ).show()
+        })
+    }
 
     override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         share(timenoteInfoDTO)
@@ -386,8 +393,8 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
     override fun onShareClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         sendTo.clear()
-        val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-            customView(R.layout.friends_search)
+        val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
+            customView(R.layout.friends_search_cl)
             lifecycleOwner(this@Home)
             positiveButton(R.string.send){
                 timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo)).observe(viewLifecycleOwner, Observer {
@@ -415,12 +422,35 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
         })
         val recyclerview = dial.getCustomView().shareWith_rv
-        val userAdapter = UsersShareWithPagingAdapter(UsersPagingAdapter.UserComparator, this, this)
+        val  userAdapter = UsersShareWithPagingAdapter(UsersPagingAdapter.UserComparator, this, this)
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
             followViewModel.getUsers(tokenId!!, userInfoDTO.id!!, 0, prefs).collectLatest {
                 userAdapter.submitData(it)
+            }
+        }
+
+        if(searchbar != null) {
+            handler = Handler { msg ->
+                if (msg.what == TRIGGER_AUTO_COMPLETE) {
+                    if (!TextUtils.isEmpty(searchbar.text)) {
+                        lifecycleScope.launch {
+                            followViewModel.searchInFollowing(tokenId!!, searchbar.text, prefs)
+                                .collectLatest {
+                                    userAdapter.submitData(it)
+                                }
+                        }
+
+                    } else {
+                        lifecycleScope.launch{
+                            followViewModel.getUsers(tokenId!!, userInfoDTO.id!!, 0, prefs).collectLatest {
+                                userAdapter.submitData(it)
+                            }
+                        }
+                    }
+                }
+                false
             }
         }
     }

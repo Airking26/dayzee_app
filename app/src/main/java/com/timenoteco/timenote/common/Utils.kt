@@ -205,7 +205,7 @@ class Utils {
                 })
             }
             onDismiss {
-                if (webSearchAdapter != null && webSearchAdapter?.images.isNullOrEmpty()) {
+                if (webSearchAdapter == null || webSearchAdapter?.images.isNullOrEmpty()) {
                     view?.visibility = View.VISIBLE
                     view1?.visibility = View.GONE
                 } else {

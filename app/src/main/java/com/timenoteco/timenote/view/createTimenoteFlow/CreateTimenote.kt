@@ -100,6 +100,9 @@ import kotlinx.android.synthetic.main.cropview.view.*
 import kotlinx.android.synthetic.main.fragment_create_timenote.*
 import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.friends_search.view.*
+import kotlinx.android.synthetic.main.friends_search.view.searchBar_friends
+import kotlinx.android.synthetic.main.friends_search.view.shareWith_rv
+import kotlinx.android.synthetic.main.friends_search_cl.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import mehdi.sakout.fancybuttons.FancyButton
@@ -273,21 +276,6 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                     creationTimenoteViewModel.setSharedWith(listOf())
                 }
             }
-        }
-
-
-
-        handler = Handler { msg ->
-            if (msg.what == TRIGGER_AUTO_COMPLETE) {
-                if (!TextUtils.isEmpty(searchBar.text)) {
-                    //searchViewModel.searchChanged(tokenId!!, searchBar.text)
-                    lifecycleScope.launch {
-                        //searchViewModel.searchUser(tokenId!!, searchBar.text)
-                    }
-
-                }
-            }
-            false
         }
     }
 
@@ -576,7 +564,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         subcategoryCv.setOnClickListener(this)
         create_timenote_btn_back.setOnClickListener(this)
         url_cardview.setOnClickListener(this)
-        create_timenote_organizers_btn.setOnClickListener(this)
+        organizers_cv.setOnClickListener(this)
         create_timenote_clear.setOnClickListener(this)
     }
 
@@ -911,7 +899,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                 lifecycleOwner(this@CreateTimenote)
             }
 
-            create_timenote_organizers_btn -> createFriendsBottomSheet(2, null)
+            organizers_cv -> createFriendsBottomSheet(2, null)
             create_timenote_clear -> {
                 creationTimenoteViewModel.clear()
                 images = mutableListOf()
@@ -1084,7 +1072,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     private fun createFriendsBottomSheet(createGroup: Int, groupName: String?) {
         sendTo = mutableListOf()
         val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
-            customView(R.layout.friends_search)
+            customView(R.layout.friends_search_cl)
             lifecycleOwner(this@CreateTimenote)
             positiveButton(R.string.confirm) {
                 when (createGroup) {
@@ -1133,6 +1121,29 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         lifecycleScope.launch {
             followViewModel.getUsers(tokenId!!, userInfoDTO.id!!,  0, prefs).collectLatest {
                 userAdapter.submitData(it)
+            }
+        }
+
+        if(searchbar != null) {
+            handler = Handler { msg ->
+                if (msg.what == TRIGGER_AUTO_COMPLETE) {
+                    if (!TextUtils.isEmpty(searchbar.text)) {
+                        lifecycleScope.launch {
+                            followViewModel.searchInFollowing(tokenId!!, searchbar.text, prefs)
+                                .collectLatest {
+                                    userAdapter.submitData(it)
+                                }
+                        }
+
+                    } else {
+                        lifecycleScope.launch{
+                            followViewModel.getUsers(tokenId!!, userInfoDTO.id!!, 0, prefs).collectLatest {
+                                userAdapter.submitData(it)
+                            }
+                        }
+                    }
+                }
+                false
             }
         }
     }
