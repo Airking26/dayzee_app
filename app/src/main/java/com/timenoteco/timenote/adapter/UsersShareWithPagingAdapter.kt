@@ -12,16 +12,20 @@ import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.bytesEqualTo
 import com.timenoteco.timenote.common.pixelsEqualTo
-import com.timenoteco.timenote.model.TimenoteInfoDTO
 import com.timenoteco.timenote.model.UserInfoDTO
 import kotlinx.android.synthetic.main.item_user.view.givenName
 import kotlinx.android.synthetic.main.item_user.view.name_user
 import kotlinx.android.synthetic.main.item_user.view.user_imageview
 import kotlinx.android.synthetic.main.item_user_send.view.*
 
-class UsersShareWithPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>,
-                                  val searchPeopleListener: SearchPeopleListener,
-                                  val addToSend: AddToSend)
+class UsersShareWithPagingAdapter(
+    diffCallback: DiffUtil.ItemCallback<UserInfoDTO>,
+    private val searchPeopleListener: SearchPeopleListener,
+    private val addToSend: AddToSend,
+    private val organizers: MutableList<String>?,
+    private val sendTo: MutableList<String>?,
+    private val createGroup: Int?
+)
     : PagingDataAdapter<UserInfoDTO, UsersShareWithPagingAdapter.UserViewHolder>(diffCallback){
 
     interface SearchPeopleListener{
@@ -29,15 +33,18 @@ class UsersShareWithPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDT
     }
 
     interface AddToSend{
-        fun onAdd(userInfoDTO: UserInfoDTO)
-        fun onRemove(userInfoDTO: UserInfoDTO)
+        fun onAdd(userInfoDTO: UserInfoDTO, createGroup: Int?)
+        fun onRemove(userInfoDTO: UserInfoDTO, createGroup: Int?)
     }
 
     class UserViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         fun bindUser(
             userInfoDTO: UserInfoDTO?,
             searchPeopleListener: SearchPeopleListener,
-            addToSend: AddToSend
+            addToSend: AddToSend,
+            organizers: MutableList<String>?,
+            sendTo: MutableList<String>?,
+            createGroup: Int?
         ) {
 
                 Glide
@@ -53,15 +60,17 @@ class UsersShareWithPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDT
                 itemView.givenName.visibility = View.VISIBLE
                 itemView.givenName.text = userInfoDTO?.givenName
             }
+            if(createGroup != null && createGroup == 2 && organizers != null && organizers.contains(userInfoDTO?.id)) itemView.item_user_send.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.ic_baseline_remove_send))
+            else if(sendTo != null && sendTo.contains(userInfoDTO?.id)) itemView.item_user_send.setImageDrawable(itemView.context.getDrawable(R.drawable.ic_baseline_remove_send))
             itemView.user_imageview.setOnClickListener { searchPeopleListener.onSearchClicked(userInfoDTO!!) }
             itemView.name_user.setOnClickListener { searchPeopleListener.onSearchClicked(userInfoDTO!!) }
             itemView.givenName.setOnClickListener { searchPeopleListener.onSearchClicked(userInfoDTO!!) }
             itemView.item_user_send.setOnClickListener {
                 if(itemView.item_user_send.drawable.bytesEqualTo(itemView.context.resources.getDrawable(R.drawable.ic_add_circle_yellow_send)) && itemView.item_user_send.drawable.pixelsEqualTo(itemView.context.resources.getDrawable(R.drawable.ic_add_circle_yellow_send))){
-                    addToSend.onAdd(userInfoDTO!!)
+                    addToSend.onAdd(userInfoDTO!!, createGroup)
                     itemView.item_user_send.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.ic_baseline_remove_send))
                 } else {
-                    addToSend.onRemove(userInfoDTO!!)
+                    addToSend.onRemove(userInfoDTO!!, createGroup)
                     itemView.item_user_send.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.ic_add_circle_yellow_send))
                 }
             }
@@ -70,7 +79,7 @@ class UsersShareWithPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDT
     }
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-        holder.bindUser(getItem(position), searchPeopleListener, addToSend)
+        holder.bindUser(getItem(position), searchPeopleListener, addToSend, organizers, sendTo, createGroup)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder =

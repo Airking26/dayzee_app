@@ -47,7 +47,6 @@ import com.timenoteco.timenote.viewModel.AlarmViewModel
 import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.TimenoteViewModel
-import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.fragment_timenote_address.*
 import kotlinx.android.synthetic.main.friends_search.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
@@ -232,7 +231,14 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
 
         })
         val recyclerview = dial.getCustomView().shareWith_rv
-        val userAdapter = UsersShareWithPagingAdapter(UsersPagingAdapter.UserComparator, this, this)
+        val userAdapter = UsersShareWithPagingAdapter(
+            UsersPagingAdapter.UserComparator,
+            this,
+            this,
+            null,
+            sendTo,
+            null
+        )
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
@@ -265,11 +271,11 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
         }
     }
 
-    override fun onAdd(userInfoDTO: UserInfoDTO) {
+    override fun onAdd(userInfoDTO: UserInfoDTO, createGroup: Int?) {
         sendTo.add(userInfoDTO.id!!)
     }
 
-    override fun onRemove(userInfoDTO: UserInfoDTO) {
+    override fun onRemove(userInfoDTO: UserInfoDTO, createGroup: Int?) {
         sendTo.remove(userInfoDTO.id!!)
     }
 

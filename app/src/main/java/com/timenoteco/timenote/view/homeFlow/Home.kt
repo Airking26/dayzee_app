@@ -12,6 +12,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -32,7 +33,6 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.mancj.materialsearchbar.MaterialSearchBar
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.*
 import com.timenoteco.timenote.common.BaseThroughFragment
@@ -48,7 +48,6 @@ import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
 import io.branch.referral.util.LinkProperties
 import kotlinx.android.synthetic.main.fragment_home.*
-import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.friends_search.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
@@ -140,6 +139,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         return getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_home)
     }
 
@@ -422,7 +422,14 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
         })
         val recyclerview = dial.getCustomView().shareWith_rv
-        val  userAdapter = UsersShareWithPagingAdapter(UsersPagingAdapter.UserComparator, this, this)
+        val  userAdapter = UsersShareWithPagingAdapter(
+            UsersPagingAdapter.UserComparator,
+            this,
+            this,
+            null,
+            sendTo,
+            null
+        )
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
@@ -459,11 +466,11 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
     }
 
-    override fun onAdd(userInfoDTO: UserInfoDTO) {
+    override fun onAdd(userInfoDTO: UserInfoDTO, createGroup: Int?) {
         sendTo.add(userInfoDTO.id!!)
     }
 
-    override fun onRemove(userInfoDTO: UserInfoDTO) {
+    override fun onRemove(userInfoDTO: UserInfoDTO, createGroup: Int?) {
         sendTo.remove(userInfoDTO.id!!)
     }
 

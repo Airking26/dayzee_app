@@ -6,13 +6,13 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Typeface
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.text.*
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -48,10 +48,8 @@ import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.TimenoteViewModel
 import kotlinx.android.synthetic.main.fragment_detailed_fragment.*
-import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.friends_search.view.*
 import kotlinx.android.synthetic.main.item_timenote_root.*
-import kotlinx.android.synthetic.main.item_timenote_root.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -62,6 +60,7 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
     CommentAdapter.CommentPicUserListener, CommentAdapter.CommentMoreListener,
     UsersShareWithPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.AddToSend {
 
+    private lateinit var imm: InputMethodManager
     private var sendTo: MutableList<String> = mutableListOf()
     private lateinit var handler: Handler
     private val TRIGGER_AUTO_COMPLETE = 200
@@ -85,11 +84,13 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
 
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-         inflater.inflate(R.layout.fragment_detailed_fragment, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        return inflater.inflate(R.layout.fragment_detailed_fragment, container, false)}
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
+        imm = (requireActivity().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager)!!
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
         userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
 
@@ -323,26 +324,26 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
         when(v){
             timenote_comment -> {
                 comments_edittext.requestFocus()
-                val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
-                imm?.showSoftInput(comments_edittext, InputMethodManager.SHOW_IMPLICIT)
+                imm.showSoftInput(comments_edittext, InputMethodManager.SHOW_IMPLICIT)
+            }
+            comments_edittext -> {
+                comments_edittext.requestFocus()
+                imm.showSoftInput(comments_edittext, InputMethodManager.SHOW_IMPLICIT)
             }
             detailed_timenote_btn_more -> createOptionsOnTimenote(requireContext(), args.timenoteInfoDTO!!)
             timenote_detailed_send_comment -> commentViewModel.postComment(tokenId!!, CommentCreationDTO(userInfoDTO.id!!, args.timenoteInfoDTO?.id!!, comments_edittext.text.toString(), "#ok")).observe(viewLifecycleOwner, Observer {
-                if (it.isSuccessful){
-                    val view = requireActivity().currentFocus
-                    view?.let { v ->
-                        val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-                        imm?.hideSoftInputFromWindow(v.windowToken, 0)
-                    }
-                    comments_edittext.text.clear()
+            if (it.isSuccessful){
+                comments_edittext.clearFocus()
+                imm.hideSoftInputFromWindow(comments_edittext.windowToken, 0)
+                comments_edittext.text.clear()
 
-                    lifecycleScope.launch {
-                        commentViewModel.getComments(tokenId!!, args.timenoteInfoDTO?.id!!, prefs).collectLatest { data ->
-                            commentAdapter.submitData(data)
-                        }
+                lifecycleScope.launch {
+                    commentViewModel.getComments(tokenId!!, args.timenoteInfoDTO?.id!!, prefs).collectLatest { data ->
+                        commentAdapter.submitData(data)
                     }
                 }
-            })
+            }
+        })
             timenote_share -> {
                 sendTo.clear()
                 val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
@@ -374,7 +375,14 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
 
                 })
                 val recyclerview = dial.getCustomView().shareWith_rv
-                val userAdapter = UsersShareWithPagingAdapter(UsersPagingAdapter.UserComparator, this, this)
+                val userAdapter = UsersShareWithPagingAdapter(
+                    UsersPagingAdapter.UserComparator,
+                    this,
+                    this,
+                    null,
+                    sendTo,
+                    null
+                )
                 recyclerview.layoutManager = LinearLayoutManager(requireContext())
                 recyclerview.adapter = userAdapter
                 lifecycleScope.launch{
@@ -498,11 +506,11 @@ class DetailedTimenoteSearch : Fragment(), View.OnClickListener, UsersPagingAdap
         findNavController().navigate(DetailedTimenoteSearchDirections.actionDetailedTimenoteSearchToProfileSearch(args.timenoteInfoDTO?.createdBy))
     }
 
-    override fun onAdd(userInfoDTO: UserInfoDTO) {
+    override fun onAdd(userInfoDTO: UserInfoDTO, createGroup: Int?) {
         sendTo.add(userInfoDTO.id!!)
     }
 
-    override fun onRemove(userInfoDTO: UserInfoDTO) {
+    override fun onRemove(userInfoDTO: UserInfoDTO, createGroup: Int?) {
         sendTo.remove(userInfoDTO.id!!)
     }
 

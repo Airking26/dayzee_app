@@ -17,7 +17,7 @@
         app:mt_placeholderColor="@android:color/darker_gray"
         app:mt_backIconTint="@android:color/darker_gray"
         app:mt_hintColor="@android:color/darker_gray"
-        app:mt_textColor="@android:color/black"
+        app:mt_textColor="@color/colorText"
         app:mt_placeholder="Search"
         android:background="@color/colorBackground"
         app:layout_constraintStart_toStartOf="parent"

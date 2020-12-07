@@ -14,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
@@ -53,10 +54,8 @@ import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
 import io.branch.referral.util.LinkProperties
 import kotlinx.android.synthetic.main.fragment_detailed_fragment.*
-import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.friends_search.view.*
 import kotlinx.android.synthetic.main.item_timenote_root.*
-import kotlinx.android.synthetic.main.item_timenote_root.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -68,6 +67,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     CommentAdapter.CommentMoreListener, UsersPagingAdapter.SearchPeopleListener,
     UsersShareWithPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.AddToSend {
 
+    private lateinit var imm: InputMethodManager
     private var sendTo: MutableList<String> = mutableListOf()
     private lateinit var handler: Handler
     private val TRIGGER_AUTO_COMPLETE = 200
@@ -97,6 +97,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
+        imm = (requireActivity().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager)!!
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
         userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
 
@@ -308,6 +309,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
 
             detailed_timenote_username.text = args.event?.createdBy?.userName
 
+        comments_edittext.setOnClickListener(this)
             timenote_comment.setOnClickListener(this)
             timenote_detailed_send_comment.setOnClickListener(this)
             detailed_timenote_btn_more.setOnClickListener(this)
@@ -318,25 +320,24 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         timenote_day_month.setOnClickListener(this)
         timenote_in_label.setOnClickListener(this)
 
-            detailed_timenote_btn_back.setOnClickListener { findNavController().popBackStack()
-            }
+            detailed_timenote_btn_back.setOnClickListener { findNavController().popBackStack() }
     }
 
     override fun onClick(v: View?) {
         when(v){
             timenote_comment -> {
                 comments_edittext.requestFocus()
-                val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
-                imm?.showSoftInput(comments_edittext, InputMethodManager.SHOW_IMPLICIT)
+                imm.showSoftInput(comments_edittext, InputMethodManager.SHOW_IMPLICIT)
+            }
+            comments_edittext -> {
+                comments_edittext.requestFocus()
+                imm.showSoftInput(comments_edittext, InputMethodManager.SHOW_IMPLICIT)
             }
             detailed_timenote_btn_more -> createOptionsOnTimenote(requireContext(), userInfoDTO.id == args.event?.createdBy?.id)
             timenote_detailed_send_comment -> commentViewModel.postComment(tokenId!!, CommentCreationDTO(userInfoDTO.id!!, args.event?.id!!, comments_edittext.text.toString(), "#ok")).observe(viewLifecycleOwner, Observer {
                     if (it.isSuccessful){
-                        val view = requireActivity().currentFocus
-                        view?.let { v ->
-                            val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-                            imm?.hideSoftInputFromWindow(v.windowToken, 0)
-                        }
+                        comments_edittext.clearFocus()
+                        imm.hideSoftInputFromWindow(comments_edittext.windowToken, 0)
                         comments_edittext.text.clear()
 
                         lifecycleScope.launch {
@@ -377,7 +378,14 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
 
                 })
                 val recyclerview = dial.getCustomView().shareWith_rv
-                val userAdapter = UsersShareWithPagingAdapter(UsersPagingAdapter.UserComparator, this, this)
+                val userAdapter = UsersShareWithPagingAdapter(
+                    UsersPagingAdapter.UserComparator,
+                    this,
+                    this,
+                    null,
+                    sendTo,
+                    null
+                )
                 recyclerview.layoutManager = LinearLayoutManager(requireContext())
                 recyclerview.adapter = userAdapter
                 lifecycleScope.launch{
@@ -567,11 +575,11 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     override fun onRemove(id: String) {
     }
 
-    override fun onAdd(userInfoDTO: UserInfoDTO) {
+    override fun onAdd(userInfoDTO: UserInfoDTO, createGroup: Int?) {
         sendTo.add(userInfoDTO.id!!)
     }
 
-    override fun onRemove(userInfoDTO: UserInfoDTO) {
+    override fun onRemove(userInfoDTO: UserInfoDTO, createGroup: Int?) {
         sendTo.remove(userInfoDTO.id!!)
     }
 

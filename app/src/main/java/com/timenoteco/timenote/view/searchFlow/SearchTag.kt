@@ -10,6 +10,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -41,7 +42,6 @@ import io.branch.indexing.BranchUniversalObject
 import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
 import io.branch.referral.util.LinkProperties
-import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.fragment_search_tag.*
 import kotlinx.android.synthetic.main.friends_search.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
@@ -76,8 +76,8 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
 
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        inflater.inflate(R.layout.fragment_search_tag, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_search_tag, container, false)}
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -158,7 +158,14 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
 
         })
         val recyclerview = dial.getCustomView().shareWith_rv
-        val userAdapter = UsersShareWithPagingAdapter(UsersPagingAdapter.UserComparator, this, this)
+        val userAdapter = UsersShareWithPagingAdapter(
+            UsersPagingAdapter.UserComparator,
+            this,
+            this,
+            null,
+            sendTo,
+            null
+        )
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
@@ -319,11 +326,11 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
 
     }
 
-    override fun onAdd(userInfoDTO: UserInfoDTO) {
+    override fun onAdd(userInfoDTO: UserInfoDTO, createGroup: Int?) {
         sendTo.add(userInfoDTO.id!!)
     }
 
-    override fun onRemove(userInfoDTO: UserInfoDTO) {
+    override fun onRemove(userInfoDTO: UserInfoDTO, createGroup: Int?) {
         sendTo.remove(userInfoDTO.id!!)
     }
 }

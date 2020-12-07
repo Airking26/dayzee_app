@@ -42,7 +42,6 @@ import com.timenoteco.timenote.view.searchFlow.ProfileSearchDirections
 import com.timenoteco.timenote.view.searchFlow.SearchDirections
 import com.timenoteco.timenote.viewModel.*
 import kotlinx.android.synthetic.main.fragment_profile_future_events.*
-import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.friends_search.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
@@ -296,7 +295,14 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
 
         })
         val recyclerview = dial.getCustomView().shareWith_rv
-        val userAdapter = UsersShareWithPagingAdapter(UsersPagingAdapter.UserComparator, this, this)
+        val userAdapter = UsersShareWithPagingAdapter(
+            UsersPagingAdapter.UserComparator,
+            this,
+            this,
+            null,
+            sendTo,
+            null
+        )
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
@@ -333,11 +339,11 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
 
     }
 
-    override fun onAdd(userInfoDTO: UserInfoDTO) {
+    override fun onAdd(userInfoDTO: UserInfoDTO, createGroup: Int?) {
         sendTo.add(userInfoDTO.id!!)
     }
 
-    override fun onRemove(userInfoDTO: UserInfoDTO) {
+    override fun onRemove(userInfoDTO: UserInfoDTO, createGroup: Int?) {
         sendTo.remove(userInfoDTO.id!!)
     }
 

@@ -165,14 +165,8 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-    }
-
     @RequiresApi(Build.VERSION_CODES.M)
     private fun setupController() {
-
-
 
         createNotificationChannel()
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
@@ -332,7 +326,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        return currentNavController?.value?.navigateUp() ?: false
+        return currentNavController?.value?.navigateUp() ?: true
     }
 
     override fun onBackHome() {

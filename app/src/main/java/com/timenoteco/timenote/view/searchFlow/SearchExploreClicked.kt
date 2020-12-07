@@ -14,12 +14,8 @@ import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.timenoteco.timenote.R
-import com.timenoteco.timenote.adapter.SuggestionAdapter
-import com.timenoteco.timenote.adapter.SuggestionItemAdapter
 import com.timenoteco.timenote.adapter.UsersShareWithPagingAdapter
-import com.timenoteco.timenote.model.Category
 import com.timenoteco.timenote.model.UserInfoDTO
-import com.timenoteco.timenote.model.UserSuggested
 import com.timenoteco.timenote.model.accessToken
 import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.SearchViewModel
@@ -50,7 +46,14 @@ class SearchExploreClicked: Fragment(), UsersShareWithPagingAdapter.AddToSend,
 
         search_explore_clicked_title_toolbar.text = args.category?.subcategory
 
-        userByCategoryAdapter = UsersShareWithPagingAdapter(UsersShareWithPagingAdapter.UserComparator, this, this)
+        userByCategoryAdapter = UsersShareWithPagingAdapter(
+            UsersShareWithPagingAdapter.UserComparator,
+            this,
+            this,
+            null,
+            null,
+            null
+        )
         search_explore_clicked_rv.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = userByCategoryAdapter
@@ -80,14 +83,14 @@ class SearchExploreClicked: Fragment(), UsersShareWithPagingAdapter.AddToSend,
         findNavController().navigate(SearchExploreClickedDirections.actionSearchExploreClickedToProfileSearch(userInfoDTO))
     }*/
 
-    override fun onAdd(userInfoDTO: UserInfoDTO) {
+    override fun onAdd(userInfoDTO: UserInfoDTO, createGroup: Int?) {
         followViewModel.followPublicUser(tokenId!!, userInfoDTO.id!!)
             .observe(viewLifecycleOwner, Observer {
                 if(it.isSuccessful) ""
             })
     }
 
-    override fun onRemove(userInfoDTO: UserInfoDTO) {
+    override fun onRemove(userInfoDTO: UserInfoDTO, createGroup: Int?) {
         followViewModel.unfollowUser(tokenId!!, userInfoDTO.id!!).observe(viewLifecycleOwner, Observer {
             if(it.isSuccessful) ""
         })

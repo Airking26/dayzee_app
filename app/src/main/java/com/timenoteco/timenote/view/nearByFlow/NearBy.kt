@@ -22,7 +22,6 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
 import androidx.preference.PreferenceManager
@@ -64,7 +63,6 @@ import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
 import io.branch.referral.util.LinkProperties
 import kotlinx.android.synthetic.main.fragment_near_by.*
-import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.friends_search.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
@@ -127,6 +125,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         makeBarVisibleListener.onBarAskedToShow()
+        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
         //return getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_near_by)
         return inflater.inflate(R.layout.fragment_near_by, container, false)
     }
@@ -201,7 +200,16 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
                 nearby_time.text = dateFormat.format(System.currentTimeMillis())
             else nearby_time.text = SimpleDateFormat(DATE_FORMAT, Locale.getDefault()).format(SimpleDateFormat(ISO, Locale.getDefault()).parse(nearbyModifyModel.date).time)
 
-            if(nearbyModifyModel?.location?.latitude != 0.0 && nearbyModifyModel?.location?.longitude != 0.0) loadData(nearbyModifyModel)
+            if(nearbyModifyModel?.location?.latitude != 0.0 && nearbyModifyModel?.location?.longitude != 0.0) {
+                loadData(nearbyModifyModel)
+                if(nearbyToCompare.isNotBlank() && nearbyToCompare.isNotEmpty()){
+                    val nearbyToCompareFormatted = Gson().fromJson<NearbyRequestBody>(nearbyToCompare, typeNearby)
+                    if(nearbyToCompareFormatted.location != nearbyModifyModel?.location){
+                        this.googleMap?.addMarker(MarkerOptions().position(LatLng(nearbyModifyModel?.location?.latitude!!, nearbyModifyModel.location.longitude)))
+                        this.googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(nearbyModifyModel?.location?.latitude!!, nearbyModifyModel.location.longitude), 15F))
+                    }
+                }
+            }
 
             nearbyToCompare = Gson().toJson(nearbyFilterData.loadNearbyFilter())
         })
@@ -212,13 +220,11 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, Utils())
         nearby_rv.adapter = timenotePagingAdapter
         nearby_rv.layoutManager = LinearLayoutManager(requireContext())
-        if(nearbyToCompare != Gson().toJson(nearbyFilterData.loadNearbyFilter()) && !tokenId.isNullOrBlank()){
                 lifecycleScope.launch {
                     nearbyViewModel.getNearbyResults(tokenId!!, nearbyModifyModel!!, prefs).collectLatest { pagingData ->
                         timenotePagingAdapter.submitData(pagingData)
                     }
                 }
-            }
 
         timenotePagingAdapter.addDataRefreshListener { isEmpty ->
             nearby_swipe_refresh.isRefreshing = false
@@ -477,7 +483,14 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
 
         })
         val recyclerview = dial.getCustomView().shareWith_rv
-        val userAdapter = UsersShareWithPagingAdapter(UsersPagingAdapter.UserComparator, this, this)
+        val userAdapter = UsersShareWithPagingAdapter(
+            UsersPagingAdapter.UserComparator,
+            this,
+            this,
+            null,
+            sendTo,
+            null
+        )
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
@@ -514,11 +527,11 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         this.googleMap?.addMarker(MarkerOptions().position(LatLng(timenoteInfoDTO.location?.latitude!!, timenoteInfoDTO.location.longitude)))
     }
 
-    override fun onAdd(userInfoDTO: UserInfoDTO) {
+    override fun onAdd(userInfoDTO: UserInfoDTO, createGroup: Int?) {
         sendTo.add(userInfoDTO.id!!)
     }
 
-    override fun onRemove(userInfoDTO: UserInfoDTO) {
+    override fun onRemove(userInfoDTO: UserInfoDTO, createGroup: Int?) {
         sendTo.remove(userInfoDTO.id!!)
     }
 

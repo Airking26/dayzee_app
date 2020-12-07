@@ -83,11 +83,9 @@ import com.timenoteco.timenote.common.stringLiveData
 import com.timenoteco.timenote.listeners.BackToHomeListener
 import com.timenoteco.timenote.listeners.TimenoteCreationPicListeners
 import com.timenoteco.timenote.model.*
-import com.timenoteco.timenote.view.createTimenoteFlow.CreateTimenoteDirections
 import com.timenoteco.timenote.viewModel.*
 import com.zhihu.matisse.Matisse
 import kotlinx.android.synthetic.main.fragment_create_timenote.*
-import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.friends_search.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -107,6 +105,7 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener,
     UsersShareWithPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.AddToSend {
 
     private var accountType: Int = -1
+    private var indexGroupChosen: MutableList<Int> = mutableListOf()
     private var sendTo: MutableList<String> = mutableListOf()
     private lateinit var handler: Handler
     private val TRIGGER_AUTO_COMPLETE = 200
@@ -118,6 +117,7 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener,
     private lateinit var paidLabelTv : TextView
     private lateinit var catLabelTv : TextView
     private lateinit var subCatTv : TextView
+    private var organizers: MutableList<String> = mutableListOf()
     private lateinit var subCatLabelTv : TextView
     val amazonClient = AmazonS3Client(
         BasicAWSCredentials(
@@ -871,6 +871,9 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener,
             create_timenote_clear -> {
                 creationTimenoteViewModel.clear()
                 images = mutableListOf()
+                sendTo.clear()
+                organizers.clear()
+                indexGroupChosen.clear()
                 creationTimenoteViewModel.setCreatedBy(userInfoDTO.id!!)
             }
             create_timenote_btn_back -> {
@@ -965,47 +968,6 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener,
         })
     }
 
-    private fun MaterialDialog.getAllGroups() {
-        profileViewModel.getAllGroups(tokenId!!)
-            .observe(viewLifecycleOwner, androidx.lifecycle.Observer { response ->
-                val listGroups: MutableList<String> = mutableListOf()
-                if(response.code() == 401) {
-                    authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer {newAccessToken ->
-                        tokenId = newAccessToken
-                        getAllGroups()
-                    })
-                }
-                if (response.isSuccessful) response.body()!!
-                    .forEach { group -> listGroups.add(group.name) }
-                listItemsMultiChoice(items = listGroups) { _, index, text ->
-                    index.forEach { indexes ->
-                        response.body()?.get(indexes)?.users?.forEach { user ->
-                            if (creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.sharedWith != null &&
-                                !creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.sharedWith?.contains(
-                                    user.id
-                                )!!
-                            ) {
-                                sendTo.add(user.id!!)
-                            } else if (!sendTo.contains(user.id))
-                                sendTo.add(user.id!!)
-                        }
-                    }
-
-
-                    if (creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.sharedWith.isNullOrEmpty() && sendTo.size > 0)
-                        creationTimenoteViewModel.setSharedWith(sendTo)
-                    else if (sendTo.size > 0)
-                        creationTimenoteViewModel.setSharedWith(
-                            creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.sharedWith?.plus(
-                                sendTo
-                            )!!
-                        )
-                    sendTo.clear()
-                }
-            })
-    }
-
-
     private fun shareWith() {
         MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             title(R.string.share_with)
@@ -1036,29 +998,54 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener,
         }
     }
 
+    private fun MaterialDialog.getAllGroups() {
+        profileViewModel.getAllGroups(tokenId!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer { response ->
+            val listGroups: MutableList<String> = mutableListOf()
+            if(response.code() == 401) {
+                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer {newAccessToken ->
+                    tokenId = newAccessToken
+                    getAllGroups()
+                })
+            }
+            if (response.isSuccessful) response.body()!!.forEach { group -> listGroups.add(group.name) }
+            listItemsMultiChoice(items = listGroups, initialSelection = indexGroupChosen.toIntArray(), allowEmptySelection = true) { _, index, text ->
+                index.forEach { indexes ->
+                    response.body()?.get(indexes)?.users?.forEach { user ->
+                        if (creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.sharedWith != null && !creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.sharedWith?.contains(user.id)!!) {
+                            sendTo.add(user.id!!)
+                        } else if (!sendTo.contains(user.id)) sendTo.add(user.id!!)
+                    }
+                }
+
+                val removedList = indexGroupChosen.filterNot { i -> index.toMutableList().any { i == it } }
+                if(removedList.isNotEmpty()){
+                    removedList.forEach {indexes ->
+                        response.body()?.get(indexes)?.users?.forEach {user ->
+                            sendTo.remove(user.id)
+                        }
+                    }
+                }
+
+                indexGroupChosen = index.toMutableList()
+                creationTimenoteViewModel.setSharedWith(sendTo)
+            }
+        })
+    }
+
     private fun createFriendsBottomSheet(createGroup: Int, groupName: String?) {
-        sendTo = mutableListOf()
         val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
             customView(R.layout.friends_search_cl)
             lifecycleOwner(this@CreateTimenoteSearch)
             positiveButton(R.string.confirm) {
                 when (createGroup) {
-                    0 -> {
-                        creationTimenoteViewModel.setSharedWith(if(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.sharedWith.isNullOrEmpty()) sendTo
-                        else creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.sharedWith?.plus(sendTo)!!)
-
-                    }
+                    0 -> creationTimenoteViewModel.setSharedWith(sendTo)
                     1 -> {
                         profileViewModel.createGroup(tokenId!!, CreateGroupDTO(groupName!!, sendTo)).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-                            if(it.isSuccessful)
-                                creationTimenoteViewModel.setSharedWith(if(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.sharedWith.isNullOrEmpty()) sendTo
-                                else creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.sharedWith?.plus(sendTo)!!)
+                            if(it.isSuccessful) creationTimenoteViewModel.setSharedWith(sendTo)
                         })
                     }
-                    2 -> {
-                        creationTimenoteViewModel.setOrganizers(if(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.organizers.isNullOrEmpty()) sendTo
-                        else creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.organizers?.plus(sendTo)!!)
-                    }
+                    2 -> creationTimenoteViewModel.setOrganizers(organizers)
+
                 }
             }
             negativeButton(R.string.cancel)
@@ -1080,13 +1067,16 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener,
         val recyclerView = dial.getCustomView().shareWith_rv
         val userAdapter = UsersShareWithPagingAdapter(
             UsersPagingAdapter.UserComparator,
-            this@CreateTimenoteSearch,
-            this@CreateTimenoteSearch
+            this,
+            this,
+            organizers,
+            sendTo,
+            createGroup
         )
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = userAdapter
         lifecycleScope.launch {
-            followViewModel.getUsers(tokenId!!, userInfoDTO.id!! ,0, prefs).collectLatest {
+            followViewModel.getUsers(tokenId!!, userInfoDTO.id!!,  0, prefs).collectLatest {
                 userAdapter.submitData(it)
             }
         }
@@ -1423,15 +1413,19 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener,
     override fun onRemove(id: String) {
     }
 
-    override fun onAdd(userInfoDTO: UserInfoDTO) {
-        if(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.sharedWith?.contains(userInfoDTO.id) != null) {
-            if (!creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.sharedWith?.contains(userInfoDTO.id)!!) sendTo.add(userInfoDTO.id!!)
-        } else sendTo.add(userInfoDTO.id!!)
+    override fun onAdd(userInfoDTO: UserInfoDTO, createGroup: Int?) {
+        if(createGroup != null && createGroup == 2){
+            organizers.add(userInfoDTO.id!!)
+        } else {
+            if (creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.sharedWith?.contains(userInfoDTO.id) != null) {
+                if (!creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.sharedWith?.contains(userInfoDTO.id)!!) sendTo.add(userInfoDTO.id!!)
+            } else sendTo.add(userInfoDTO.id!!)
+        }
     }
 
-    override fun onRemove(userInfoDTO: UserInfoDTO) {
-        sendTo.remove(userInfoDTO.id)
+    override fun onRemove(userInfoDTO: UserInfoDTO, createGroup: Int?) {
+        if(createGroup != null && createGroup == 2) organizers.remove(userInfoDTO.id)
+        else sendTo.remove(userInfoDTO.id)
     }
-
 
 }
