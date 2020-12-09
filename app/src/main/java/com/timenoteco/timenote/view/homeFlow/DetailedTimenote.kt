@@ -13,8 +13,8 @@ import android.text.*
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
@@ -41,6 +41,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.*
+import com.timenoteco.timenote.common.HashTagHelper
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.bytesEqualTo
 import com.timenoteco.timenote.common.pixelsEqualTo
@@ -54,8 +55,9 @@ import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
 import io.branch.referral.util.LinkProperties
 import kotlinx.android.synthetic.main.fragment_detailed_fragment.*
-import kotlinx.android.synthetic.main.friends_search.view.*
+import kotlinx.android.synthetic.main.friends_search_cl.view.*
 import kotlinx.android.synthetic.main.item_timenote_root.*
+import kotlinx.android.synthetic.main.item_timenote_root.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -70,6 +72,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     private lateinit var imm: InputMethodManager
     private var sendTo: MutableList<String> = mutableListOf()
     private lateinit var handler: Handler
+    private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     private val TRIGGER_AUTO_COMPLETE = 200
     private val AUTO_COMPLETE_DELAY: Long = 200
     private lateinit var userInfoDTO: UserInfoDTO
@@ -130,28 +133,44 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                     timenote_buy_cl.visibility = View.VISIBLE
                     if (args.event?.price?.price!! > 0) timenote_buy.text = args.event?.price?.price!!.toString().plus(args.event?.price?.currency ?: "$") }
                 } else {
-                    if(timenote_plus.drawable.bytesEqualTo(resources.getDrawable(R.drawable.ic_ajout_cal)) && timenote_plus.drawable.pixelsEqualTo(resources.getDrawable(R.drawable.ic_ajout_cal))){
-                        timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal_plein_gradient))
-                        timenoteViewModel.joinTimenote(tokenId!!, args.event?.id!!).observe(
-                            viewLifecycleOwner,
-                            Observer {
-                                if(it.code() == 401) {
-                                    authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
-                                        tokenId = newAccessToken
-                                        timenoteViewModel.joinTimenote(tokenId!!, args.event?.id!!)
-                                    })
-                                }
-                            })
-                    } else {
-                        timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal))
-                        timenoteViewModel.leaveTimenote(tokenId!!, args.event?.id!!).observe(viewLifecycleOwner, Observer {
-                            if(it.code() == 401) {
-                                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
-                                    tokenId = newAccessToken
-                                    timenoteViewModel.leaveTimenote(tokenId!!, args.event?.id!!)
+                    if (userInfoDTO.id != args.event?.createdBy?.id) {
+                        if (timenote_plus.drawable.bytesEqualTo(resources.getDrawable(R.drawable.ic_ajout_cal)) && timenote_plus.drawable.pixelsEqualTo(
+                                resources.getDrawable(R.drawable.ic_ajout_cal)
+                            )
+                        ) {
+                            timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal_plein_gradient))
+                            timenoteViewModel.joinTimenote(tokenId!!, args.event?.id!!).observe(
+                                viewLifecycleOwner,
+                                Observer {
+                                    if (it.code() == 401) {
+                                        authViewModel.refreshToken(prefs).observe(
+                                            viewLifecycleOwner,
+                                            Observer { newAccessToken ->
+                                                tokenId = newAccessToken
+                                                timenoteViewModel.joinTimenote(
+                                                    tokenId!!,
+                                                    args.event?.id!!
+                                                )
+                                            })
+                                    }
                                 })
-                            }
-                        })
+                        } else {
+                            timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal))
+                            timenoteViewModel.leaveTimenote(tokenId!!, args.event?.id!!)
+                                .observe(viewLifecycleOwner, Observer {
+                                    if (it.code() == 401) {
+                                        authViewModel.refreshToken(prefs).observe(
+                                            viewLifecycleOwner,
+                                            Observer { newAccessToken ->
+                                                tokenId = newAccessToken
+                                                timenoteViewModel.leaveTimenote(
+                                                    tokenId!!,
+                                                    args.event?.id!!
+                                                )
+                                            })
+                                    }
+                                })
+                        }
                     }
                 }
             }
@@ -162,11 +181,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(timenote_indicator.adapterDataObserver)
 
             timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal))
-            if (args.event?.isParticipating!!) timenote_plus.setImageDrawable(
-                resources.getDrawable(
-                    R.drawable.ic_ajout_cal_plein_gradient
-                )
-            )
+            if (args.event?.isParticipating!! || userInfoDTO.id == args.event?.createdBy?.id) timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal_plein_gradient))
             else timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal))
 
             timenote_year.text = utils.setYear(args.event?.startingAt!!)
@@ -268,8 +283,25 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
 
             timenote_added_by.text = addedByFormated
 
+        val hashTagHelper = HashTagHelper.Creator.create(R.color.colorAccent, object : HashTagHelper.OnHashTagClickListener{
+            override fun onHashTagClicked(hashTag: String?) {
+                findNavController().navigate(DetailedTimenoteDirections.actionGlobalTimenoteTAG(args.event, args.from, hashTag))
+            }
 
-        val username = SpannableStringBuilder(args.event?.createdBy?.userName)
+        }, null, resources)
+        hashTagHelper.handle(timenote_username_desc)
+
+        if(args.event?.description.isNullOrBlank()){
+            timenote_username_desc.visibility = View.GONE
+        } else {
+            val description = "${args.event?.createdBy?.userName} ${args.event?.description}"
+            val descriptionFormatted = SpannableStringBuilder(description)
+            descriptionFormatted.setSpan(bold, 0, args.event?.createdBy?.userName?.length!!, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+            descriptionFormatted.setSpan(light, args.event?.createdBy?.userName?.length!!, description.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+            timenote_username_desc.text = descriptionFormatted
+        }
+
+        /*val username = SpannableStringBuilder(args.event?.createdBy?.userName)
         username.setSpan(bold, 0, args.event?.createdBy?.userName?.length!!, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
 
             if (args.event?.hashtags.isNullOrEmpty() && args.event?.description.isNullOrBlank()) {
@@ -298,7 +330,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                     Spannable.SPAN_EXCLUSIVE_INCLUSIVE
                 )
                 timenote_username_desc.text = username.append(" ").append(completeDesc)
-            }
+            }*/
 
             Glide
                 .with(this)
@@ -310,19 +342,24 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             detailed_timenote_username.text = args.event?.createdBy?.userName
 
         comments_edittext.setOnClickListener(this)
-            timenote_comment.setOnClickListener(this)
-            timenote_detailed_send_comment.setOnClickListener(this)
-            detailed_timenote_btn_more.setOnClickListener(this)
-            timenote_share.setOnClickListener(this)
-            timenote_plus.setOnClickListener(this)
-            timenote_fl.setOnClickListener(this)
-            timenote_buy_cl.setOnClickListener(this)
+        timenote_comment.setOnClickListener(this)
+        timenote_detailed_send_comment.setOnClickListener(this)
+        detailed_timenote_btn_more.setOnClickListener(this)
+        timenote_share.setOnClickListener(this)
+        timenote_plus.setOnClickListener(this)
+        timenote_fl.setOnClickListener(this)
+        timenote_buy_cl.setOnClickListener(this)
         timenote_day_month.setOnClickListener(this)
+        timenote_year.setOnClickListener(this)
+        timenote_time.setOnClickListener(this)
+        separator_1.setOnClickListener(this)
+        separator_2.setOnClickListener(this)
         timenote_in_label.setOnClickListener(this)
 
             detailed_timenote_btn_back.setOnClickListener { findNavController().popBackStack() }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onClick(v: View?) {
         when(v){
             timenote_comment -> {
@@ -350,7 +387,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             timenote_share -> {
                 sendTo.clear()
                 val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
-                    customView(R.layout.friends_search)
+                    customView(R.layout.friends_search_cl)
                     lifecycleOwner(this@DetailedTimenote)
                     positiveButton(R.string.send){
                         timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(args.event?.id!!, sendTo)).observe(viewLifecycleOwner, Observer {
@@ -416,30 +453,45 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                     }
                 }
             }
-            timenote_plus ->
-                if(timenote_plus.drawable.bytesEqualTo(resources.getDrawable(R.drawable.ic_ajout_cal)) && timenote_plus.drawable.pixelsEqualTo(resources.getDrawable(R.drawable.ic_ajout_cal))){
-                    timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal_plein_gradient))
-                    timenoteViewModel.joinTimenote(tokenId!!, args.event?.id!!).observe(
-                        viewLifecycleOwner,
-                        Observer {
-                            if(it.code() == 401) {
-                                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
-                                    tokenId = newAccessToken
-                                    timenoteViewModel.joinTimenote(tokenId!!, args.event?.id!!)
-                                })
-                            }
-                        })
-                } else {
-                    timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal))
-                    timenoteViewModel.leaveTimenote(tokenId!!, args.event?.id!!).observe(viewLifecycleOwner, Observer {
-                        if(it.code() == 401) {
-                            authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
-                                tokenId = newAccessToken
-                                timenoteViewModel.leaveTimenote(tokenId!!, args.event?.id!!)
+            timenote_plus -> {
+                if (userInfoDTO.id != args.event?.createdBy?.id) {
+                    if (timenote_plus.drawable.bytesEqualTo(resources.getDrawable(R.drawable.ic_ajout_cal)) && timenote_plus.drawable.pixelsEqualTo(
+                            resources.getDrawable(R.drawable.ic_ajout_cal)
+                        )
+                    ) {
+                        timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal_plein_gradient))
+                        timenoteViewModel.joinTimenote(tokenId!!, args.event?.id!!).observe(
+                            viewLifecycleOwner,
+                            Observer {
+                                if (it.code() == 401) {
+                                    authViewModel.refreshToken(prefs)
+                                        .observe(viewLifecycleOwner, Observer { newAccessToken ->
+                                            tokenId = newAccessToken
+                                            timenoteViewModel.joinTimenote(
+                                                tokenId!!,
+                                                args.event?.id!!
+                                            )
+                                        })
+                                }
                             })
-                        }
-                    })
+                    } else {
+                        timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal))
+                        timenoteViewModel.leaveTimenote(tokenId!!, args.event?.id!!)
+                            .observe(viewLifecycleOwner, Observer {
+                                if (it.code() == 401) {
+                                    authViewModel.refreshToken(prefs)
+                                        .observe(viewLifecycleOwner, Observer { newAccessToken ->
+                                            tokenId = newAccessToken
+                                            timenoteViewModel.leaveTimenote(
+                                                tokenId!!,
+                                                args.event?.id!!
+                                            )
+                                        })
+                                }
+                            })
+                    }
                 }
+            }
             timenote_fl -> {
                 val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
                     customView(R.layout.users_participating)
@@ -467,19 +519,12 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                 i.data = Uri.parse(if (args.event?.url?.contains("https://")!!) args.event?.url else "https://" + args.event?.url)
                 startActivity(i)
             }
-            timenote_day_month -> {
-                separator_1.visibility = View.INVISIBLE
-                separator_2.visibility = View.INVISIBLE
-                timenote_day_month.visibility = View.INVISIBLE
-                timenote_time.visibility = View.INVISIBLE
-                timenote_year.visibility = View.INVISIBLE
-                timenote_in_label.visibility = View.VISIBLE
-                //if(isFromFuture)
-                    timenote_in_label.text = utils.inTime(args.event?.startingAt!!)
-                /*else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    timenote_in_label.text = utils.sinceTime(args.event?.endingAt!!)
-                }*/
-            }
+            timenote_day_month -> showInTime(utils, args.event!!)
+            timenote_year -> showInTime(utils, args.event!!)
+            timenote_time ->  showInTime(utils, args.event!!)
+            separator_1 -> showInTime(utils, args.event!!)
+            separator_2 -> showInTime(utils, args.event!!)
+
             timenote_in_label -> {
                 separator_1.visibility = View.VISIBLE
                 separator_2.visibility = View.VISIBLE
@@ -489,6 +534,22 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                 timenote_in_label.visibility = View.INVISIBLE
             }
         }
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun showInTime(
+        utils: Utils,
+        timenote: TimenoteInfoDTO
+    ) {
+        separator_1.visibility = View.INVISIBLE
+        separator_2.visibility = View.INVISIBLE
+        timenote_day_month.visibility = View.INVISIBLE
+        timenote_time.visibility = View.INVISIBLE
+        timenote_year.visibility = View.INVISIBLE
+        timenote_in_label.visibility = View.VISIBLE
+        if (SimpleDateFormat(ISO).parse(timenote.endingAt).time > System.currentTimeMillis()) timenote_in_label.text = utils.inTime(timenote.startingAt)
+        else timenote_in_label.text = utils.sinceTime(timenote.endingAt)
     }
 
     private fun createOptionsOnTimenote(context: Context, isMine: Boolean){
@@ -501,11 +562,11 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             listItems (items = listItems){ dialog, index, text ->
                 when(text.toString()){
                     context.getString(R.string.share_to) -> share()
-                    context.getString(R.string.duplicate) -> findNavController().navigate(DetailedTimenoteDirections.actionDetailedTimenoteToCreateTimenote(1, args.event?.id,
+                    context.getString(R.string.duplicate) -> findNavController().navigate(DetailedTimenoteDirections.actionGlobalCreateTimenote(1, args.event?.id,
                         CreationTimenoteDTO(args.event?.createdBy?.id!!, null, args.event?.title!!, args.event?.description, args.event?.pictures,
                             args.event?.colorHex, args.event?.location, args.event?.category, args.event?.startingAt!!, args.event?.endingAt!!,
                             args.event?.hashtags, args.event?.url, args.event?.price!!, null), args.from))
-                    context.getString(R.string.edit) -> findNavController().navigate(DetailedTimenoteDirections.actionDetailedTimenoteToCreateTimenote(2, args.event?.id,
+                    context.getString(R.string.edit) -> findNavController().navigate(DetailedTimenoteDirections.actionGlobalCreateTimenote(2, args.event?.id,
                         CreationTimenoteDTO(args.event?.createdBy?.id!!, null, args.event?.title!!, args.event?.description, args.event?.pictures,
                             args.event?.colorHex, args.event?.location, args.event?.category, args.event?.startingAt!!, args.event?.endingAt!!,
                             args.event?.hashtags, args.event?.url, args.event?.price!!, null), args.from))
@@ -554,12 +615,34 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     }
 
     override fun onPicUserCommentClicked(userInfoDTO: UserInfoDTO) {
-        findNavController().navigate(DetailedTimenoteDirections.actionDetailedTimenoteToProfile().setIsNotMine(true).setFrom(args.from).setUserInfoDTO(userInfoDTO))
+        findNavController().navigate(DetailedTimenoteDirections.actionGlobalProfile().setIsNotMine(true).setFrom(args.from).setUserInfoDTO(userInfoDTO))
     }
 
-    override fun onCommentMoreClicked() {
+    override fun onCommentMoreClicked(createdBy: String?, commentId: String?) {
+        val actionsComment : List<String> = if(userInfoDTO.id == createdBy || args.event?.createdBy?.id == userInfoDTO.id)listOf(getString(R.string.delete))
+        else listOf(getString(R.string.report))
         MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-            listItems (items = listOf(getString(R.string.report))){ dialog, index, text ->  }
+            listItems (items = actionsComment){ _, _, text ->
+                when(text){
+                    getString(R.string.delete)  -> commentViewModel.deleteComment(tokenId!!, commentId!!).observe(viewLifecycleOwner, Observer {
+                        if(it.code() == 401){
+                            authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer { newAccessToken ->
+                                tokenId = newAccessToken
+                                commentViewModel.deleteComment(tokenId!!, commentId).observe(viewLifecycleOwner, Observer { resp ->
+                                    if(resp.isSuccessful) commentAdapter.refresh()
+                                })
+                            })
+                        }
+                        if(it.isSuccessful) commentAdapter.refresh()
+                    })
+
+                    getString(R.string.report) -> Toast.makeText(
+                        requireContext(),
+                        "Reported",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
             lifecycleOwner(this@DetailedTimenote)
         }
     }

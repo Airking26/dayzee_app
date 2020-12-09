@@ -86,7 +86,7 @@ import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.viewModel.*
 import com.zhihu.matisse.Matisse
 import kotlinx.android.synthetic.main.fragment_create_timenote.*
-import kotlinx.android.synthetic.main.friends_search.view.*
+import kotlinx.android.synthetic.main.friends_search_cl.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import mehdi.sakout.fancybuttons.FancyButton
@@ -437,13 +437,7 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener,
 
         if(it.title.isNotEmpty() && it.title.isNotBlank()){
             descCv.visibility = View.VISIBLE
-            if(!it.description.isNullOrBlank() && !it.description.isNullOrEmpty() && !it.hashtags.isNullOrEmpty()){
-                descTv.text = it.hashtags?.joinToString(separator = "") + " " + it.description!!
-            } else if(!it.hashtags.isNullOrEmpty()){
-                descTv.text = it.hashtags?.joinToString(separator = "")
-            } else if(!it.description.isNullOrBlank() && !it.description.isNullOrEmpty()){
-                descTv.text = it.description!!
-            } else descTv.text = ""
+            descTv.text = it.description
         } else {
             descCv.visibility = View.GONE
         }
@@ -723,10 +717,11 @@ class CreateTimenoteSearch : Fragment(), View.OnClickListener,
                     hashTagHelper.handle(descTv)
                     val hashtagList = hashTagHelper.getAllHashTags(true)
                     var descWithoutHashtag = descTv.text.toString()
-                    for (hashtag in hashtagList) { descWithoutHashtag = descWithoutHashtag.replace(hashtag, "") }
-                    val descWithoutHashtagFormated = descWithoutHashtag.replace("\\s+".toRegex(), " ").trim().capitalize()
+                    //for (hashtag in hashtagList) { descWithoutHashtag = descWithoutHashtag.replace(hashtag, "") }
+                    //val descWithoutHashtagFormated = descWithoutHashtag.replace("\\s+".toRegex(), " ").trim().capitalize()
+                    if(!descWithoutHashtag.trim().startsWith("#")) descWithoutHashtag = descWithoutHashtag.capitalize()
                     creationTimenoteViewModel.setHashtags(hashtagList)
-                    creationTimenoteViewModel.setDescription(descWithoutHashtagFormated)
+                    creationTimenoteViewModel.setDescription(descWithoutHashtag)
                 }
             }
             create_timenote_fifth_color -> MaterialDialog(

@@ -126,7 +126,7 @@ class Settings : Fragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when(v) {
             profile_settings_notification_manager -> findNavController().navigate(SettingsDirections.actionSettingsToNotificationManager())
-            profile_settings_edit_personnal_infos -> findNavController().navigate(SettingsDirections.actionSettingsToProfilModify(false, null))
+            profile_settings_edit_personnal_infos -> findNavController().navigate(SettingsDirections.actionGlobalProfilModify(false, null))
             profile_settings_date_format -> MaterialDialog(
                 requireContext(),
                 BottomSheet(LayoutMode.WRAP_CONTENT)
@@ -197,8 +197,8 @@ class Settings : Fragment(), View.OnClickListener {
                 loginViewModel.markAsDisconnected()
             }
             profile_settings_asked_sent -> findNavController().navigate(
-                SettingsDirections.actionSettingsToFollowPage(userInfoDTO.id!!, false).setFollowers(3))
-            profile_settings_awaiting -> findNavController().navigate(SettingsDirections.actionSettingsToFollowPage(userInfoDTO.id!!, false).setFollowers(2))
+                SettingsDirections.actionGlobalFollowPage(userInfoDTO.id!!, false).setFollowers(3))
+            profile_settings_awaiting -> findNavController().navigate(SettingsDirections.actionGlobalFollowPage(userInfoDTO.id!!, false).setFollowers(2))
         }
     }
 }

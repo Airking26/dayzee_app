@@ -93,7 +93,7 @@ class FollowPageSearch : Fragment(), UsersPagingAdapter.SearchPeopleListener, Us
     }
 
     override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
-        findNavController().navigate(FollowPageSearchDirections.actionFollowPageSearchToProfileSearch(userInfoDTO))
+        findNavController().navigate(FollowPageSearchDirections.actionGlobalProfileSearch(userInfoDTO))
     }
 
     override fun onUnfollow(id: String) {

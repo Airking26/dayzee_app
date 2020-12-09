@@ -10,7 +10,8 @@
 
     <LinearLayout
         android:id="@+id/profile_menu_ll"
-        style="@style/AppTheme.Toolbar.LinearLayout">
+        style="@style/AppTheme.Toolbar.LinearLayout"
+        tools:ignore="MissingConstraints">
 
         <androidx.appcompat.widget.Toolbar
             style="@style/AppTheme.Toolbar"
@@ -162,7 +163,7 @@
     </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.card.MaterialCardView
-        android:visibility="gone"
+        android:visibility="visible"
         android:id="@+id/menu_profile_cv"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -213,7 +214,7 @@
         android:layout_marginTop="12dp"
         app:cardCornerRadius="10dp"
         app:layout_constraintStart_toEndOf="@id/menu_profile_cv"
-        app:layout_constraintEnd_toEndOf="@id/menu_settings_cv"
+        app:layout_constraintEnd_toEndOf="@id/menu_invite_friends_cv"
         app:layout_constraintTop_toBottomOf="@id/menu_invite_friends_cv">
 
         <androidx.constraintlayout.widget.ConstraintLayout

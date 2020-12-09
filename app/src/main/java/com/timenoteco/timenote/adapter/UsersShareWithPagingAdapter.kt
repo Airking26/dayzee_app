@@ -13,6 +13,7 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.bytesEqualTo
 import com.timenoteco.timenote.common.pixelsEqualTo
 import com.timenoteco.timenote.model.UserInfoDTO
+import kotlinx.android.synthetic.main.item_user.view.*
 import kotlinx.android.synthetic.main.item_user.view.givenName
 import kotlinx.android.synthetic.main.item_user.view.name_user
 import kotlinx.android.synthetic.main.item_user.view.user_imageview
@@ -44,8 +45,7 @@ class UsersShareWithPagingAdapter(
             addToSend: AddToSend,
             organizers: MutableList<String>?,
             sendTo: MutableList<String>?,
-            createGroup: Int?
-        ) {
+            createGroup: Int?) {
 
                 Glide
                     .with(itemView)
@@ -67,9 +67,11 @@ class UsersShareWithPagingAdapter(
             itemView.givenName.setOnClickListener { searchPeopleListener.onSearchClicked(userInfoDTO!!) }
             itemView.item_user_send.setOnClickListener {
                 if(itemView.item_user_send.drawable.bytesEqualTo(itemView.context.resources.getDrawable(R.drawable.ic_add_circle_yellow_send)) && itemView.item_user_send.drawable.pixelsEqualTo(itemView.context.resources.getDrawable(R.drawable.ic_add_circle_yellow_send))){
+                    itemView.user_rl.background = itemView.context.getDrawable(R.drawable.border_selected)
                     addToSend.onAdd(userInfoDTO!!, createGroup)
                     itemView.item_user_send.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.ic_baseline_remove_send))
                 } else {
+                    itemView.user_rl.background = itemView.context.getDrawable(R.drawable.border_unselected)
                     addToSend.onRemove(userInfoDTO!!, createGroup)
                     itemView.item_user_send.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.ic_add_circle_yellow_send))
                 }

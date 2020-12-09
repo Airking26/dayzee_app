@@ -49,7 +49,7 @@ import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.TimenoteViewModel
 import kotlinx.android.synthetic.main.fragment_timenote_address.*
-import kotlinx.android.synthetic.main.friends_search.view.*
+import kotlinx.android.synthetic.main.friends_search_cl.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -101,14 +101,15 @@ class TimenoteAddressSearch : Fragment(), UsersShareWithPagingAdapter.SearchPeop
         mapFragment?.getMapAsync(callback)
         timenote_address_toolbar.text = args.timenoteInfoDTO?.location?.address?.address?.plus(", ")?.plus(args.timenoteInfoDTO?.location?.address?.city)?.plus(" ")?.plus(args.timenoteInfoDTO?.location?.address?.country)
 
-        timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils)
+        timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils, userInfoDTO.id)
         timenote_around_rv.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = timenotePagingAdapter
         }
 
         lifecycleScope.launch {
-            timenoteViewModel.getAroundTimenotePagingFlow(tokenId!!, prefs).collectLatest {
+            timenoteViewModel.getAroundTimenotePagingFlow(tokenId!!, FilterLocationDTO(Location(args.timenoteInfoDTO?.location?.longitude!!, args.timenoteInfoDTO?.location?.latitude!!,
+                Address(args.timenoteInfoDTO?.location?.address?.address ?: "", args.timenoteInfoDTO?.location?.address?.zipCode ?: "", args.timenoteInfoDTO?.location?.address?.city!!, args.timenoteInfoDTO?.location?.address?.country!!)), 0),prefs).collectLatest {
                 timenotePagingAdapter?.submitData(it)
             }
         }
@@ -137,19 +138,17 @@ class TimenoteAddressSearch : Fragment(), UsersShareWithPagingAdapter.SearchPeop
 
     override fun onDuplicateClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         findNavController().navigate(
-            TimenoteAddressSearchDirections.actionTimenoteAddressSearchToCreateTimenoteSearch(2, "",
+            TimenoteAddressSearchDirections.actionGlobalCreateTimenoteSearch(2, "",
             CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
                 timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
                 timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null), args.from))
     }
 
     override fun onSeeMoreClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(TimenoteAddressSearchDirections.actionTimenoteAddressSearchToDetailedTimenoteSearch(timenoteInfoDTO))
+        findNavController().navigate(TimenoteAddressSearchDirections.actionGlobalDetailedTimenoteSearch(timenoteInfoDTO))
     }
 
-    override fun onCommentClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(TimenoteAddressSearchDirections.actionTimenoteAddressSearchToDetailedTimenoteSearch(timenoteInfoDTO))
-    }
+    override fun onCommentClicked(timenoteInfoDTO: TimenoteInfoDTO) {}
 
     override fun onPlusClicked(timenoteInfoDTO: TimenoteInfoDTO, isAdded: Boolean) {
         if(isAdded){
@@ -176,7 +175,7 @@ class TimenoteAddressSearch : Fragment(), UsersShareWithPagingAdapter.SearchPeop
     }
 
     override fun onPictureClicked(userInfoDTO: UserInfoDTO) {
-        findNavController().navigate(TimenoteAddressSearchDirections.actionTimenoteAddressSearchToProfileSearch(userInfoDTO))
+        findNavController().navigate(TimenoteAddressSearchDirections.actionGlobalProfileSearch(userInfoDTO))
     }
 
 
@@ -206,7 +205,7 @@ class TimenoteAddressSearch : Fragment(), UsersShareWithPagingAdapter.SearchPeop
     override fun onShareClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         sendTo.clear()
         val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-            customView(R.layout.friends_search)
+            customView(R.layout.friends_search_cl)
             lifecycleOwner(this@TimenoteAddressSearch)
             positiveButton(R.string.send){
                 timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo)).observe(viewLifecycleOwner, Observer {
@@ -305,6 +304,10 @@ class TimenoteAddressSearch : Fragment(), UsersShareWithPagingAdapter.SearchPeop
         })
     }
     override fun onAddMarker(timenoteInfoDTO: TimenoteInfoDTO) {}
+    override fun onHashtagClicked(timenoteInfoDTO: TimenoteInfoDTO ,hashtag: String?) {
+        findNavController().navigate(TimenoteAddressSearchDirections.actionGlobalTimenoteTAGSearch(hashtag))
+    }
+
     override fun onHideToOthersClicked(timenoteInfoDTO: TimenoteInfoDTO) {}
     override fun onMaskThisUser() {}
     override fun onAddressClicked(timenoteInfoDTO: TimenoteInfoDTO) {}

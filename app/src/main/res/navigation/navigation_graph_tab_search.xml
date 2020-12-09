@@ -78,18 +78,6 @@
         <action
             android:id="@+id/action_search_to_searchExploreClicked"
             app:destination="@id/searchExploreClicked" />
-        <action
-            android:id="@+id/action_search_to_profileSearch"
-            app:destination="@id/profileSearch" />
-        <action
-            android:id="@+id/action_search_to_timenoteAddressSearch"
-            app:destination="@id/timenoteAddressSearch" />
-        <action
-            android:id="@+id/action_search_to_detailedTimenoteSearch"
-            app:destination="@id/detailedTimenoteSearch" />
-        <action
-            android:id="@+id/action_search_to_createTimenoteSearch"
-            app:destination="@id/createTimenoteSearch" />
     </fragment>
     <fragment
         android:id="@+id/searchExplore"
@@ -99,9 +87,6 @@
         android:id="@+id/searchExploreClicked"
         android:name="com.timenoteco.timenote.view.searchFlow.SearchExploreClicked"
         android:label="SearchExploreClicked" >
-        <action
-            android:id="@+id/action_searchExploreClicked_to_profileSearch"
-            app:destination="@id/profileSearch" />
         <argument
             android:name="category"
             app:argType="com.timenoteco.timenote.model.Category"
@@ -116,19 +101,10 @@
         android:name="com.timenoteco.timenote.view.searchFlow.DetailedTimenoteSearch"
         android:label="detailedTimenoteSearch"
         tools:layout="@layout/fragment_detailed_fragment">
-        <action
-            android:id="@+id/action_detailedTimenoteSearch_to_profileSearch"
-            app:destination="@id/profileSearch" />
-        <action
-            android:id="@+id/action_detailedTimenoteSearch_to_createTimenoteSearch"
-            app:destination="@id/createTimenoteSearch" />
         <argument
             android:name="timenoteInfoDTO"
             app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
             app:nullable="true" />
-        <deepLink
-            android:id="@+id/deepLink"
-            app:uri="https://timenote.app.link/owfJ8Houjab" />
     </fragment>
     <fragment
         android:id="@+id/profileSearch"
@@ -138,14 +114,8 @@
             android:id="@+id/action_profileSearch_to_followPageSearch"
             app:destination="@id/followPageSearch" />
         <action
-            android:id="@+id/action_profileSearch_to_detailedTimenoteSearch"
-            app:destination="@id/detailedTimenoteSearch" />
-        <action
             android:id="@+id/action_profileSearch_to_profileCalendarSearch"
             app:destination="@id/profileCalendarSearch" />
-        <action
-            android:id="@+id/action_profileSearch_to_createTimenoteSearch"
-            app:destination="@id/createTimenoteSearch" />
         <argument
             android:name="userInfoDTO"
             app:argType="com.timenoteco.timenote.model.UserInfoDTO"
@@ -168,9 +138,6 @@
         <argument
             android:name="isNotMine"
             app:argType="boolean" />
-        <action
-            android:id="@+id/action_followPageSearch_to_profileSearch"
-            app:destination="@id/profileSearch" />
     </fragment>
     <fragment
         android:id="@+id/previewTimenoteCreatedSearch"
@@ -191,9 +158,6 @@
         <argument
             android:name="id"
             app:argType="string" />
-        <action
-            android:id="@+id/action_profileCalendarSearch_to_detailedTimenoteSearch"
-            app:destination="@id/detailedTimenoteSearch" />
     </fragment>
     <fragment
         android:id="@+id/createTimenoteSearch"
@@ -225,15 +189,6 @@
             android:name="timenoteInfoDTO"
             app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
             app:nullable="true" />
-        <action
-            android:id="@+id/action_timenoteAddressSearch_to_detailedTimenoteSearch"
-            app:destination="@id/detailedTimenoteSearch" />
-        <action
-            android:id="@+id/action_timenoteAddressSearch_to_createTimenoteSearch"
-            app:destination="@id/createTimenoteSearch" />
-        <action
-            android:id="@+id/action_timenoteAddressSearch_to_profileSearch"
-            app:destination="@id/profileSearch" />
     </fragment>
     <fragment
         android:id="@+id/profilModifySearch"
@@ -247,4 +202,23 @@
             app:argType="com.timenoteco.timenote.model.UserInfoDTO"
             app:nullable="true" />
     </fragment>
+    <action android:id="@+id/action_global_detailedTimenoteSearch" app:destination="@id/detailedTimenoteSearch" />
+    <action android:id="@+id/action_global_createTimenoteSearch" app:destination="@id/createTimenoteSearch" />
+    <action android:id="@+id/action_global_profileSearch" app:destination="@id/profileSearch" />
+    <fragment
+        android:id="@+id/timenoteTAGSearch"
+        android:name="com.timenoteco.timenote.view.searchFlow.TimenoteTAGSearch"
+        android:label="TimenoteTAGSearch" >
+        <argument
+            android:name="timenoteInfoDTO"
+            app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="hashtag"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+    <action android:id="@+id/action_global_timenoteTAGSearch" app:destination="@id/timenoteTAGSearch" />
+    <action android:id="@+id/action_global_timenoteAddressSearch" app:destination="@id/timenoteAddressSearch" />
 </navigation>

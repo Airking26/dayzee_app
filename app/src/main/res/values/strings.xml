@@ -272,4 +272,7 @@
     <string name="create">Create</string>
     <string name="clear_all_fields">Clear all fields</string>
     <string name="remove">Remove</string>
+    <string name="action_search">Search</string>
+    <string name="back_vector_path" translatable="false">M50 25,L80 50,M20 50,L80 50,M50 75,L80 50</string>
+    <string name="menu_vector_path" translatable="false">M20 30,L80 30,M20 50,L80 50,M20 70,L80 70</string>
 </resources>

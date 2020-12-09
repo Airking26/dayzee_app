@@ -17,6 +17,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.PagingData
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.LayoutMode
@@ -43,7 +44,7 @@ import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
 import io.branch.referral.util.LinkProperties
 import kotlinx.android.synthetic.main.fragment_search_tag.*
-import kotlinx.android.synthetic.main.friends_search.view.*
+import kotlinx.android.synthetic.main.friends_search_cl.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -81,7 +82,7 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            val userAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils)
+            val userAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils, userInfoDTO.id)
             search_tag_rv.apply {
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = userAdapter
@@ -93,6 +94,14 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
                     }
                 }
             })
+
+        searchViewModel.getSearchIsEmptyLiveData().observe(viewLifecycleOwner, Observer {
+            if(it) {
+                lifecycleScope.launch {
+                    userAdapter.submitData(PagingData.empty())
+                }
+            }
+        })
 
     }
 
@@ -120,7 +129,7 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
     }
 
     override fun onEditClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(SearchDirections.actionSearchToCreateTimenoteSearch(2, timenoteInfoDTO.id, CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
+        findNavController().navigate(SearchDirections.actionGlobalCreateTimenoteSearch(2, timenoteInfoDTO.id, CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
             timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
             timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null), 2))
     }
@@ -202,6 +211,9 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
 
     }
 
+    override fun onHashtagClicked(timenoteInfoDTO: TimenoteInfoDTO ,hashtag: String?) {
+        findNavController().navigate(SearchDirections.actionGlobalTimenoteTAGSearch(hashtag))
+    }
 
     override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         share(timenoteInfoDTO)
@@ -238,22 +250,20 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
     }
 
     override fun onDuplicateClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(SearchDirections.actionSearchToCreateTimenoteSearch(1, timenoteInfoDTO.id, CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
+        findNavController().navigate(SearchDirections.actionGlobalCreateTimenoteSearch(1, timenoteInfoDTO.id, CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
             timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
             timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null), 2))
     }
 
     override fun onAddressClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(SearchDirections.actionSearchToTimenoteAddressSearch(timenoteInfoDTO))
+        findNavController().navigate(SearchDirections.actionGlobalTimenoteAddressSearch(timenoteInfoDTO))
     }
 
     override fun onSeeMoreClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(SearchDirections.actionSearchToDetailedTimenoteSearch(timenoteInfoDTO))
+        findNavController().navigate(SearchDirections.actionGlobalDetailedTimenoteSearch(timenoteInfoDTO))
     }
 
-    override fun onCommentClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(SearchDirections.actionSearchToDetailedTimenoteSearch(timenoteInfoDTO))
-    }
+    override fun onCommentClicked(timenoteInfoDTO: TimenoteInfoDTO) {}
 
     override fun onPlusClicked(timenoteInfoDTO: TimenoteInfoDTO, isAdded: Boolean) {
         if(isAdded){
@@ -280,7 +290,7 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
     }
 
     override fun onPictureClicked(userInfoDTO: UserInfoDTO) {
-        findNavController().navigate(SearchDirections.actionSearchToProfileSearch(userInfoDTO))
+        findNavController().navigate(SearchDirections.actionGlobalProfileSearch(userInfoDTO))
     }
 
     override fun onHideToOthersClicked(timenoteInfoDTO: TimenoteInfoDTO) {

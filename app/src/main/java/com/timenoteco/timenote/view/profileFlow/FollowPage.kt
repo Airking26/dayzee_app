@@ -86,7 +86,7 @@ class FollowPage : Fragment(), UsersPagingAdapter.SearchPeopleListener,
     }
 
     override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
-        findNavController().navigate(FollowPageDirections.actionFollowPageToProfile().setFrom(4).setIsNotMine(true).setUserInfoDTO(userInfoDTO))
+        findNavController().navigate(FollowPageDirections.actionGlobalProfile().setFrom(4).setIsNotMine(true).setUserInfoDTO(userInfoDTO))
     }
 
     override fun onUnfollow(id: String) {

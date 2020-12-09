@@ -10,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.PagingData
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
@@ -40,7 +41,7 @@ class SearchPeople: Fragment(), UsersPagingAdapter.SearchPeopleListener {
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
         val userInfoDTOPref = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
 
-        val userAdapter = UsersPagingAdapter(
+        var userAdapter = UsersPagingAdapter(
             UsersPagingAdapter.UserComparator,
             null,
             this,
@@ -60,10 +61,18 @@ class SearchPeople: Fragment(), UsersPagingAdapter.SearchPeopleListener {
                     }
                 }
             })
+
+        searchViewModel.getSearchIsEmptyLiveData().observe(viewLifecycleOwner, Observer {
+            if(it) {
+                lifecycleScope.launch {
+                    userAdapter.submitData(PagingData.empty())
+                }
+            }
+        })
     }
 
     override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
-        findNavController().navigate(SearchDirections.actionSearchToProfileSearch(userInfoDTO))
+        findNavController().navigate(SearchDirections.actionGlobalProfileSearch(userInfoDTO))
     }
 
     override fun onUnfollow(id: String) {

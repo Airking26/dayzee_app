@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.common
 
+import android.graphics.Typeface
 import android.text.Spanned
 import android.text.TextPaint
 import android.text.style.ClickableSpan
@@ -8,13 +9,6 @@ import android.widget.TextView
 import androidx.annotation.ColorInt
 
 
-/**
- * Created by danylo.volokh on 12/22/2015.
- * This class is a combination of [android.text.style.ForegroundColorSpan]
- * and [ClickableSpan].
- *
- * You can set a color of this span plus set a click listener
- */
 class ClickableForegroundColorSpan(@param:ColorInt private val mColor: Int, private val mOnHashTagClickListener: OnHashTagClickListener?
 ) :
     ClickableSpan() {
@@ -25,6 +19,7 @@ class ClickableForegroundColorSpan(@param:ColorInt private val mColor: Int, priv
 
     override fun updateDrawState(ds: TextPaint) {
         ds.color = mColor
+        ds.typeface = Typeface.DEFAULT
     }
 
     override fun onClick(widget: View) {

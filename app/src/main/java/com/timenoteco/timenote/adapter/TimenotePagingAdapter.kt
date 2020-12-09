@@ -14,7 +14,7 @@ import com.timenoteco.timenote.model.TimenoteInfoDTO
 
 class TimenotePagingAdapter(diffCallbacks: DiffUtil.ItemCallback<TimenoteInfoDTO>,
                             private val timenoteListenerListener: TimenoteOptionsListener,
-                            val fragment: Fragment, private val isFromFuture: Boolean, private val utils: Utils
+                            val fragment: Fragment, private val isFromFuture: Boolean, private val utils: Utils, private val createdBy: String?
 )
     : PagingDataAdapter<TimenoteInfoDTO, ItemTimenoteAdapter.TimenoteViewHolder>(diffCallbacks){
 
@@ -30,7 +30,7 @@ class TimenotePagingAdapter(diffCallbacks: DiffUtil.ItemCallback<TimenoteInfoDTO
             timenoteListenerListener,
             fragment,
             isFromFuture,
-            utils
+            utils, createdBy
         )
 
 }

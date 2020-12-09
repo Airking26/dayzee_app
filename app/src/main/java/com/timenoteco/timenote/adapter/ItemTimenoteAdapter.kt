@@ -6,11 +6,12 @@ import android.content.Intent
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
-import android.text.Spannable
-import android.text.SpannableStringBuilder
+import android.text.*
+import android.text.style.ClickableSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
@@ -23,22 +24,20 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.request.RequestOptions
 import com.timenoteco.timenote.R
-import com.timenoteco.timenote.common.RoundedCornersTransformation
-import com.timenoteco.timenote.common.Utils
-import com.timenoteco.timenote.common.bytesEqualTo
-import com.timenoteco.timenote.common.pixelsEqualTo
+import com.timenoteco.timenote.common.*
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.TimenoteInfoDTO
 import kotlinx.android.synthetic.main.item_timenote.view.*
 import kotlinx.android.synthetic.main.item_timenote_root.view.*
 import java.text.SimpleDateFormat
+import java.util.*
 
 class ItemTimenoteAdapter(
     private val timenotes: List<TimenoteInfoDTO>,
     private val timenoteListenerListener: TimenoteOptionsListener,
     private val fragment: Fragment,
     private val isFromFuture: Boolean,
-    private val utils: Utils) :
+    private val utils: Utils, private val createdBy: String?) :
     RecyclerView.Adapter<ItemTimenoteAdapter.TimenoteViewHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimenoteViewHolder {
@@ -56,7 +55,8 @@ class ItemTimenoteAdapter(
                 timenoteListenerListener,
                 fragment,
                 isFromFuture,
-                utils)
+                utils,
+            createdBy)
 
     }
 
@@ -67,11 +67,12 @@ class ItemTimenoteAdapter(
             timenoteListenerListener: TimenoteOptionsListener,
             fragment: Fragment,
             isFromFuture: Boolean,
-            utils: Utils
+            utils: Utils,
+            createdBy: String?
         ) {
             if(isFromFuture) {
                 itemView.timenote_plus.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.ic_ajout_cal))
-                if(timenote.isParticipating) itemView.timenote_plus.setImageDrawable(itemView.resources.getDrawable(R.drawable.ic_ajout_cal_plein_gradient))
+                if(timenote.isParticipating || createdBy == timenote.createdBy.id) itemView.timenote_plus.setImageDrawable(itemView.resources.getDrawable(R.drawable.ic_ajout_cal_plein_gradient))
                 else itemView.timenote_plus.setImageDrawable(itemView.resources.getDrawable(R.drawable.ic_ajout_cal))
             }
             else itemView.timenote_plus.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.ic_like))
@@ -171,7 +172,7 @@ class ItemTimenoteAdapter(
             }
             else {
                 if(timenote.joinedBy?.count!! > 0){
-                    addedBy = "Saved by ${timenote.joinedBy.count!!} people"
+                    addedBy = "Saved by ${timenote.joinedBy.count} people"
                     val addedByFormated = SpannableStringBuilder(addedBy)
                     addedByFormated.setSpan(light, 0, 8, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
                     addedByFormated.setSpan(bold, 9, addedBy.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
@@ -194,7 +195,7 @@ class ItemTimenoteAdapter(
                         if (timenote.price .price > 0) itemView.timenote_buy.text = timenote.price.price.toString().plus(timenote.price.currency)
                     }
                 } else {
-                    if(isFromFuture) {
+                    if(isFromFuture && createdBy != timenote.createdBy.id) {
                         if(itemView.timenote_plus.drawable.bytesEqualTo(itemView.context.getDrawable(R.drawable.ic_ajout_cal)) && itemView.timenote_plus.drawable.pixelsEqualTo(itemView.context.getDrawable(R.drawable.ic_ajout_cal))){
                             itemView.timenote_plus.setImageDrawable(itemView.context.getDrawable(R.drawable.ic_ajout_cal_plein_gradient))
                             timenoteListenerListener.onPlusClicked(timenote, true)
@@ -219,10 +220,15 @@ class ItemTimenoteAdapter(
             itemView.timenote_username.text = timenote.createdBy.userName
             if(timenote.location != null) itemView.timenote_place.text = timenote.location.address.address.plus(", ").plus(timenote.location.address.city).plus(" ").plus(timenote.location.address.country)
 
-            val username = SpannableStringBuilder(timenote.createdBy.userName)
-            username.setSpan(bold, 0, timenote.createdBy.userName?.length!!, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+           val hashTagHelper = HashTagHelper.Creator.create(R.color.colorAccent, object : HashTagHelper.OnHashTagClickListener{
+                override fun onHashTagClicked(hashTag: String?) {
+                    timenoteListenerListener.onHashtagClicked(timenote, hashTag)
+                }
 
-            if(timenote.hashtags.isNullOrEmpty() && timenote.description.isNullOrBlank()){
+            }, null, itemView.resources)
+            hashTagHelper.handle(itemView.timenote_username_desc)
+
+            /*if(timenote.hashtags.isNullOrEmpty() && timenote.description.isNullOrBlank()){
                 itemView.timenote_username_desc.visibility = View.GONE
             } else if(timenote.hashtags.isNullOrEmpty() && !timenote.description.isNullOrBlank()){
                 val desc = SpannableStringBuilder(timenote.description)
@@ -238,22 +244,53 @@ class ItemTimenoteAdapter(
                 completeDesc.setSpan(bold, 0, hashtags.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
                 completeDesc.setSpan(light, hashtags.length, completeDesc.toString().length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
                 itemView.timenote_username_desc.text = username.append(" ").append(completeDesc)
+            }*/
+
+            if(timenote.description.isNullOrBlank()){
+                itemView.timenote_username_desc.visibility = View.GONE
+            } else {
+                val ellipzise = "..."
+                val ellipsizeClickable = SpannableString(ellipzise)
+                val clickalbleEllipsize = object : ClickableSpan(){
+                    override fun onClick(widget: View) {
+                        timenoteListenerListener.onSeeMoreClicked(timenote)
+                    }
+
+                    override fun updateDrawState(ds: TextPaint) {
+                        ds.isUnderlineText  = false
+                        ds.color = itemView.context.getColor(R.color.colorText)
+                        ds.typeface = Typeface.DEFAULT_BOLD
+                    }
+                }
+                ellipsizeClickable.setSpan(clickalbleEllipsize, 0, ellipzise.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+                val description = "${timenote.createdBy.userName} ${timenote.description}"
+                val descriptionFormatted = SpannableStringBuilder(description)
+                descriptionFormatted.setSpan(bold, 0, timenote.createdBy.userName?.length!!, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+                descriptionFormatted.setSpan(light, timenote.createdBy.userName?.length!!, description.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+                itemView.timenote_username_desc.text = descriptionFormatted
+
+                itemView.timenote_username_desc.viewTreeObserver.addOnGlobalLayoutListener(object: ViewTreeObserver.OnGlobalLayoutListener{
+                    override fun onGlobalLayout() {
+                        itemView.timenote_username_desc.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                        if(itemView.timenote_username_desc.lineCount > 2){
+                            val endOfLastLine = itemView.timenote_username_desc.layout.getLineEnd(1)
+                            var descriptionWithEllipsize = TextUtils.concat(itemView.timenote_username_desc.text.subSequence(0, endOfLastLine - 4), ellipsizeClickable)
+                            itemView.timenote_username_desc.text = descriptionWithEllipsize
+                        }
+                    }
+
+                })
             }
 
             itemView.timenote_year.text = utils.setYear(timenote.startingAt)
             itemView.timenote_day_month.text = utils.setFormatedStartDate(timenote.startingAt, timenote.endingAt)
             itemView.timenote_time.text = utils.setFormatedEndDate(timenote.startingAt, timenote.endingAt)
 
-            itemView.timenote_day_month.setOnClickListener {
-                itemView.separator_1.visibility = View.INVISIBLE
-                itemView.separator_2.visibility = View.INVISIBLE
-                itemView.timenote_day_month.visibility = View.INVISIBLE
-                itemView.timenote_time.visibility = View.INVISIBLE
-                itemView.timenote_year.visibility = View.INVISIBLE
-                itemView.timenote_in_label.visibility = View.VISIBLE
-                if(isFromFuture) itemView.timenote_in_label.text = utils.inTime(timenote.startingAt)
-                else itemView.timenote_in_label.text = utils.sinceTime(timenote.endingAt)
-            }
+            itemView.timenote_day_month.setOnClickListener { showInTime(isFromFuture, utils, timenote) }
+            itemView.timenote_year.setOnClickListener { showInTime(isFromFuture, utils, timenote) }
+            itemView.timenote_time.setOnClickListener { showInTime(isFromFuture, utils, timenote) }
+            itemView.separator_1.setOnClickListener { showInTime(isFromFuture, utils, timenote) }
+            itemView.separator_2.setOnClickListener { showInTime(isFromFuture, utils, timenote) }
 
             itemView.timenote_in_label.setOnClickListener {
                 itemView.separator_1.visibility = View.VISIBLE
@@ -265,16 +302,15 @@ class ItemTimenoteAdapter(
             }
 
             itemView.timenote_options.setOnClickListener {
-                createOptionsOnTimenote(itemView.context,  timenoteListenerListener, timenote)
+                createOptionsOnTimenote(itemView.context,  timenoteListenerListener, timenote, createdBy)
             }
 
             itemView.timenote_comment_account.setOnClickListener { timenoteListenerListener.onSeeMoreClicked(timenote) }
-            itemView.timenote_username_desc.setOnClickListener { timenoteListenerListener.onSeeMoreClicked(timenote) }
             itemView.timenote_share.setOnClickListener{timenoteListenerListener.onShareClicked(timenote)}
             itemView.timenote_pic_user_imageview.setOnClickListener { timenoteListenerListener.onPictureClicked(timenote.createdBy) }
             itemView.timenote_comment.setOnClickListener { timenoteListenerListener.onCommentClicked(timenote) }
             itemView.timenote_plus.setOnClickListener {
-                if(isFromFuture) {
+                if(isFromFuture && createdBy != timenote.createdBy.id) {
                     if(itemView.timenote_plus.drawable.bytesEqualTo(itemView.context.getDrawable(R.drawable.ic_ajout_cal)) && itemView.timenote_plus.drawable.pixelsEqualTo(itemView.context.getDrawable(R.drawable.ic_ajout_cal))){
                         itemView.timenote_plus.setImageDrawable(itemView.context.getDrawable(R.drawable.ic_ajout_cal_plein_gradient))
                         timenoteListenerListener.onPlusClicked(timenote, true)
@@ -288,14 +324,31 @@ class ItemTimenoteAdapter(
             itemView.timenote_fl.setOnClickListener{timenoteListenerListener.onSeeParticipants(timenote)}
         }
 
+        @RequiresApi(Build.VERSION_CODES.O)
+        private fun showInTime(
+            isFromFuture: Boolean,
+            utils: Utils,
+            timenote: TimenoteInfoDTO
+        ) {
+            itemView.separator_1.visibility = View.INVISIBLE
+            itemView.separator_2.visibility = View.INVISIBLE
+            itemView.timenote_day_month.visibility = View.INVISIBLE
+            itemView.timenote_time.visibility = View.INVISIBLE
+            itemView.timenote_year.visibility = View.INVISIBLE
+            itemView.timenote_in_label.visibility = View.VISIBLE
+            if (isFromFuture) itemView.timenote_in_label.text = utils.inTime(timenote.startingAt)
+            else itemView.timenote_in_label.text = utils.sinceTime(timenote.endingAt)
+        }
+
         private fun createOptionsOnTimenote(
             context: Context,
             timenoteListenerListener: TimenoteOptionsListener,
-            timenote: TimenoteInfoDTO
+            timenote: TimenoteInfoDTO,
+            createdBy: String?
         ){
-            val dateFormat = SimpleDateFormat("dd.MM.yyyy")
+            val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
             val ISO =  "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
-            val listItems: MutableList<String> = mutableListOf(context.getString(R.string.share_to) ,context.getString(R.string.duplicate), context.getString(R.string.report))
+            val listItems: MutableList<String> = if(createdBy == timenote.createdBy.id) mutableListOf(context.getString(R.string.share_to) ,context.getString(R.string.duplicate), context.getString(R.string.edit), context.getString(R.string.delete)) else mutableListOf(context.getString(R.string.share_to) ,context.getString(R.string.duplicate), context.getString(R.string.report))
             MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(text = "Posted : " + dateFormat.format(SimpleDateFormat(ISO).parse(timenote.createdAt).time))
                 listItems (items = listItems){ _, _, text ->
@@ -303,6 +356,8 @@ class ItemTimenoteAdapter(
                         context.getString(R.string.duplicate) -> timenoteListenerListener.onDuplicateClicked(timenote)
                         context.getString(R.string.report) -> timenoteListenerListener.onReportClicked(timenote)
                         context.getString(R.string.share_to) -> timenoteListenerListener.onAlarmClicked(timenote)
+                        context.getString(R.string.edit) -> timenoteListenerListener.onEditClicked(timenote)
+                        context.getString(R.string.delete)  -> timenoteListenerListener.onDeleteClicked(timenote)
                     }
                 }
             }

@@ -6,7 +6,7 @@ import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.model.UserInfoDTO
 import com.timenoteco.timenote.webService.service.SearchService
 
-class SearchUserPagingSource(val token: String, val search: String, val searchService: SearchService, val sharedPreferences: SharedPreferences) : PagingSource<Int, UserInfoDTO>() {
+class SearchUserPagingSource(val token: String, val search: String, private val searchService: SearchService, val sharedPreferences: SharedPreferences) : PagingSource<Int, UserInfoDTO>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, UserInfoDTO> {
         return try {

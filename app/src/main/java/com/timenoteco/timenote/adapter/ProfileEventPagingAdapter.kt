@@ -24,6 +24,7 @@ import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.TimenoteInfoDTO
 import kotlinx.android.synthetic.main.item_profile_timenote_list_style.view.*
 import java.text.SimpleDateFormat
+import java.util.*
 
 class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<TimenoteInfoDTO>,
                                 private val timenoteOptionsListener: TimenoteOptionsListener,
@@ -55,6 +56,8 @@ class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<Timenote
 class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
     @RequiresApi(Build.VERSION_CODES.O)
     fun bindListStyleItem(event: TimenoteInfoDTO, timenoteOptionsListener: TimenoteOptionsListener, onCardClicked: ItemProfileCardListener, isMine: String?, isUpcoming: Boolean) {
+        val DATE_FORMAT_DAY_AND_TIME = "EEE, d MMM yyyy hh:mm aaa"
+        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
         itemView.setOnClickListener { onCardClicked.onCardClicked(event) }
 
@@ -63,6 +66,13 @@ class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
             itemView.profile_item_address_event.text = event.location.address.address.plus(", ").plus(event.location.address.city).plus(" ").plus(event.location.address.country)
         itemView.profile_item_name_owner.text = event.createdBy.userName
         itemView.profile_item_date_event.text = if(isUpcoming) Utils().inTime(event.startingAt) else Utils().sinceTime(event.endingAt)
+        itemView.profile_item_date_event.setOnClickListener {
+            if(itemView.profile_item_date_event.text.contains("In") || itemView.profile_item_date_event.text.contains("Since")){
+                itemView.profile_item_date_event.text = SimpleDateFormat(DATE_FORMAT_DAY_AND_TIME, Locale.getDefault()).format(SimpleDateFormat(ISO, Locale.getDefault()).parse(event.startingAt).time)
+            } else {
+                itemView.profile_item_date_event.text = if(isUpcoming) Utils().inTime(event.startingAt) else Utils().sinceTime(event.endingAt)
+            }
+        }
         itemView.profile_item_options.setOnClickListener { createOptionsOnTimenote(itemView.context, isMine, timenoteOptionsListener, event) }
         if(!event.pictures.isNullOrEmpty()) {
             Glide

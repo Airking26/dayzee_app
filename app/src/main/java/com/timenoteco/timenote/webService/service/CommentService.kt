@@ -12,4 +12,7 @@ interface CommentService {
 
     @POST("comment/create")
     suspend fun postComment(@Header("Authorization") token: String, @Body commentCreationDTO: CommentCreationDTO) : Response<CommentInfoDTO>
+
+    @DELETE("comment/delete/{id}")
+    suspend fun deleteComment(@Header("Authorization") token: String, @Path("id") id: String): Response<CommentInfoDTO>
 }

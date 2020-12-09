@@ -8,6 +8,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.timenoteco.timenote.model.CreationTimenoteDTO
+import com.timenoteco.timenote.model.FilterLocationDTO
 import com.timenoteco.timenote.model.ShareTimenoteDTO
 import com.timenoteco.timenote.model.TimenoteCreationSignalementDTO
 import com.timenoteco.timenote.paging.TimenoteAroundPagingSource
@@ -23,7 +24,7 @@ class TimenoteViewModel: ViewModel() {
 
     fun getRecentTimenotePagingFlow(token: String, sharedPreferences: SharedPreferences) = Pager(PagingConfig(pageSize = 1)){ TimenoteRecentPagingSource(token, timenoteService, sharedPreferences)}.flow.cachedIn(viewModelScope)
     fun getUpcomingTimenotePagingFlow(token: String, upcoming: Boolean, sharedPreferences: SharedPreferences) = Pager(PagingConfig(pageSize = 1)){ TimenotePagingSource(token, timenoteService, upcoming, sharedPreferences) }.flow.cachedIn(viewModelScope)
-    fun getAroundTimenotePagingFlow(token: String, sharedPreferences: SharedPreferences) = Pager(PagingConfig(pageSize = 1)){ TimenoteAroundPagingSource(token, timenoteService, sharedPreferences) }.flow.cachedIn(viewModelScope)
+    fun getAroundTimenotePagingFlow(token: String, filterLocationDTO: FilterLocationDTO, sharedPreferences: SharedPreferences) = Pager(PagingConfig(pageSize = 1)){ TimenoteAroundPagingSource(token, timenoteService, filterLocationDTO, sharedPreferences) }.flow.cachedIn(viewModelScope)
     fun getSpecificTimenote(token: String, id: String) = flow { emit(timenoteService.getTimenoteId("Bearer $token",id)) }.asLiveData(viewModelScope.coroutineContext)
     fun modifySpecificTimenote(token: String, id: String, timenoteBody: CreationTimenoteDTO) =  flow {emit(timenoteService.modifyTimenote("Bearer $token",id, timenoteBody))}.asLiveData(viewModelScope.coroutineContext)
     fun deleteTimenote(token: String, id: String) = flow {emit(timenoteService.deleteTimenote("Bearer $token",id))}.asLiveData(viewModelScope.coroutineContext)

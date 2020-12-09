@@ -214,6 +214,6 @@ class ProfileCalendar: Fragment(), ItemCalendarAdapter.CalendarEventClicked {
     }
 
     override fun onEventClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(ProfileCalendarDirections.actionProfileCalendarToDetailedTimenote(4, timenoteInfoDTO))
+        findNavController().navigate(ProfileCalendarDirections.actionGlobalDetailedTimenote(4, timenoteInfoDTO))
     }
 }

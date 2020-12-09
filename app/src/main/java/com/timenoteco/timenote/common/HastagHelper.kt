@@ -2,14 +2,17 @@ package com.timenoteco.timenote.common
 
 import android.content.res.Resources
 import android.graphics.Color
+import android.graphics.Typeface
 import android.text.Editable
 import android.text.Spannable
+import android.text.SpannableStringBuilder
 import android.text.TextWatcher
 import android.text.method.LinkMovementMethod
 import android.text.style.CharacterStyle
 import android.text.style.ForegroundColorSpan
 import android.widget.TextView
 import com.timenoteco.timenote.R
+import com.timenoteco.timenote.adapter.ItemTimenoteRecentAdapter
 import java.util.*
 
 
@@ -53,9 +56,7 @@ class HashTagHelper private constructor(
             before: Int,
             count: Int
         ) {
-            if (text.length > 0) {
-                eraseAndColorizeAllText(text)
-            }
+            if (text.isNotEmpty()) eraseAndColorizeAllText(text)
         }
 
         override fun afterTextChanged(s: Editable) {}
@@ -90,7 +91,7 @@ class HashTagHelper private constructor(
             CharacterStyle::class.java
         )
         for (span in spans) {
-            spannable.removeSpan(span)
+            //spannable.removeSpan(span)
         }
         setColorsToAllHashTags(text)
     }
@@ -137,12 +138,23 @@ class HashTagHelper private constructor(
         val s = mTextView!!.text as Spannable
         val span: CharacterStyle
         if (mOnHashTagClickListener != null) {
-            span = ClickableForegroundColorSpan(resources.getColor(R.color.colorText), this)
+            span = ClickableForegroundColorSpan(resources.getColor(R.color.colorStartGradient), this)
         } else {
             // no need for clickable span because it is messing with selection when click
             span = ForegroundColorSpan(resources.getColor(R.color.colorText))
         }
         s.setSpan(span, startIndex, nextNotLetterDigitCharIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+    }
+
+
+    private fun setFontForHashTagToTheEnd(
+        startIndex: Int,
+        nextNotLetterDigitCharIndex: Int
+    ) {
+        val m = Typeface.create("sans-serif", Typeface.BOLD_ITALIC)
+        val bold = ItemTimenoteRecentAdapter.CustomTypefaceSpan(m)
+        val span = SpannableStringBuilder(mTextView?.text)
+        span.setSpan(bold, startIndex, nextNotLetterDigitCharIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
     }
 
     fun getAllHashTags(withHashes: Boolean): List<String> {

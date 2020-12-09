@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                         val userInfoDTO = Gson().fromJson<UserInfoDTO>(referringParams.getString("userInfoDTO"), typeUserInfoDTO)
 
                         control.navigate(
-                            HomeDirections.actionHomeToProfile(true, 1, userInfoDTO)
+                            HomeDirections.actionGlobalProfile(true, 1, userInfoDTO)
                         )
                     }
                 }
@@ -122,7 +122,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                         )
 
                         control.navigate(
-                            HomeDirections.actionHomeToProfile(true, 1, userInfoDTO)
+                            HomeDirections.actionGlobalProfile(true, 1, userInfoDTO)
                         )
                     }
                 }

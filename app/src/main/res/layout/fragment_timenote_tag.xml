@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".view.homeFlow.TimenoteAddress">
+
+
+    <LinearLayout
+        android:id="@+id/timenote_tag_ll"
+        style="@style/AppTheme.Toolbar.LinearLayout"
+        tools:ignore="MissingConstraints">
+
+        <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
+
+            <TextView
+                android:layout_width="300dp"
+                android:textSize="15sp"
+                android:layout_marginHorizontal="24dp"
+                android:maxLines="2"
+                android:ellipsize="end"
+                tools:text="#noel"
+                android:gravity="center"
+                android:id="@+id/timenote_tag_toolbar"
+                style="@style/AppTheme.Toolbar.Title"/>
+
+            <TextView
+                android:paddingVertical="8dp"
+                android:paddingEnd="8dp"
+                android:fontFamily="sans-serif-light"
+                android:drawableStart="@drawable/ic_back_thin"
+                android:id="@+id/timenote_tag_btn_back"
+                style="@style/AppTheme.Toolbar.TextRight"
+                android:text=""
+                tools:ignore="RtlSymmetry" />
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <TextView style="@style/AppTheme.Divider.Toolbar"/>
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/timenote_tag_rv"
+        tools:listitem="@layout/item_timenote"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/timenote_tag_ll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

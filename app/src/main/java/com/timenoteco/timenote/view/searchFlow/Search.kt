@@ -20,10 +20,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.paging.map
 import androidx.preference.PreferenceManager
 import com.google.android.material.tabs.TabLayoutMediator
-import com.mancj.materialsearchbar.MaterialSearchBar
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.SearchViewTopExplorePagerAdapter
 import com.timenoteco.timenote.adapter.SearchViewPeopleTagPagerAdapter
+import com.timenoteco.timenote.androidView.materialsearchbar.MaterialSearchBar
 import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.model.accessToken
 import com.timenoteco.timenote.view.profileFlow.ProfileDirections
@@ -100,7 +100,10 @@ class Search : BaseThroughFragment() {
             handler = Handler { msg ->
                 if (msg.what == TRIGGER_AUTO_COMPLETE) {
                     if (!TextUtils.isEmpty(searchBar.text)) {
+                        searchViewModel.setSearchIsEmpty(false)
                         searchViewModel.searchChanged(tokenId!!, searchBar.text, prefs)
+                    } else {
+                        searchViewModel.setSearchIsEmpty(true)
                     }
                 }
                 false

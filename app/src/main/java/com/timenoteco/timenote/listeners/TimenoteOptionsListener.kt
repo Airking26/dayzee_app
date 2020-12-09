@@ -20,4 +20,5 @@ interface TimenoteOptionsListener {
     fun onSeeParticipants(timenoteInfoDTO: TimenoteInfoDTO)
     fun onShareClicked(timenoteInfoDTO: TimenoteInfoDTO)
     fun onAddMarker(timenoteInfoDTO: TimenoteInfoDTO)
+    fun onHashtagClicked(timenoteInfoDTO: TimenoteInfoDTO, hashtag: String?)
 }

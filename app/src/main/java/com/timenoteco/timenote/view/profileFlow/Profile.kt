@@ -75,8 +75,8 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
         //if(!tokenId.isNullOrBlank()) loginViewModel.markAsAuthenticated() else findNavController().navigate(ProfileDirections.actionProfileToNavigation())
         loginViewModel.getAuthenticationState().observe(requireActivity(), androidx.lifecycle.Observer {
             when (it) {
-                LoginViewModel.AuthenticationState.DISCONNECTED -> findNavController().navigate(SettingsDirections.actionSettingsToNavigation3())
-                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(ProfileDirections.actionProfileToNavigation())
+                LoginViewModel.AuthenticationState.DISCONNECTED -> findNavController().navigate(SettingsDirections.actionGlobalNavigation())
+                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(ProfileDirections.actionGlobalNavigation())
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> {
                     tokenId = prefs.getString(accessToken, null)
                     if(arguments?.isEmpty!!)
@@ -358,7 +358,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
 
     override fun onClick(v: View?) {
         when(v){
-            profile_modify_btn -> findNavController().navigate(ProfileDirections.actionProfileToProfilModify(false, null))
+            profile_modify_btn -> findNavController().navigate(ProfileDirections.actionGlobalProfilModify(false, null))
             profile_calendar_btn -> findNavController().navigate(ProfileDirections.actionProfileToProfileCalendar(userInfoDTO?.id!!))
             profile_settings_btn -> {
                 if(args.isNotMine) MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
@@ -381,14 +381,14 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 if(args.isNotMine)findNavController().popBackStack()
                 else findNavController().navigate(ProfileDirections.actionProfileToNotifications())
             }
-            profile_followers_label -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage(userInfoDTO?.id!!, args.isNotMine).setFollowers(1))
-            profile_following_label -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage(userInfoDTO?.id!!, args.isNotMine).setFollowers(0))
-            profile_nbr_followers -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage(userInfoDTO?.id!!, args.isNotMine).setFollowers(1))
-            profile_nbr_following -> findNavController().navigate(ProfileDirections.actionProfileToFollowPage(userInfoDTO?.id!!, args.isNotMine).setFollowers(0))
+            profile_followers_label -> findNavController().navigate(ProfileDirections.actionGlobalFollowPage(userInfoDTO?.id!!, args.isNotMine).setFollowers(1))
+            profile_following_label -> findNavController().navigate(ProfileDirections.actionGlobalFollowPage(userInfoDTO?.id!!, args.isNotMine).setFollowers(0))
+            profile_nbr_followers -> findNavController().navigate(ProfileDirections.actionGlobalFollowPage(userInfoDTO?.id!!, args.isNotMine).setFollowers(1))
+            profile_nbr_following -> findNavController().navigate(ProfileDirections.actionGlobalFollowPage(userInfoDTO?.id!!, args.isNotMine).setFollowers(0))
             profile_infos -> {
                 if(stateSwitchUrl.isNullOrBlank()) {
-                    if(args.isNotMine) findNavController().navigate(ProfileDirections.actionProfileToProfilModify(args.isNotMine, args.userInfoDTO))
-                    else findNavController().navigate(ProfileDirections.actionProfileToProfilModify(args.isNotMine, null))
+                    if(args.isNotMine) findNavController().navigate(ProfileDirections.actionGlobalProfilModify(args.isNotMine, args.userInfoDTO))
+                    else findNavController().navigate(ProfileDirections.actionGlobalProfilModify(args.isNotMine, null))
                 }
                 else {
                     val intent = Intent(Intent.ACTION_VIEW)

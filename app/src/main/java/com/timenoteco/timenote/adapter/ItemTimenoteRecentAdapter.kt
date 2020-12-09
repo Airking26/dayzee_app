@@ -42,9 +42,10 @@ class ItemTimenoteRecentAdapter(private val timenotesToCome: List<TimenoteInfoDT
     class TimenoteToComeViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         @RequiresApi(Build.VERSION_CODES.O)
         fun bindItem(timenote: TimenoteInfoDTO, timenoteClicked: TimenoteRecentClicked){
+
             if(timenote.pictures.isNullOrEmpty()){
                 if(!timenote.colorHex.isNullOrEmpty() && !timenote.colorHex.isNullOrBlank())
-                itemView.timenote_recent_pic_imageview.setBackgroundColor(Color.parseColor(if(timenote.colorHex?.contains("#")!!) timenote.colorHex else  "#${timenote.colorHex}"))
+                itemView.timenote_recent_pic_imageview.setBackgroundColor(Color.parseColor(if(timenote.colorHex.contains("#")) timenote.colorHex else  "#${timenote.colorHex}"))
             } else {
                 Glide
                     .with(itemView)

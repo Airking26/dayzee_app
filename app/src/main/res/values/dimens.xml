@@ -10,4 +10,7 @@
     <dimen name="day_circle_radius">140dp</dimen>
     <dimen name="day_circle_stroke_width">1dp</dimen>
     <dimen name="grid">120dp</dimen>
+
+    <dimen name="corner_radius_rounded">25dp</dimen>
+    <dimen name="corner_radius_default">2dp</dimen>
 </resources>

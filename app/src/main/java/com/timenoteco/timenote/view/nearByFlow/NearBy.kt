@@ -63,7 +63,7 @@ import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
 import io.branch.referral.util.LinkProperties
 import kotlinx.android.synthetic.main.fragment_near_by.*
-import kotlinx.android.synthetic.main.friends_search.view.*
+import kotlinx.android.synthetic.main.friends_search_cl.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -217,7 +217,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
 
     @ExperimentalPagingApi
     private fun loadData(nearbyModifyModel: NearbyRequestBody?) {
-        timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, Utils())
+        timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, Utils(), userInfoDTO.id)
         nearby_rv.adapter = timenotePagingAdapter
         nearby_rv.layoutManager = LinearLayoutManager(requireContext())
                 lifecycleScope.launch {
@@ -313,7 +313,6 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     }
 
     override fun onCommentClicked(event: TimenoteInfoDTO) {
-        findNavController().navigate(NearByDirections.actionNearByToDetailedTimenote(3, event))
     }
 
     override fun onPlusClicked(timenoteInfoDTO: TimenoteInfoDTO, isAdded: Boolean) {
@@ -353,7 +352,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     }
 
     override fun onPictureClicked(userInfoDTO: UserInfoDTO) {
-        findNavController().navigate(NearByDirections.actionNearByToProfile(true, 3, userInfoDTO))
+        findNavController().navigate(NearByDirections.actionGlobalProfile(true, 3, userInfoDTO))
     }
 
     override fun onHideToOthersClicked(timenoteInfoDTO: TimenoteInfoDTO) {
@@ -394,7 +393,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     }
 
     override fun onSeeMoreClicked(event: TimenoteInfoDTO) {
-        findNavController().navigate(NearByDirections.actionNearByToDetailedTimenote(3, event))
+        findNavController().navigate(NearByDirections.actionGlobalDetailedTimenote(3, event))
     }
 
     override fun onReportClicked(timenoteInfoDTO: TimenoteInfoDTO) {
@@ -527,6 +526,10 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         this.googleMap?.addMarker(MarkerOptions().position(LatLng(timenoteInfoDTO.location?.latitude!!, timenoteInfoDTO.location.longitude)))
     }
 
+    override fun onHashtagClicked(timenoteInfoDTO: TimenoteInfoDTO ,hashtag: String?) {
+        findNavController().navigate(NearByDirections.actionGlobalTimenoteTAG(timenoteInfoDTO, 3, hashtag))
+    }
+
     override fun onAdd(userInfoDTO: UserInfoDTO, createGroup: Int?) {
         sendTo.add(userInfoDTO.id!!)
     }
@@ -547,13 +550,13 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     }
 
     override fun onDuplicateClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(NearByDirections.actionNearByToCreateTimenote(1, timenoteInfoDTO.id, CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
+        findNavController().navigate(NearByDirections.actionGlobalCreateTimenote(1, timenoteInfoDTO.id, CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
             timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
             timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null), 3))
     }
 
     override fun onAddressClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(NearByDirections.actionNearByToTimenoteAddress(timenoteInfoDTO, 3))
+        findNavController().navigate(NearByDirections.actionGlobalTimenoteAddress(timenoteInfoDTO, 3))
     }
 
     override fun onSearchClicked(userInfoDTO: UserInfoDTO) {

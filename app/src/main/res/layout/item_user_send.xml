@@ -8,16 +8,26 @@
     android:padding="4dp"
     xmlns:fancy="http://schemas.android.com/apk/res-auto">
 
-    <ImageView
-        android:src="@drawable/beach"
-        android:id="@+id/user_imageview"
+    <RelativeLayout
         android:layout_marginVertical="8dp"
         android:layout_marginStart="16dp"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:id="@+id/user_rl"
+        android:background="@drawable/border_unselected"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="38dp"
+        android:layout_height="38dp">
+
+        <ImageView
+            android:layout_centerInParent="true"
+            android:src="@drawable/beach"
+            android:id="@+id/user_imageview"
+            android:layout_width="36dp"
+            android:layout_height="36dp"/>
+
+    </RelativeLayout>
+
 
     <TextView
         android:fontFamily="sans-serif-light"
@@ -30,10 +40,10 @@
         android:ellipsize="end"
         app:layout_constraintEnd_toStartOf="@id/item_user_send"
         app:layout_constraintBottom_toTopOf="@id/givenName"
-        app:layout_constraintStart_toEndOf="@id/user_imageview"
+        app:layout_constraintStart_toEndOf="@id/user_rl"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="@id/user_imageview" />
+        app:layout_constraintTop_toTopOf="@id/user_rl" />
 
     <TextView
         tools:text="Samuel Zaffran"
@@ -45,8 +55,8 @@
         android:maxLines="1"
         android:ellipsize="end"
         app:layout_constraintEnd_toStartOf="@id/item_user_send"
-        app:layout_constraintBottom_toBottomOf="@id/user_imageview"
-        app:layout_constraintStart_toEndOf="@id/user_imageview"
+        app:layout_constraintBottom_toBottomOf="@id/user_rl"
+        app:layout_constraintStart_toEndOf="@id/user_rl"
         android:layout_width="0dp"
         android:layout_height="wrap_content"/>
 
@@ -58,8 +68,8 @@
         android:gravity="center"
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/user_imageview"
-        app:layout_constraintTop_toTopOf="@id/user_imageview"
+        app:layout_constraintBottom_toBottomOf="@id/user_rl"
+        app:layout_constraintTop_toTopOf="@id/user_rl"
         android:id="@+id/item_user_send"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>

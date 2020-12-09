@@ -66,9 +66,6 @@
         android:name="com.timenoteco.timenote.view.profileFlow.Profile"
         android:label="fragment_profile">
         <action
-            android:id="@+id/action_profile_to_profilModify"
-            app:destination="@id/profilModify" />
-        <action
             android:id="@+id/action_profile_to_profileCalendar"
             app:destination="@id/profileCalendar" />
         <argument
@@ -79,24 +76,12 @@
             android:id="@+id/action_profile_to_notifications"
             app:destination="@id/notifications" />
         <action
-            android:id="@+id/action_profile_to_followPage"
-            app:destination="@id/followPage" />
-        <action
             android:id="@+id/action_profile_to_menu"
             app:destination="@id/menu" />
-        <action
-            android:id="@+id/action_profile_to_createTimenote"
-            app:destination="@id/createTimenote" />
-        <action
-            android:id="@+id/action_profile_to_detailedTimenote"
-            app:destination="@id/detailedTimenote" />
         <argument
             android:name="from"
             android:defaultValue="4"
             app:argType="integer"/>
-        <action
-            android:id="@+id/action_profile_to_navigation"
-            app:destination="@id/navigation" />
         <argument
             android:name="userInfoDTO"
             app:argType="com.timenoteco.timenote.model.UserInfoDTO"
@@ -122,22 +107,12 @@
         <argument
             android:name="id"
             app:argType="string" />
-        <action
-            android:id="@+id/action_profileCalendar_to_detailedTimenote"
-            app:destination="@id/detailedTimenote" />
     </fragment>
     <fragment
         android:id="@+id/notifications"
         android:name="com.timenoteco.timenote.view.profileFlow.Notifications"
         android:label="fragment_notifications"
-        tools:layout="@layout/fragment_notifications" >
-        <action
-            android:id="@+id/action_notifications_to_profile"
-            app:destination="@id/profile" />
-        <action
-            android:id="@+id/action_notifications_to_detailedTimenote"
-            app:destination="@id/detailedTimenote" />
-    </fragment>
+        tools:layout="@layout/fragment_notifications" />
     <fragment
         android:id="@+id/settings"
         android:name="com.timenoteco.timenote.view.profileFlow.settingsDirectory.Settings"
@@ -146,15 +121,6 @@
         <action
             android:id="@+id/action_settings_to_notificationManager"
             app:destination="@id/notificationManager" />
-        <action
-            android:id="@+id/action_settings_to_profilModify"
-            app:destination="@id/profilModify" />
-        <action
-            android:id="@+id/action_settings_to_followPage"
-            app:destination="@id/followPage" />
-        <action
-            android:id="@+id/action_settings_to_navigation3"
-            app:destination="@id/navigation" />
     </fragment>
     <fragment
         android:id="@+id/notificationManager"
@@ -170,9 +136,6 @@
             android:name="followers"
             app:argType="integer"
             android:defaultValue="-1" />
-        <action
-            android:id="@+id/action_followPage_to_profile"
-            app:destination="@id/profile" />
         <argument
             android:name="id"
             app:argType="string" />
@@ -194,9 +157,6 @@
         <action
             android:id="@+id/action_menu_to_contacts"
             app:destination="@id/contacts" />
-        <action
-            android:id="@+id/action_menu_to_profilModify"
-            app:destination="@id/profilModify" />
         <action
             android:id="@+id/action_menu_to_preferenceCategory"
             app:destination="@id/preferenceCategory" />
@@ -286,18 +246,49 @@
         android:name="com.timenoteco.timenote.view.homeFlow.DetailedTimenote"
         android:label="fragment_detailed_fragment"
         tools:layout="@layout/fragment_detailed_fragment" >
-        <action
-            android:id="@+id/action_detailedTimenote_to_profile"
-            app:destination="@id/profile" />
         <argument
             android:name="from"
             app:argType="integer" />
-        <action
-            android:id="@+id/action_detailedTimenote_to_createTimenote"
-            app:destination="@id/createTimenote" />
         <argument
             android:name="event"
             app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
             app:nullable="true" />
     </fragment>
+    <fragment
+        android:id="@+id/timenoteTAG"
+        android:name="com.timenoteco.timenote.view.homeFlow.TimenoteTAG"
+        android:label="TimenoteTAG" >
+        <argument
+            android:name="timenoteInfoDTO"
+            app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
+            app:nullable="true" />
+        <argument
+            android:name="from"
+            app:argType="integer" />
+        <argument
+            android:name="hashtag"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/timenoteAddress"
+        android:name="com.timenoteco.timenote.view.homeFlow.TimenoteAddress"
+        android:label="fragment_timenote_address"
+        tools:layout="@layout/fragment_timenote_address" >
+        <argument
+            android:name="timenoteInfoDTO"
+            app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
+            app:nullable="true" />
+        <argument
+            android:name="from"
+            app:argType="integer" />
+    </fragment>
+    <action android:id="@+id/action_global_detailedTimenote" app:destination="@id/detailedTimenote" />
+    <action android:id="@+id/action_global_createTimenote" app:destination="@id/createTimenote" />
+    <action android:id="@+id/action_global_profile" app:destination="@id/profile" />
+    <action android:id="@+id/action_global_timenoteTAG" app:destination="@id/timenoteTAG" />
+    <action android:id="@+id/action_global_timenoteAddress" app:destination="@id/timenoteAddress" />
+    <action android:id="@+id/action_global_profilModify" app:destination="@id/profilModify" />
+    <action android:id="@+id/action_global_followPage" app:destination="@id/followPage" />
+    <action android:id="@+id/action_global_navigation" app:destination="@id/navigation" />
 </navigation>

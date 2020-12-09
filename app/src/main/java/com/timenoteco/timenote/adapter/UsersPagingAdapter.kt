@@ -14,8 +14,7 @@ import com.timenoteco.timenote.model.TimenoteInfoDTO
 import com.timenoteco.timenote.model.UserInfoDTO
 import kotlinx.android.synthetic.main.item_user.view.*
 
-class UsersPagingAdapter(
-    diffCallback: DiffUtil.ItemCallback<UserInfoDTO>,
+class UsersPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>,
     val timenoteInfoDTO: TimenoteInfoDTO?,
     val searchPeopleListener: SearchPeopleListener,
     val isNotMine: Boolean?,

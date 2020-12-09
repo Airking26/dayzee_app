@@ -12,8 +12,8 @@ interface TimenoteService {
     @GET("timenote/feed/past/{offset}")
     suspend fun getPastTimenotes(@Header("Authorization") token: String, @Path ("offset") offset: Int) : Response<List<TimenoteInfoDTO>>
 
-    @GET("timenote/around/{offset}")
-    suspend fun getAroundTimenotes(@Header("Authorization") token: String, @Path ("offset") offset: Int) : Response<List<TimenoteInfoDTO>>
+    @POST("timenote/around/{offset}")
+    suspend fun getAroundTimenotes(@Header("Authorization") token: String, @Path ("offset") offset: Int, @Body filterLocationDTO: FilterLocationDTO) : Response<List<TimenoteInfoDTO>>
 
     @GET("timenote/recent/{offset}")
     suspend fun getRecentTimenotes(@Header("Authorization") token: String, @Path ("offset") offset: Int) : Response<List<TimenoteInfoDTO>>

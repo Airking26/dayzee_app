@@ -8,10 +8,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.database.Cursor
-import android.graphics.Bitmap
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Rect
+import android.graphics.*
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -30,6 +27,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
@@ -86,14 +84,15 @@ import com.timenoteco.timenote.viewModel.*
 import com.yalantis.ucrop.UCrop
 import com.zhihu.matisse.Matisse
 import kotlinx.android.synthetic.main.fragment_create_timenote.*
-import kotlinx.android.synthetic.main.friends_search.view.searchBar_friends
-import kotlinx.android.synthetic.main.friends_search.view.shareWith_rv
+import kotlinx.android.synthetic.main.friends_search_cl.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import mehdi.sakout.fancybuttons.FancyButton
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
+import java.lang.Integer.min
 import java.lang.reflect.Type
 import java.net.URL
 import java.sql.Timestamp
@@ -105,6 +104,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     HashTagHelper.OnHashTagClickListener, UsersPagingAdapter.SearchPeopleListener,
     UsersShareWithPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.AddToSend {
 
+    private var b: Bitmap? = null
     private var accountType: Int = -1
     private var sendTo: MutableList<String> = mutableListOf()
     private var organizers: MutableList<String> = mutableListOf()
@@ -455,13 +455,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
 
         if(it.title.isNotEmpty() && it.title.isNotBlank()){
             descCv.visibility = View.VISIBLE
-            if(!it.description.isNullOrBlank() && !it.description.isNullOrEmpty() && !it.hashtags.isNullOrEmpty()){
-                descTv.text = it.hashtags?.joinToString(separator = "") + " " + it.description!!
-            } else if(!it.hashtags.isNullOrEmpty()){
-                descTv.text = it.hashtags?.joinToString(separator = "")
-            } else if(!it.description.isNullOrBlank() && !it.description.isNullOrEmpty()){
-                descTv.text = it.description!!
-            } else descTv.text = ""
+            descTv.text = it.description
         } else {
             descCv.visibility = View.GONE
         }
@@ -583,7 +577,8 @@ class CreateTimenote : Fragment(), View.OnClickListener,
             val r = Matisse.obtainResult(data)
             for(image in r!!){
                 images?.add(image.toString())
-                //images?.add(AWSFile(image, MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, image)))
+                b = MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, image)
+
             }
             screenSlideCreationTimenotePagerAdapter.images = images
             screenSlideCreationTimenotePagerAdapter.notifyDataSetChanged()
@@ -611,6 +606,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onClick(v: View?) {
         when (v) {
             when_cardview -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
@@ -742,10 +738,11 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                     hashTagHelper.handle(descTv)
                     val hashtagList = hashTagHelper.getAllHashTags(true)
                     var descWithoutHashtag = descTv.text.toString()
-                    for (hashtag in hashtagList) { descWithoutHashtag = descWithoutHashtag.replace(hashtag, "") }
-                    val descWithoutHashtagFormated = descWithoutHashtag.replace("\\s+".toRegex(), " ").trim().capitalize()
+                    //for (hashtag in hashtagList) { descWithoutHashtag = descWithoutHashtag.replace(hashtag, "") }
+                    //val descWithoutHashtagFormated = descWithoutHashtag.replace("\\s+".toRegex(), " ").trim().capitalize()
+                    if(!descWithoutHashtag.trim().startsWith("#")) descWithoutHashtag = descWithoutHashtag.capitalize()
                     creationTimenoteViewModel.setHashtags(hashtagList)
-                    creationTimenoteViewModel.setDescription(descWithoutHashtagFormated)
+                    creationTimenoteViewModel.setDescription(descWithoutHashtag)
                 }
             }
             create_timenote_fifth_color -> MaterialDialog(
@@ -911,10 +908,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                                 File(getPath(Uri.parse(image))!!)
                             } else File(image)
 
-                            pushPic(
-                                file,
-                                MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, Uri.parse(image))
-                            )
+                            pushPic(file, MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, Uri.parse(image)))
                         }
                     } else if (!creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.colorHex.isNullOrBlank() || !creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.pictures.isNullOrEmpty()) {
                         create_timenote_next_btn.visibility = View.GONE
@@ -1157,6 +1151,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         }*/
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     private fun saveImage(image: Bitmap, uri: Uri?, dialog: MaterialDialog?): String? {
         var savedImagePath: String? = null
         val imageFileName = "JPEG_${Timestamp(System.currentTimeMillis())}.jpg"
@@ -1191,11 +1186,22 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         return savedImagePath
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     private fun compressFile(imageFile: File, image: Bitmap) {
         try {
+            val bitmap = BitmapFactory.Options().run {
+            inJustDecodeBounds = true
+            BitmapFactory.decodeFile(imageFile.absolutePath, this)
+            val sampleHeight = if (outWidth > outHeight) 900 else 1100
+            val sampleWidth = if (outWidth > outHeight) 1100 else 900
+            inSampleSize = min(outWidth / sampleWidth, outHeight / sampleHeight)
+            inJustDecodeBounds = false
+            BitmapFactory.decodeFile(imageFile.absolutePath, this)
+        }
             val fOut: OutputStream = FileOutputStream(imageFile)
-            image.compress(Bitmap.CompressFormat.JPEG, 100, fOut)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fOut)
             fOut.close()
+            bitmap.recycle()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -1281,6 +1287,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         return formCompleted
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     fun pushPic(file: File, bitmap: Bitmap){
         amazonClient.setRegion(Region.getRegion(Regions.EU_WEST_3))
         val transferUtiliy = TransferUtility(amazonClient, requireContext())
@@ -1436,6 +1443,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onImageSelectedFromWeb(bitmap: String, dialog: MaterialDialog) {
         //progressDialog.show()
         create_timenote_next_btn.visibility = View.GONE

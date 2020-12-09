@@ -7,7 +7,6 @@ import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -17,15 +16,13 @@ import com.timenoteco.timenote.model.UserInfoDTO
 import kotlinx.android.synthetic.main.item_comment.view.*
 import java.text.SimpleDateFormat
 import java.time.Instant
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.time.temporal.TemporalAccessor
 import java.util.*
 
 class CommentAdapter(
-    val comments: List<CommentInfoDTO>,
-    val commentPicUserListener: CommentPicUserListener,
-    val commentMoreListener: CommentMoreListener
+    private val comments: List<CommentInfoDTO>,
+    private val commentPicUserListener: CommentPicUserListener,
+    private val commentMoreListener: CommentMoreListener
 ) :
     RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() {
 
@@ -34,7 +31,7 @@ class CommentAdapter(
     }
 
     interface CommentMoreListener{
-        fun onCommentMoreClicked()
+        fun onCommentMoreClicked(createdBy: String?, commentId: String?)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentViewHolder =
@@ -82,7 +79,7 @@ class CommentAdapter(
 
             itemView.comment_time.text = calculateTimeSinceComment(commentModel.createdAt)
 
-            itemView.comment_more.setOnClickListener{commentMoreListener.onCommentMoreClicked()}
+            itemView.comment_more.setOnClickListener{commentMoreListener.onCommentMoreClicked(commentModel.createdBy.id, commentModel.id)}
             itemView.comment_user_pic_imageview.setOnClickListener { commentPicUserListener.onPicUserCommentClicked(commentModel.createdBy) }
         }
 

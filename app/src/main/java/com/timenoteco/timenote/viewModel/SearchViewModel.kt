@@ -21,16 +21,27 @@ import kotlinx.coroutines.flow.flow
 class SearchViewModel : ViewModel() {
 
     private val searchService = DayzeeRepository().getSearchService()
-    private val followService = DayzeeRepository().getFollowService()
     private val searchUserLiveData = MutableLiveData<Flow<PagingData<UserInfoDTO>>>()
     private val searchTagLiveData = MutableLiveData<Flow<PagingData<TimenoteInfoDTO>>>()
+    private val searchIsEmptyLiveData = MutableLiveData<Boolean>()
 
-    fun searchUser(token: String, search: String, sharedPreferences: SharedPreferences) {
+    private fun searchUser(token: String, search: String, sharedPreferences: SharedPreferences) {
         searchUserLiveData.postValue(Pager(PagingConfig(pageSize = 1)){SearchUserPagingSource(token, search, searchService, sharedPreferences)}.flow.cachedIn(viewModelScope))
     }
 
-    fun searchTag(token: String, search: String, sharedPreferences: SharedPreferences){
+    private fun searchTag(token: String, search: String, sharedPreferences: SharedPreferences){
         searchTagLiveData.postValue(Pager(PagingConfig(pageSize = 1)){SearchTagPagingSource(token, search, searchService, sharedPreferences)}.flow.cachedIn(viewModelScope))
+    }
+
+    fun getHashtags(token: String, search: String, sharedPreferences: SharedPreferences) = Pager(
+        PagingConfig(pageSize = 1)){SearchTagPagingSource(token, search, searchService, sharedPreferences)}.flow.cachedIn(viewModelScope)
+
+    fun getSearchIsEmptyLiveData(): LiveData<Boolean> {
+        return searchIsEmptyLiveData
+    }
+
+    fun setSearchIsEmpty(isEmpty: Boolean){
+        searchIsEmptyLiveData.postValue(isEmpty)
     }
 
     fun getUserSearchLiveData(): LiveData<Flow<PagingData<UserInfoDTO>>> {

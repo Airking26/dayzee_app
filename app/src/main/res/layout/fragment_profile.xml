@@ -262,7 +262,6 @@
                         app:fb_defaultColor="@color/colorYellow"
                         app:fb_radius="5dp"
                         app:fb_text="@string/follow"
-                        app:fb_textColor="@color/white"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/profile_pic_imageview" />
@@ -280,7 +279,6 @@
                         app:fb_defaultColor="@color/colorYellow"
                         app:fb_radius="5dp"
                         app:fb_text="@string/accept"
-                        app:fb_textColor="@color/white"
                         app:layout_constraintEnd_toStartOf="@id/profile_decline_btn"
                         app:layout_constraintHorizontal_chainStyle="packed"
                         app:layout_constraintStart_toStartOf="parent"

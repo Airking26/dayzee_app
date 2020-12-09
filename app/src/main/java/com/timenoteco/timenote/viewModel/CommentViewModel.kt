@@ -18,5 +18,6 @@ class CommentViewModel : ViewModel() {
 
     fun getComments(token: String, id : String, sharedPreferences: SharedPreferences) = Pager(PagingConfig(pageSize = 1)){CommentPagingSource(token, id, commentService, sharedPreferences)}.flow.cachedIn(viewModelScope)
     fun postComment(token: String, commentCreationDTO: CommentCreationDTO) = flow { emit(commentService.postComment("Bearer $token", commentCreationDTO))}.asLiveData(viewModelScope.coroutineContext)
+    fun deleteComment(token: String, id: String) = flow { emit(commentService.deleteComment("Bearer $token", id)) }.asLiveData(viewModelScope.coroutineContext)
 
 }
