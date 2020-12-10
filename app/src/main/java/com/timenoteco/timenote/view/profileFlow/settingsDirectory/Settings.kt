@@ -24,7 +24,6 @@ import com.timenoteco.timenote.androidView.input
 import com.timenoteco.timenote.common.intLiveData
 import com.timenoteco.timenote.common.stringLiveData
 import com.timenoteco.timenote.model.*
-import com.timenoteco.timenote.view.profileFlow.ProfileDirections
 import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.MeViewModel
@@ -197,8 +196,8 @@ class Settings : Fragment(), View.OnClickListener {
                 loginViewModel.markAsDisconnected()
             }
             profile_settings_asked_sent -> findNavController().navigate(
-                SettingsDirections.actionGlobalFollowPage(userInfoDTO.id!!, false).setFollowers(3))
-            profile_settings_awaiting -> findNavController().navigate(SettingsDirections.actionGlobalFollowPage(userInfoDTO.id!!, false).setFollowers(2))
+                SettingsDirections.actionGlobalFollowPage(userInfoDTO.id!!, false, 0).setFollowers(3))
+            profile_settings_awaiting -> findNavController().navigate(SettingsDirections.actionGlobalFollowPage(userInfoDTO.id!!, false, 0).setFollowers(2))
         }
     }
 }

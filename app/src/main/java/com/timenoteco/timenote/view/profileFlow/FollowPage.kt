@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.view.profileFlow
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -14,10 +15,13 @@ import androidx.navigation.fragment.navArgs
 import androidx.paging.ExperimentalPagingApi
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.UsersAwaitingPagingAdapter
 import com.timenoteco.timenote.adapter.UsersPagingAdapter
 import com.timenoteco.timenote.adapter.UsersShareWithPagingAdapter
+import com.timenoteco.timenote.listeners.GoToProfile
 import com.timenoteco.timenote.model.UserInfoDTO
 import com.timenoteco.timenote.model.accessToken
 import com.timenoteco.timenote.viewModel.FollowViewModel
@@ -25,10 +29,13 @@ import com.timenoteco.timenote.viewModel.LoginViewModel
 import kotlinx.android.synthetic.main.fragment_follow_page.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.lang.reflect.Type
 
 class FollowPage : Fragment(), UsersPagingAdapter.SearchPeopleListener,
     UsersAwaitingPagingAdapter.SearchPeopleListener, UsersAwaitingPagingAdapter.AcceptDecline {
 
+    private lateinit var userInfoDTO: UserInfoDTO
+    private lateinit var goToProfileLisner : GoToProfile
     private val followViewModel : FollowViewModel by activityViewModels()
     private val authViewModel : LoginViewModel by activityViewModels()
     private lateinit var usersPagingAdapter: UsersPagingAdapter
@@ -43,10 +50,18 @@ class FollowPage : Fragment(), UsersPagingAdapter.SearchPeopleListener,
         tokenId = prefs.getString(accessToken, null)
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        goToProfileLisner = context as GoToProfile
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_follow_page, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
+        userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
+
         when(args.followers){
             0 -> followPage_toolbar.text = getString(R.string.following)
             1 -> followPage_toolbar.text = getString(R.string.followers)
@@ -86,7 +101,8 @@ class FollowPage : Fragment(), UsersPagingAdapter.SearchPeopleListener,
     }
 
     override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
-        findNavController().navigate(FollowPageDirections.actionGlobalProfile().setFrom(4).setIsNotMine(true).setUserInfoDTO(userInfoDTO))
+        if(userInfoDTO.id == this.userInfoDTO.id) goToProfileLisner.goToProfile()
+        else findNavController().navigate(FollowPageDirections.actionGlobalProfileElse(args.from).setUserInfoDTO(userInfoDTO))
     }
 
     override fun onUnfollow(id: String) {

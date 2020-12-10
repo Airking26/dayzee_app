@@ -72,7 +72,7 @@ class SearchPeople: Fragment(), UsersPagingAdapter.SearchPeopleListener {
     }
 
     override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
-        findNavController().navigate(SearchDirections.actionGlobalProfileSearch(userInfoDTO))
+        findNavController().navigate(SearchDirections.actionGlobalProfileElse(2).setUserInfoDTO(userInfoDTO))
     }
 
     override fun onUnfollow(id: String) {

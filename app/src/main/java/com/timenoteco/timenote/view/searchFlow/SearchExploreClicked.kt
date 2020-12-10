@@ -97,6 +97,6 @@ class SearchExploreClicked: Fragment(), UsersShareWithPagingAdapter.AddToSend,
     }
 
     override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
-        findNavController().navigate(SearchExploreClickedDirections.actionGlobalProfileSearch(userInfoDTO))
+        findNavController().navigate(SearchExploreClickedDirections.actionGlobalProfileElse(2).setUserInfoDTO(userInfoDTO))
     }
 }

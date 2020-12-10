@@ -83,9 +83,6 @@
             app:argType="com.timenoteco.timenote.model.CreationTimenoteDTO"
             app:nullable="true"
             android:defaultValue="@null" />
-        <action
-            android:id="@+id/action_createTimenote_to_navigation"
-            app:destination="@id/navigation" />
         <argument
             android:name="from"
             app:argType="integer"
@@ -107,4 +104,5 @@
             android:name="modify"
             app:argType="integer" />
     </fragment>
+    <action android:id="@+id/action_global_navigation" app:destination="@id/navigation" />
 </navigation>

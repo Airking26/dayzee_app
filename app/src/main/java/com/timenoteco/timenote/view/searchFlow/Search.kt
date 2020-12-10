@@ -26,7 +26,6 @@ import com.timenoteco.timenote.adapter.SearchViewPeopleTagPagerAdapter
 import com.timenoteco.timenote.androidView.materialsearchbar.MaterialSearchBar
 import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.model.accessToken
-import com.timenoteco.timenote.view.profileFlow.ProfileDirections
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.SearchViewModel
 import kotlinx.android.synthetic.main.fragment_search.*
@@ -55,7 +54,7 @@ class Search : BaseThroughFragment() {
         tokenId = prefs.getString(accessToken, null)
         loginViewModel.getAuthenticationState().observe(requireActivity(), androidx.lifecycle.Observer {
             when (it) {
-                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(SearchDirections.actionSearchToNavigation())
+                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(SearchDirections.actionGlobalNavigation())
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> {
                     tokenId = prefs.getString(accessToken, null)
                     findNavController().popBackStack(R.id.search, false)

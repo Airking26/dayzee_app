@@ -22,8 +22,7 @@ class ProfileEventPagerAdapter(fragmentManager: FragmentManager, lifecycle: Life
         }
     }
 
-    fun setShowFilterBar(showFilterBar: Boolean, position: Int?, isReselected: Boolean?, isMine: Boolean){
-        if(isMine){
+    fun setShowFilterBar(showFilterBar: Boolean, position: Int?, isReselected: Boolean?){
             if(isReselected != null && isReselected){
                 if(position == 0) profilePastEvents.setShowFilterBar(showFilterBar)
                 else profileFutureEvents.setShowFilterBar(showFilterBar)
@@ -34,8 +33,6 @@ class ProfileEventPagerAdapter(fragmentManager: FragmentManager, lifecycle: Life
                 if(position == 0) profilePastEvents.setShowFilterBar(showFilterBar)
                 else profileFutureEvents.setShowFilterBar(showFilterBar)
             }*/
-        }
-
     }
 
 }

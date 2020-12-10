@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.DiffUtil
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.model.CommentInfoDTO
 import com.timenoteco.timenote.model.TimenoteInfoDTO
-import com.timenoteco.timenote.view.searchFlow.DetailedTimenoteSearch
 
 class CommentPagingAdapter(
     diffCallback: DiffUtil.ItemCallback<CommentInfoDTO>,

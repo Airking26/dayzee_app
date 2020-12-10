@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.view.homeFlow
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
@@ -41,6 +42,7 @@ import com.timenoteco.timenote.adapter.TimenotePagingAdapter
 import com.timenoteco.timenote.adapter.UsersPagingAdapter
 import com.timenoteco.timenote.adapter.UsersShareWithPagingAdapter
 import com.timenoteco.timenote.common.Utils
+import com.timenoteco.timenote.listeners.GoToProfile
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.viewModel.AlarmViewModel
@@ -59,6 +61,7 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
     UsersShareWithPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.AddToSend,
     UsersPagingAdapter.SearchPeopleListener, View.OnClickListener {
 
+    private lateinit var goToProfileLisner : GoToProfile
     private val args: TimenoteAddressArgs by navArgs()
     private val timenoteViewModel : TimenoteViewModel by activityViewModels()
     private var timenotePagingAdapter: TimenotePagingAdapter? = null
@@ -88,6 +91,12 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
         this.googleMap?.moveCamera(CameraUpdateFactory.newLatLng(LatLng(args.timenoteInfoDTO?.location?.latitude!!, args.timenoteInfoDTO?.location?.longitude!!)))
         this.googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(args.timenoteInfoDTO?.location?.latitude!!, args.timenoteInfoDTO?.location?.longitude!!), 15F))
         this.googleMap?.addMarker(MarkerOptions().position(LatLng(args.timenoteInfoDTO?.location?.latitude!!, args.timenoteInfoDTO?.location?.longitude!!)))
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        goToProfileLisner = context as GoToProfile
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
@@ -135,17 +144,19 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
         }
     }
     override fun onDuplicateClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(TimenoteAddressDirections.actionGlobalCreateTimenote(1, "",
+        findNavController().navigate(TimenoteAddressDirections.actionGlobalCreateTimenote(timenoteInfoDTO.id,
             CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
                 timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
-                timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null), args.from))
+                timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null)).setFrom(args.from).setModify(1))
     }
 
     override fun onSeeMoreClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         findNavController().navigate(TimenoteAddressDirections.actionGlobalDetailedTimenote(1, timenoteInfoDTO))
     }
 
-    override fun onCommentClicked(timenoteInfoDTO: TimenoteInfoDTO) {}
+    override fun onCommentClicked(timenoteInfoDTO: TimenoteInfoDTO) {
+        findNavController().navigate(TimenoteAddressDirections.actionGlobalDetailedTimenote(args.from, timenoteInfoDTO))
+    }
 
     override fun onPlusClicked(timenoteInfoDTO: TimenoteInfoDTO, isAdded: Boolean) {
         if(isAdded){
@@ -172,7 +183,8 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
     }
 
     override fun onPictureClicked(userInfoDTO: UserInfoDTO) {
-        findNavController().navigate(TimenoteAddressDirections.actionGlobalProfile().setFrom(args.from).setIsNotMine(true).setUserInfoDTO(userInfoDTO))
+        if(userInfoDTO.id == this.userInfoDTO.id) goToProfileLisner.goToProfile()
+        else findNavController().navigate(TimenoteAddressDirections.actionGlobalProfileElse(args.from).setUserInfoDTO(userInfoDTO))
     }
 
 
@@ -303,17 +315,17 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
     }
     override fun onAddMarker(timenoteInfoDTO: TimenoteInfoDTO) {}
     override fun onHashtagClicked(timenoteInfoDTO: TimenoteInfoDTO ,hashtag: String?) {
-        findNavController().navigate(TimenoteAddressDirections.actionGlobalTimenoteTAG(timenoteInfoDTO, args.from, hashtag))
+        findNavController().navigate(TimenoteAddressDirections.actionGlobalTimenoteTAG(timenoteInfoDTO, hashtag).setFrom(args.from))
     }
 
     override fun onHideToOthersClicked(timenoteInfoDTO: TimenoteInfoDTO) {}
     override fun onMaskThisUser() {}
     override fun onAddressClicked(timenoteInfoDTO: TimenoteInfoDTO) {}
     override fun onEditClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(TimenoteAddressDirections.actionGlobalCreateTimenote(2, "",
+        findNavController().navigate(TimenoteAddressDirections.actionGlobalCreateTimenote(timenoteInfoDTO.id,
             CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
                 timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
-                timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null), args.from))
+                timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null)).setFrom(args.from).setModify(2))
     }
     override fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {

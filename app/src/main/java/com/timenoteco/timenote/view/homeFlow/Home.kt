@@ -39,6 +39,7 @@ import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.bytesEqualTo
 import com.timenoteco.timenote.common.pixelsEqualTo
+import com.timenoteco.timenote.listeners.GoToProfile
 import com.timenoteco.timenote.listeners.RefreshPicBottomNavListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.*
@@ -58,6 +59,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     UsersPagingAdapter.SearchPeopleListener, ItemTimenoteRecentAdapter.TimenoteRecentClicked, UsersShareWithPagingAdapter.SearchPeopleListener,
     UsersShareWithPagingAdapter.AddToSend {
 
+    private lateinit var goToProfileLisner : GoToProfile
     private var sendTo: MutableList<String> = mutableListOf()
     private lateinit var handler: Handler
     private val TRIGGER_AUTO_COMPLETE = 200
@@ -85,10 +87,10 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         tokenId = prefs.getString(accessToken, null)
         refreshTokenId = prefs.getString(refreshToken, null)
-        if(!tokenId.isNullOrBlank()) loginViewModel.markAsAuthenticated() else findNavController().navigate(HomeDirections.actionHomeToNavigation())
+        if(!tokenId.isNullOrBlank()) loginViewModel.markAsAuthenticated() else findNavController().navigate(HomeDirections.actionGlobalNavigation())
         loginViewModel.getAuthenticationState().observe(requireActivity(), Observer {
             when (it) {
-                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> { findNavController().navigate(HomeDirections.actionHomeToNavigation()) }
+                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> { findNavController().navigate(HomeDirections.actionGlobalNavigation()) }
 
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> {
                     tokenId = prefs.getString(accessToken, null)
@@ -105,6 +107,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        goToProfileLisner = context as GoToProfile
         onGoToNearby = context as OnGoToNearby
         onRefreshPicBottomNavListener = context as RefreshPicBottomNavListener
     }
@@ -260,7 +263,9 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         }
     }
 
-    override fun onCommentClicked(timenoteInfoDTO: TimenoteInfoDTO) {}
+    override fun onCommentClicked(timenoteInfoDTO: TimenoteInfoDTO) {
+        findNavController().navigate(HomeDirections.actionGlobalDetailedTimenote(1, timenoteInfoDTO))
+    }
 
     override fun onPlusClicked(timenoteInfoDTO: TimenoteInfoDTO, isAdded: Boolean) {
         if(isAdded){
@@ -287,7 +292,8 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     }
 
     override fun onPictureClicked(userInfoDTO: UserInfoDTO) {
-        findNavController().navigate(HomeDirections.actionGlobalProfile(true, 1, userInfoDTO))
+        if(userInfoDTO.id == this.userInfoDTO.id) goToProfileLisner.goToProfile()
+        else findNavController().navigate(HomeDirections.actionGlobalProfileElse(1).setUserInfoDTO(userInfoDTO))
     }
 
     override fun onDoubleClick() {}
@@ -378,10 +384,10 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     }
 
     override fun onDuplicateClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(HomeDirections.actionGlobalCreateTimenote(1, timenoteInfoDTO.id,
+        findNavController().navigate(HomeDirections.actionGlobalCreateTimenote(timenoteInfoDTO.id,
             CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
             timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
-            timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null), 1))
+            timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null)).setFrom(1).setModify(1))
     }
 
     override fun onAddressClicked(timenoteInfoDTO: TimenoteInfoDTO) {
@@ -476,7 +482,8 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     }
 
     override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
-        findNavController().navigate(HomeDirections.actionGlobalProfile(true, 1, userInfoDTO))
+        if(userInfoDTO.id == this.userInfoDTO.id) goToProfileLisner.goToProfile()
+        else findNavController().navigate(HomeDirections.actionGlobalProfileElse(1).setUserInfoDTO(userInfoDTO))
     }
 
     override fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO) {
@@ -494,10 +501,10 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     }
 
     override fun onEditClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(HomeDirections.actionGlobalCreateTimenote(2, timenoteInfoDTO.id,
+        findNavController().navigate(HomeDirections.actionGlobalCreateTimenote(timenoteInfoDTO.id,
             CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
                 timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
-                timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null), 1))
+                timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null)).setFrom(1).setModify(2))
     }
 
     override fun onUnfollow(id: String) {}

@@ -32,10 +32,7 @@ import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.setupWithNavController
-import com.timenoteco.timenote.listeners.BackToHomeListener
-import com.timenoteco.timenote.listeners.ExitCreationTimenote
-import com.timenoteco.timenote.listeners.RefreshPicBottomNavListener
-import com.timenoteco.timenote.listeners.ShowBarListener
+import com.timenoteco.timenote.listeners.*
 import com.timenoteco.timenote.model.FCMDTO
 import com.timenoteco.timenote.model.Notification
 import com.timenoteco.timenote.model.TimenoteInfoDTO
@@ -48,7 +45,7 @@ import io.branch.referral.Branch
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.reflect.Type
 
-class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby, ShowBarListener, ExitCreationTimenote, RefreshPicBottomNavListener {
+class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby, ShowBarListener, ExitCreationTimenote, RefreshPicBottomNavListener, GoToProfile {
 
     private lateinit var control: NavController
     private val CHANNEL_ID: String = "dayzee_channel"
@@ -85,10 +82,10 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                     } else {
                         val typeUserInfoDTO: Type = object : TypeToken<UserInfoDTO?>() {}.type
                         val userInfoDTO = Gson().fromJson<UserInfoDTO>(referringParams.getString("userInfoDTO"), typeUserInfoDTO)
-
-                        control.navigate(
-                            HomeDirections.actionGlobalProfile(true, 1, userInfoDTO)
-                        )
+                        goToProfile()
+                        /*control.navigate(
+                            HomeDirections.actionGlobalProfile(userInfoDTO).setFrom(1)
+                        )*/
                     }
                 }
             }
@@ -121,9 +118,8 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                             typeUserInfoDTO
                         )
 
-                        control.navigate(
-                            HomeDirections.actionGlobalProfile(true, 1, userInfoDTO)
-                        )
+                        //control.navigate(HomeDirections.actionGlobalProfile(userInfoDTO).setFrom(1))
+                        goToProfile()
                     }
                 }
             } else {
@@ -238,11 +234,15 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                         bottomNavView.visibility = View.VISIBLE
                         utils.showStatusBar(this)
                     }
-                    R.id.profile -> {
+                    R.id.myProfile -> {
                         utils.showStatusBar(this)
                         bottomNavView.visibility = View.VISIBLE
                     }
-                    R.id.createTimenoteSearch ->{
+                    R.id.profileElse -> {
+                        utils.showStatusBar(this)
+                        bottomNavView.visibility = View.VISIBLE
+                    }
+                    /*R.id.createTimenoteSearch ->{
                         utils.showStatusBar(this)
                         bottomNavView.visibility = View.GONE
                     }
@@ -257,7 +257,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                     R.id.profileCalendarSearch -> {
                         utils.hideStatusBar(this)
                         bottomNavView.visibility = View.GONE
-                    }
+                    }*/
                     R.id.profileCalendar -> {
                         utils.hideStatusBar(this)
                         bottomNavView.visibility = View.GONE
@@ -354,6 +354,10 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
 
     override fun onrefreshPicBottomNav(userInfoDTO: UserInfoDTO?) {
         setPicBottomNav(userInfoDTO)
+    }
+
+    override fun goToProfile() {
+        bottomNavView.selectedItemId = R.id.navigation_graph_tab_4
     }
 
 }

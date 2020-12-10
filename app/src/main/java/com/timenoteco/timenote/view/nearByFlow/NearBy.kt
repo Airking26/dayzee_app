@@ -53,6 +53,7 @@ import com.timenoteco.timenote.adapter.*
 import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.stringLiveData
+import com.timenoteco.timenote.listeners.GoToProfile
 import com.timenoteco.timenote.listeners.ShowBarListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.*
@@ -75,6 +76,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     UsersPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.SearchPeopleListener,
     UsersShareWithPagingAdapter.AddToSend {
 
+    private lateinit var goToProfileLisner : GoToProfile
     private var sendTo: MutableList<String> = mutableListOf()
     private lateinit var handler: Handler
     private val TRIGGER_AUTO_COMPLETE = 200
@@ -132,6 +134,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        goToProfileLisner = context as GoToProfile
         makeBarVisibleListener = context as ShowBarListener
     }
 
@@ -313,6 +316,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     }
 
     override fun onCommentClicked(event: TimenoteInfoDTO) {
+        findNavController().navigate(NearByDirections.actionGlobalDetailedTimenote(3, event))
     }
 
     override fun onPlusClicked(timenoteInfoDTO: TimenoteInfoDTO, isAdded: Boolean) {
@@ -352,7 +356,8 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     }
 
     override fun onPictureClicked(userInfoDTO: UserInfoDTO) {
-        findNavController().navigate(NearByDirections.actionGlobalProfile(true, 3, userInfoDTO))
+        if(userInfoDTO.id == this.userInfoDTO.id) goToProfileLisner.goToProfile()
+        else findNavController().navigate(NearByDirections.actionGlobalProfileElse(3).setUserInfoDTO(userInfoDTO))
     }
 
     override fun onHideToOthersClicked(timenoteInfoDTO: TimenoteInfoDTO) {
@@ -362,12 +367,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     override fun onMaskThisUser() {
     }
 
-    override fun onDoubleClick() {
-        timenoteViewModel.getSpecificTimenote(tokenId!!, "").observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            /*if(it.body()?.joinedBy?.users.contains("")!!) timenoteViewModel.joinTimenote(tokenId!!, "")
-            else timenoteViewModel.leaveTimenote(tokenId!!, "")*/
-        })
-    }
+    override fun onDoubleClick() {}
 
     override fun onSeeParticipants(infoDTO: TimenoteInfoDTO) {
         val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
@@ -550,9 +550,9 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     }
 
     override fun onDuplicateClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(NearByDirections.actionGlobalCreateTimenote(1, timenoteInfoDTO.id, CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
+        findNavController().navigate(NearByDirections.actionGlobalCreateTimenote(timenoteInfoDTO.id, CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
             timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
-            timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null), 3))
+            timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null)).setFrom(3).setModify(1))
     }
 
     override fun onAddressClicked(timenoteInfoDTO: TimenoteInfoDTO) {

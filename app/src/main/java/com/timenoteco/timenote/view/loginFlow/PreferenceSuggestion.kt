@@ -41,7 +41,7 @@ class PreferenceSuggestion : Fragment() {
 
         suggestion_ok_btn.setOnClickListener {
             if(args.isInLogin) viewModel.markAsAuthenticated()
-            else findNavController().popBackStack(R.id.profile, false)
+            else findNavController().popBackStack(R.id.myProfile, false)
         }
     }
 }

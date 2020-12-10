@@ -78,6 +78,7 @@ import com.timenoteco.timenote.common.HashTagHelper
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.stringLiveData
 import com.timenoteco.timenote.listeners.BackToHomeListener
+import com.timenoteco.timenote.listeners.GoToProfile
 import com.timenoteco.timenote.listeners.TimenoteCreationPicListeners
 import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.viewModel.*
@@ -190,7 +191,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
             androidx.lifecycle.Observer {
                 when (it) {
                     LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(
-                        CreateTimenoteDirections.actionCreateTimenoteToNavigation()
+                        CreateTimenoteDirections.actionGlobalNavigation()
                     )
                     LoginViewModel.AuthenticationState.AUTHENTICATED -> {
                         tokenId = prefs.getString(accessToken, null)
@@ -927,11 +928,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     }
 
     private fun modifyTimenote() {
-        timenoteViewModel.modifySpecificTimenote(
-            tokenId!!,
-            args.id!!,
-            creationTimenoteViewModel.getCreateTimeNoteLiveData().value!!
-        ).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+        timenoteViewModel.modifySpecificTimenote(tokenId!!, args.id!!, creationTimenoteViewModel.getCreateTimeNoteLiveData().value!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             if(it.code() == 401) {
                 authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer {newAccessToken ->
                     tokenId = newAccessToken
@@ -943,13 +940,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                 endDateDisplayed = null
                 create_timenote_next_btn.visibility = View.VISIBLE
                 done_pb.visibility = View.GONE
-                findNavController().navigate(
-                    CreateTimenoteDirections.actionCreateTimenoteToPreviewTimenoteCreated(
-                        args.from,
-                        it.body(),
-                        args.modify
-                    )
-                )
+                findNavController().navigate(CreateTimenoteDirections.actionCreateTimenoteToPreviewTimenoteCreated(args.from, it.body(), args.modify))
                 imagesUrl = mutableListOf()
                 images = mutableListOf()
             }

@@ -45,6 +45,7 @@ import com.timenoteco.timenote.common.HashTagHelper
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.bytesEqualTo
 import com.timenoteco.timenote.common.pixelsEqualTo
+import com.timenoteco.timenote.listeners.GoToProfile
 import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.viewModel.CommentViewModel
 import com.timenoteco.timenote.viewModel.FollowViewModel
@@ -70,6 +71,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     UsersShareWithPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.AddToSend {
 
     private lateinit var imm: InputMethodManager
+    private lateinit var goToProfileLisner : GoToProfile
     private var sendTo: MutableList<String> = mutableListOf()
     private lateinit var handler: Handler
     private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
@@ -91,7 +93,11 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         tokenId = prefs.getString(accessToken, null)
+    }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        goToProfileLisner = context as GoToProfile
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
@@ -285,7 +291,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
 
         val hashTagHelper = HashTagHelper.Creator.create(R.color.colorAccent, object : HashTagHelper.OnHashTagClickListener{
             override fun onHashTagClicked(hashTag: String?) {
-                findNavController().navigate(DetailedTimenoteDirections.actionGlobalTimenoteTAG(args.event, args.from, hashTag))
+                findNavController().navigate(DetailedTimenoteDirections.actionGlobalTimenoteTAG(args.event, hashTag).setFrom(args.from))
             }
 
         }, null, resources)
@@ -562,14 +568,14 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             listItems (items = listItems){ dialog, index, text ->
                 when(text.toString()){
                     context.getString(R.string.share_to) -> share()
-                    context.getString(R.string.duplicate) -> findNavController().navigate(DetailedTimenoteDirections.actionGlobalCreateTimenote(1, args.event?.id,
+                    context.getString(R.string.duplicate) -> findNavController().navigate(DetailedTimenoteDirections.actionGlobalCreateTimenote(args.event?.id,
                         CreationTimenoteDTO(args.event?.createdBy?.id!!, null, args.event?.title!!, args.event?.description, args.event?.pictures,
                             args.event?.colorHex, args.event?.location, args.event?.category, args.event?.startingAt!!, args.event?.endingAt!!,
-                            args.event?.hashtags, args.event?.url, args.event?.price!!, null), args.from))
-                    context.getString(R.string.edit) -> findNavController().navigate(DetailedTimenoteDirections.actionGlobalCreateTimenote(2, args.event?.id,
+                            args.event?.hashtags, args.event?.url, args.event?.price!!, null)).setFrom(args.from).setModify(1))
+                    context.getString(R.string.edit) -> findNavController().navigate(DetailedTimenoteDirections.actionGlobalCreateTimenote( args.event?.id,
                         CreationTimenoteDTO(args.event?.createdBy?.id!!, null, args.event?.title!!, args.event?.description, args.event?.pictures,
                             args.event?.colorHex, args.event?.location, args.event?.category, args.event?.startingAt!!, args.event?.endingAt!!,
-                            args.event?.hashtags, args.event?.url, args.event?.price!!, null), args.from))
+                            args.event?.hashtags, args.event?.url, args.event?.price!!, null)).setFrom(args.from).setModify(2))
                     context.getString(R.string.report) -> Toast.makeText(
                         requireContext(),
                         "Reported. Thank You.",
@@ -615,7 +621,8 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     }
 
     override fun onPicUserCommentClicked(userInfoDTO: UserInfoDTO) {
-        findNavController().navigate(DetailedTimenoteDirections.actionGlobalProfile().setIsNotMine(true).setFrom(args.from).setUserInfoDTO(userInfoDTO))
+        if(userInfoDTO.id == this.userInfoDTO.id) goToProfileLisner.goToProfile()
+        else findNavController().navigate(DetailedTimenoteDirections.actionGlobalProfileElse(args.from).setUserInfoDTO(userInfoDTO))
     }
 
     override fun onCommentMoreClicked(createdBy: String?, commentId: String?) {

@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.item_user.view.*
 class UsersPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>,
     val timenoteInfoDTO: TimenoteInfoDTO?,
     val searchPeopleListener: SearchPeopleListener,
-    val isNotMine: Boolean?,
+    val mine: Boolean?,
     val followers: Int?
 )
     : PagingDataAdapter<UserInfoDTO, UsersPagingAdapter.UserViewHolder>(diffCallback){
@@ -29,7 +29,7 @@ class UsersPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>,
     }
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-        holder.bindUser(getItem(position), searchPeopleListener, isNotMine, followers)
+        holder.bindUser(getItem(position), searchPeopleListener, mine, followers)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -49,11 +49,11 @@ class UsersPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>,
         fun bindUser(
             item: UserInfoDTO?,
             searchPeopleListener: SearchPeopleListener,
-            notMine: Boolean?,
+            mine: Boolean?,
             followers: Int?
         ) {
 
-            if(notMine != null && notMine == false){
+            if(mine != null && mine == true){
                 if(followers != null && followers == 0){
                     itemView.user_unfollow.visibility = View.VISIBLE
                     itemView.user_unfollow.setOnClickListener { searchPeopleListener.onUnfollow(item?.id!!) }

@@ -1,4 +1,4 @@
-/*package com.timenoteco.timenote.view.profileFlow
+package com.timenoteco.timenote.view.profileFlow
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -47,20 +47,16 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.log
 
-class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarListener {
+class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarListener {
 
-    private var isMine: Boolean = true
     private var userInfoDTO: UserInfoDTO? = null
     private var stateSwitchUrl: String? = null
-    private var isFollowed = false
     private var profileEventPagerAdapter: ProfileEventPagerAdapter? = null
     private lateinit var profileModifyData: ProfileModifyData
     private val loginViewModel : LoginViewModel by activityViewModels()
-    private val followViewModel: FollowViewModel by activityViewModels()
     private val stringViewModel : StringViewModel by activityViewModels()
     private val meViewModel : MeViewModel by activityViewModels()
     private var showFilterBar: Boolean = false
-    private val args : ProfileArgs by navArgs()
     private lateinit var prefs: SharedPreferences
     private var tokenId : String? = null
     private var showFilterBarFutureEvents = false
@@ -72,21 +68,20 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         tokenId = prefs.getString(accessToken, null)
         locaPref = prefs.getInt("locaPref", -1)
-        stringViewModel.getSwitchNotifLiveData().observe(requireActivity(), androidx.lifecycle.Observer { if(it) findNavController().navigate(ProfileDirections.actionProfileToNotifications()) })
-        //if(!tokenId.isNullOrBlank()) loginViewModel.markAsAuthenticated() else findNavController().navigate(ProfileDirections.actionProfileToNavigation())
+        stringViewModel.getSwitchNotifLiveData().observe(requireActivity(), androidx.lifecycle.Observer { if(it) findNavController().navigate(MyProfileDirections.actionMyProfileToNotifications()) })
         loginViewModel.getAuthenticationState().observe(requireActivity(), androidx.lifecycle.Observer {
             when (it) {
                 LoginViewModel.AuthenticationState.DISCONNECTED -> findNavController().navigate(SettingsDirections.actionGlobalNavigation())
-                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(ProfileDirections.actionGlobalNavigation())
+                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(MyProfileDirections.actionGlobalNavigation())
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> {
                     tokenId = prefs.getString(accessToken, null)
-                    if(arguments?.isEmpty!!)
-                        findNavController().popBackStack(R.id.profile, false)
+                    val o = arguments
+                    if(arguments == null || arguments?.isEmpty!!) findNavController().popBackStack(R.id.myProfile, false)
                     else arguments.let { bundle ->
                         if(!bundle?.getString("type").isNullOrBlank())
-                            findNavController().navigate(ProfileDirections.actionProfileToNotifications())
+                            findNavController().navigate(MyProfileDirections.actionMyProfileToNotifications())
                         else
-                            findNavController().popBackStack(R.id.profile, false)
+                            findNavController().popBackStack(R.id.myProfile, false)
                     }
                 }
             }
@@ -109,8 +104,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
         if(!tokenId.isNullOrBlank()) {
 
             val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
-            isMine = args.userInfoDTO == null || args.userInfoDTO?.id == Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo).id
-            userInfoDTO = if(isMine) Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo) else args.userInfoDTO
+            userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
 
             val simpleDateFormatDayName = SimpleDateFormat("EEE.", Locale.getDefault())
             val simpleDateFormatDayNumber = SimpleDateFormat("dd", Locale.getDefault())
@@ -136,7 +130,6 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
             }
 
 
-            if(isMine) {
                 prefs.intLiveData("followers", userInfoDTO?.followers!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                     profile_nbr_followers.text = it.toString()
                 })
@@ -227,66 +220,8 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                                 userInfoDTO?.location?.address?.address
                         }
                     })
-            } else {
-                profile_location.visibility = View.GONE
-                profile_modify_btn.visibility = View.INVISIBLE
-                profile_follow_btn.visibility = View.VISIBLE
-                profile_settings_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_more_vert_black_profile_24dp))
-                profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_back_thin))
-                profile_follow_btn.setOnClickListener(this)
 
-                if (userInfoDTO?.socialMedias?.youtube?.enabled!!) {
-                    if (!userInfoDTO?.socialMedias?.youtube?.url?.isBlank()!!) {
-                        profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_youtube_colored))
-                        stateSwitchUrl = userInfoDTO?.socialMedias?.youtube?.url
-                    }
-                } else if (userInfoDTO?.socialMedias?.facebook?.enabled!!) {
-                    if (!userInfoDTO?.socialMedias?.facebook?.url?.isBlank()!!) {
-                        profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_facebook_colored))
-                        stateSwitchUrl = userInfoDTO?.socialMedias?.facebook?.url
-                    }
-                } else if (userInfoDTO?.socialMedias?.instagram?.enabled!!) {
-                    if (!userInfoDTO?.socialMedias?.instagram?.url?.isBlank()!!) {
-                        profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_insta_colored))
-                        stateSwitchUrl = userInfoDTO?.socialMedias?.instagram?.url
-                    }
-                } else if (userInfoDTO?.socialMedias?.whatsApp?.enabled!!) {
-                    if (!userInfoDTO?.socialMedias?.whatsApp?.url?.isBlank()!!) {
-                        profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_whatsapp))
-                        stateSwitchUrl = userInfoDTO?.socialMedias?.whatsApp?.url
-                    }
-                } else if (userInfoDTO?.socialMedias?.linkedIn?.enabled!!) {
-                    if (!userInfoDTO?.socialMedias?.linkedIn?.url?.isBlank()!!) {
-                        profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_linkedin_colored))
-                        stateSwitchUrl = userInfoDTO?.socialMedias?.linkedIn?.url
-                    }
-                } else {
-                    profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_icons8_contacts))
-                }
-
-                profile_nbr_followers.text = userInfoDTO?.followers?.toString()
-                profile_nbr_following.text = userInfoDTO?.following?.toString()
-
-
-            }
-
-            if (userInfoDTO?.isInFollowers!! && !isMine) {
-                profile_modify_btn.visibility = View.INVISIBLE
-                profile_follow_btn.apply {
-                    setBorderColor(resources.getColor(android.R.color.darker_gray))
-                    setBorderWidth(1)
-                    setText(resources.getString(R.string.unfollow))
-                    setBackgroundColor(resources.getColor(android.R.color.transparent))
-                    setTextColor(resources.getColor(android.R.color.darker_gray))
-                }
-            }
-
-            if(userInfoDTO?.status == STATUS.PRIVATE.ordinal && !userInfoDTO?.isInFollowers!! && !isMine){
-                scrollable.visibility = View.GONE
-                profile_account_private.visibility = View.VISIBLE
-            }
-            else {
-                profileEventPagerAdapter = ProfileEventPagerAdapter(childFragmentManager, lifecycle, showFilterBar, this, args.from, userInfoDTO?.id!!)
+                profileEventPagerAdapter = ProfileEventPagerAdapter(childFragmentManager, lifecycle, showFilterBar, this, 1, userInfoDTO?.id!!)
                 profile_vp?.apply {
                     adapter = profileEventPagerAdapter
                     isUserInputEnabled = false
@@ -300,16 +235,16 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 profile_tablayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                     override fun onTabReselected(tab: TabLayout.Tab?) {
                         if(tab?.position == 0 && !showFilterBarPastEvents){
-                            profileEventPagerAdapter?.setShowFilterBar(true, 0, true, isMine)
+                            profileEventPagerAdapter?.setShowFilterBar(true, 0, true)
                             showFilterBarPastEvents = true
                         } else if(tab?.position == 0 && showFilterBarPastEvents){
-                            profileEventPagerAdapter?.setShowFilterBar(false, 0, true, isMine)
+                            profileEventPagerAdapter?.setShowFilterBar(false, 0, true)
                             showFilterBarPastEvents = false
                         } else if(tab?.position == 1 && !showFilterBarFutureEvents){
-                            profileEventPagerAdapter?.setShowFilterBar(true, 1, true, isMine)
+                            profileEventPagerAdapter?.setShowFilterBar(true, 1, true)
                             showFilterBarFutureEvents = true
                         } else {
-                            profileEventPagerAdapter?.setShowFilterBar(false, 1, true, isMine)
+                            profileEventPagerAdapter?.setShowFilterBar(false, 1, true)
                             showFilterBarFutureEvents = false
                         }
 
@@ -320,7 +255,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                     }
 
                     override fun onTabSelected(tab: TabLayout.Tab?) {
-                        profileEventPagerAdapter?.setShowFilterBar(false, tab?.position!!, false, isMine)
+                        profileEventPagerAdapter?.setShowFilterBar(false, tab?.position!!, false)
                         showFilterBarPastEvents = false
                         showFilterBarFutureEvents = false
                         when (tab?.position) {
@@ -338,10 +273,8 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 })
 
                 TabLayoutMediator(profile_tablayout, profile_vp) { tab, position -> }.attach()
-            }
 
             profile_modify_btn.setOnClickListener(this)
-            if ((userInfoDTO?.isInFollowers!! && !isMine)  || isMine){
                 profile_settings_btn.setOnClickListener(this)
                 profile_followers_label.setOnClickListener(this)
                 profile_nbr_followers.setOnClickListener(this)
@@ -349,7 +282,6 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                 profile_following_label.setOnClickListener(this)
                 profile_infos.setOnClickListener(this)
                 profile_calendar_btn.setOnClickListener(this)
-            }
             profile_notif_btn.setOnClickListener(this)
             profile_location.setOnClickListener(this)
 
@@ -360,38 +292,16 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
 
     override fun onClick(v: View?) {
         when(v){
-            profile_modify_btn -> findNavController().navigate(ProfileDirections.actionGlobalProfilModify(false, null))
-            profile_calendar_btn -> findNavController().navigate(ProfileDirections.actionProfileToProfileCalendar(userInfoDTO?.id!!))
-            profile_settings_btn -> {
-                if(!isMine) MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                    title(text = userInfoDTO?.userName)
-                    val listItems: MutableList<String> = mutableListOf(context.getString(R.string.share_to) , context.getString(R.string.report))
-                    listItems (items = listItems){ _, _, text ->
-                        when(text.toString()){
-                            context.getString(R.string.report) -> Toast.makeText(
-                                requireContext(),
-                                "Reported",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            context.getString(R.string.share_to) -> share(userInfoDTO!!)
-                        }
-                    }
-                }
-                else findNavController().navigate(ProfileDirections.actionProfileToMenu())
-            }
-            profile_notif_btn -> {
-                if(!isMine)findNavController().popBackStack()
-                else findNavController().navigate(ProfileDirections.actionProfileToNotifications())
-            }
-            profile_followers_label -> findNavController().navigate(ProfileDirections.actionGlobalFollowPage(userInfoDTO?.id!!, !isMine).setFollowers(1))
-            profile_following_label -> findNavController().navigate(ProfileDirections.actionGlobalFollowPage(userInfoDTO?.id!!, !isMine).setFollowers(0))
-            profile_nbr_followers -> findNavController().navigate(ProfileDirections.actionGlobalFollowPage(userInfoDTO?.id!!, !isMine).setFollowers(1))
-            profile_nbr_following -> findNavController().navigate(ProfileDirections.actionGlobalFollowPage(userInfoDTO?.id!!, !isMine).setFollowers(0))
+            profile_modify_btn -> findNavController().navigate(MyProfileDirections.actionGlobalProfilModify(false, null))
+            profile_calendar_btn -> findNavController().navigate(MyProfileDirections.actionGlobalProfileCalendar(userInfoDTO?.id!!))
+            profile_settings_btn -> findNavController().navigate(MyProfileDirections.actionMyProfileToMenu())
+            profile_notif_btn -> findNavController().navigate(MyProfileDirections.actionMyProfileToNotifications())
+            profile_followers_label -> findNavController().navigate(MyProfileDirections.actionGlobalFollowPage(userInfoDTO?.id!!, true, 4).setFollowers(1))
+            profile_following_label -> findNavController().navigate(MyProfileDirections.actionGlobalFollowPage(userInfoDTO?.id!!, true, 4).setFollowers(0))
+            profile_nbr_followers -> findNavController().navigate(MyProfileDirections.actionGlobalFollowPage(userInfoDTO?.id!!, true, 4).setFollowers(1))
+            profile_nbr_following -> findNavController().navigate(MyProfileDirections.actionGlobalFollowPage(userInfoDTO?.id!!, true, 4).setFollowers(0))
             profile_infos -> {
-                if(stateSwitchUrl.isNullOrBlank()) {
-                    if(!isMine) findNavController().navigate(ProfileDirections.actionGlobalProfilModify(!isMine, args.userInfoDTO))
-                    else findNavController().navigate(ProfileDirections.actionGlobalProfilModify(!isMine, null))
-                }
+                if(stateSwitchUrl.isNullOrBlank()) findNavController().navigate(MyProfileDirections.actionGlobalProfilModify(true, null))
                 else {
                     val intent = Intent(Intent.ACTION_VIEW)
                     intent.data = Uri.parse(stateSwitchUrl)
@@ -406,18 +316,7 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
                     }
                 }
             }
-            profile_follow_btn -> {
-                if (!isFollowed) {
-                    if (userInfoDTO?.status == STATUS.PUBLIC.ordinal) {
-                        followPublicUser()
-                    } else if (!isFollowed && (userInfoDTO?.status == STATUS.PRIVATE.ordinal)) {
-                        followPrivateUser()
-                    }
-                } else if(isFollowed){
-                    unfollowUser()
-                }
-            }
-            profile_location -> if(isMine) MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            profile_location -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.location)
                 listItems(items = listOf(getString(R.string.no_location), getString(R.string.city), getString(
                                     R.string.address))) { dialog, index, text ->
@@ -431,115 +330,8 @@ class Profile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarLi
         }
     }
 
-    private fun share(userInfoDTO: UserInfoDTO) {
-
-        val linkProperties: LinkProperties = LinkProperties().setChannel("whatsapp").setFeature("sharing")
-
-        val branchUniversalObject = if(!userInfoDTO.picture.isNullOrEmpty()) BranchUniversalObject()
-            .setTitle(userInfoDTO.userName!!)
-            .setContentDescription(userInfoDTO.givenName ?: "")
-            .setContentImageUrl(userInfoDTO.picture!!)
-            .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
-            .setContentMetadata(ContentMetadata().addCustomMetadata("timenoteInfoDTO", Gson().toJson(userInfoDTO)))
-        else BranchUniversalObject()
-            .setTitle(userInfoDTO.userName!!)
-            .setContentDescription(userInfoDTO.givenName ?: "")
-            .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
-            .setContentMetadata(ContentMetadata().addCustomMetadata("timenoteInfoDTO", Gson().toJson(userInfoDTO)))
-
-        branchUniversalObject.generateShortUrl(requireContext(), linkProperties) { url, error ->
-            BranchEvent("branch_url_created").logEvent(requireContext())
-            val i = Intent(Intent.ACTION_SEND)
-            i.type = "text/plain"
-            i.putExtra(Intent.EXTRA_TEXT, String.format("Dayzee : %s at %s", userInfoDTO.userName, url))
-            startActivityForResult(i, 111)
-        }
-
-
-    }
-
-    private fun unfollowUser() {
-        followViewModel.unfollowUser(tokenId!!, userInfoDTO?.id!!).observe(
-            viewLifecycleOwner,
-            androidx.lifecycle.Observer {
-                if(it.code() == 401){
-                    loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer { newAccessToken ->
-                        tokenId = newAccessToken
-                        unfollowUser()
-                    })
-                }
-                if(it.isSuccessful) {
-                    prefs.edit().putInt("following", prefs.getInt("following", 0) - 1).apply()
-                    profile_follow_btn.apply {
-                        setBorderColor(resources.getColor(android.R.color.transparent))
-                        setBorderWidth(0)
-                        setText(resources.getString(R.string.follow))
-                        setBackgroundColor(resources.getColor(R.color.colorYellow))
-                        setTextColor(resources.getColor(R.color.colorBackground))
-                    }
-
-                    isFollowed = false
-                }
-            })
-    }
-
-    private fun followPrivateUser() {
-        followViewModel.followPrivateUser(tokenId!!, userInfoDTO?.id!!)
-            .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-                if(it.code() == 400) Toast.makeText(
-                    requireContext(),
-                    "Already Asked",
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
-                if(it.code() == 401){
-                    loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer { newAccessToken ->
-                        tokenId = newAccessToken
-                        followPrivateUser()
-                    })
-                }
-                if(it.isSuccessful) {
-                    profile_follow_btn.apply {
-                        setBorderColor(resources.getColor(android.R.color.darker_gray))
-                        setBorderWidth(1)
-                        setText(resources.getString(R.string.unfollow))
-                        setBackgroundColor(resources.getColor(android.R.color.transparent))
-                        setTextColor(resources.getColor(android.R.color.darker_gray))
-                    }
-
-                    isFollowed = true
-                }
-
-            })
-    }
-
-    private fun followPublicUser() {
-        followViewModel.followPublicUser(tokenId!!, userInfoDTO?.id!!).observe(
-            viewLifecycleOwner,
-            androidx.lifecycle.Observer {
-                if(it.code() == 401) loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer { newAccessToken ->
-                    tokenId = newAccessToken
-                    followPublicUser()
-                })
-                if(it.isSuccessful) {
-                    prefs.edit().putInt("following", prefs.getInt("following", 0) + 1).apply()
-                    profile_follow_btn.apply {
-                        setBorderColor(resources.getColor(android.R.color.darker_gray))
-                        setBorderWidth(1)
-                        setText(resources.getString(R.string.unfollow))
-                        setBackgroundColor(resources.getColor(android.R.color.transparent))
-                        setTextColor(resources.getColor(android.R.color.darker_gray))
-                    }
-
-                    isFollowed = true
-
-                }
-            })
-    }
-
     override fun onHideFilterBarClicked(position:Int?) {
-        profileEventPagerAdapter?.setShowFilterBar(false, position, null, isMine)
+        profileEventPagerAdapter?.setShowFilterBar(false, position, null)
     }
 
 }
-*/

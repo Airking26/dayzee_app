@@ -99,13 +99,13 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
                     authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
                         tokenId = newAccessToken
                         meViewModel.getSpecificUser(tokenId!!, notification.id).observe(viewLifecycleOwner, Observer {userInfoDTO ->
-                            if(userInfoDTO.isSuccessful) findNavController().navigate(NotificationsDirections.actionGlobalProfile().setFrom(4).setIsNotMine(true).setUserInfoDTO(it.body()))
+                            if(userInfoDTO.isSuccessful) findNavController().navigate(NotificationsDirections.actionGlobalProfileElse(4).setUserInfoDTO(it.body()))
 
                         })
                     })
                 }
                 if(it.isSuccessful)
-                findNavController().navigate(NotificationsDirections.actionGlobalProfile().setFrom(4).setIsNotMine(true).setUserInfoDTO(it.body()))
+                findNavController().navigate(NotificationsDirections.actionGlobalProfileElse(4).setUserInfoDTO(it.body()))
             })
         }
     }

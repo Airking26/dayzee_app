@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation_graph_tab_4"
-    app:startDestination="@id/profile">
+    app:startDestination="@id/myProfile">
     <navigation
         android:id="@+id/navigation"
         app:startDestination="@id/login">
@@ -62,33 +62,6 @@
         </fragment>
     </navigation>
     <fragment
-        android:id="@+id/profile"
-        android:name="com.timenoteco.timenote.view.profileFlow.Profile"
-        android:label="fragment_profile">
-        <action
-            android:id="@+id/action_profile_to_profileCalendar"
-            app:destination="@id/profileCalendar" />
-        <argument
-            android:defaultValue="false"
-            android:name="isNotMine"
-            app:argType="boolean"/>
-        <action
-            android:id="@+id/action_profile_to_notifications"
-            app:destination="@id/notifications" />
-        <action
-            android:id="@+id/action_profile_to_menu"
-            app:destination="@id/menu" />
-        <argument
-            android:name="from"
-            android:defaultValue="4"
-            app:argType="integer"/>
-        <argument
-            android:name="userInfoDTO"
-            app:argType="com.timenoteco.timenote.model.UserInfoDTO"
-            app:nullable="true"
-            android:defaultValue="@null" />
-    </fragment>
-    <fragment
         android:id="@+id/profilModify"
         android:name="com.timenoteco.timenote.view.profileFlow.ProfilModify"
         android:label="ProfilModify" >
@@ -142,6 +115,9 @@
         <argument
             android:name="isNotMine"
             app:argType="boolean" />
+        <argument
+            android:name="from"
+            app:argType="integer" />
     </fragment>
     <fragment
         android:name="com.timenoteco.timenote.view.profileFlow.menuDirectory.Menu"
@@ -151,9 +127,6 @@
         <action
             android:id="@+id/action_menu_to_settings"
             app:destination="@id/settings" />
-        <action
-            android:id="@+id/action_menu_to_profilePreview"
-            app:destination="@id/profilePreview" />
         <action
             android:id="@+id/action_menu_to_contacts"
             app:destination="@id/contacts" />
@@ -207,7 +180,8 @@
             app:destination="@id/previewTimenoteCreated" />
         <argument
             android:name="modify"
-            app:argType="integer" />
+            app:argType="integer"
+            android:defaultValue="1" />
         <argument
             android:name="id"
             app:argType="string"
@@ -218,7 +192,8 @@
             app:nullable="true"/>
         <argument
             android:name="from"
-            app:argType="integer"/>
+            app:argType="integer"
+            android:defaultValue="4" />
     </fragment>
     <fragment
         android:id="@+id/previewTimenoteCreated"
@@ -232,11 +207,10 @@
             android:name="timenoteInfoDTO"
             app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
             app:nullable="true" />
+        <argument
+            android:name="modify"
+            app:argType="integer" />
     </fragment>
-    <fragment
-        android:id="@+id/profilePreview"
-        android:name="com.timenoteco.timenote.view.profileFlow.menuDirectory.ProfilePreview"
-        android:label="ProfilePreview" />
     <fragment
         android:id="@+id/contacts"
         android:name="com.timenoteco.timenote.view.profileFlow.menuDirectory.Contacts"
@@ -285,10 +259,35 @@
     </fragment>
     <action android:id="@+id/action_global_detailedTimenote" app:destination="@id/detailedTimenote" />
     <action android:id="@+id/action_global_createTimenote" app:destination="@id/createTimenote" />
-    <action android:id="@+id/action_global_profile" app:destination="@id/profile" />
     <action android:id="@+id/action_global_timenoteTAG" app:destination="@id/timenoteTAG" />
     <action android:id="@+id/action_global_timenoteAddress" app:destination="@id/timenoteAddress" />
     <action android:id="@+id/action_global_profilModify" app:destination="@id/profilModify" />
     <action android:id="@+id/action_global_followPage" app:destination="@id/followPage" />
     <action android:id="@+id/action_global_navigation" app:destination="@id/navigation" />
+    <fragment
+        android:id="@+id/myProfile"
+        android:name="com.timenoteco.timenote.view.profileFlow.MyProfile"
+        android:label="MyProfile" >
+        <action
+            android:id="@+id/action_myProfile_to_notifications"
+            app:destination="@id/notifications" />
+        <action
+            android:id="@+id/action_myProfile_to_menu"
+            app:destination="@id/menu" />
+    </fragment>
+    <action android:id="@+id/action_global_profileCalendar" app:destination="@id/profileCalendar" />
+    <fragment
+        android:id="@+id/profileElse"
+        android:name="com.timenoteco.timenote.view.profileFlow.ProfileElse"
+        android:label="ProfileElse" >
+        <argument
+            android:name="userInfoDTO"
+            app:argType="com.timenoteco.timenote.model.UserInfoDTO"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="from"
+            app:argType="integer" />
+    </fragment>
+    <action android:id="@+id/action_global_profileElse" app:destination="@id/profileElse" />
 </navigation>

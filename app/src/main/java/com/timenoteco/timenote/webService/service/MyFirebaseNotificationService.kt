@@ -65,7 +65,7 @@ class MyFirebaseNotificationService : FirebaseMessagingService() {
         val pi = NavDeepLinkBuilder(this)
             .setComponentName(MainActivity::class.java)
             .setGraph(R.navigation.navigation_graph_tab_profile)
-            .setDestination(R.id.profile)
+            .setDestination(R.id.myProfile)
             .setArguments(bundle)
             .createPendingIntent()
 

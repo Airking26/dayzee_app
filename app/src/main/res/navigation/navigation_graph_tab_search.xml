@@ -73,9 +73,6 @@
             android:id="@+id/action_search_to_searchExplore"
             app:destination="@id/searchExplore" />
         <action
-            android:id="@+id/action_search_to_navigation"
-            app:destination="@id/navigation" />
-        <action
             android:id="@+id/action_search_to_searchExploreClicked"
             app:destination="@id/searchExploreClicked" />
     </fragment>
@@ -97,78 +94,43 @@
         android:name="com.timenoteco.timenote.view.searchFlow.SearchTop"
         android:label="SearchTop" />
     <fragment
-        android:id="@+id/detailedTimenoteSearch"
-        android:name="com.timenoteco.timenote.view.searchFlow.DetailedTimenoteSearch"
-        android:label="detailedTimenoteSearch"
-        tools:layout="@layout/fragment_detailed_fragment">
+        android:id="@+id/detailedTimenote"
+        android:name="com.timenoteco.timenote.view.homeFlow.DetailedTimenote"
+        android:label="fragment_detailed_timenote"
+        tools:layout="@layout/fragment_detailed_fragment" >
+        <argument android:name="from"
+            app:argType="integer" />
         <argument
-            android:name="timenoteInfoDTO"
+            android:name="event"
             app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
             app:nullable="true" />
     </fragment>
     <fragment
-        android:id="@+id/profileSearch"
-        android:name="com.timenoteco.timenote.view.searchFlow.ProfileSearch"
-        android:label="ProfileSearch" >
-        <action
-            android:id="@+id/action_profileSearch_to_followPageSearch"
-            app:destination="@id/followPageSearch" />
-        <action
-            android:id="@+id/action_profileSearch_to_profileCalendarSearch"
-            app:destination="@id/profileCalendarSearch" />
+        android:id="@+id/timenoteAddress"
+        android:name="com.timenoteco.timenote.view.homeFlow.TimenoteAddress"
+        android:label="fragment_timenote_address"
+        tools:layout="@layout/fragment_timenote_address" >
         <argument
-            android:name="userInfoDTO"
-            app:argType="com.timenoteco.timenote.model.UserInfoDTO"
+            android:name="timenoteInfoDTO"
+            app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
             app:nullable="true" />
-        <action
-            android:id="@+id/action_profileSearch_to_profilModifySearch"
-            app:destination="@id/profilModifySearch" />
-    </fragment>
-    <fragment
-        android:id="@+id/followPageSearch"
-        android:name="com.timenoteco.timenote.view.searchFlow.FollowPageSearch"
-        android:label="FollowPageSearch" >
-        <argument
-            android:name="followers"
-            app:argType="integer"
-            android:defaultValue="-1" />
-        <argument
-            android:name="id"
-            app:argType="string" />
-        <argument
-            android:name="isNotMine"
-            app:argType="boolean" />
-    </fragment>
-    <fragment
-        android:id="@+id/previewTimenoteCreatedSearch"
-        android:name="com.timenoteco.timenote.view.searchFlow.PreviewTimenoteCreatedSearch"
-        android:label="PreviewTimenoteCreatedSearch">
         <argument
             android:name="from"
-            app:argType="integer" />
-        <argument
-            android:name="timenoteInfoDTO"
-            app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
-            app:nullable="true" />
+            app:argType="integer"
+            android:defaultValue="1" />
     </fragment>
     <fragment
-        android:id="@+id/profileCalendarSearch"
-        android:name="com.timenoteco.timenote.view.searchFlow.ProfileCalendarSearch"
-        android:label="ProfileCalendarSearch" >
-        <argument
-            android:name="id"
-            app:argType="string" />
-    </fragment>
-    <fragment
-        android:id="@+id/createTimenoteSearch"
-        android:name="com.timenoteco.timenote.view.searchFlow.CreateTimenoteSearch"
-        android:label="CreateTimenoteSearch" >
+        android:id="@+id/createTimenote"
+        android:name="com.timenoteco.timenote.view.createTimenoteFlow.CreateTimenote"
+        android:label="fragment_create_timenote"
+        tools:layout="@layout/fragment_create_timenote" >
         <action
-            android:id="@+id/action_createTimenoteSearch_to_previewTimenoteCreatedSearch"
-            app:destination="@id/previewTimenoteCreatedSearch" />
+            android:id="@+id/action_createTimenote_to_previewTimenoteCreated"
+            app:destination="@id/previewTimenoteCreated" />
         <argument
             android:name="modify"
-            app:argType="integer" />
+            app:argType="integer"
+            android:defaultValue="1" />
         <argument
             android:name="id"
             app:argType="string"
@@ -179,21 +141,47 @@
             app:nullable="true" />
         <argument
             android:name="from"
-            app:argType="integer" />
+            app:argType="integer"
+            android:defaultValue="2" />
     </fragment>
     <fragment
-        android:id="@+id/timenoteAddressSearch"
-        android:name="com.timenoteco.timenote.view.searchFlow.TimenoteAddressSearch"
-        android:label="TimenoteAddressSearch" >
+        android:id="@+id/previewTimenoteCreated"
+        android:name="com.timenoteco.timenote.view.createTimenoteFlow.PreviewTimenoteCreated"
+        android:label="fragment_preview_timenote_created"
+        tools:layout="@layout/fragment_preview_timenote_created" >
+        <argument
+            android:name="from"
+            app:argType="integer" />
         <argument
             android:name="timenoteInfoDTO"
             app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
             app:nullable="true" />
+        <argument
+            android:name="modify"
+            app:argType="integer" />
     </fragment>
     <fragment
-        android:id="@+id/profilModifySearch"
-        android:name="com.timenoteco.timenote.view.searchFlow.ProfilModifySearch"
-        android:label="ProfilModifySearch" >
+        android:id="@+id/followPage"
+        android:name="com.timenoteco.timenote.view.profileFlow.FollowPage"
+        android:label="fragment_follow_page"
+        tools:layout="@layout/fragment_follow_page" >
+        <argument
+            android:name="followers"
+            app:argType="integer"
+            android:defaultValue="-1" />
+        <argument
+            android:name="id"
+            app:argType="string" />
+        <argument
+            android:name="isNotMine"
+            app:argType="boolean" />
+        <argument android:name="from"
+            app:argType="integer" />
+    </fragment>
+    <fragment
+        android:id="@+id/profilModify"
+        android:name="com.timenoteco.timenote.view.profileFlow.ProfilModify"
+        android:label="ProfilModify" >
         <argument
             android:name="isNotMine"
             app:argType="boolean" />
@@ -202,23 +190,51 @@
             app:argType="com.timenoteco.timenote.model.UserInfoDTO"
             app:nullable="true" />
     </fragment>
-    <action android:id="@+id/action_global_detailedTimenoteSearch" app:destination="@id/detailedTimenoteSearch" />
-    <action android:id="@+id/action_global_createTimenoteSearch" app:destination="@id/createTimenoteSearch" />
-    <action android:id="@+id/action_global_profileSearch" app:destination="@id/profileSearch" />
     <fragment
-        android:id="@+id/timenoteTAGSearch"
-        android:name="com.timenoteco.timenote.view.searchFlow.TimenoteTAGSearch"
-        android:label="TimenoteTAGSearch" >
+        android:id="@+id/timenoteTAG"
+        android:name="com.timenoteco.timenote.view.homeFlow.TimenoteTAG"
+        android:label="TimenoteTAG" >
         <argument
             android:name="timenoteInfoDTO"
             app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
-            app:nullable="true"
-            android:defaultValue="@null" />
+            app:nullable="true" />
+        <argument
+            android:name="from"
+            app:argType="integer"
+            android:defaultValue="1" />
         <argument
             android:name="hashtag"
             app:argType="string"
             app:nullable="true" />
     </fragment>
-    <action android:id="@+id/action_global_timenoteTAGSearch" app:destination="@id/timenoteTAGSearch" />
-    <action android:id="@+id/action_global_timenoteAddressSearch" app:destination="@id/timenoteAddressSearch" />
+    <action android:id="@+id/action_global_detailedTimenote" app:destination="@id/detailedTimenote" />
+    <action android:id="@+id/action_global_createTimenote" app:destination="@id/createTimenote" />
+    <action android:id="@+id/action_global_timenoteTAG" app:destination="@id/timenoteTAG" />
+    <action android:id="@+id/action_global_timenoteAddress" app:destination="@id/timenoteAddress" />
+    <action android:id="@+id/action_global_followPage" app:destination="@id/followPage" />
+    <action android:id="@+id/action_global_profilModify" app:destination="@id/profilModify" />
+    <fragment
+        android:id="@+id/profileElse"
+        android:name="com.timenoteco.timenote.view.profileFlow.ProfileElse"
+        android:label="ProfileElse" >
+        <argument
+            android:name="userInfoDTO"
+            app:argType="com.timenoteco.timenote.model.UserInfoDTO"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="from"
+            app:argType="integer" />
+    </fragment>
+    <action android:id="@+id/action_global_profileElse" app:destination="@id/profileElse" />
+    <fragment
+        android:id="@+id/profileCalendar"
+        android:name="com.timenoteco.timenote.view.profileFlow.ProfileCalendar"
+        android:label="ProfileCalendar" >
+        <argument
+            android:name="id"
+            app:argType="string" />
+    </fragment>
+    <action android:id="@+id/action_global_profileCalendar" app:destination="@id/profileCalendar" />
+    <action android:id="@+id/action_global_navigation" app:destination="@id/navigation" />
 </navigation>

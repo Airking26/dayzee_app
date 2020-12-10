@@ -24,6 +24,7 @@ import java.lang.reflect.Type
 
 class Menu : Fragment(), View.OnClickListener {
 
+    private lateinit var userInfoDTO: UserInfoDTO
     private lateinit var prefs : SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +38,7 @@ class Menu : Fragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
-        val userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
+        userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
 
         menu_settings_cv.setOnClickListener(this)
         menu_preferences_cv.setOnClickListener(this)
@@ -59,7 +60,7 @@ class Menu : Fragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when(v){
             menu_settings_cv -> findNavController().navigate(MenuDirections.actionMenuToSettings())
-            menu_profile_cv -> findNavController().navigate(MenuDirections.actionMenuToProfilePreview())
+            menu_profile_cv -> findNavController().navigate(MenuDirections.actionGlobalProfileElse(4).setUserInfoDTO(userInfoDTO))
             menu_preferences_cv -> findNavController().navigate(MenuDirections.actionMenuToPreferenceCategory())
             menu_invite_friends_cv -> {
                 val PERMISSIONS_STORAGE = arrayOf(
