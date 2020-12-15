@@ -38,6 +38,7 @@ import com.timenoteco.timenote.adapter.UsersShareWithPagingAdapter
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.*
+import com.timenoteco.timenote.view.homeFlow.HomeDirections
 import com.timenoteco.timenote.viewModel.*
 import io.branch.indexing.BranchUniversalObject
 import io.branch.referral.util.BranchEvent
@@ -129,9 +130,10 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
     }
 
     override fun onEditClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(SearchDirections.actionGlobalCreateTimenote(timenoteInfoDTO.id, CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
+        findNavController().navigate(
+            SearchDirections.actionGlobalCreateTimenote().setFrom(2).setModify(2).setId(timenoteInfoDTO.id).setTimenoteBody(CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
             timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
-            timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null)).setFrom(2).setModify(2))
+            timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null)))
     }
 
 
@@ -250,9 +252,9 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
     }
 
     override fun onDuplicateClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(SearchDirections.actionGlobalCreateTimenote(timenoteInfoDTO.id, CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
+        findNavController().navigate(SearchDirections.actionGlobalCreateTimenote().setFrom(2).setModify(1).setId(timenoteInfoDTO.id).setTimenoteBody(CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
             timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
-            timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null)).setFrom(2).setModify(1))
+            timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null)))
     }
 
     override fun onAddressClicked(timenoteInfoDTO: TimenoteInfoDTO) {

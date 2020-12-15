@@ -29,10 +29,7 @@ class ProfileEventPagerAdapter(fragmentManager: FragmentManager, lifecycle: Life
             } else if(isReselected != null && !isReselected){
                 if(position == 0)profilePastEvents.setShowFilterBar(showFilterBar)
                 else profileFutureEvents.setShowFilterBar(showFilterBar)
-            } /*else {
-                if(position == 0) profilePastEvents.setShowFilterBar(showFilterBar)
-                else profileFutureEvents.setShowFilterBar(showFilterBar)
-            }*/
+            }
     }
 
 }

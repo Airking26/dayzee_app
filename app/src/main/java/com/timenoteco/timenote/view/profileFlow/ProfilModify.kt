@@ -232,7 +232,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
                 profilModifyModel = Gson().fromJson<UserInfoDTO>(it, type)
                 setUserInfoDTO(profilModifyModel)
 
-                if (profilModifyModel?.socialMedias?.youtube?.enabled!!)
+                if (profilModifyModel.socialMedias.youtube.enabled)
                     setStateSwitch(
                         profile_modify_youtube_switch,
                         profile_modify_facebook_switch,

@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.NavHostFragment.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
@@ -28,31 +27,25 @@ import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ProfileEventPagerAdapter
 import com.timenoteco.timenote.common.BaseThroughFragment
-import com.timenoteco.timenote.common.intLiveData
-import com.timenoteco.timenote.common.stringLiveData
 import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
-import com.timenoteco.timenote.viewModel.MeViewModel
-import com.timenoteco.timenote.viewModel.StringViewModel
-import com.timenoteco.timenote.webService.ProfileModifyData
 import io.branch.indexing.BranchUniversalObject
 import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
 import io.branch.referral.util.LinkProperties
-import kotlinx.android.synthetic.main.fragment_profile.*
+import kotlinx.android.synthetic.main.fragment_profile_else.*
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.math.log
 
 class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBarListener {
 
+    private lateinit var meInfoDTO: UserInfoDTO
     private var userInfoDTO: UserInfoDTO? = null
     private var stateSwitchUrl: String? = null
     private var profileEventPagerAdapter: ProfileEventPagerAdapter? = null
-    private val stringViewModel : StringViewModel by activityViewModels()
     private var showFilterBar: Boolean = false
     private val args : ProfileElseArgs by navArgs()
     private lateinit var prefs: SharedPreferences
@@ -63,6 +56,7 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
     private var showFilterBarFutureEvents = false
     private var showFilterBarPastEvents = false
     private var locaPref: Int = -1
+    private var isDetailShown : Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,8 +72,9 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-            val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
-            userInfoDTO = args.userInfoDTO
+        val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
+        meInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
+        userInfoDTO = args.userInfoDTO
 
             val simpleDateFormatDayName = SimpleDateFormat("EEE.", Locale.getDefault())
             val simpleDateFormatDayNumber = SimpleDateFormat("dd", Locale.getDefault())
@@ -93,21 +88,17 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
                 .placeholder(R.drawable.circle_pic)
                 .into(profile_pic_imageview)
 
-            profile_name_toolbar.text = userInfoDTO?.userName
-            if(userInfoDTO?.description.isNullOrBlank()) profile_desc.visibility = View.GONE else {
+        profile_name_toolbar.text = userInfoDTO?.userName
+        if(userInfoDTO?.description.isNullOrBlank()) profile_desc.visibility = View.GONE else {
                 profile_desc.visibility = View.VISIBLE
                 profile_desc.text = userInfoDTO?.description
             }
 
-            if(userInfoDTO?.givenName.isNullOrBlank()) profile_name.visibility = View.GONE else {
+        if(userInfoDTO?.givenName.isNullOrBlank()) profile_name.visibility = View.GONE else {
                 profile_name.visibility = View.VISIBLE
                 profile_name.text = userInfoDTO?.givenName
             }
-
-                profile_follow_btn.visibility = View.VISIBLE
-                profile_follow_btn.setOnClickListener(this)
-
-                if (userInfoDTO?.socialMedias?.youtube?.enabled!!) {
+        if (userInfoDTO?.socialMedias?.youtube?.enabled!!) {
                     if (!userInfoDTO?.socialMedias?.youtube?.url?.isBlank()!!) {
                         profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_youtube_colored))
                         stateSwitchUrl = userInfoDTO?.socialMedias?.youtube?.url
@@ -133,6 +124,7 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
                         stateSwitchUrl = userInfoDTO?.socialMedias?.linkedIn?.url
                     }
                 } else {
+                    isDetailShown = false
                     profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_icons8_contacts))
                 }
 
@@ -147,6 +139,7 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
                     setBackgroundColor(resources.getColor(android.R.color.transparent))
                     setTextColor(resources.getColor(android.R.color.darker_gray))
                 }
+                isFollowed = true
             }
 
             if(userInfoDTO?.status == STATUS.PRIVATE.ordinal && !userInfoDTO?.isInFollowers!!){
@@ -198,19 +191,20 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
                 profile_infos.setOnClickListener(this)
                 profile_calendar_btn.setOnClickListener(this)
             }
-            profile_notif_btn.setOnClickListener(this)
+        profile_follow_btn.setOnClickListener(this)
+        profile_notif_btn.setOnClickListener(this)
 
     }
 
     override fun onClick(v: View?) {
         when(v){
-            profile_modify_btn -> findNavController().navigate(ProfileElseDirections.actionGlobalProfilModify(true, userInfoDTO))
             profile_calendar_btn -> findNavController().navigate(ProfileElseDirections.actionGlobalProfileCalendar(userInfoDTO?.id!!))
             profile_settings_btn ->  MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                     title(text = userInfoDTO?.userName)
-                    val listItems: MutableList<String> = mutableListOf(context.getString(R.string.share_to) , context.getString(R.string.report))
+                    val listItems: MutableList<String> = mutableListOf(context.getString(R.string.details), context.getString(R.string.share_to) , context.getString(R.string.report))
                     listItems (items = listItems){ _, _, text ->
                         when(text.toString()){
+                            context.getString(R.string.details) ->  findNavController().navigate(ProfileElseDirections.actionGlobalProfilModify(true, userInfoDTO))
                             context.getString(R.string.report) -> Toast.makeText(
                                 requireContext(),
                                 "Reported",

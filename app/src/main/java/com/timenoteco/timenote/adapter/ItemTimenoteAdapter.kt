@@ -258,8 +258,10 @@ class ItemTimenoteAdapter(
 
                     override fun updateDrawState(ds: TextPaint) {
                         ds.isUnderlineText  = false
-                        ds.color = itemView.context.getColor(R.color.colorText)
-                        ds.typeface = Typeface.DEFAULT_BOLD
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            ds.color = itemView.context.getColor(R.color.colorText)
+                            ds.typeface = Typeface.DEFAULT_BOLD
+                        }
                     }
                 }
                 ellipsizeClickable.setSpan(clickalbleEllipsize, 0, ellipzise.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)

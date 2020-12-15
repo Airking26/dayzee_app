@@ -1,4 +1,4 @@
-package com.timenoteco.timenote.view.createTimenoteFlow
+/*package com.timenoteco.timenote.view.createTimenoteFlow
 
 import android.content.Context
 import android.content.Intent
@@ -29,6 +29,7 @@ import io.branch.referral.util.ContentMetadata
 import io.branch.referral.util.LinkProperties
 import kotlinx.android.synthetic.main.fragment_preview_timenote_created.*
 import kotlinx.android.synthetic.main.item_timenote_root.view.*
+import java.io.File
 
 
 class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
@@ -72,10 +73,10 @@ class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
                 }
                 screenSlideCreationTimenotePagerAdapter = ScreenSlideCreationTimenotePagerAdapter(
                     this,
-                    mutableList,
+                    mutableListOf(),
                     true,
                     false,
-                    listOf()
+                    mutableList
                 )
                 preview_created_timenote_vp.adapter = screenSlideCreationTimenotePagerAdapter
                 preview_created_timenote_indicator.setViewPager(preview_created_timenote_vp)
@@ -160,3 +161,4 @@ class PreviewTimenoteCreated : Fragment(), View.OnClickListener {
 
 
 }
+*/

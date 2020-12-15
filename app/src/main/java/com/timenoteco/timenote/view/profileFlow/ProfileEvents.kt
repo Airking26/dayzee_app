@@ -27,6 +27,7 @@ import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
 import com.afollestad.materialdialogs.datetime.datePicker
+import com.afollestad.materialdialogs.datetime.dateTimePicker
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -38,6 +39,7 @@ import com.timenoteco.timenote.listeners.ItemProfileCardListener
 import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.*
+import com.timenoteco.timenote.view.homeFlow.HomeDirections
 import com.timenoteco.timenote.view.searchFlow.SearchDirections
 import com.timenoteco.timenote.viewModel.*
 import kotlinx.android.synthetic.main.fragment_profile_future_events.*
@@ -47,6 +49,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
+import java.util.*
 
 private const val ARG_PARAM1 = "showHideFilterBar"
 private const val ARG_PARAM2 = "from"
@@ -67,7 +70,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
     private var showHideFilterBar: Boolean = false
     private var from: Int? = null
     private lateinit var id: String
-    private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
+    private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     private var isFuture = true
     private lateinit var onRemoveFilterBarListener: OnRemoveFilterBarListener
     private val followViewModel: FollowViewModel by activityViewModels()
@@ -177,14 +180,17 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
     }
 
     override fun onEditClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-            findNavController().navigate(SearchDirections.actionGlobalCreateTimenote(timenoteInfoDTO.id, CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
-                timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
-                timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null)).setFrom(from!!).setModify(2))
+        findNavController().navigate(
+            SearchDirections.actionGlobalCreateTimenote().setFrom(from!!).setModify(2).setId(timenoteInfoDTO.id).setTimenoteBody(CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
+            timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
+            timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null)))
     }
 
     override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-            datePicker { dialog, datetime ->
+            val cal = Calendar.getInstance()
+            cal.timeInMillis = SimpleDateFormat(ISO, Locale.getDefault()).parse(timenoteInfoDTO.startingAt).time
+            dateTimePicker (currentDateTime = cal) { _, datetime ->
                 alarmViewModel.createAlarm(tokenId!!, AlarmCreationDTO(timenoteInfoDTO.createdBy.id!!, timenoteInfoDTO.id, SimpleDateFormat(ISO).format(datetime.time.time))).observe(viewLifecycleOwner, Observer {
                     if(it.code() == 401){
                         authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
@@ -213,9 +219,9 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
     }
 
     override fun onDuplicateClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(ProfileElseDirections.actionGlobalCreateTimenote(timenoteInfoDTO.id, CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
+        findNavController().navigate(SearchDirections.actionGlobalCreateTimenote().setFrom(from!!).setModify(1).setId(timenoteInfoDTO.id).setTimenoteBody(CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
             timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
-            timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null)).setFrom(from!!).setModify(1))
+            timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null)))
     }
 
     override fun onHideToOthersClicked(timenoteInfoDTO: TimenoteInfoDTO) {

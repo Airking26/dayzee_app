@@ -144,10 +144,9 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
         }
     }
     override fun onDuplicateClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(TimenoteAddressDirections.actionGlobalCreateTimenote(timenoteInfoDTO.id,
-            CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
-                timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
-                timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null)).setFrom(args.from).setModify(1))
+        findNavController().navigate(TimenoteAddressDirections.actionGlobalCreateTimenote().setFrom(args.from).setModify(1).setId(timenoteInfoDTO.id).setTimenoteBody(CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
+            timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
+            timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null)))
     }
 
     override fun onSeeMoreClicked(timenoteInfoDTO: TimenoteInfoDTO) {
@@ -322,10 +321,9 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
     override fun onMaskThisUser() {}
     override fun onAddressClicked(timenoteInfoDTO: TimenoteInfoDTO) {}
     override fun onEditClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(TimenoteAddressDirections.actionGlobalCreateTimenote(timenoteInfoDTO.id,
-            CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
-                timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
-                timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null)).setFrom(args.from).setModify(2))
+        findNavController().navigate(TimenoteAddressDirections.actionGlobalCreateTimenote().setFrom(args.from).setModify(2).setId(timenoteInfoDTO.id).setTimenoteBody(CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
+            timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
+            timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null)))
     }
     override fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {

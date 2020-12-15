@@ -1,6 +1,5 @@
 package com.timenoteco.timenote.view
 
-import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.*
@@ -12,8 +11,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
@@ -25,22 +22,18 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.iid.FirebaseInstanceId
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.setupWithNavController
 import com.timenoteco.timenote.listeners.*
-import com.timenoteco.timenote.model.FCMDTO
 import com.timenoteco.timenote.model.Notification
 import com.timenoteco.timenote.model.TimenoteInfoDTO
 import com.timenoteco.timenote.model.UserInfoDTO
 import com.timenoteco.timenote.view.homeFlow.Home
 import com.timenoteco.timenote.view.homeFlow.HomeDirections
-import com.timenoteco.timenote.viewModel.MeViewModel
-import com.timenoteco.timenote.viewModel.StringViewModel
+import com.timenoteco.timenote.viewModel.SwitchToNotifViewModel
 import io.branch.referral.Branch
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.reflect.Type
@@ -83,9 +76,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                         val typeUserInfoDTO: Type = object : TypeToken<UserInfoDTO?>() {}.type
                         val userInfoDTO = Gson().fromJson<UserInfoDTO>(referringParams.getString("userInfoDTO"), typeUserInfoDTO)
                         goToProfile()
-                        /*control.navigate(
-                            HomeDirections.actionGlobalProfile(userInfoDTO).setFrom(1)
-                        )*/
+                        control.navigate(HomeDirections.actionGlobalProfileElse(1).setUserInfoDTO(userInfoDTO))
                     }
                 }
             }
@@ -101,24 +92,15 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                 if (referringParams?.getBoolean("+clicked_branch_link")!!) {
                     if(referringParams.has("timenoteInfoDTO")) {
                         val typeTimenoteInfo: Type = object : TypeToken<TimenoteInfoDTO?>() {}.type
-                        val timenoteInfoDTO = Gson().fromJson<TimenoteInfoDTO>(
-                            referringParams.getString("timenoteInfoDTO"),
-                            typeTimenoteInfo
-                        )
-                        control.navigate(
-                            HomeDirections.actionGlobalDetailedTimenote(
-                                1,
-                                timenoteInfoDTO
-                            )
-                        )
+                        val timenoteInfoDTO = Gson().fromJson<TimenoteInfoDTO>(referringParams.getString("timenoteInfoDTO"), typeTimenoteInfo)
+                        control.navigate(HomeDirections.actionGlobalDetailedTimenote(1, timenoteInfoDTO))
                     } else {
                         val typeUserInfoDTO: Type = object : TypeToken<UserInfoDTO?>() {}.type
                         val userInfoDTO = Gson().fromJson<UserInfoDTO>(
                             referringParams.getString("userInfoDTO"),
                             typeUserInfoDTO
                         )
-
-                        //control.navigate(HomeDirections.actionGlobalProfile(userInfoDTO).setFrom(1))
+                        control.navigate(HomeDirections.actionGlobalProfileElse(1).setUserInfoDTO(userInfoDTO))
                         goToProfile()
                     }
                 }
@@ -151,13 +133,13 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                 intent.getStringExtra("userPictureURL") ?: ""))
 
             prefs.edit().putString("notifications", Gson().toJson(notifications) ?: Gson().toJson(mutableListOf<Notification>())).apply()
-            bottomNavView.selectedItemId = R.id.navigation_graph_tab_4
+            goToProfile()
             ViewModelProviders.of(this, object : ViewModelProvider.Factory {
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                     @Suppress("UNCHECKED_CAST")
-                    return StringViewModel() as T
+                    return SwitchToNotifViewModel() as T
                 }
-            })[StringViewModel::class.java].switchNotif(true)
+            })[SwitchToNotifViewModel::class.java].switchNotif(true)
         }
     }
 

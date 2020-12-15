@@ -19,7 +19,6 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.model.UserInfoDTO
 import com.timenoteco.timenote.model.accessToken
 import kotlinx.android.synthetic.main.fragment_menu.*
-import kotlinx.android.synthetic.main.fragment_profile.*
 import java.lang.reflect.Type
 
 class Menu : Fragment(), View.OnClickListener {
@@ -44,7 +43,6 @@ class Menu : Fragment(), View.OnClickListener {
         menu_preferences_cv.setOnClickListener(this)
         menu_profile_cv.setOnClickListener(this)
         menu_invite_friends_cv.setOnClickListener(this)
-        profile_menu_modify.setOnClickListener(this)
 
         Glide
             .with(this)
@@ -71,7 +69,6 @@ class Menu : Fragment(), View.OnClickListener {
                         requestPermissions(PERMISSIONS_STORAGE, 10)
                     }
             }
-            profile_menu_modify -> findNavController().navigate(MenuDirections.actionGlobalProfilModify(false, null))
         }
     }
 

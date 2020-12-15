@@ -1,5 +1,6 @@
 package com.timenoteco.timenote.view.searchFlow
 
+import android.content.ContentValues.TAG
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
@@ -20,6 +21,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.paging.map
 import androidx.preference.PreferenceManager
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.gson.Gson
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.SearchViewTopExplorePagerAdapter
 import com.timenoteco.timenote.adapter.SearchViewPeopleTagPagerAdapter
@@ -78,6 +80,9 @@ class Search : BaseThroughFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if(!tokenId.isNullOrBlank()) {
+
+            searchBar.lastSuggestions = prefs.getStringSet("lastSuggestions", setOf<String>())?.toMutableList()
+
             viewTopExplorePagerAdapter =
                 SearchViewTopExplorePagerAdapter(childFragmentManager, lifecycle)
             viewPeopleTagPagerAdapter =
@@ -119,6 +124,7 @@ class Search : BaseThroughFragment() {
 
             })
 
+
             if(isEnabled){
                 search_tablayout.getTabAt(0)?.text = "People"
                 search_tablayout.getTabAt(1)?.text = "Tags"
@@ -152,6 +158,11 @@ class Search : BaseThroughFragment() {
 
             })
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        prefs.edit().putStringSet("lastSuggestions", (searchBar.lastSuggestions as MutableList<String>).toSet()).apply()
     }
 
 }

@@ -57,6 +57,7 @@ import com.timenoteco.timenote.listeners.GoToProfile
 import com.timenoteco.timenote.listeners.ShowBarListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.*
+import com.timenoteco.timenote.view.homeFlow.HomeDirections
 import com.timenoteco.timenote.viewModel.*
 import com.timenoteco.timenote.webService.NearbyFilterData
 import io.branch.indexing.BranchUniversalObject
@@ -550,9 +551,10 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     }
 
     override fun onDuplicateClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(NearByDirections.actionGlobalCreateTimenote(timenoteInfoDTO.id, CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
+        findNavController().navigate(
+            NearByDirections.actionGlobalCreateTimenote().setFrom(3).setModify(1).setId(timenoteInfoDTO.id).setTimenoteBody(CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
             timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
-            timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null)).setFrom(3).setModify(1))
+            timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null)))
     }
 
     override fun onAddressClicked(timenoteInfoDTO: TimenoteInfoDTO) {

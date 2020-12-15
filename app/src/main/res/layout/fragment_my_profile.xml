@@ -212,7 +212,7 @@
                         android:id="@+id/profile_infos"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_icons8_contacts"
+                        android:src="@drawable/ic_outline_share_24"
                         app:layout_constraintBottom_toBottomOf="@id/profile_following_label"
                         app:layout_constraintEnd_toEndOf="@id/profile_calendar_cl"
                         app:layout_constraintStart_toStartOf="@id/profile_calendar_cl"

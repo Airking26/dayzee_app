@@ -109,41 +109,24 @@
         android:name="com.timenoteco.timenote.view.createTimenoteFlow.CreateTimenote"
         android:label="fragment_create_timenote"
         tools:layout="@layout/fragment_create_timenote" >
-        <action
-            android:id="@+id/action_createTimenote_to_previewTimenoteCreated"
-            app:destination="@id/previewTimenoteCreated" />
         <argument
             android:name="modify"
             app:argType="integer"
             android:defaultValue="1" />
         <argument
+            android:defaultValue="@null"
             android:name="id"
             app:argType="string"
-            app:nullable="true"/>
+            app:nullable="true" />
         <argument
             android:name="timenoteBody"
             app:argType="com.timenoteco.timenote.model.CreationTimenoteDTO"
-            app:nullable="true"/>
+            app:nullable="true"
+            android:defaultValue="@null" />
         <argument
             android:name="from"
             app:argType="integer"
             android:defaultValue="3" />
-    </fragment>
-    <fragment
-        android:id="@+id/previewTimenoteCreated"
-        android:name="com.timenoteco.timenote.view.createTimenoteFlow.PreviewTimenoteCreated"
-        android:label="fragment_preview_timenote_created"
-        tools:layout="@layout/fragment_preview_timenote_created" >
-        <argument
-            android:name="from"
-            app:argType="integer" />
-        <argument
-            android:name="timenoteInfoDTO"
-            app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
-            app:nullable="true" />
-        <argument
-            android:name="modify"
-            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/followPage"

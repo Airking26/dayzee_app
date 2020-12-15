@@ -11,6 +11,7 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.listeners.TimenoteCreationPicListeners
 import com.timenoteco.timenote.model.AWSFile
 import kotlinx.android.synthetic.main.timenote_view_image.*
+import java.io.File
 
 private const val ARG_PARAM1 = "position"
 private const val ARG_PARAM2 = "aws"
@@ -47,7 +48,7 @@ class ScreenSlideCreationTimenoteImageFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        if(param4!! && !param5.isNullOrBlank()){
+        if(!param5.isNullOrBlank()){
             Glide.with(view)
                 .load(param5)
                 .into(create_timenote_pic)

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackground"
-    xmlns:fancy="http://schemas.android.com/apk/res-auto"
     tools:context=".view.profileFlow.menuDirectory.Menu">
 
     <LinearLayout
@@ -18,68 +18,53 @@
             android:background="@color/colorBackground">
 
             <ImageView
+                style="@style/AppTheme.Toolbar.Title"
                 android:layout_width="80dp"
                 android:src="@drawable/dayzee"
-                style="@style/AppTheme.Toolbar.Title"
                 android:text="@string/timeline" />
 
         </androidx.appcompat.widget.Toolbar>
 
         <TextView
-            android:visibility="gone"
-            style="@style/AppTheme.Divider.Toolbar" />
+            style="@style/AppTheme.Divider.Toolbar"
+            android:visibility="gone" />
 
     </LinearLayout>
 
     <ImageView
         android:id="@+id/profile_menu_iv"
-        android:src="@drawable/beach"
-        app:layout_constraintTop_toBottomOf="@id/profile_menu_ll"
-        app:layout_constraintStart_toStartOf="@id/menu_settings_cv"
         android:layout_width="72dp"
-        android:layout_height="72dp"/>
+        android:layout_height="72dp"
+        android:src="@drawable/beach"
+        app:layout_constraintStart_toStartOf="@id/menu_settings_cv"
+        app:layout_constraintTop_toBottomOf="@id/profile_menu_ll" />
 
     <TextView
-        android:textSize="20sp"
-        android:textColor="@color/colorText"
         android:id="@+id/profile_menu_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:textColor="@color/colorText"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@id/profile_menu_location"
         app:layout_constraintStart_toEndOf="@id/profile_menu_iv"
         app:layout_constraintTop_toTopOf="@id/profile_menu_iv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="sam2629" />
 
     <TextView
-        android:drawablePadding="4dp"
         android:id="@+id/profile_menu_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:drawableStart="@drawable/ic_toolbar_location"
+        android:drawablePadding="4dp"
         android:fontFamily="sans-serif-light"
+        android:textColor="@color/colorText"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@id/profile_menu_iv"
+        app:layout_constraintStart_toStartOf="@id/profile_menu_name"
         app:layout_constraintTop_toBottomOf="@id/profile_menu_name"
-        app:layout_constraintStart_toStartOf="@id/profile_menu_name"
-        android:textColor="@color/colorText"
-        android:textSize="14sp" />
-
-    <mehdi.sakout.fancybuttons.FancyButton
-        android:layout_marginTop="4dp"
-        app:layout_constraintTop_toBottomOf="@id/profile_menu_location"
-        app:layout_constraintStart_toStartOf="@id/profile_menu_name"
-        android:id="@+id/profile_menu_modify"
-        fancy:fb_defaultColor="@android:color/transparent"
-        fancy:fb_borderWidth="1dp"
-        fancy:fb_borderColor="@color/colorText"
-        fancy:fb_radius="5dp"
-        fancy:fb_textSize="12sp"
-        fancy:fb_text="Modify your profil"
-        fancy:fb_textColor="@color/colorText"
-        android:paddingVertical="2dp"
-        android:paddingHorizontal="12dp"
-        android:background="@color/colorPrimary"
-        android:textColor="@color/colorText"
-        android:layout_gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        tools:text="Paris, France" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/menu_settings_cv"
@@ -150,8 +135,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
                 android:ellipsize="end"
+                android:maxLines="1"
                 android:text="@string/invite_friends"
                 android:textColor="@color/colorText"
                 android:textSize="16sp"
@@ -163,17 +148,17 @@
     </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.card.MaterialCardView
-        android:visibility="visible"
         android:id="@+id/menu_profile_cv"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="8dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="12dp"
-        app:layout_constraintEnd_toStartOf="@id/menu_preferences_cv"
-        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="visible"
         app:cardCornerRadius="10dp"
         app:layout_constraintEnd_toEndOf="@id/menu_settings_cv"
+        app:layout_constraintEnd_toStartOf="@id/menu_preferences_cv"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/menu_settings_cv">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -213,8 +198,8 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="12dp"
         app:cardCornerRadius="10dp"
-        app:layout_constraintStart_toEndOf="@id/menu_profile_cv"
         app:layout_constraintEnd_toEndOf="@id/menu_invite_friends_cv"
+        app:layout_constraintStart_toEndOf="@id/menu_profile_cv"
         app:layout_constraintTop_toBottomOf="@id/menu_invite_friends_cv">
 
         <androidx.constraintlayout.widget.ConstraintLayout

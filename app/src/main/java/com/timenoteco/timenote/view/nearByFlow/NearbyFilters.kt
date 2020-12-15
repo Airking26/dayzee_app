@@ -74,7 +74,7 @@ class NearbyFilters : Fragment(), View.OnClickListener {
     private val AUTOCOMPLETE_REQUEST_CODE: Int = 12
     private val nearbyViewModel : NearbyViewModel by activityViewModels()
 
-    enum class Type(){
+    enum class Type {
         FROMFOLLOWER,
         NOTFROMFOLLOWER,
         ALL
@@ -178,7 +178,7 @@ class NearbyFilters : Fragment(), View.OnClickListener {
             }*/
             nearby_filter_from -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.from)
-                listItems(null, listOf("Public", "Private", "Public and Private")) { dialog, index, text ->
+                listItems(null, listOf("Public", "Private", "Public and Private")) { _, index, _ ->
                     when(index){
                         0 -> nearbyFilterData.setFrom(Type.NOTFROMFOLLOWER.ordinal)
                         1 -> nearbyFilterData.setFrom(Type.FROMFOLLOWER.ordinal)
@@ -190,28 +190,16 @@ class NearbyFilters : Fragment(), View.OnClickListener {
             nearby_filter_done_btn -> findNavController().navigate(NearbyFiltersDirections.actionNearbyFiltersToNearBy())
             nearby_filter_paid_timenote -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.from)
-                listItems(null, listOf(getString(R.string.free), getString(R.string.paid))) { dialog, index, text ->
+                listItems(null, listOf(getString(R.string.free), getString(R.string.paid))) { _, index, _ ->
                     when(index){
                         0 -> nearbyFilterData.setPaidTimenote(Price(0, ""))
-                        1 -> {
-                            MaterialDialog(
-                                requireContext(),
-                                BottomSheet(LayoutMode.WRAP_CONTENT)
-                            ).show {
-                                title(R.string.max_price)
-                                input(inputType = InputType.TYPE_CLASS_NUMBER) { _, charSequence ->
-                                    nearbyFilterData.setPaidTimenote(Price( charSequence.toString().toInt(), ""))
-                                    lifecycleOwner(this@NearbyFilters)
-                                }
-                                negativeButton(R.string.all){nearbyFilterData.setPaidTimenote(Price(Int.MAX_VALUE, ""))}
-                            }
-                        }
+                        1 -> nearbyFilterData.setPaidTimenote(Price(Int.MAX_VALUE, ""))
                     }
                 }
                 lifecycleOwner(this@NearbyFilters)
             }
             nearby_filter_when -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                datePicker { dialog, datetime ->
+                datePicker { _, datetime ->
                     nearbyFilterData.setWhen(Utils().formatDate(ISO, datetime.time.time))
                 }
             }

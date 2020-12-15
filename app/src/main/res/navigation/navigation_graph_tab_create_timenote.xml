@@ -4,6 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation_graph_tab_5"
     app:startDestination="@id/createTimenote">
+    <fragment
+        android:id="@+id/detailedTimenote"
+        android:name="com.timenoteco.timenote.view.homeFlow.DetailedTimenote"
+        android:label="fragment_detailed_timenote"
+        tools:layout="@layout/fragment_detailed_fragment">
+        <argument
+            android:name="from"
+            app:argType="integer" />
+        <argument
+            android:name="event"
+            app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
+            app:nullable="true" />
+    </fragment>
     <navigation
         android:id="@+id/navigation"
         app:startDestination="@id/login">
@@ -66,9 +79,6 @@
         android:name="com.timenoteco.timenote.view.createTimenoteFlow.CreateTimenote"
         android:label="fragment_create_timenote"
         tools:layout="@layout/fragment_create_timenote" >
-        <action
-            android:id="@+id/action_createTimenote_to_previewTimenoteCreated"
-            app:destination="@id/previewTimenoteCreated" />
         <argument
             android:defaultValue="0"
             android:name="modify"
@@ -88,21 +98,6 @@
             app:argType="integer"
             android:defaultValue="0" />
     </fragment>
-    <fragment
-        android:id="@+id/previewTimenoteCreated"
-        android:name="com.timenoteco.timenote.view.createTimenoteFlow.PreviewTimenoteCreated"
-        android:label="fragment_preview_timenote_created"
-        tools:layout="@layout/fragment_preview_timenote_created" >
-        <argument
-            android:name="from"
-            app:argType="integer"/>
-        <argument
-            android:name="timenoteInfoDTO"
-            app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
-            app:nullable="true" />
-        <argument
-            android:name="modify"
-            app:argType="integer" />
-    </fragment>
     <action android:id="@+id/action_global_navigation" app:destination="@id/navigation" />
+    <action android:id="@+id/action_global_detailedTimenote" app:destination="@id/detailedTimenote" />
 </navigation>

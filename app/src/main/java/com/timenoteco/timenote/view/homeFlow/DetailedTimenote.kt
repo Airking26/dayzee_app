@@ -10,10 +10,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.text.*
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.ViewTreeObserver
+import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -70,6 +67,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     CommentAdapter.CommentMoreListener, UsersPagingAdapter.SearchPeopleListener,
     UsersShareWithPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.AddToSend {
 
+
     private lateinit var imm: InputMethodManager
     private lateinit var goToProfileLisner : GoToProfile
     private var sendTo: MutableList<String> = mutableListOf()
@@ -98,10 +96,13 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     override fun onAttach(context: Context) {
         super.onAttach(context)
         goToProfileLisner = context as GoToProfile
+
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-         inflater.inflate(R.layout.fragment_detailed_fragment, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        return inflater.inflate(R.layout.fragment_detailed_fragment, container, false)
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -272,7 +273,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             } else {
                 if(args.event?.joinedBy?.count!! > 0){
                     addedBy = "Saved by ${args.event?.joinedBy?.count!!} people"
-                    val addedByFormated = SpannableStringBuilder(addedBy)
+                    addedByFormated = SpannableStringBuilder(addedBy)
                     addedByFormated.setSpan(light, 0, 8, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
                     addedByFormated.setSpan(bold, 9, addedBy.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
                     timenote_added_by.text = addedByFormated
@@ -568,14 +569,12 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             listItems (items = listItems){ dialog, index, text ->
                 when(text.toString()){
                     context.getString(R.string.share_to) -> share()
-                    context.getString(R.string.duplicate) -> findNavController().navigate(DetailedTimenoteDirections.actionGlobalCreateTimenote(args.event?.id,
-                        CreationTimenoteDTO(args.event?.createdBy?.id!!, null, args.event?.title!!, args.event?.description, args.event?.pictures,
-                            args.event?.colorHex, args.event?.location, args.event?.category, args.event?.startingAt!!, args.event?.endingAt!!,
-                            args.event?.hashtags, args.event?.url, args.event?.price!!, null)).setFrom(args.from).setModify(1))
-                    context.getString(R.string.edit) -> findNavController().navigate(DetailedTimenoteDirections.actionGlobalCreateTimenote( args.event?.id,
-                        CreationTimenoteDTO(args.event?.createdBy?.id!!, null, args.event?.title!!, args.event?.description, args.event?.pictures,
-                            args.event?.colorHex, args.event?.location, args.event?.category, args.event?.startingAt!!, args.event?.endingAt!!,
-                            args.event?.hashtags, args.event?.url, args.event?.price!!, null)).setFrom(args.from).setModify(2))
+                    context.getString(R.string.duplicate) -> findNavController().navigate(DetailedTimenoteDirections.actionGlobalCreateTimenote().setFrom(args.from).setModify(1).setId(args.event?.id!!).setTimenoteBody(CreationTimenoteDTO(args.event?.createdBy?.id!!, null, args.event?.title!!, args.event?.description, args.event?.pictures,
+                        args.event?.colorHex, args.event?.location, args.event?.category, args.event?.startingAt!!, args.event?.endingAt!!,
+                        args.event?.hashtags, args.event?.url, args.event?.price!!, null)))
+                    context.getString(R.string.edit) -> findNavController().navigate(DetailedTimenoteDirections.actionGlobalCreateTimenote().setFrom(args.from).setModify(2).setId(args.event?.id!!).setTimenoteBody(CreationTimenoteDTO(args.event?.createdBy?.id!!, null, args.event?.title!!, args.event?.description, args.event?.pictures,
+                        args.event?.colorHex, args.event?.location, args.event?.category, args.event?.startingAt!!, args.event?.endingAt!!,
+                        args.event?.hashtags, args.event?.url, args.event?.price!!, null)))
                     context.getString(R.string.report) -> Toast.makeText(
                         requireContext(),
                         "Reported. Thank You.",
