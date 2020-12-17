@@ -193,7 +193,12 @@ class ItemTimenoteAdapter(
                     if (timenote.price.price >= 0 && !timenote.url.isNullOrBlank()) {
                         itemView.timenote_buy_cl.visibility = View.VISIBLE
                         if (timenote.price .price > 0) itemView.timenote_buy.text = timenote.price.price.toString().plus(timenote.price.currency)
+
+                        if(!timenote.urlTitle.isNullOrEmpty() || !timenote.urlTitle.isNullOrBlank()){
+                            itemView.more_label.text = timenote.urlTitle.capitalize()
+                        } else itemView.more_label.text = itemView.resources.getString(R.string.find_out_more)
                     }
+
                 } else {
                     if(isFromFuture && createdBy != timenote.createdBy.id) {
                         if(itemView.timenote_plus.drawable.bytesEqualTo(itemView.context.getDrawable(R.drawable.ic_ajout_cal)) && itemView.timenote_plus.drawable.pixelsEqualTo(itemView.context.getDrawable(R.drawable.ic_ajout_cal))){

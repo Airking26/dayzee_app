@@ -264,6 +264,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     }
 
     override fun onCommentClicked(timenoteInfoDTO: TimenoteInfoDTO) {
+        //findNavController().navigate(HomeDirections.actionGlobalDetailedTimenoteCarousel(1, timenoteInfoDTO))
         findNavController().navigate(HomeDirections.actionGlobalDetailedTimenote(1, timenoteInfoDTO))
     }
 
@@ -386,7 +387,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     override fun onDuplicateClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         findNavController().navigate(HomeDirections.actionGlobalCreateTimenote().setFrom(1).setModify(1).setId(timenoteInfoDTO.id).setTimenoteBody(CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
             timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
-            timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null)))
+            timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null, timenoteInfoDTO.urlTitle)))
     }
 
     override fun onAddressClicked(timenoteInfoDTO: TimenoteInfoDTO) {
@@ -502,7 +503,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     override fun onEditClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         findNavController().navigate(HomeDirections.actionGlobalCreateTimenote().setFrom(1).setModify(2).setId(timenoteInfoDTO.id).setTimenoteBody(CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
             timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
-            timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null)))
+            timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null, timenoteInfoDTO.urlTitle)))
     }
 
     override fun onUnfollow(id: String) {}

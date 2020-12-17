@@ -41,11 +41,11 @@
             android:screenOrientation="portrait"
             android:launchMode="singleTask"
             android:name=".view.MainActivity">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
             <!-- Branch URI scheme -->
             <intent-filter>
                 <data android:scheme="timenote" android:host="open" />

@@ -136,6 +136,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     private lateinit var paidTimenote : CardView
     private lateinit var subcategoryCv : CardView
     private lateinit var picCl: ConstraintLayout
+    private lateinit var labelCv: CardView
     private lateinit var noAnswer: TextView
     private lateinit var vp: ViewPager2
     private lateinit var screenSlideCreationTimenotePagerAdapter: ScreenSlideCreationTimenotePagerAdapter
@@ -302,16 +303,31 @@ class CreateTimenote : Fragment(), View.OnClickListener,
             }*/
         }
         if(it.url.isNullOrBlank()) {
+            url_title_cardview.visibility = View.GONE
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 create_timenote_url_btn.compoundDrawableTintList = ColorStateList.valueOf(resources.getColor(android.R.color.darker_gray))
                 create_timenote_url_btn.setTextColor(resources.getColor(android.R.color.darker_gray))
             }
             create_timenote_url_btn.text = getString(R.string.add_an_url)
         } else {
+            url_title_cardview.visibility = View.VISIBLE
             create_timenote_url_btn.text = it.url
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 create_timenote_url_btn.compoundDrawableTintList = ColorStateList.valueOf(resources.getColor(R.color.colorText))
                 create_timenote_url_btn.setTextColor(resources.getColor(R.color.colorText))
+            }
+            if(it.urlTitle.isNullOrBlank() || it.urlTitle.isNullOrEmpty()){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    create_timenote_url_title_btn.compoundDrawableTintList = ColorStateList.valueOf(resources.getColor(android.R.color.darker_gray))
+                    create_timenote_url_title_btn.setTextColor(resources.getColor(android.R.color.darker_gray))
+                }
+                create_timenote_url_title_btn.text = ""
+            } else {
+                create_timenote_url_title_btn.text = it.urlTitle
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    create_timenote_url_title_btn.compoundDrawableTintList = ColorStateList.valueOf(resources.getColor(R.color.colorText))
+                    create_timenote_url_title_btn.setTextColor(resources.getColor(R.color.colorText))
+                }
             }
         }
         if (it.category == null || it.category?.category.isNullOrEmpty() || it.category?.category.isNullOrBlank()){
@@ -506,6 +522,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         subCatLabelTv = create_timenote_sub_category_label
         catLabelTv = create_timenote_category_label
         paidLabelTv = create_timenote_paid_timenote_label
+        labelCv = url_title_cardview
         picCl = pic_cl
         vp = vp_pic
         if(args.modify == 0) {
@@ -558,6 +575,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         url_cardview.setOnClickListener(this)
         organizers_cv.setOnClickListener(this)
         create_timenote_clear.setOnClickListener(this)
+        url_title_cardview.setOnClickListener(this)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -875,20 +893,22 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                     }
                 }
             }
-            url_cardview -> MaterialDialog(
-                requireContext(),
-                BottomSheet(LayoutMode.WRAP_CONTENT)
-            ).show {
+            url_cardview -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.link)
-                input(allowEmpty = true,
-                    inputType = InputType.TYPE_TEXT_VARIATION_URI,
-                    prefill = creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.url
-                ) { _, charSequence ->
+                input(allowEmpty = true, inputType = InputType.TYPE_TEXT_VARIATION_URI, prefill = creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.url) { _, charSequence ->
                     creationTimenoteViewModel.setUrl(charSequence.toString())
+                    if(charSequence.toString().isNotEmpty() && charSequence.toString().isNotBlank()){
+                        labelCv.visibility = View.VISIBLE
+                    }
                 }
                 lifecycleOwner(this@CreateTimenote)
             }
-
+            url_title_cardview -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                title(R.string.label)
+                input(allowEmpty = true, inputType = InputType.TYPE_CLASS_TEXT, prefill = creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.urlTitle, maxLength = 20){ _, charSequence ->
+                    creationTimenoteViewModel.setUrlTitle(charSequence.toString())
+                }
+            }
             organizers_cv -> createFriendsBottomSheet(2, null)
             create_timenote_clear -> {
                 creationTimenoteViewModel.clear()

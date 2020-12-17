@@ -14,6 +14,7 @@ import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -21,7 +22,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.PagerSnapHelper
+import androidx.recyclerview.widget.SnapHelper
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.WhichButton
@@ -38,6 +42,9 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.*
+import com.timenoteco.timenote.androidView.*
+import com.timenoteco.timenote.androidView.CarouselAdapter
+import com.timenoteco.timenote.androidView.ProminentLayoutManager
 import com.timenoteco.timenote.common.HashTagHelper
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.bytesEqualTo
@@ -52,10 +59,10 @@ import io.branch.indexing.BranchUniversalObject
 import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
 import io.branch.referral.util.LinkProperties
+import kotlinx.android.synthetic.main.activity_grid.*
 import kotlinx.android.synthetic.main.fragment_detailed_fragment.*
 import kotlinx.android.synthetic.main.friends_search_cl.view.*
 import kotlinx.android.synthetic.main.item_timenote_root.*
-import kotlinx.android.synthetic.main.item_timenote_root.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -63,10 +70,14 @@ import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 
 
-class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.CommentPicUserListener,
+class DetailedTimenoteCarousel : Fragment(), View.OnClickListener, CommentAdapter.CommentPicUserListener,
     CommentAdapter.CommentMoreListener, UsersPagingAdapter.SearchPeopleListener,
     UsersShareWithPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.AddToSend {
 
+
+    private lateinit var layoutManager: LinearLayoutManager
+    private lateinit var adapter: CarouselAdapter
+    private lateinit var snapHelper: SnapHelper
 
     private lateinit var imm: InputMethodManager
     private lateinit var goToProfileLisner : GoToProfile
@@ -84,7 +95,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     private val authViewModel: LoginViewModel by activityViewModels()
     private var tokenId: String? = null
     private lateinit var screenSlideCreationTimenotePagerAdapter : ScreenSlideTimenotePagerAdapter
-    private val args : DetailedTimenoteArgs by navArgs()
+    private val args : DetailedTimenoteCarouselArgs by navArgs()
     private val utils = Utils()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,11 +112,60 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
-        return inflater.inflate(R.layout.fragment_detailed_fragment, container, false)
+        return inflater.inflate(R.layout.fragment_detailed_fragment_carousel, container, false)
+    }
+
+    private fun initRecyclerViewPosition(position: Int) {
+        // This initial scroll will be slightly off because it doesn't respect the SnapHelper.
+        // Do it anyway so that the target view is laid out, then adjust onPreDraw.
+        layoutManager.scrollToPosition(position)
+
+        recycler_view.doOnPreDraw {
+            val targetView = layoutManager.findViewByPosition(position) ?: return@doOnPreDraw
+            val distanceToFinalSnap =
+                snapHelper.calculateDistanceToFinalSnap(layoutManager, targetView)
+                    ?: return@doOnPreDraw
+
+            layoutManager.scrollToPositionWithOffset(position, -distanceToFinalSnap[0])
+        }
+    }
+
+    /** Display a random set of images each time */
+    private fun reloadImages() {
+        val images: ArrayList<CarouselImageModel> = ArrayList(CarouselImage.images.shuffled())
+        recycler_view.swapAdapter(GridAdapter(images){_, position ->
+            findNavController().navigate(DetailedTimenoteCarouselDirections.actionGlobalCarouselActivity())
+        }, false)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+
+        with(recycler_view) {
+            layoutManager = this@DetailedTimenoteCarousel.layoutManager
+            //addItemDecoration(GridSpacingDecoration(resources.getDimensionPixelSize(R.dimen.grid_spacing)))
+            reloadImages()
+        }
+
+        /*layoutManager = ProminentLayoutManager(requireContext())
+        adapter = CarouselAdapter(CarouselImage.images)
+        snapHelper = PagerSnapHelper()
+
+        with(recycler_view){
+            setItemViewCacheSize(4)
+            layoutManager = this@DetailedTimenoteCarousel.layoutManager
+            adapter = this@DetailedTimenoteCarousel.adapter
+
+            val spacing = resources.getDimensionPixelSize(R.dimen.carousel_spacing)
+            addItemDecoration(LinearHorizontalSpacingDecoration(spacing))
+            addItemDecoration(BoundsOffsetDecoration())
+
+            snapHelper.attachToRecyclerView(this)
+        }*/
+
+        //initRecyclerViewPosition(0)
 
         imm = (requireActivity().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager)!!
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
@@ -138,11 +198,8 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                 if(i1 == 0){
                 if (args.event?.price?.price!! >= 0 && !args.event?.url.isNullOrBlank()) {
                     timenote_buy_cl.visibility = View.VISIBLE
-                    if (args.event?.price?.price!! > 0) timenote_buy.text = args.event?.price?.price!!.toString().plus(args.event?.price?.currency ?: "$")
-                    if(!args.event?.urlTitle.isNullOrEmpty() || !args.event?.urlTitle.isNullOrBlank()){
-                        more_label.text = args.event?.urlTitle?.capitalize()
-                    } else more_label.text = resources.getString(R.string.find_out_more)
-                } } else {
+                    if (args.event?.price?.price!! > 0) timenote_buy.text = args.event?.price?.price!!.toString().plus(args.event?.price?.currency ?: "$") }
+                } else {
                     if (userInfoDTO.id != args.event?.createdBy?.id) {
                         if (timenote_plus.drawable.bytesEqualTo(resources.getDrawable(R.drawable.ic_ajout_cal)) && timenote_plus.drawable.pixelsEqualTo(
                                 resources.getDrawable(R.drawable.ic_ajout_cal)
@@ -398,7 +455,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                 sendTo.clear()
                 val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
                     customView(R.layout.friends_search_cl)
-                    lifecycleOwner(this@DetailedTimenote)
+                    lifecycleOwner(this@DetailedTimenoteCarousel)
                     positiveButton(R.string.send){
                         timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(args.event?.id!!, sendTo)).observe(viewLifecycleOwner, Observer {
                             if(it.code() == 401) {
@@ -505,7 +562,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             timenote_fl -> {
                 val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
                     customView(R.layout.users_participating)
-                    lifecycleOwner(this@DetailedTimenote)
+                    lifecycleOwner(this@DetailedTimenoteCarousel)
                 }
 
                 val recyclerview = dial.getCustomView().users_participating_rv
@@ -574,10 +631,10 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                     context.getString(R.string.share_to) -> share()
                     context.getString(R.string.duplicate) -> findNavController().navigate(DetailedTimenoteDirections.actionGlobalCreateTimenote().setFrom(args.from).setModify(1).setId(args.event?.id!!).setTimenoteBody(CreationTimenoteDTO(args.event?.createdBy?.id!!, null, args.event?.title!!, args.event?.description, args.event?.pictures,
                         args.event?.colorHex, args.event?.location, args.event?.category, args.event?.startingAt!!, args.event?.endingAt!!,
-                        args.event?.hashtags, args.event?.url, args.event?.price!!, null, args.event?.urlTitle)))
+                        args.event?.hashtags, args.event?.url, args.event?.price!!, null)))
                     context.getString(R.string.edit) -> findNavController().navigate(DetailedTimenoteDirections.actionGlobalCreateTimenote().setFrom(args.from).setModify(2).setId(args.event?.id!!).setTimenoteBody(CreationTimenoteDTO(args.event?.createdBy?.id!!, null, args.event?.title!!, args.event?.description, args.event?.pictures,
                         args.event?.colorHex, args.event?.location, args.event?.category, args.event?.startingAt!!, args.event?.endingAt!!,
-                        args.event?.hashtags, args.event?.url, args.event?.price!!, null, args.event?.urlTitle)))
+                        args.event?.hashtags, args.event?.url, args.event?.price!!, null)))
                     context.getString(R.string.report) -> Toast.makeText(
                         requireContext(),
                         "Reported. Thank You.",
@@ -588,7 +645,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                         dateTimePicker { dialog, datetime ->
 
                         }
-                        lifecycleOwner(this@DetailedTimenote)
+                        lifecycleOwner(this@DetailedTimenoteCarousel)
                     }
                 }
             }
@@ -652,7 +709,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                     ).show()
                 }
             }
-            lifecycleOwner(this@DetailedTimenote)
+            lifecycleOwner(this@DetailedTimenoteCarousel)
         }
     }
 

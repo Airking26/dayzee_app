@@ -224,22 +224,6 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                         utils.showStatusBar(this)
                         bottomNavView.visibility = View.VISIBLE
                     }
-                    /*R.id.createTimenoteSearch ->{
-                        utils.showStatusBar(this)
-                        bottomNavView.visibility = View.GONE
-                    }
-                    R.id.detailedTimenoteSearch -> {
-                        utils.showStatusBar(this)
-                        bottomNavView.visibility = View.GONE
-                    }
-                    R.id.profileSearch -> {
-                        utils.showStatusBar(this)
-                        bottomNavView.visibility = View.VISIBLE
-                    }
-                    R.id.profileCalendarSearch -> {
-                        utils.hideStatusBar(this)
-                        bottomNavView.visibility = View.GONE
-                    }*/
                     R.id.profileCalendar -> {
                         utils.hideStatusBar(this)
                         bottomNavView.visibility = View.GONE

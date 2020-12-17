@@ -183,7 +183,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
         findNavController().navigate(
             SearchDirections.actionGlobalCreateTimenote().setFrom(from!!).setModify(2).setId(timenoteInfoDTO.id).setTimenoteBody(CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
             timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
-            timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null)))
+            timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null, timenoteInfoDTO.urlTitle)))
     }
 
     override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO) {
@@ -221,7 +221,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
     override fun onDuplicateClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         findNavController().navigate(SearchDirections.actionGlobalCreateTimenote().setFrom(from!!).setModify(1).setId(timenoteInfoDTO.id).setTimenoteBody(CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
             timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
-            timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null)))
+            timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null, timenoteInfoDTO.urlTitle)))
     }
 
     override fun onHideToOthersClicked(timenoteInfoDTO: TimenoteInfoDTO) {

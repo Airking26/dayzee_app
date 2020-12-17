@@ -81,6 +81,11 @@ class CreationTimenoteData {
         return timenoteModel
     }
 
+    fun setUrlTitle(urlTitle: String?) : CreationTimenoteDTO{
+        timenoteModel.urlTitle = urlTitle
+        return timenoteModel
+    }
+
     fun clear(): CreationTimenoteDTO {
         timenoteModel = CreationTimenoteDTO(createdBy = "", title = "", startingAt = "", endingAt = "", price = Price(0, ""), pictures = listOf(), hashtags = listOf(), description = "", category = Category("", ""), colorHex = "")
         return timenoteModel

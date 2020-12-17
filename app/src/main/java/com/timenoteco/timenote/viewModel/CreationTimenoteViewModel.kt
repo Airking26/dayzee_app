@@ -36,6 +36,7 @@ class CreationTimenoteViewModel: ViewModel() {
     fun setPrice(price: Price) = timenoteLiveData.postValue(createTimenoteData.setPrice(price))
     fun setHashtags(hashtags: List<String>) = timenoteLiveData.postValue(createTimenoteData.setHashtags(hashtags))
     fun setUrl(url: String) = timenoteLiveData.postValue(createTimenoteData.setUrl(url))
+    fun setUrlTitle(urlTitle : String) = timenoteLiveData.postValue(createTimenoteData.setUrlTitle(urlTitle))
     fun setDescription(description: String) = timenoteLiveData.postValue(createTimenoteData.setDescription(description))
     fun setPicUser(pic: List<String>) = timenoteLiveData.postValue(createTimenoteData.setPic(pic))
     fun setLocation(location: Location) = timenoteLiveData.postValue(createTimenoteData.setPlace(location))

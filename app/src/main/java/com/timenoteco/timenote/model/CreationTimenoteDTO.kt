@@ -6,7 +6,6 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class CreationTimenoteDTO (
-
 	@SerializedName("createdBy") var createdBy : String,
 	@SerializedName("organizers") var organizers : List<String>? = null,
 	@SerializedName("title") var title : String,
@@ -20,5 +19,6 @@ data class CreationTimenoteDTO (
 	@SerializedName("hashtags") var hashtags : List<String>? = null,
 	@SerializedName("url") var url : String? = null,
 	@SerializedName("price") var price : Price,
-	@SerializedName("sharedWith") var sharedWith : List<String>? = null
+	@SerializedName("sharedWith") var sharedWith : List<String>? = null,
+	@SerializedName("urlTitle") var urlTitle: String? = null
 ) : Parcelable
