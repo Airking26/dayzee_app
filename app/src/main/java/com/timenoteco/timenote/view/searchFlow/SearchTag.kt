@@ -217,7 +217,7 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
         findNavController().navigate(SearchDirections.actionGlobalTimenoteTAG(timenoteInfoDTO, hashtag))
     }
 
-    override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO) {
+    override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO, type: Int) {
         share(timenoteInfoDTO)
     }
 

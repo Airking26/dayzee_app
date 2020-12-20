@@ -15,5 +15,4 @@ class AlarmViewModel : ViewModel() {
     fun createAlarm(token: String, alarmCreationDTO: AlarmCreationDTO) = flow { emit(alarmService.createAlarm("Bearer $token", alarmCreationDTO))}.asLiveData(viewModelScope.coroutineContext)
     fun updateAlarm(token: String, id: String, alarmCreationDTO: AlarmCreationDTO) = flow { emit(alarmService.updateAlarm("Bearer $token", id, alarmCreationDTO))}.asLiveData(viewModelScope.coroutineContext)
     fun deleteAlarm(token: String, id: String) = flow { emit(alarmService.deleteAlarm("Bearer $token", id))}.asLiveData(viewModelScope.coroutineContext)
-
 }

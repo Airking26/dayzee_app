@@ -254,4 +254,5 @@ class Signup: Fragment(), View.OnClickListener {
 
         }
     }
+
 }

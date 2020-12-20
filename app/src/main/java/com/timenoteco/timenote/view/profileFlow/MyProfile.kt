@@ -70,7 +70,6 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
                 LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(MyProfileDirections.actionGlobalNavigation())
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> {
                     tokenId = prefs.getString(accessToken, null)
-                    val o = arguments
                     if(arguments == null || arguments?.isEmpty!!) findNavController().popBackStack(R.id.myProfile, false)
                     else arguments.let { bundle ->
                         if(!bundle?.getString("type").isNullOrBlank())

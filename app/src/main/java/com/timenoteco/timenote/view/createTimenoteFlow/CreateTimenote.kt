@@ -54,6 +54,7 @@ import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
 import com.afollestad.materialdialogs.list.listItemsMultiChoice
 import com.amazonaws.auth.BasicAWSCredentials
+import com.amazonaws.auth.CognitoCachingCredentialsProvider
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
@@ -117,12 +118,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     private var visibilityTimenote: Int = -1
     private var startDateDisplayed: String? = null
     private var endDateDisplayed: String? = null
-    val amazonClient = AmazonS3Client(
-        BasicAWSCredentials(
-            "AKIA5JWTNYVYJQIE5GWS",
-            "pVf9Wxd/rK4r81FsOsNDaaOJIKE5AGbq96Lh4RB9"
-        )
-    )
+    private lateinit var am : AmazonS3Client
     private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
     private lateinit var args : CreateTimenoteArgs
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
@@ -234,6 +230,11 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         inflater.inflate(R.layout.fragment_create_timenote, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        am = AmazonS3Client(CognitoCachingCredentialsProvider(
+            requireContext(),
+            "us-east-1:a1e54ce4-a26d-44b1-83ea-9ca1d0d7903a", // ID du groupe d'identités
+            Regions.US_EAST_1 // Région
+        ))
         try {
             args = navArgs<CreateTimenoteArgs>().value
         } catch (i : InvocationTargetException){
@@ -1249,15 +1250,15 @@ class CreateTimenote : Fragment(), View.OnClickListener,
 
     @RequiresApi(Build.VERSION_CODES.N)
     fun pushPic(file: File){
-        amazonClient.setRegion(Region.getRegion(Regions.EU_WEST_3))
-        val transferUtiliy = TransferUtility(amazonClient, requireContext())
+        //amazonClient.setRegion(Region.getRegion(Regions.EU_WEST_3))
+        val transferUtiliy = TransferUtility(am, requireContext())
         val key = "timenote/${UUID.randomUUID().mostSignificantBits}"
         val transferObserver = transferUtiliy.upload("timenote-dev-images", key, file, CannedAccessControlList.Private)
         transferObserver.setTransferListener(object : TransferListener {
             override fun onStateChanged(id: Int, state: TransferState?) {
                 if (state == TransferState.COMPLETED) {
                     imagesUrl.add(
-                        amazonClient.getResourceUrl("timenote-dev-images", key).toString()
+                        am.getResourceUrl("timenote-dev-images", key).toString()
                     )
                     if (images?.size == imagesUrl.size) {
                         creationTimenoteViewModel.setPicUser(imagesUrl)
@@ -1276,6 +1277,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
             }
 
             override fun onError(id: Int, ex: java.lang.Exception?) {
+                val k = ex?.message
             }
 
         })

@@ -423,7 +423,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     override fun onEditClicked(timenoteInfoDTO: TimenoteInfoDTO) {
     }
 
-    override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO) {
+    override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO, type: Int) {
         share(timenoteInfoDTO)
     }
 

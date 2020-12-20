@@ -65,6 +65,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     private val TRIGGER_AUTO_COMPLETE = 200
     private val AUTO_COMPLETE_DELAY: Long = 200
     private val loginViewModel: LoginViewModel by activityViewModels()
+    private val alarmViewModel: AlarmViewModel by activityViewModels()
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
     private val followViewModel: FollowViewModel by activityViewModels()
     private val meViewModel : MeViewModel by activityViewModels()
@@ -114,8 +115,10 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
     override fun onResume() {
         super.onResume()
-        if(tokenId != null)
+        if(tokenId != null) {
+            tokenId = prefs.getString(accessToken, null)
             retrieveCurrentRegistrationToken(prefs.getString(accessToken, null)!!)
+        }
         when(loginViewModel.getAuthenticationState().value){
             LoginViewModel.AuthenticationState.GUEST -> loginViewModel.markAsUnauthenticated()
             LoginViewModel.AuthenticationState.UNAUTHENTICATED -> loginViewModel.markAsUnauthenticated()
@@ -146,6 +149,9 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     @ExperimentalPagingApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if(tokenId != null) {
+
+            if(prefs.getString("alarms", null)== null) getAlarms()
+
             val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
             userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
 
@@ -162,6 +168,22 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
             home_future_timeline.setOnClickListener(this)
         }
 
+    }
+
+    private fun getAlarms() {
+        alarmViewModel.getAlarms(tokenId!!).observe(viewLifecycleOwner, Observer {
+            if (it.code() == 401) {
+                loginViewModel.refreshToken(prefs)
+                    .observe(viewLifecycleOwner, Observer { newAccessToken ->
+                        tokenId = newAccessToken
+                        alarmViewModel.getAlarms(tokenId!!)
+                            .observe(viewLifecycleOwner, Observer { lst ->
+                                prefs.edit().putString("alarms", Gson().toJson(lst.body())).apply()
+                            })
+                    })
+            }
+            prefs.edit().putString("alarms", Gson().toJson(it.body())).apply()
+        })
     }
 
     @ExperimentalPagingApi
@@ -353,7 +375,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         })
     }
 
-    override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO) {
+    override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO, type: Int) {
         share(timenoteInfoDTO)
     }
 

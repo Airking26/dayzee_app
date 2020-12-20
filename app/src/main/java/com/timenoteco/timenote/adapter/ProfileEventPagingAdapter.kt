@@ -21,6 +21,7 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.ItemProfileCardListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
+import com.timenoteco.timenote.model.AlarmInfoDTO
 import com.timenoteco.timenote.model.TimenoteInfoDTO
 import kotlinx.android.synthetic.main.item_profile_timenote_list_style.view.*
 import java.text.SimpleDateFormat
@@ -29,7 +30,7 @@ import java.util.*
 class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<TimenoteInfoDTO>,
                                 private val timenoteOptionsListener: TimenoteOptionsListener,
                                 private val onCardClicked: ItemProfileCardListener,
-                                private val isMine: String?, private val isUpcoming: Boolean)
+                                private val isMine: String?, private val isUpcoming: Boolean, private val listOfAlarms: MutableList<AlarmInfoDTO>)
     : PagingDataAdapter<TimenoteInfoDTO, RecyclerView.ViewHolder>(diffUtilCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -43,7 +44,7 @@ class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<Timenote
                 getItem(position)!!,
                 timenoteOptionsListener,
                 onCardClicked,
-                isMine, isUpcoming)
+                isMine, isUpcoming, listOfAlarms)
     }
 
 
@@ -55,7 +56,14 @@ class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<Timenote
 
 class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
     @RequiresApi(Build.VERSION_CODES.O)
-    fun bindListStyleItem(event: TimenoteInfoDTO, timenoteOptionsListener: TimenoteOptionsListener, onCardClicked: ItemProfileCardListener, isMine: String?, isUpcoming: Boolean) {
+    fun bindListStyleItem(
+        event: TimenoteInfoDTO,
+        timenoteOptionsListener: TimenoteOptionsListener,
+        onCardClicked: ItemProfileCardListener,
+        isMine: String?,
+        isUpcoming: Boolean,
+        listOfAlarms: MutableList<AlarmInfoDTO>
+    ) {
         val DATE_FORMAT_DAY_AND_TIME = "EEE, d MMM yyyy hh:mm aaa"
         val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
@@ -68,12 +76,17 @@ class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         itemView.profile_item_date_event.text = if(isUpcoming) Utils().inTime(event.startingAt) else Utils().sinceTime(event.endingAt)
         itemView.profile_item_date_event.setOnClickListener {
             if(itemView.profile_item_date_event.text.contains("In") || itemView.profile_item_date_event.text.contains("Since")){
-                itemView.profile_item_date_event.text = SimpleDateFormat(DATE_FORMAT_DAY_AND_TIME, Locale.getDefault()).format(SimpleDateFormat(ISO, Locale.getDefault()).parse(event.startingAt).time)
+                val o = SimpleDateFormat(ISO)
+                o.timeZone = TimeZone.getTimeZone("UTC")
+                val m = o.parse(event.startingAt)
+                o.timeZone = TimeZone.getDefault()
+                val k = o.format(m)
+                itemView.profile_item_date_event.text = SimpleDateFormat(DATE_FORMAT_DAY_AND_TIME, Locale.getDefault()).format(m.time)
             } else {
                 itemView.profile_item_date_event.text = if(isUpcoming) Utils().inTime(event.startingAt) else Utils().sinceTime(event.endingAt)
             }
         }
-        itemView.profile_item_options.setOnClickListener { createOptionsOnTimenote(itemView.context, isMine, timenoteOptionsListener, event) }
+        itemView.profile_item_options.setOnClickListener { createOptionsOnTimenote(itemView.context, isMine, timenoteOptionsListener, event, listOfAlarms) }
         if(!event.pictures.isNullOrEmpty()) {
             Glide
                 .with(itemView)
@@ -90,22 +103,61 @@ class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
             .placeholder(R.drawable.circle_pic)
             .into(itemView.profile_item_pic_profile_imageview)
     }
-    private fun createOptionsOnTimenote(context: Context, isMine: String?, timenoteListenerListener: TimenoteOptionsListener, event: TimenoteInfoDTO){
+    private fun createOptionsOnTimenote(
+        context: Context,
+        isMine: String?,
+        timenoteListenerListener: TimenoteOptionsListener,
+        event: TimenoteInfoDTO,
+        listOfAlarms: MutableList<AlarmInfoDTO>
+    ){
         val dateFormat = SimpleDateFormat("dd.MM.yyyy")
         val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
-        val listItems: MutableList<String> =
-            if(isMine!! == event.createdBy.id) mutableListOf(context.getString(R.string.duplicate), context.getString(
-                R.string.edit), context.getString(R.string.delete), context.getString(R.string.alarm))
-            else mutableListOf(context.getString(R.string.duplicate), context.getString(R.string.alarm), context.getString(R.string.report), context.getString(
-                R.string.hide_to_others))
+        var li: MutableList<String> = mutableListOf()
+
+        if(listOfAlarms.isEmpty()){
+            li = if (isMine!! == event.createdBy.id) {
+                mutableListOf(context.getString(R.string.duplicate),  context.getString(R.string.create_alarm), context.getString(
+                    R.string.edit), context.getString(R.string.delete))
+            } else {
+                mutableListOf(context.getString(R.string.duplicate), context.getString(R.string.create_alarm), context.getString(R.string.report), context.getString(
+                    R.string.hide_to_others))
+            }
+        }
+
+        for(alrm in listOfAlarms){
+            if(alrm.timenote == event.id) {
+                if(isMine!! == event.createdBy.id){
+                    li = mutableListOf(context.getString(R.string.duplicate), context.getString(R.string.update_alarm), context.getString(R.string.delete_alarm), context.getString(R.string.edit), context.getString(R.string.delete))
+                    break
+                } else {
+                    li = mutableListOf(context.getString(R.string.duplicate), context.getString(R.string.update_alarm),  context.getString(R.string.delete_alarm),context.getString(R.string.report), context.getString(R.string.hide_to_others))
+                    break
+                }
+            } else {
+                li = if (isMine!! == event.createdBy.id) {
+                    mutableListOf(context.getString(R.string.duplicate),  context.getString(R.string.create_alarm), context.getString(
+                        R.string.edit), context.getString(R.string.delete))
+                } else {
+                    mutableListOf(context.getString(R.string.duplicate), context.getString(R.string.create_alarm), context.getString(R.string.report), context.getString(
+                        R.string.hide_to_others))
+                }
+            }
+        }
+
+        listOfAlarms.forEach { alrm ->
+
+        }
+
         MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             title(text = "Posted : " + dateFormat.format(SimpleDateFormat(ISO).parse(event.createdAt).time))
-            listItems (items = listItems){ _, _, text ->
+            listItems (items = li){ _, _, text ->
                 when(text.toString()){
                     context.getString(R.string.duplicate) -> timenoteListenerListener.onDuplicateClicked(event)
                     context.getString(R.string.edit) -> timenoteListenerListener.onEditClicked(event)
                     context.getString(R.string.report) -> timenoteListenerListener.onReportClicked(event)
-                    context.getString(R.string.alarm) -> timenoteListenerListener.onAlarmClicked(event)
+                    context.getString(R.string.create_alarm) -> timenoteListenerListener.onAlarmClicked(event, 0)
+                    context.getString(R.string.update_alarm) -> timenoteListenerListener.onAlarmClicked(event, 1)
+                    context.getString(R.string.delete_alarm) -> timenoteListenerListener.onAlarmClicked(event, 2)
                     context.getString(R.string.delete) -> timenoteListenerListener.onDeleteClicked(event)
                     context.getString(R.string.hide_to_others) -> timenoteListenerListener.onHideToOthersClicked(event)
                 }

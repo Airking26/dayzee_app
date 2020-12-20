@@ -362,7 +362,7 @@ class ItemTimenoteAdapter(
                     when(text.toString()){
                         context.getString(R.string.duplicate) -> timenoteListenerListener.onDuplicateClicked(timenote)
                         context.getString(R.string.report) -> timenoteListenerListener.onReportClicked(timenote)
-                        context.getString(R.string.share_to) -> timenoteListenerListener.onAlarmClicked(timenote)
+                        context.getString(R.string.share_to) -> timenoteListenerListener.onAlarmClicked(timenote, 0)
                         context.getString(R.string.edit) -> timenoteListenerListener.onEditClicked(timenote)
                         context.getString(R.string.delete)  -> timenoteListenerListener.onDeleteClicked(timenote)
                     }

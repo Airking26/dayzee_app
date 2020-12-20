@@ -73,63 +73,6 @@ import kotlin.math.abs
 class Utils {
 
 
-    fun placePicker(context: Context, lifecycleOwner: LifecycleOwner, textView: TextView, placePickerListener: PlacePickerListener, fromNearby: Boolean, activity: Activity){
-        val places : MutableList<Address> = mutableListOf()
-        val TRIGGER_AUTO_COMPLETE = 500
-        val AUTO_COMPLETE_DELAY: Long = 500
-        lateinit var handler: Handler
-
-        val dialog = MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-            title(R.string.where)
-            onDismiss {if(fromNearby) hideStatusBar(activity)}
-            customView(R.layout.autocomplete_search_address, scrollable = true, horizontalPadding = true)
-            positiveButton(R.string.done)
-            lifecycleOwner(lifecycleOwner)
-        }
-        val customView = dialog.getCustomView()
-        val autoCompleteTextView = customView.autocompleteTextview_Address as AutoCompleteTextView
-        val geocoder = Geocoder(context)
-        val autocompleteAdapter = AutoSuggestAdapter(context, android.R.layout.simple_dropdown_item_1line)
-        autoCompleteTextView.threshold = 3
-        autoCompleteTextView.setAdapter(autocompleteAdapter)
-        autoCompleteTextView.setOnItemClickListener { parent, view, position, id ->
-            dialog.dismiss()
-            placePickerListener.onPlacePicked(autocompleteAdapter.getObject(position))
-            textView.text = autocompleteAdapter.getObject(position).getAddressLine(0)
-        }
-        handler = Handler(Handler.Callback { msg ->
-            if (msg.what == TRIGGER_AUTO_COMPLETE) {
-                if (!TextUtils.isEmpty(autoCompleteTextView.text)) {
-                    places.clear()
-                    val i = geocoder.getFromLocationName(autoCompleteTextView.text.toString(), 3)
-                    if(!i.isNullOrEmpty()){
-                        for(y in i){
-                            //val city: String = y.locality ?: ""
-                            //val country: String = y.countryName ?: ""
-                            val address: String = y.getAddressLine(0) ?: ""
-                            val latLong: LatLng = LatLng(y.latitude, y.longitude)
-                            places.add(y)
-                        }
-                        autocompleteAdapter.setData(places)
-                        autocompleteAdapter.notifyDataSetChanged()
-                    }
-                }
-            }
-            false;
-        })
-        autoCompleteTextView.addTextChangedListener(object: TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-            }
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                handler.removeMessages(TRIGGER_AUTO_COMPLETE);
-                handler.sendEmptyMessageDelayed(TRIGGER_AUTO_COMPLETE, AUTO_COMPLETE_DELAY);
-            }
-
-        })
-    }
-
     fun picturePickerTimenote(context: Context, resources: Resources, view: View, view1: View, fragment: Fragment, webSearchViewModel: WebSearchViewModel) {
         val PERMISSIONS_STORAGE = arrayOf(
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -235,24 +178,6 @@ class Utils {
             .autoHideToolbarOnSingleTap(true)
             .forResult(112)
     }
-
-    /*fun createPictureSingleBS(childFragmentManager: FragmentManager, tag: String){
-        BSImagePicker.Builder("com.timenoteco.timenote.fileprovider")
-            .setSpanCount(3)
-            .useFrontCamera()
-            .setTag(tag)
-            .build()
-            .show(childFragmentManager, "")
-    }
-
-    fun createPictureMultipleBS(childFragmentManager: FragmentManager, tag: String){
-        BSImagePicker.Builder("com.timenoteco.timenote.fileprovider")
-            .isMultiSelect
-            .setSpanCount(3)
-            .setTag(tag)
-            .build()
-            .show(childFragmentManager, "")
-    }*/
 
     fun hideStatusBar(activity: Activity){
         activity.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_IMMERSIVE
@@ -392,13 +317,25 @@ class Utils {
         val starting = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Instant.parse(startDate).epochSecond * 1000
         } else {
-            SimpleDateFormat(ISO, Locale.getDefault()).parse(startDate).time
+            val o = SimpleDateFormat(ISO)
+            o.timeZone = TimeZone.getTimeZone("UTC")
+            val m = o.parse(startDate)
+            o.timeZone = TimeZone.getDefault()
+            val k = o.format(m)
+            val c = SimpleDateFormat(ISO, Locale.getDefault()).parse(k).time
+            val ds = SimpleDateFormat(ISO, Locale.getDefault()).parse(startDate).time
+            SimpleDateFormat(ISO, Locale.getDefault()).parse(k).time
         }
 
         val ending = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Instant.parse(endDate).epochSecond * 1000
         } else {
-            SimpleDateFormat(ISO, Locale.getDefault()).parse(endDate).time
+            val o = SimpleDateFormat(ISO)
+            o.timeZone = TimeZone.getTimeZone("UTC")
+            val m = o.parse(endDate)
+            o.timeZone = TimeZone.getDefault()
+            val k = o.format(m)
+            SimpleDateFormat(ISO, Locale.getDefault()).parse(k).time
         }
 
 
@@ -459,13 +396,24 @@ class Utils {
         val starting = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Instant.parse(startDate).epochSecond * 1000
         } else {
-            SimpleDateFormat(ISO, Locale.getDefault()).parse(startDate).time
+            val o = SimpleDateFormat(ISO)
+            o.timeZone = TimeZone.getTimeZone("UTC")
+            val m = o.parse(startDate)
+            o.timeZone = TimeZone.getDefault()
+            val k = o.format(m)
+            SimpleDateFormat(ISO, Locale.getDefault()).parse(k).time
+            //SimpleDateFormat(ISO, Locale.getDefault()).parse(startDate).time
         }
 
         val ending = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Instant.parse(endDate).epochSecond * 1000
         } else {
-            SimpleDateFormat(ISO, Locale.getDefault()).parse(endDate).time
+            val o = SimpleDateFormat(ISO)
+            o.timeZone = TimeZone.getTimeZone("UTC")
+            val m = o.parse(endDate)
+            o.timeZone = TimeZone.getDefault()
+            val k = o.format(m)
+            SimpleDateFormat(ISO, Locale.getDefault()).parse(k).time
         }
         formatedEndDate =
             if(formatDate(DATE_FORMAT_DAY, starting) == formatDate(DATE_FORMAT_DAY, ending)){
@@ -487,7 +435,12 @@ class Utils {
         val starting = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Instant.parse(startDate).epochSecond * 1000
         } else {
-            SimpleDateFormat(ISO, Locale.getDefault()).parse(startDate).time
+            val o = SimpleDateFormat(ISO)
+            o.timeZone = TimeZone.getTimeZone("UTC")
+            val m = o.parse(startDate)
+            o.timeZone = TimeZone.getDefault()
+            val k = o.format(m)
+            SimpleDateFormat(ISO, Locale.getDefault()).parse(k).time
         }
         return formatDate(YEAR, starting)
     }
@@ -526,7 +479,7 @@ class Utils {
             nbrYear = c.get(Calendar.YEAR) - 1970
             nbrMonth = c.get(Calendar.MONTH)
             nbrDay = c.get(Calendar.DAY_OF_MONTH) - 1
-            nbrHours = c.get(Calendar.HOUR)
+            nbrHours = c.get(Calendar.HOUR) + 12
             nbrMin = c.get(Calendar.MINUTE)
         }
 

@@ -61,6 +61,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
+import java.util.*
 
 
 class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.CommentPicUserListener,
@@ -195,10 +196,8 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             else timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal))
 
             timenote_year.text = utils.setYear(args.event?.startingAt!!)
-            timenote_day_month.text =
-                utils.setFormatedStartDate(args.event?.startingAt!!, args.event?.endingAt!!)
-            timenote_time.text =
-                utils.setFormatedEndDate(args.event?.startingAt!!, args.event?.endingAt!!)
+            timenote_day_month.text = utils.setFormatedStartDate(args.event?.startingAt!!, args.event?.endingAt!!)
+            timenote_time.text = utils.setFormatedEndDate(args.event?.startingAt!!, args.event?.endingAt!!)
 
             var addedBy = ""
             var addedByFormated = SpannableStringBuilder(addedBy)
@@ -558,7 +557,12 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         timenote_time.visibility = View.INVISIBLE
         timenote_year.visibility = View.INVISIBLE
         timenote_in_label.visibility = View.VISIBLE
-        if (SimpleDateFormat(ISO).parse(timenote.endingAt).time > System.currentTimeMillis()) timenote_in_label.text = utils.inTime(timenote.startingAt)
+        val o = SimpleDateFormat(ISO)
+        o.timeZone = TimeZone.getTimeZone("UTC")
+        val m = o.parse(timenote.endingAt)
+        o.timeZone = TimeZone.getDefault()
+        val k = o.format(m)
+        if (SimpleDateFormat(ISO, Locale.getDefault()).parse(k).time > System.currentTimeMillis()) timenote_in_label.text = utils.inTime(timenote.startingAt)
         else timenote_in_label.text = utils.sinceTime(timenote.endingAt)
     }
 

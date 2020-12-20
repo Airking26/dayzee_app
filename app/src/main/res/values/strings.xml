@@ -279,4 +279,9 @@
     <string name="add_a_label_to_appear">Add a label to appear</string>
     <string name="label">Label</string>
     <string name="find_out_more">Find out more</string>
+    <string name="create_alarm">Create Alarm</string>
+    <string name="update_alarm">Update Alarm</string>
+    <string name="delete_alarm">Delete Alarm</string>
+    <string name="discover">Discover</string>
+    <string name="friends">Friends</string>
 </resources>

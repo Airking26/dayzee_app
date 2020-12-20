@@ -128,21 +128,7 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
 
 
 
-    override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-            dateTimePicker { dialog, datetime ->
-                alarmViewModel.createAlarm(tokenId!!, AlarmCreationDTO(timenoteInfoDTO.createdBy.id!!, timenoteInfoDTO.id, SimpleDateFormat(ISO).format(datetime.time.time))).observe(viewLifecycleOwner, Observer {
-                    if(it.code() == 401){
-                        authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
-                            tokenId = newAccessToken
-                            alarmViewModel.createAlarm(tokenId!!, AlarmCreationDTO(timenoteInfoDTO.createdBy.id!!, timenoteInfoDTO.id, SimpleDateFormat(ISO).format(datetime.time.time)))
-                        })
-                    }
-                })
-            }
-            lifecycleOwner(this@TimenoteAddress)
-        }
-    }
+    override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO, type: Int) {}
     override fun onDuplicateClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         findNavController().navigate(TimenoteAddressDirections.actionGlobalCreateTimenote().setFrom(args.from).setModify(1).setId(timenoteInfoDTO.id).setTimenoteBody(CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
             timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,

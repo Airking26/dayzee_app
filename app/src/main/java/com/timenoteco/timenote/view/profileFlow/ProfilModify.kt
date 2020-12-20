@@ -40,6 +40,7 @@ import com.afollestad.materialdialogs.datetime.datePicker
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
 import com.amazonaws.auth.BasicAWSCredentials
+import com.amazonaws.auth.CognitoCachingCredentialsProvider
 import com.amazonaws.mobile.client.AWSMobileClient
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
@@ -96,12 +97,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
 
     private lateinit var profilModifyModel: UserInfoDTO
     private var imagesUrl: String = ""
-    val amazonClient = AmazonS3Client(
-        BasicAWSCredentials(
-            "AKIA5JWTNYVYJQIE5GWS",
-            "pVf9Wxd/rK4r81FsOsNDaaOJIKE5AGbq96Lh4RB9"
-        )
-    )
+    private lateinit var am : AmazonS3Client
     private lateinit var prefs : SharedPreferences
     private val AUTOCOMPLETE_REQUEST_CODE: Int = 12
     private lateinit var profileModifyPicIv : ImageView
@@ -156,6 +152,13 @@ class ProfilModify: Fragment(), View.OnClickListener,
     @SuppressLint("RestrictedApi")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        am = AmazonS3Client(
+            CognitoCachingCredentialsProvider(
+            requireContext(),
+            "us-east-1:a1e54ce4-a26d-44b1-83ea-9ca1d0d7903a", // ID du groupe d'identités
+            Regions.US_EAST_1 // Région
+        )
+        )
         utils = Utils()
         profileModifyPb = profile_modify_pb
         profileModifyPicIv = profile_modify_pic_imageview
@@ -637,8 +640,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
     }
 
     fun pushPic(file: File, bitmap: Bitmap){
-        amazonClient.setRegion(Region.getRegion(Regions.EU_WEST_3))
-        val transferUtiliy = TransferUtility(amazonClient, requireContext())
+        val transferUtiliy = TransferUtility(am, requireContext())
         compressFile(file, bitmap)
         val key = "timenote/${UUID.randomUUID().mostSignificantBits}"
         val transferObserver = transferUtiliy.upload(
@@ -651,7 +653,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
                 if (state == TransferState.COMPLETED) {
                     profileModifyPb.visibility = View.GONE
                     profileModifyPicIv.visibility = View.VISIBLE
-                    imagesUrl = amazonClient.getResourceUrl("timenote-dev-images", key).toString()
+                    imagesUrl = am.getResourceUrl("timenote-dev-images", key).toString()
                     profileModifyData.setPicture(imagesUrl)
                 }
 

@@ -42,6 +42,7 @@ import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.view.homeFlow.HomeDirections
 import com.timenoteco.timenote.view.searchFlow.SearchDirections
 import com.timenoteco.timenote.viewModel.*
+import com.timenoteco.timenote.webService.service.AlarmData
 import kotlinx.android.synthetic.main.fragment_profile_future_events.*
 import kotlinx.android.synthetic.main.friends_search_cl.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
@@ -79,6 +80,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
     private val alarmViewModel: AlarmViewModel by activityViewModels()
     private val authViewModel: LoginViewModel by activityViewModels()
     private var profileEventPagingAdapter : ProfileEventPagingAdapter? = null
+    private lateinit var listOfAlarms: AlarmData
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,6 +106,8 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
 
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
         userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
+
+        listOfAlarms = AlarmData(requireContext())
 
         val profileFilterChipAdapter = ProfileFilterChipAdapter(listOf("My Timenotes", "The Joined", "With Alarm", "Group Related"), this)
         profile_filter_rv_chips_in_rv.apply {
@@ -132,7 +136,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
             this,
             this,
             userInfoDTO.id,
-            isFuture)
+            isFuture, listOfAlarms.getAlarms())
         profile_rv.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = profileEventPagingAdapter
@@ -186,8 +190,25 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
             timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null, timenoteInfoDTO.urlTitle)))
     }
 
-    override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+    override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO, type: Int) {
+        if(type == 2) alarmViewModel.deleteAlarm(tokenId!!, listOfAlarms.getAlarms().find { alr -> alr.timenote == timenoteInfoDTO.id }?.id!!).observe(viewLifecycleOwner, Observer {
+            if(it.code() == 401){
+                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
+                    tokenId = newAccessToken
+                    if(type == 2) alarmViewModel.deleteAlarm(tokenId!!, listOfAlarms.getAlarms().find { alr -> alr.timenote == timenoteInfoDTO.id }?.id!!).observe(viewLifecycleOwner, Observer {rsp ->
+                        if(rsp.isSuccessful){
+                            listOfAlarms.deleteAlarm(listOfAlarms.getAlarms().find { alr -> alr.timenote == timenoteInfoDTO.id }?.id!!)
+                            Toast.makeText(requireContext(), "Alarm Deleted", Toast.LENGTH_SHORT).show()}
+                    })
+
+                })
+            }
+
+            if(it.isSuccessful){
+                listOfAlarms.deleteAlarm(listOfAlarms.getAlarms().find { alr -> alr.timenote == timenoteInfoDTO.id }?.id!!)
+                Toast.makeText(requireContext(), "Alarm Deleted", Toast.LENGTH_SHORT).show()
+            }
+        }) else if(type == 0) MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             val cal = Calendar.getInstance()
             cal.timeInMillis = SimpleDateFormat(ISO, Locale.getDefault()).parse(timenoteInfoDTO.startingAt).time
             dateTimePicker (currentDateTime = cal) { _, datetime ->
@@ -195,12 +216,55 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
                     if(it.code() == 401){
                         authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
                             tokenId = newAccessToken
-                            alarmViewModel.createAlarm(tokenId!!, AlarmCreationDTO(timenoteInfoDTO.createdBy.id!!, timenoteInfoDTO.id, SimpleDateFormat(ISO).format(datetime.time.time)))
+                            alarmViewModel.createAlarm(tokenId!!, AlarmCreationDTO(timenoteInfoDTO.createdBy.id!!, timenoteInfoDTO.id, SimpleDateFormat(ISO).format(datetime.time.time))).observe(viewLifecycleOwner, Observer {rsp ->
+                                if(rsp.isSuccessful) {
+                                    listOfAlarms.addAlarm(rsp.body()!!)
+
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Alarm Created",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                        .show()
+                                }
+                            })
                         })
+                    } else if(it.isSuccessful) {
+
+                        listOfAlarms.addAlarm(it.body()!!)
+
+                        Toast.makeText(
+                            requireContext(),
+                            "Alarm Created",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 })
             }
             lifecycleOwner(this@ProfileEvents)
+        } else {
+            MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                val cal = Calendar.getInstance()
+                cal.timeInMillis = SimpleDateFormat(ISO, Locale.getDefault()).parse(timenoteInfoDTO.startingAt).time
+                dateTimePicker (currentDateTime = cal) { _, datetime ->
+                    alarmViewModel.updateAlarm(tokenId!!, timenoteInfoDTO.id, AlarmCreationDTO(timenoteInfoDTO.createdBy.id!!, timenoteInfoDTO.id, SimpleDateFormat(ISO).format(datetime.time.time))).observe(viewLifecycleOwner, Observer {
+                        if(it.code() == 401){
+                            authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
+                                tokenId = newAccessToken
+                                alarmViewModel.updateAlarm(tokenId!!,timenoteInfoDTO.id, AlarmCreationDTO(timenoteInfoDTO.createdBy.id!!, timenoteInfoDTO.id, SimpleDateFormat(ISO).format(datetime.time.time))).observe(viewLifecycleOwner, Observer {rsp ->
+                                    if(rsp.isSuccessful){
+                                        listOfAlarms.updateAlarm(timenoteInfoDTO.id, rsp.body()!!)
+                                        Toast.makeText(requireContext(), "Alarm Updated", Toast.LENGTH_SHORT).show()
+                                    }
+                                })
+                            })
+                        } else if(it.isSuccessful) {
+                            listOfAlarms.updateAlarm(timenoteInfoDTO.id, it.body()!!)
+                            Toast.makeText(requireContext(), "Alarm Updated", Toast.LENGTH_SHORT).show()}
+                    })
+                }
+                lifecycleOwner(this@ProfileEvents)
+            }
         }
     }
 

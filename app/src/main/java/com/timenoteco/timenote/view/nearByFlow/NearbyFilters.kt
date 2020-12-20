@@ -127,10 +127,10 @@ class NearbyFilters : Fragment(), View.OnClickListener {
             val nearbyModifyModel : NearbyRequestBody? = Gson().fromJson<NearbyRequestBody>(prefs.getString("nearby", null), type)
             if(nearbyModifyModel?.categories?.isNullOrEmpty()!!) nearby_filter_category_tv.text = getString(R.string.none) else nearby_filter_category_tv.text = nearbyModifyModel.categories?.get(0)!!.subcategory
             when (nearbyModifyModel.type) {
-                Type.ALL.ordinal -> nearby_filter_from_tv.text = getString(R.string.public_and_private)
-                Type.FROMFOLLOWER.ordinal -> nearby_filter_from_tv.text = getString(R.string.private_label)
-                Type.NOTFROMFOLLOWER.ordinal -> nearby_filter_from_tv.text = getString(R.string.public_label)
-                else -> nearby_filter_from_tv.text = getString(R.string.public_label)
+                Type.ALL.ordinal -> nearby_filter_from_tv.text = getString(R.string.all)
+                Type.FROMFOLLOWER.ordinal -> nearby_filter_from_tv.text = getString(R.string.friends)
+                Type.NOTFROMFOLLOWER.ordinal -> nearby_filter_from_tv.text = getString(R.string.discover)
+                else -> nearby_filter_from_tv.text = getString(R.string.discover)
             }
             when(nearbyModifyModel.price.price){
                 0 -> nearby_filter_paid_timenote_tv.text = getString(R.string.free)
@@ -139,7 +139,7 @@ class NearbyFilters : Fragment(), View.OnClickListener {
             }
             when(nearbyModifyModel.maxDistance){
                 in 1..250 -> nearby_distance_seekbar.setProgress(nearbyModifyModel.maxDistance.toFloat())
-                else -> nearby_distance_seekbar.setProgress(1F)
+                else -> nearby_distance_seekbar.setProgress(10F)
             }
             if(nearbyModifyModel.date.isBlank()) nearby_filter_when_tv.text = SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis()) else nearby_filter_when_tv.text = SimpleDateFormat(DATE_FORMAT, Locale.getDefault()).format(SimpleDateFormat(ISO, Locale.getDefault()).parse(nearbyModifyModel.date).time)
             nearby_filter_where_tv.text = nearbyModifyModel.location.address.address

@@ -156,7 +156,7 @@ class TimenoteTAG: Fragment(), TimenoteOptionsListener, View.OnClickListener,
             if(it.isSuccessful) timenotePagingAdapter?.refresh()
         })    }
 
-    override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO) {}
+    override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO, type : Int) {}
 
     override fun onDuplicateClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         findNavController().navigate(TimenoteTAGDirections.actionGlobalCreateTimenote().setFrom(args.from).setModify(1).setId(timenoteInfoDTO.id).setTimenoteBody(CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
