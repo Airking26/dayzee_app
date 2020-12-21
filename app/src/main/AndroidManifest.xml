@@ -93,6 +93,10 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
+        <activity android:name="com.timenoteco.timenote.androidView.matisse.ui.MatisseActivity"/>
+        <activity android:name="com.timenoteco.timenote.androidView.matisse.internal.ui.AlbumPreviewActivity"/>
+        <activity android:name="com.timenoteco.timenote.androidView.matisse.internal.ui.SelectedPreviewActivity"/>
+
     </application>
 
 </manifest>

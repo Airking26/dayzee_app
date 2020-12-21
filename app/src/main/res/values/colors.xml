@@ -57,5 +57,8 @@
     <color name="searchBarPlaceholderColorDark">#8AFFFFFF</color>
     <color name="searchBarTextHighlightColorDark">#BF00a1ff</color>
 
+    <color name="preview_bottom_toolbar_bg">#CC000000</color>
+    <color name="preview_bottom_size">#61FFFFFF</color>
+
 
 </resources>

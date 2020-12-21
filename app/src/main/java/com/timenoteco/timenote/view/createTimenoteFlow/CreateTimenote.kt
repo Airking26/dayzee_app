@@ -11,7 +11,6 @@ import android.graphics.*
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.os.Handler
 import android.provider.MediaStore
 import android.text.Editable
@@ -30,9 +29,6 @@ import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -53,12 +49,10 @@ import com.afollestad.materialdialogs.datetime.dateTimePicker
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
 import com.afollestad.materialdialogs.list.listItemsMultiChoice
-import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.auth.CognitoCachingCredentialsProvider
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
-import com.amazonaws.regions.Region
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.CannedAccessControlList
@@ -75,16 +69,15 @@ import com.timenoteco.timenote.adapter.ScreenSlideCreationTimenotePagerAdapter
 import com.timenoteco.timenote.adapter.UsersPagingAdapter
 import com.timenoteco.timenote.adapter.UsersShareWithPagingAdapter
 import com.timenoteco.timenote.adapter.WebSearchAdapter
-import com.timenoteco.timenote.androidView.input
+import com.timenoteco.timenote.androidView.dialog.input
+import com.timenoteco.timenote.androidView.matisse.Matisse
 import com.timenoteco.timenote.common.*
 import com.timenoteco.timenote.listeners.BackToHomeListener
-import com.timenoteco.timenote.listeners.ExitCreationTimenote
 import com.timenoteco.timenote.listeners.GoToProfile
 import com.timenoteco.timenote.listeners.TimenoteCreationPicListeners
 import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.viewModel.*
 import com.yalantis.ucrop.UCrop
-import com.zhihu.matisse.Matisse
 import kotlinx.android.synthetic.main.fragment_create_timenote.*
 import kotlinx.android.synthetic.main.friends_search_cl.view.*
 import kotlinx.coroutines.flow.collectLatest
@@ -93,12 +86,9 @@ import mehdi.sakout.fancybuttons.FancyButton
 import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
-import java.io.OutputStream
-import java.lang.Integer.min
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Type
 import java.net.URL
-import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -1342,7 +1332,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     }
 
     override fun onDeleteClicked(uri: Uri?) {
-        //images?.remove(uri.toString())
+        images?.remove(File(uri?.path!!))
         vp_pic.apply {
             screenSlideCreationTimenotePagerAdapter = ScreenSlideCreationTimenotePagerAdapter(
                 this@CreateTimenote,

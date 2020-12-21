@@ -120,7 +120,6 @@ dependencies {
 
     api 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
     implementation 'com.github.yalantis:ucrop:2.2.6'
-    implementation 'com.zhihu.android:matisse:0.5.3-beta3'
 
     implementation 'me.relex:circleindicator:2.1.4'
     implementation 'io.branch.sdk.android:library:4.+'

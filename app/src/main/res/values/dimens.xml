@@ -19,4 +19,9 @@
     <dimen name="prominent_threshold">72dp</dimen>
     <dimen name="rounded_corners_radius">8dp</dimen>
     <dimen name="gradient_width">56dp</dimen>
+
+    <dimen name="media_grid_size">48dp</dimen>
+    <dimen name="media_grid_spacing">4dp</dimen>
+
+    <dimen name="album_item_height">72dp</dimen>
 </resources>

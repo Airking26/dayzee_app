@@ -1,22 +1,15 @@
-package com.timenoteco.timenote.androidView
+package com.timenoteco.timenote.androidView.carousel
 
 import android.app.Activity
-import android.content.Intent
 import android.graphics.Rect
-import android.os.Bundle
 import android.view.*
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.ImageView
 import androidx.annotation.Px
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.timenoteco.timenote.R
-import com.timenoteco.timenote.databinding.ActivityGridBinding
-import com.timenoteco.timenote.model.CarouselImage
 import com.timenoteco.timenote.model.CarouselImageModel
 
 /** Works only with a [GridLayoutManager] */
@@ -57,7 +50,8 @@ class GridAdapter(
         setHasStableIds(true)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH = VH(parent)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH =
+        VH(parent)
 
     override fun onBindViewHolder(holder: VH, position: Int) {
         val image = images[position]

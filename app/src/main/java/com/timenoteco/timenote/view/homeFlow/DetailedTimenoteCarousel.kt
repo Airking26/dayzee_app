@@ -22,9 +22,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.SnapHelper
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
@@ -42,9 +40,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.*
-import com.timenoteco.timenote.androidView.*
-import com.timenoteco.timenote.androidView.CarouselAdapter
-import com.timenoteco.timenote.androidView.ProminentLayoutManager
+import com.timenoteco.timenote.androidView.carousel.CarouselAdapter
+import com.timenoteco.timenote.androidView.carousel.GridAdapter
 import com.timenoteco.timenote.common.HashTagHelper
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.bytesEqualTo
@@ -133,9 +130,12 @@ class DetailedTimenoteCarousel : Fragment(), View.OnClickListener, CommentAdapte
     /** Display a random set of images each time */
     private fun reloadImages() {
         val images: ArrayList<CarouselImageModel> = ArrayList(CarouselImage.images.shuffled())
-        recycler_view.swapAdapter(GridAdapter(images){_, position ->
-            findNavController().navigate(DetailedTimenoteCarouselDirections.actionGlobalCarouselActivity())
-        }, false)
+        recycler_view.swapAdapter(
+            GridAdapter(
+                images
+            ) { _, position ->
+                findNavController().navigate(DetailedTimenoteCarouselDirections.actionGlobalCarouselActivity())
+            }, false)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

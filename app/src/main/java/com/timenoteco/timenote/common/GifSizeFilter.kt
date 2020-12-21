@@ -3,11 +3,11 @@ package com.timenoteco.timenote.common
 import android.content.Context
 import android.graphics.Point
 import com.timenoteco.timenote.R
-import com.zhihu.matisse.MimeType
-import com.zhihu.matisse.filter.Filter
-import com.zhihu.matisse.internal.entity.IncapableCause
-import com.zhihu.matisse.internal.entity.Item
-import com.zhihu.matisse.internal.utils.PhotoMetadataUtils
+import com.timenoteco.timenote.androidView.matisse.MimeType
+import com.timenoteco.timenote.androidView.matisse.filter.Filter
+import com.timenoteco.timenote.androidView.matisse.internal.entity.IncapableCause
+import com.timenoteco.timenote.androidView.matisse.internal.entity.Item
+import com.timenoteco.timenote.androidView.matisse.internal.utils.PhotoMetadataUtils
 
 
 internal class GifSizeFilter(
@@ -31,11 +31,7 @@ internal class GifSizeFilter(
         return if (size.x < mMinWidth || size.y < mMinHeight || item.size > mMaxSize) {
             IncapableCause(
                 IncapableCause.DIALOG,
-                context.getString(
-                    R.string.error_file_type,
-                    mMinWidth,
-                    PhotoMetadataUtils.getSizeInMB(mMaxSize.toLong()).toString()
-                )
+                ""
             )
         } else null
     }

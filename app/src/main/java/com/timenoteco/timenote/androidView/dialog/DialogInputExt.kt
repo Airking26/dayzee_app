@@ -1,4 +1,4 @@
-package com.timenoteco.timenote.androidView
+package com.timenoteco.timenote.androidView.dialog
 
 import android.annotation.SuppressLint
 import android.text.InputType

@@ -1,4 +1,4 @@
-package com.timenoteco.timenote.androidView
+package com.timenoteco.timenote.androidView.carousel
 
 import android.animation.LayoutTransition
 import android.content.Context
@@ -10,7 +10,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.Px
-import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isInvisible
@@ -22,7 +21,6 @@ import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.timenoteco.timenote.R
-import com.timenoteco.timenote.databinding.ActivityCarouselRecyclerviewWithGradientsBinding
 import com.timenoteco.timenote.databinding.ViewOverlayableImageBinding
 import com.timenoteco.timenote.model.CarouselImage
 import com.timenoteco.timenote.model.CarouselImageModel
@@ -46,8 +44,13 @@ class CarouselActivity : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        layoutManager = ProminentLayoutManager(requireContext())
-        adapter = CarouselAdapter(CarouselImage.images.shuffled())
+        layoutManager =
+            ProminentLayoutManager(
+                requireContext()
+            )
+        adapter = CarouselAdapter(
+            CarouselImage.images.shuffled()
+        )
         snapHelper = PagerSnapHelper()
 
         with(recycler_view) {
@@ -56,7 +59,11 @@ class CarouselActivity : Fragment() {
             adapter = this@CarouselActivity.adapter
 
             val spacing = resources.getDimensionPixelSize(R.dimen.carousel_spacing)
-            addItemDecoration(LinearHorizontalSpacingDecoration(spacing))
+            addItemDecoration(
+                LinearHorizontalSpacingDecoration(
+                    spacing
+                )
+            )
             addItemDecoration(BoundsOffsetDecoration())
 
             snapHelper.attachToRecyclerView(this)
@@ -142,7 +149,11 @@ internal class CarouselAdapter(private val images: List<CarouselImageModel>) :
             hasInitParentDimensions = true
         }
 
-        return VH(OverlayableImageView(parent.context))
+        return VH(
+            OverlayableImageView(
+                parent.context
+            )
+        )
     }
 
     override fun onBindViewHolder(vh: VH, position: Int) {

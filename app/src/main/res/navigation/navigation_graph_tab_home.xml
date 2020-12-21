@@ -206,6 +206,6 @@
     <action android:id="@+id/action_global_detailedTimenoteCarousel" app:destination="@id/detailedTimenoteCarousel" />
     <fragment
         android:id="@+id/carouselActivity"
-        android:name="com.timenoteco.timenote.androidView.CarouselActivity"
+        android:name="com.timenoteco.timenote.androidView.carousel.CarouselActivity"
         android:label="CarouselActivity" /><action android:id="@+id/action_global_carouselActivity" app:destination="@id/carouselActivity"/>
 </navigation>

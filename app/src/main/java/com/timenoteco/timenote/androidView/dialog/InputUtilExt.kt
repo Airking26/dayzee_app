@@ -1,4 +1,4 @@
-package com.timenoteco.timenote.androidView
+package com.timenoteco.timenote.androidView.dialog
 
 import android.content.Context
 import android.view.View

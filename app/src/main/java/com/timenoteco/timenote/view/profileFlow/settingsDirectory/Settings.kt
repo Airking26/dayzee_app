@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import com.afollestad.materialdialogs.LayoutMode
@@ -20,20 +19,13 @@ import com.afollestad.materialdialogs.list.listItems
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
-import com.timenoteco.timenote.androidView.input
-import com.timenoteco.timenote.common.intLiveData
+import com.timenoteco.timenote.androidView.dialog.input
 import com.timenoteco.timenote.common.stringLiveData
 import com.timenoteco.timenote.model.*
-import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.MeViewModel
-import com.timenoteco.timenote.viewModel.ProfileModifyViewModel
 import com.timenoteco.timenote.webService.ProfileModifyData
-import com.timenoteco.timenote.webService.service.FollowService
-import kotlinx.android.synthetic.main.fragment_profil_modify.*
 import kotlinx.android.synthetic.main.fragment_settings.*
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 
 class Settings : Fragment(), View.OnClickListener {

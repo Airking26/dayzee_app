@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.Rect
 import android.net.Uri
@@ -39,13 +38,11 @@ import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.datetime.datePicker
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
-import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.auth.CognitoCachingCredentialsProvider
 import com.amazonaws.mobile.client.AWSMobileClient
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
-import com.amazonaws.regions.Region
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.CannedAccessControlList
@@ -62,8 +59,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.WebSearchAdapter
-import com.timenoteco.timenote.androidView.getInputField
-import com.timenoteco.timenote.androidView.input
+import com.timenoteco.timenote.androidView.dialog.input
+import com.timenoteco.timenote.androidView.matisse.Matisse
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.stringLiveData
 import com.timenoteco.timenote.listeners.RefreshPicBottomNavListener
@@ -76,7 +73,6 @@ import com.timenoteco.timenote.viewModel.MeViewModel
 import com.timenoteco.timenote.viewModel.ProfileModifyViewModel
 import com.timenoteco.timenote.viewModel.WebSearchViewModel
 import com.timenoteco.timenote.webService.ProfileModifyData
-import com.zhihu.matisse.Matisse
 import io.branch.indexing.BranchUniversalObject
 import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
