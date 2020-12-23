@@ -474,7 +474,7 @@ class Utils {
 
         val decountTime: String
         if(nbrYear <= 0 && nbrMonth <= 0 && nbrDay <= 0 && nbrHour <= 0 && nbrMin < 0){
-            decountTime = "ONGOING"
+            decountTime = "LIVE"
         }
         else if(nbrYear <= 0){
             if(nbrMonth <= 0){
@@ -485,11 +485,17 @@ class Utils {
                         } else {
                             "In $nbrHour hours and $nbrMin minute"
                         }
-                    } else {
+                    } else if(nbrHour == 1){
                         if(nbrMin > 1){
                             "In $nbrHour hour and $nbrMin minutes"
                         } else {
                             "In $nbrHour hour and $nbrMin minute"
+                        }
+                    } else {
+                        if(nbrMin > 1){
+                            "In $nbrMin minutes"
+                        } else {
+                            "In $nbrMin minute"
                         }
                     }
                 } else {

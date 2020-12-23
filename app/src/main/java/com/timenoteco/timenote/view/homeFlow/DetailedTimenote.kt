@@ -562,7 +562,11 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         val m = o.parse(timenote.endingAt)
         o.timeZone = TimeZone.getDefault()
         val k = o.format(m)
-        if (SimpleDateFormat(ISO, Locale.getDefault()).parse(k).time > System.currentTimeMillis()) timenote_in_label.text = utils.inTime(timenote.startingAt)
+        if (SimpleDateFormat(ISO, Locale.getDefault()).parse(k).time > System.currentTimeMillis()){
+            if(utils.inTime(timenote.startingAt) == "LIVE") timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_oval, 0,0, 0)
+            else timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0,0, 0)
+            timenote_in_label.text = utils.inTime(timenote.startingAt)
+        }
         else timenote_in_label.text = utils.sinceTime(timenote.endingAt)
     }
 

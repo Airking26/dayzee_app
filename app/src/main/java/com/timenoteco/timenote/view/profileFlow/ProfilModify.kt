@@ -580,7 +580,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
             profile_modify_description -> {
                 val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.describe_yourself)
-                input(allowEmpty = true, inputType = InputType.TYPE_CLASS_TEXT, prefill = profileModifyData.loadProfileModifyModel()?.description) { _, text ->
+                input(allowEmpty = true, inputType = InputType.TYPE_CLASS_TEXT, prefill = profileModifyData.loadProfileModifyModel()?.description, maxLength = 120) { _, text ->
                     profileModifyData.setDescription(text.toString())
                 }
                 positiveButton(R.string.done)

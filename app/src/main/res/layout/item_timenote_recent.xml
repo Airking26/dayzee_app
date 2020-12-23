@@ -85,7 +85,7 @@
             android:paddingHorizontal="8dp"
             android:maxLines="1"
             android:ellipsize="end"
-            tools:text="In 12 days and 8 hours"
+            tools:text="LIVE"
             android:layout_width="0dp"
             android:layout_height="wrap_content"/>
 

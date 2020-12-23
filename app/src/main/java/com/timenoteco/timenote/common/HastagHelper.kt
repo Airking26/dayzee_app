@@ -138,10 +138,10 @@ class HashTagHelper private constructor(
         val s = mTextView!!.text as Spannable
         val span: CharacterStyle
         if (mOnHashTagClickListener != null) {
-            span = ClickableForegroundColorSpan(resources.getColor(R.color.colorText), this)
+            span = ClickableForegroundColorSpan(resources.getColor(R.color.colorHashtag), this)
         } else {
             // no need for clickable span because it is messing with selection when click
-            span = ForegroundColorSpan(resources.getColor(R.color.colorText))
+            span = ForegroundColorSpan(resources.getColor(R.color.colorHashtag))
         }
         s.setSpan(span, startIndex, nextNotLetterDigitCharIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
     }

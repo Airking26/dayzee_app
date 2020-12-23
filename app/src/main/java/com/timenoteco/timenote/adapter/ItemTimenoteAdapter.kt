@@ -343,7 +343,11 @@ class ItemTimenoteAdapter(
             itemView.timenote_time.visibility = View.INVISIBLE
             itemView.timenote_year.visibility = View.INVISIBLE
             itemView.timenote_in_label.visibility = View.VISIBLE
-            if (isFromFuture) itemView.timenote_in_label.text = utils.inTime(timenote.startingAt)
+            if (isFromFuture) {
+                if(utils.inTime(timenote.startingAt) != "LIVE") itemView.timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0,0, 0)
+                else itemView.timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_oval, 0,0, 0)
+                itemView.timenote_in_label.text = utils.inTime(timenote.startingAt)
+            }
             else itemView.timenote_in_label.text = utils.sinceTime(timenote.endingAt)
         }
 

@@ -17,6 +17,7 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.model.TimenoteInfoDTO
 import kotlinx.android.synthetic.main.item_timenote_recent.view.*
+import kotlinx.android.synthetic.main.item_timenote_root.view.*
 
 class ItemTimenoteRecentAdapter(private val timenotesToCome: List<TimenoteInfoDTO>, val timenoteRecentClicked: TimenoteRecentClicked):
     RecyclerView.Adapter<ItemTimenoteRecentAdapter.TimenoteToComeViewHolder>(){
@@ -65,6 +66,8 @@ class ItemTimenoteRecentAdapter(private val timenotesToCome: List<TimenoteInfoDT
                 .into(itemView.timenote_recent_pic_user_imageview)
 
             itemView.timenote_recent_title.text = timenote.title
+            //if(Utils().inTime(timenote.startingAt) == "LIVE") itemView.timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_oval, 0,0, 0)
+            //else itemView.timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0,0, 0)
             itemView.timenote_recent_date.text = Utils().inTime(timenote.startingAt)
             itemView.setOnClickListener { timenoteClicked.onTimenoteRecentClicked(timenote) }
         }

@@ -14,6 +14,7 @@
     <attr name="colorDivider" format="reference|color"/>
     <attr name="colorBackgroundSettings" format="reference|color"/>
     <attr name="colorElevated" format="reference|color"/>
+    <attr name="colorHashtag" format="reference|color"/>
 
     <declare-styleable name="ExpandIconView">
         <attr name="eiv_roundedCorners" format="boolean"/>

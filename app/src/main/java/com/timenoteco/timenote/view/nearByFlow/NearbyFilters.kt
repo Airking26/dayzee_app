@@ -163,7 +163,7 @@ class NearbyFilters : Fragment(), View.OnClickListener {
             }*/
             nearby_filter_from -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.from)
-                listItems(null, listOf("Public", "Private", "Public and Private")) { _, index, _ ->
+                listItems(null, listOf(getString(R.string.discover), getString(R.string.friends), getString(R.string.all))) { _, index, _ ->
                     when(index){
                         0 -> nearbyFilterData.setFrom(Type.NOTFROMFOLLOWER.ordinal)
                         1 -> nearbyFilterData.setFrom(Type.FROMFOLLOWER.ordinal)

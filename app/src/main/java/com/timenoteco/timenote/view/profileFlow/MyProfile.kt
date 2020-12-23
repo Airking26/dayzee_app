@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import com.afollestad.materialdialogs.LayoutMode
@@ -24,6 +25,7 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.ProfileEventPagerAdapter
 import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.common.intLiveData
+import com.timenoteco.timenote.common.stringLiveData
 import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.view.profileFlow.settingsDirectory.SettingsDirections
@@ -52,6 +54,7 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
     private val meViewModel : MeViewModel by activityViewModels()
     private var showFilterBar: Boolean = false
     private lateinit var prefs: SharedPreferences
+    private lateinit var notifications: MutableList<Notification>
     private var tokenId : String? = null
     private var showFilterBarFutureEvents = false
     private var showFilterBarPastEvents = false
@@ -87,6 +90,16 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
         when(loginViewModel.getAuthenticationState().value){
             LoginViewModel.AuthenticationState.GUEST -> loginViewModel.markAsUnauthenticated()
         }
+
+        prefs.stringLiveData("notifications", Gson().toJson(prefs.getString("notifications", null))).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            val typeNotification: Type = object : TypeToken<MutableList<Notification?>>() {}.type
+            notifications = Gson().fromJson<MutableList<Notification>>(it, typeNotification) ?: mutableListOf()
+            if(notifications.any { n -> !n.read }){
+                profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_notification_rouge))
+            } else {
+                profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_notifications_ok))
+            }
+        })
 
         switchToDetailedTimenote.getswitchToPreviewDetailedTimenoteViewModel().observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             if(it) {

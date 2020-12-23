@@ -73,7 +73,6 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
     }
 
     private fun refreshNotifications(){
-        val notification = notifications
         notifications.map { it.read = true }
         prefs.edit().putString("notifications", Gson().toJson(notifications)).apply()
     }
