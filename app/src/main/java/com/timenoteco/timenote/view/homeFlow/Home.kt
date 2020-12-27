@@ -7,6 +7,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
+import android.text.InputType
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -35,10 +36,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.*
-import com.timenoteco.timenote.common.BaseThroughFragment
-import com.timenoteco.timenote.common.Utils
-import com.timenoteco.timenote.common.bytesEqualTo
-import com.timenoteco.timenote.common.pixelsEqualTo
+import com.timenoteco.timenote.androidView.dialog.input
+import com.timenoteco.timenote.common.*
 import com.timenoteco.timenote.listeners.GoToProfile
 import com.timenoteco.timenote.listeners.RefreshPicBottomNavListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
@@ -118,14 +117,14 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         if(tokenId != null) {
             tokenId = prefs.getString(accessToken, null)
             retrieveCurrentRegistrationToken(prefs.getString(accessToken, null)!!)
+            onRefreshPicBottomNavListener.onrefreshPicBottomNav(userInfoDTO)
         }
         when(loginViewModel.getAuthenticationState().value){
-            LoginViewModel.AuthenticationState.GUEST -> loginViewModel.markAsUnauthenticated()
+            //LoginViewModel.AuthenticationState.GUEST -> loginViewModel.markAsUnauthenticated()
             LoginViewModel.AuthenticationState.UNAUTHENTICATED -> loginViewModel.markAsUnauthenticated()
             else -> ""
         }
 
-        onRefreshPicBottomNavListener.onrefreshPicBottomNav(userInfoDTO)
     }
 
     @SuppressLint("StringFormatInvalid")
@@ -150,6 +149,8 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if(tokenId != null) {
 
+            changePasswordTemporary()
+
             if(prefs.getString("alarms", null)== null) getAlarms()
 
             val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
@@ -168,6 +169,61 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
             home_future_timeline.setOnClickListener(this)
         }
 
+    }
+
+    private fun changePasswordTemporary() {
+        prefs.booleanLiveData("temporary_password", false).observe(viewLifecycleOwner, Observer {
+            if (it) {
+                MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                    cancelOnTouchOutside(false)
+                    cancelable(false)
+                    title(R.string.change_password)
+                    message(R.string.this_is_temporary_password)
+                    input(hintRes = R.string.new_password, inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD) { _, newPassword ->
+                        MaterialDialog(
+                            requireContext(),
+                            BottomSheet(LayoutMode.WRAP_CONTENT)
+                        ).show {
+                            cancelOnTouchOutside(false)
+                            cancelable(false)
+                            title(R.string.change_password)
+                            input(hintRes = R.string.new_password_again, inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD) { _, newPasswordAgain ->
+                                if (newPassword.toString() == newPasswordAgain.toString()) {
+                                    meViewModel.changePassword(tokenId!!, newPasswordAgain.toString()).observe(viewLifecycleOwner, Observer { rsp ->
+                                        if (rsp.code() == 401) {
+                                            loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer { newToken ->
+                                                    tokenId = newToken
+                                                    meViewModel.changePassword(tokenId!!, newPasswordAgain.toString()).observe(viewLifecycleOwner, Observer { resp ->
+                                                        if (resp.isSuccessful) {
+                                                            prefs.edit().putBoolean("temporary_password", false).apply()
+                                                            Toast.makeText(
+                                                                requireContext(),
+                                                                "Password changed successfully",
+                                                                Toast.LENGTH_SHORT
+                                                            ).show()
+                                                        }
+                                                    })
+                                                })
+                                        }
+
+                                        if (rsp.isSuccessful) {
+                                            prefs.edit().putBoolean("temporary_password", false).apply()
+                                            Toast.makeText(
+                                                requireContext(),
+                                                "Password changed successfully",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    })
+                                }
+                            }
+                            lifecycleOwner(this@Home)
+                        }
+                    }
+                    lifecycleOwner(this@Home)
+                }
+            }
+        })
     }
 
     private fun getAlarms() {

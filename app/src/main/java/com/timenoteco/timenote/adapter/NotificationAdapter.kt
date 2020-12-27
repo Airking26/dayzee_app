@@ -52,7 +52,8 @@ class NotificationAdapter(private val notifications: MutableList<Notification>, 
                 itemView.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.colorBackground))
             }
 
-            Glide
+            if(notification.type.toInt() == 1) itemView.notification_user_pic_imageview.setImageDrawable(itemView.resources.getDrawable(R.drawable.ic_baseline_notifications_active_24))
+            else Glide
                 .with(itemView)
                 .load(notification.pictureUrl)
                 .apply(RequestOptions.circleCropTransform())

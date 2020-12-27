@@ -129,6 +129,7 @@
 
     <style name="Matisse.Dracula" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowFullscreen">true</item>
+        <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="o_mr1">shortEdges</item>
         <item name="colorPrimary">@color/colorBackground</item>
         <item name="colorPrimaryDark">@color/colorText</item>
         <item name="album.dropdown.title.color">@color/colorText</item>

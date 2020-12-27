@@ -31,6 +31,7 @@ import com.timenoteco.timenote.listeners.OnRemoveFilterBarListener
 import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.viewModel.FollowViewModel
 import com.timenoteco.timenote.viewModel.LoginViewModel
+import com.timenoteco.timenote.viewModel.ProfileViewModel
 import io.branch.indexing.BranchUniversalObject
 import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
@@ -53,6 +54,7 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
     private var isFollowed = false
     private val loginViewModel : LoginViewModel by activityViewModels()
     private val followViewModel: FollowViewModel by activityViewModels()
+    private val profileViewModel: ProfileViewModel by activityViewModels()
     private var showFilterBarFutureEvents = false
     private var showFilterBarPastEvents = false
     private var locaPref: Int = -1
@@ -87,6 +89,9 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
                 .apply(RequestOptions.circleCropTransform())
                 .placeholder(R.drawable.circle_pic)
                 .into(profile_pic_imageview)
+
+        if(userInfoDTO?.certified!!) profile_name_toolbar.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_certification, 0)
+        else profile_name_toolbar.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0)
 
         profile_name_toolbar.text = userInfoDTO?.userName
         if(userInfoDTO?.description.isNullOrBlank()) profile_desc.visibility = View.GONE else {
@@ -182,7 +187,7 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
                 TabLayoutMediator(profile_tablayout, profile_vp) { tab, position -> }.attach()
             }
 
-            if (userInfoDTO?.isInFollowers!!){
+            if ((userInfoDTO?.status == STATUS.PRIVATE.ordinal && userInfoDTO?.isInFollowers!!)||(userInfoDTO?.status == STATUS.PUBLIC.ordinal)){
                 profile_settings_btn.setOnClickListener(this)
                 profile_followers_label.setOnClickListener(this)
                 profile_nbr_followers.setOnClickListener(this)
@@ -199,12 +204,45 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
     override fun onClick(v: View?) {
         when(v){
             profile_calendar_btn -> findNavController().navigate(ProfileElseDirections.actionGlobalProfileCalendar(userInfoDTO?.id!!))
-            profile_settings_btn ->  MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            profile_settings_btn -> {
+                val listItems = if(meInfoDTO.isAdmin!! && !userInfoDTO?.certified!!) mutableListOf(
+                    getString(R.string.certify),
+                    getString(R.string.details),
+                    getString(R.string.share_to),
+                    getString(R.string.report)
+                ) else mutableListOf(
+                    getString(R.string.details),
+                    getString(R.string.share_to),
+                    getString(R.string.report)
+                )
+                MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                     title(text = userInfoDTO?.userName)
-                    val listItems: MutableList<String> = mutableListOf(context.getString(R.string.details), context.getString(R.string.share_to) , context.getString(R.string.report))
-                    listItems (items = listItems){ _, _, text ->
-                        when(text.toString()){
-                            context.getString(R.string.details) ->  findNavController().navigate(ProfileElseDirections.actionGlobalProfilModify(true, userInfoDTO))
+                    listItems(items = listItems) { _, _, text ->
+                        when (text.toString()) {
+                            context.getString(R.string.certify) -> profileViewModel.certifyProfile(tokenId!!, userInfoDTO?.id!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                                if(it.code() == 401){
+                                    loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer {newAccessToken ->
+                                        tokenId = newAccessToken
+                                        profileViewModel.certifyProfile(tokenId!!, userInfoDTO?.id!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {rsp ->
+                                            if(rsp.isSuccessful) Toast.makeText(
+                                                requireContext(),
+                                                "Certified",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        })
+                                    })
+                                }
+
+                                if(it.isSuccessful) Toast.makeText(
+                                    requireContext(),
+                                    "Certified",
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+                            })
+                            context.getString(R.string.details) -> findNavController().navigate(
+                                ProfileElseDirections.actionGlobalProfilModify(true, userInfoDTO)
+                            )
                             context.getString(R.string.report) -> Toast.makeText(
                                 requireContext(),
                                 "Reported",
@@ -214,6 +252,7 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
                         }
                     }
                 }
+            }
             profile_notif_btn -> findNavController().popBackStack()
             profile_followers_label -> findNavController().navigate(ProfileElseDirections.actionGlobalFollowPage(userInfoDTO?.id!!, false, args.from).setFollowers(1))
             profile_following_label -> findNavController().navigate(ProfileElseDirections.actionGlobalFollowPage(userInfoDTO?.id!!, false, args.from).setFollowers(0))

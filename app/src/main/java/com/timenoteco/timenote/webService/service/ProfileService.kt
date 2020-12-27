@@ -30,4 +30,6 @@ interface ProfileService {
     @POST("profile/{id}/timenotes/date")
     suspend fun getTimenoteByDate(@Header("Authorization") token: String, @Path("id") id: String, @Body timenoteDateFilteredDTO: TimenoteDateFilteredDTO) : Response<List<TimenoteInfoDTO>>
 
+    @PUT("profile/certify/{id}")
+    suspend fun certifyProfile(@Header("Authorization") token: String, @Path("id") id: String) : Response<UserInfoDTO>
 }

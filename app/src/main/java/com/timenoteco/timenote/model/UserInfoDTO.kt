@@ -22,11 +22,6 @@ enum class STATUS{
     DELETED
 }
 
-enum class DATEFORMAT{
-    FIRST,
-    SECOND
-}
-
 @Parcelize
 data class UserInfoDTO (
     @SerializedName("id") var id : String? = null,
@@ -46,5 +41,7 @@ data class UserInfoDTO (
     @SerializedName("isInFollowing") var isInFollowing: Boolean = false,
     @SerializedName("isInFollowers") var isInFollowers: Boolean = false,
     @SerializedName("socialMedias") var socialMedias : SocialMedias,
-    @SerializedName("createdAt") var createdAt : String? = null
+    @SerializedName("createdAt") var createdAt : String? = null,
+    @SerializedName("certified") var certified: Boolean? = false,
+    @SerializedName("isAdmin") var isAdmin: Boolean? = false
 ) : Parcelable

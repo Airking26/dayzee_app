@@ -29,4 +29,7 @@ interface MeService{
     @GET("users/{id}")
     suspend fun getSpecificUser(@Header("Authorization") token: String, @Path("id") id: String) : Response<UserInfoDTO>
 
+    @PATCH("users/changePassword/{password}")
+    suspend fun changePassword(@Header("Authorization") token: String, @Path("password") password : String) : Response<UserInfoDTO>
+
 }

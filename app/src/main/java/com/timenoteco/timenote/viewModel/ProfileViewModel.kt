@@ -27,5 +27,6 @@ class ProfileViewModel: ViewModel() {
     fun getAllGroups(token: String) = flow { emit(profileService.getAllGroups("Bearer $token")) }.asLiveData(viewModelScope.coroutineContext)
     fun getTimenotesByDate(token: String, timenoteDateFilteredDTO: TimenoteDateFilteredDTO, id: String) = flow { emit(profileService.getTimenoteByDate("Bearer $token", id, timenoteDateFilteredDTO))}.asLiveData(viewModelScope.coroutineContext)
     fun getTimenotesFiltered(token: String, timenoteFilteredDTO: TimenoteFilteredDTO, sharedPreferences: SharedPreferences) = Pager(PagingConfig(pageSize = 1)){ProfileEventFilteredPagingSource(token, timenoteFilteredDTO, profileService, sharedPreferences)}.flow.cachedIn(viewModelScope)
+    fun certifyProfile(token: String, id: String) = flow { emit(profileService.certifyProfile("Bearer $token", id)) }.asLiveData(viewModelScope.coroutineContext)
 
 }

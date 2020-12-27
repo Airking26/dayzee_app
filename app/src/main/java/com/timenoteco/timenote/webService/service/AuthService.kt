@@ -24,4 +24,7 @@ interface AuthService {
     @GET("auth/refresh")
     suspend fun refreshAccessToken(@Header("Refresh") refreshToken: String) : Response<RefreshTokenDTO>
 
+    @GET("auth/forgotPassword/{email}")
+    suspend fun forgotPassword(@Path("email") email: String) : Response<PasswordChanged>
+
 }

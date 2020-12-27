@@ -71,4 +71,6 @@ class LoginViewModel: ViewModel() {
     fun markAsAuthenticated() = authenticationState.postValue(AuthenticationState.AUTHENTICATED)
     fun markAsUnauthenticated() = authenticationState.postValue(AuthenticationState.UNAUTHENTICATED)
 
+    fun forgotPassword(email: String) = flow { emit(authService.forgotPassword(email)) }.asLiveData(viewModelScope.coroutineContext)
+
 }

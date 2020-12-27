@@ -11,5 +11,6 @@ data class NearbyRequestBody (
     @SerializedName("categories") var categories : List<Categories>? = listOf(),
     @SerializedName("date") var date : String,
     @SerializedName("price") var price : Price,
-    @SerializedName("type") var type : Int
+    @SerializedName("type") var type : Int,
+    @SerializedName("userID") var userID: String? = null
 ) : Parcelable

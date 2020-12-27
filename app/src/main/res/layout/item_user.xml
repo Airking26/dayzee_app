@@ -21,6 +21,7 @@
     <TextView
         android:fontFamily="sans-serif-light"
         android:id="@+id/name_user"
+        android:drawablePadding="2dp"
         android:gravity="center"
         android:textColor="@color/colorText"
         tools:text="samo23"

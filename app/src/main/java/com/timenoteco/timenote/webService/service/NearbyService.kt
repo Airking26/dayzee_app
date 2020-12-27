@@ -8,5 +8,5 @@ import retrofit2.http.*
 interface NearbyService {
 
     @POST("nearby/{offset}")
-    suspend fun getNearbyResults(@Header("Authorization") token: String,@Path("offset") offset: Int, @Body nearbyRequestBody: NearbyRequestBody) : Response<List<TimenoteInfoDTO>>
+    suspend fun getNearbyResults(@Path("offset") offset: Int, @Body nearbyRequestBody: NearbyRequestBody) : Response<List<TimenoteInfoDTO>>
 }

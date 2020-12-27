@@ -89,36 +89,17 @@ class ProfileCalendar: Fragment(), ItemCalendarAdapter.CalendarEventClicked {
             }
 
             override fun onDatePicked(datetime: Calendar) {
-                val monthActual = calendarView.month
+                val monthActual = calendarView.month + 1
                 calendarView.setAdapter(CalendarAdapter(requireContext(), datetime))
-                val day = Day(datetime.year, datetime.month, datetime.dayOfMonth)
-                val selectedMonth = datetime.month
+                val day = Day(datetime.year, datetime.month + 1, datetime.dayOfMonth)
+                val selectedMonth = datetime.month + 1
                 calendarView.select(day)
                 val nbrOfDays =
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) YearMonth.of(
-                        day.year,
-                        day.month
-                    ).lengthOfMonth()
-                    else GregorianCalendar(
-                        day.year,
-                        day.month,
-                        day.day
-                    ).getActualMaximum(Calendar.DAY_OF_MONTH)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) YearMonth.of(day.year, day.month).lengthOfMonth()
+                    else GregorianCalendar(day.year, day.month, day.day).getActualMaximum(Calendar.DAY_OF_MONTH)
 
-                val startDate = SimpleDateFormat(ISO).format(
-                    GregorianCalendar(
-                        day.year,
-                        day.month,
-                        1
-                    ).timeInMillis
-                )
-                val endDate = SimpleDateFormat(ISO).format(
-                    GregorianCalendar(
-                        day.year,
-                        day.month,
-                        nbrOfDays
-                    ).timeInMillis
-                )
+                val startDate = SimpleDateFormat(ISO).format(GregorianCalendar(day.year, day.month - 1, 1).timeInMillis)
+                val endDate = SimpleDateFormat(ISO).format(GregorianCalendar(day.year, day.month - 1, nbrOfDays).timeInMillis)
                 if (monthActual != selectedMonth) loadData(startDate, endDate, day)
             }
 
@@ -130,30 +111,11 @@ class ProfileCalendar: Fragment(), ItemCalendarAdapter.CalendarEventClicked {
 
             override fun onMonthChange(day: Day?) {
                 val nbrOfDays =
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) YearMonth.of(
-                        day?.year!!,
-                        day.month
-                    ).lengthOfMonth()
-                    else GregorianCalendar(
-                        day?.year!!,
-                        day.month,
-                        day.day
-                    ).getActualMaximum(Calendar.DAY_OF_MONTH)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) YearMonth.of(day?.year!!, day.month + 1).lengthOfMonth()
+                    else GregorianCalendar(day?.year!!, day.month, day.day).getActualMaximum(Calendar.DAY_OF_MONTH)
 
-                val startDate = SimpleDateFormat(ISO).format(
-                    GregorianCalendar(
-                        day.year,
-                        day.month,
-                        1
-                    ).timeInMillis
-                )
-                val endDate = SimpleDateFormat(ISO).format(
-                    GregorianCalendar(
-                        day.year,
-                        day.month,
-                        nbrOfDays
-                    ).timeInMillis
-                )
+                val startDate = SimpleDateFormat(ISO).format(GregorianCalendar(day.year, day.month, 1).timeInMillis)
+                val endDate = SimpleDateFormat(ISO).format(GregorianCalendar(day.year, day.month, nbrOfDays).timeInMillis)
                 loadData(startDate, endDate, day)
             }
 

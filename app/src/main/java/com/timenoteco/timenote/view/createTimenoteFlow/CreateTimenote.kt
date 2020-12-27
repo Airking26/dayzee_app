@@ -77,7 +77,6 @@ import com.timenoteco.timenote.listeners.GoToProfile
 import com.timenoteco.timenote.listeners.TimenoteCreationPicListeners
 import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.viewModel.*
-import com.yalantis.ucrop.UCrop
 import kotlinx.android.synthetic.main.fragment_create_timenote.*
 import kotlinx.android.synthetic.main.friends_search_cl.view.*
 import kotlinx.coroutines.flow.collectLatest
@@ -285,13 +284,6 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                     paidLabelTv.compoundDrawableTintList = ColorStateList.valueOf(resources.getColor(R.color.colorText))
                 }
             }
-            /*else -> {
-                noAnswer.text = ""
-                paidLabelTv.setTextColor(resources.getColor(android.R.color.darker_gray))
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    paidLabelTv.compoundDrawableTintList = ColorStateList.valueOf(resources.getColor(android.R.color.darker_gray))
-                }
-            }*/
         }
         if(it.url.isNullOrBlank()) {
             url_title_cardview.visibility = View.GONE
@@ -753,8 +745,6 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                     hashTagHelper.handle(descTv)
                     val hashtagList = hashTagHelper.getAllHashTags(true)
                     var descWithoutHashtag = descTv.text.toString()
-                    //for (hashtag in hashtagList) { descWithoutHashtag = descWithoutHashtag.replace(hashtag, "") }
-                    //val descWithoutHashtagFormated = descWithoutHashtag.replace("\\s+".toRegex(), " ").trim().capitalize()
                     if(!descWithoutHashtag.trim().startsWith("#")) descWithoutHashtag = descWithoutHashtag.capitalize()
                     creationTimenoteViewModel.setHashtags(hashtagList)
                     creationTimenoteViewModel.setDescription(descWithoutHashtag)
@@ -1123,37 +1113,6 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         }
     }
 
-    private fun cropView(uri: Uri?) {
-        val u = Uri.parse(File(getPath(uri)!!).absolutePath)
-        val a = Uri.parse(File(getPath(uri)!!).canonicalPath)
-        UCrop.of(Uri.parse(uri?.toString()), u)
-            .withAspectRatio(16F, 9F)
-            .start(requireContext(), this)
-
-        /*var cropView: CropImageView?
-        val dialog = MaterialDialog(requireContext()).show {
-            customView(R.layout.cropview)
-            title(R.string.resize)
-            positiveButton(R.string.done) {
-                progressBar.visibility = View.GONE
-                takeAddPicTv.visibility = View.GONE
-                picCl.visibility = View.VISIBLE
-
-                //MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri) = cropView?.croppedImage!!
-                saveImage(MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri), uri , null)
-                screenSlideCreationTimenotePagerAdapter.notifyDataSetChanged()
-                vp.adapter = screenSlideCreationTimenotePagerAdapter
-            }
-            lifecycleOwner(this@CreateTimenote)
-        }
-
-        cropView = dialog.getCustomView().crop_view as CropImageView
-        cropView.setImageBitmap(MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri))
-        if(uri != null){
-            hideChooseBackground()
-        }*/
-    }
-
     private fun saveTemporary(image: Bitmap, dialog: MaterialDialog){
         val outputDir = requireContext().cacheDir
         val name = "IMG_${System.currentTimeMillis()}"
@@ -1317,7 +1276,6 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     }
 
     override fun onCropPicClicked(uri: Uri?) {
-        cropView(uri)
     }
 
     override fun onAddClicked() {

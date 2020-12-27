@@ -53,6 +53,7 @@ import com.timenoteco.timenote.adapter.*
 import com.timenoteco.timenote.common.BaseThroughFragment
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.stringLiveData
+import com.timenoteco.timenote.listeners.BackToHomeListener
 import com.timenoteco.timenote.listeners.GoToProfile
 import com.timenoteco.timenote.listeners.ShowBarListener
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
@@ -78,6 +79,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     UsersShareWithPagingAdapter.AddToSend {
 
     private lateinit var goToProfileLisner : GoToProfile
+    private lateinit var goBackHome: BackToHomeListener
     private var sendTo: MutableList<String> = mutableListOf()
     private lateinit var handler: Handler
     private val TRIGGER_AUTO_COMPLETE = 200
@@ -104,7 +106,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     private var tokenId: String? = null
     private var nearbyToCompare: String = ""
     private val utils = Utils()
-    private lateinit var userInfoDTO: UserInfoDTO
+    private var userInfoDTO: UserInfoDTO? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,7 +114,9 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         tokenId = prefs.getString(accessToken, null)
         loginViewModel.getAuthenticationState().observe(requireActivity(), androidx.lifecycle.Observer {
             when (it) {
-                //LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(NearByDirections.actionNearByToNavigation())
+                LoginViewModel.AuthenticationState.UNAUTHENTICATED ->{
+                    findNavController().navigate(NearByDirections.actionGlobalNavigation())
+                }
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> {
                     tokenId = prefs.getString(accessToken, null)
                     findNavController().popBackStack(R.id.nearBy, false)
@@ -135,6 +139,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        goBackHome = context as BackToHomeListener
         goToProfileLisner = context as GoToProfile
         makeBarVisibleListener = context as ShowBarListener
     }
@@ -162,7 +167,9 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         nearby_filter_btn.setOnClickListener(this)
 
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
-        userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
+        userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", null), typeUserInfo)
+
+        if(userInfoDTO != null) nearbyFilterData.setID(userInfoDTO?.id!!)
 
         //nearby_swipe_refresh.setOnRefreshListener { loadData(nearbyModifyModel) }
 
@@ -221,11 +228,11 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
 
     @ExperimentalPagingApi
     private fun loadData(nearbyModifyModel: NearbyRequestBody?) {
-        timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, Utils(), userInfoDTO.id)
+        timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, Utils(), userInfoDTO?.id)
         nearby_rv.adapter = timenotePagingAdapter
         nearby_rv.layoutManager = LinearLayoutManager(requireContext())
                 lifecycleScope.launch {
-                    nearbyViewModel.getNearbyResults(tokenId!!, nearbyModifyModel!!, prefs).collectLatest { pagingData ->
+                    nearbyViewModel.getNearbyResults(nearbyModifyModel!!, prefs).collectLatest { pagingData ->
                         timenotePagingAdapter.submitData(pagingData)
                     }
                 }
@@ -317,48 +324,72 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     }
 
     override fun onCommentClicked(event: TimenoteInfoDTO) {
-        findNavController().navigate(NearByDirections.actionGlobalDetailedTimenote(3, event))
+        if(userInfoDTO == null) loginViewModel.markAsUnauthenticated()
+        else findNavController().navigate(NearByDirections.actionGlobalDetailedTimenote(3, event))
     }
 
     override fun onPlusClicked(timenoteInfoDTO: TimenoteInfoDTO, isAdded: Boolean) {
-        if(isAdded){
-            timenoteViewModel.joinTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-                    if(it.code() == 401) {
-                        loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer { newAccessToken ->
-                            tokenId = newAccessToken
-                            timenoteViewModel.joinTimenote(tokenId!!, timenoteInfoDTO.id)
-                        })
-                    }
-                })
-        }  else {
-            timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-                if(it.code() == 401) {
-                    loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer { newAccessToken ->
-                        tokenId = newAccessToken
-                        timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id)
+        if(userInfoDTO == null) loginViewModel.markAsUnauthenticated()
+        else {
+            if (isAdded) {
+                timenoteViewModel.joinTimenote(tokenId!!, timenoteInfoDTO.id)
+                    .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                        if (it.code() == 401) {
+                            loginViewModel.refreshToken(prefs).observe(
+                                viewLifecycleOwner,
+                                androidx.lifecycle.Observer { newAccessToken ->
+                                    tokenId = newAccessToken
+                                    timenoteViewModel.joinTimenote(tokenId!!, timenoteInfoDTO.id)
+                                })
+                        }
                     })
-                }
-            })
+            } else {
+                timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id)
+                    .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                        if (it.code() == 401) {
+                            loginViewModel.refreshToken(prefs).observe(
+                                viewLifecycleOwner,
+                                androidx.lifecycle.Observer { newAccessToken ->
+                                    tokenId = newAccessToken
+                                    timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id)
+                                })
+                        }
+                    })
+            }
         }
     }
 
     override fun onClick(v: View?) {
         when(v){
-            nearby_place -> startActivityForResult(Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, placesList).build(requireContext()), AUTOCOMPLETE_REQUEST_CODE)
-            nearby_time -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                onDismiss { Utils().hideStatusBar(requireActivity()) }
-                datePicker { dialog, datetime ->
-                    nearbyDateTv.text = dateFormat.format(datetime.time.time)
-                    nearbyFilterData.setWhen(utils.formatDate(ISO, datetime.time.time))
+            nearby_place -> {
+                if(userInfoDTO == null) loginViewModel.markAsUnauthenticated()
+                else startActivityForResult(Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, placesList).build(requireContext()), AUTOCOMPLETE_REQUEST_CODE)
+            }
+            nearby_time -> {
+                if(userInfoDTO == null) loginViewModel.markAsUnauthenticated()
+                else MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                    onDismiss { Utils().hideStatusBar(requireActivity()) }
+                    datePicker { dialog, datetime ->
+                        nearbyDateTv.text = dateFormat.format(datetime.time.time)
+                        nearbyFilterData.setWhen(utils.formatDate(ISO, datetime.time.time))
+                    }
                 }
             }
-            nearby_filter_btn -> findNavController().navigate(NearByDirections.actionNearByToNearbyFilters())
+            nearby_filter_btn -> {
+                if(userInfoDTO == null) loginViewModel.markAsUnauthenticated()
+                else findNavController().navigate(NearByDirections.actionNearByToNearbyFilters())
+            }
         }
     }
 
     override fun onPictureClicked(userInfoDTO: UserInfoDTO) {
-        if(userInfoDTO.id == this.userInfoDTO.id) goToProfileLisner.goToProfile()
-        else findNavController().navigate(NearByDirections.actionGlobalProfileElse(3).setUserInfoDTO(userInfoDTO))
+        if(this.userInfoDTO == null) loginViewModel.markAsUnauthenticated()
+        else {
+            if (userInfoDTO.id == this.userInfoDTO?.id) goToProfileLisner.goToProfile()
+            else findNavController().navigate(
+                NearByDirections.actionGlobalProfileElse(3).setUserInfoDTO(userInfoDTO)
+            )
+        }
     }
 
     override fun onHideToOthersClicked(timenoteInfoDTO: TimenoteInfoDTO) {
@@ -371,38 +402,44 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     override fun onDoubleClick() {}
 
     override fun onSeeParticipants(infoDTO: TimenoteInfoDTO) {
-        val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
-            customView(R.layout.users_participating)
-            lifecycleOwner(this@NearBy)
-        }
+        if(userInfoDTO == null) loginViewModel.markAsUnauthenticated()
+        else {
+            val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
+                customView(R.layout.users_participating)
+                lifecycleOwner(this@NearBy)
+            }
 
-        val recyclerview = dial.getCustomView().users_participating_rv
-        val userAdapter = UsersPagingAdapter(
-            UsersPagingAdapter.UserComparator,
-            infoDTO,
-            this,
-            null,
-            null
-        )
-        recyclerview.layoutManager = LinearLayoutManager(requireContext())
-        recyclerview.adapter = userAdapter
-        lifecycleScope.launch{
-            timenoteViewModel.getUsersParticipating(tokenId!!, infoDTO.id, prefs).collectLatest {
-                userAdapter.submitData(it)
+            val recyclerview = dial.getCustomView().users_participating_rv
+            val userAdapter = UsersPagingAdapter(
+                UsersPagingAdapter.UserComparator,
+                infoDTO,
+                this,
+                null,
+                null
+            )
+            recyclerview.layoutManager = LinearLayoutManager(requireContext())
+            recyclerview.adapter = userAdapter
+            lifecycleScope.launch {
+                timenoteViewModel.getUsersParticipating(tokenId!!, infoDTO.id, prefs)
+                    .collectLatest {
+                        userAdapter.submitData(it)
+                    }
             }
         }
     }
 
     override fun onSeeMoreClicked(event: TimenoteInfoDTO) {
-        findNavController().navigate(NearByDirections.actionGlobalDetailedTimenote(3, event))
+        if(userInfoDTO == null) loginViewModel.markAsUnauthenticated()
+        else findNavController().navigate(NearByDirections.actionGlobalDetailedTimenote(3, event))
     }
 
     override fun onReportClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        timenoteViewModel.signalTimenote(tokenId!!, TimenoteCreationSignalementDTO(userInfoDTO.id!!, timenoteInfoDTO.id, "")).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+        if(userInfoDTO == null) loginViewModel.markAsUnauthenticated()
+        else timenoteViewModel.signalTimenote(tokenId!!, TimenoteCreationSignalementDTO(userInfoDTO?.id!!, timenoteInfoDTO.id, "")).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             if(it.code() == 401){
                 loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer {newAccessToken ->
                     tokenId = newAccessToken
-                    timenoteViewModel.signalTimenote(tokenId!!, TimenoteCreationSignalementDTO(userInfoDTO.id!!, timenoteInfoDTO.id, "")).observe(viewLifecycleOwner, androidx.lifecycle.Observer { rsp ->
+                    timenoteViewModel.signalTimenote(tokenId!!, TimenoteCreationSignalementDTO(userInfoDTO?.id!!, timenoteInfoDTO.id, "")).observe(viewLifecycleOwner, androidx.lifecycle.Observer { rsp ->
                         if(rsp.isSuccessful) Toast.makeText(
                             requireContext(),
                             "Reported",
@@ -421,10 +458,16 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     }
 
     override fun onEditClicked(timenoteInfoDTO: TimenoteInfoDTO) {
+        if(userInfoDTO == null) loginViewModel.markAsUnauthenticated()
+        else findNavController().navigate(
+            NearByDirections.actionGlobalCreateTimenote().setFrom(3).setModify(2).setId(timenoteInfoDTO.id).setTimenoteBody(CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
+                timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
+                timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null, timenoteInfoDTO.urlTitle)))
     }
 
     override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO, type: Int) {
-        share(timenoteInfoDTO)
+        if(userInfoDTO == null) loginViewModel.markAsUnauthenticated()
+        else share(timenoteInfoDTO)
     }
 
     private fun share(timenoteInfoDTO: TimenoteInfoDTO) {
@@ -454,23 +497,33 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
 
     }
     override fun onShareClicked(timenoteInfoDTO: TimenoteInfoDTO) {
+        if(userInfoDTO == null) loginViewModel.markAsUnauthenticated()
+        else {
         sendTo.clear()
         val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
             customView(R.layout.friends_search_cl)
             lifecycleOwner(this@NearBy)
-            positiveButton(R.string.send){
-                timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo)).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-                    if(it.code() == 401) {
-                        loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer { newAccessToken ->
-                            tokenId = newAccessToken
-                            timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo))
-                        })
-                    }
-                })            }
+            positiveButton(R.string.send) {
+                timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo))
+                    .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                        if (it.code() == 401) {
+                            loginViewModel.refreshToken(prefs).observe(
+                                viewLifecycleOwner,
+                                androidx.lifecycle.Observer { newAccessToken ->
+                                    tokenId = newAccessToken
+                                    timenoteViewModel.shareWith(
+                                        tokenId!!,
+                                        ShareTimenoteDTO(timenoteInfoDTO.id, sendTo)
+                                    )
+                                })
+                        }
+                    })
+            }
             negativeButton(R.string.cancel)
         }
 
-        dial.getActionButton(WhichButton.NEGATIVE).updateTextColor(resources.getColor(android.R.color.darker_gray))
+        dial.getActionButton(WhichButton.NEGATIVE)
+            .updateTextColor(resources.getColor(android.R.color.darker_gray))
         val searchbar = dial.getCustomView().searchBar_friends
         searchbar.setCardViewElevation(0)
         searchbar.addTextChangeListener(object : TextWatcher {
@@ -479,6 +532,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
                 handler.removeMessages(TRIGGER_AUTO_COMPLETE)
                 handler.sendEmptyMessageDelayed(TRIGGER_AUTO_COMPLETE, AUTO_COMPLETE_DELAY)
             }
+
             override fun afterTextChanged(s: Editable?) {}
 
         })
@@ -493,13 +547,13 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         )
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
-        lifecycleScope.launch{
-            followViewModel.getUsers(tokenId!!, userInfoDTO.id!!, 0, prefs).collectLatest {
+        lifecycleScope.launch {
+            followViewModel.getUsers(tokenId!!, userInfoDTO?.id!!, 0, prefs).collectLatest {
                 userAdapter.submitData(it)
             }
         }
 
-        if(searchbar != null) {
+        if (searchbar != null) {
             handler = Handler { msg ->
                 if (msg.what == TRIGGER_AUTO_COMPLETE) {
                     if (!TextUtils.isEmpty(searchbar.text)) {
@@ -511,10 +565,11 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
                         }
 
                     } else {
-                        lifecycleScope.launch{
-                            followViewModel.getUsers(tokenId!!, userInfoDTO.id!!, 0, prefs).collectLatest {
-                                userAdapter.submitData(it)
-                            }
+                        lifecycleScope.launch {
+                            followViewModel.getUsers(tokenId!!, userInfoDTO?.id!!, 0, prefs)
+                                .collectLatest {
+                                    userAdapter.submitData(it)
+                                }
                         }
                     }
                 }
@@ -522,13 +577,15 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
             }
         }
     }
+    }
 
     override fun onAddMarker(timenoteInfoDTO: TimenoteInfoDTO) {
         this.googleMap?.addMarker(MarkerOptions().position(LatLng(timenoteInfoDTO.location?.latitude!!, timenoteInfoDTO.location.longitude)))
     }
 
     override fun onHashtagClicked(timenoteInfoDTO: TimenoteInfoDTO ,hashtag: String?) {
-        findNavController().navigate(NearByDirections.actionGlobalTimenoteTAG(timenoteInfoDTO, 3, hashtag))
+        if(userInfoDTO == null) loginViewModel.markAsUnauthenticated()
+        else findNavController().navigate(NearByDirections.actionGlobalTimenoteTAG(timenoteInfoDTO, 3, hashtag))
     }
 
     override fun onAdd(userInfoDTO: UserInfoDTO, createGroup: Int?) {
@@ -540,7 +597,8 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     }
 
     override fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+        if(userInfoDTO == null) loginViewModel.markAsUnauthenticated()
+        else timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             if(it.code() == 401) {
                 loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer {newAccessToken ->
                     tokenId = newAccessToken
@@ -551,14 +609,16 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     }
 
     override fun onDuplicateClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(
+        if(userInfoDTO == null) loginViewModel.markAsUnauthenticated()
+        else findNavController().navigate(
             NearByDirections.actionGlobalCreateTimenote().setFrom(3).setModify(1).setId(timenoteInfoDTO.id).setTimenoteBody(CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
             timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
             timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null, timenoteInfoDTO.urlTitle)))
     }
 
     override fun onAddressClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(NearByDirections.actionGlobalTimenoteAddress(timenoteInfoDTO, 3))
+        if(userInfoDTO == null) loginViewModel.markAsUnauthenticated()
+        else findNavController().navigate(NearByDirections.actionGlobalTimenoteAddress(timenoteInfoDTO, 3))
     }
 
     override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
@@ -572,4 +632,10 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     override fun onRemove(id: String) {
     }
 
+    override fun onPause() {
+        super.onPause()
+        if(loginViewModel.getAuthenticationState().value == LoginViewModel.AuthenticationState.GUEST){
+            loginViewModel.markAsUnauthenticated()
+        }
+    }
 }

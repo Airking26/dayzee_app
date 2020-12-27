@@ -84,10 +84,10 @@ class Utils {
     fun createWebSearchDialog(context: Context, webSearchViewModel: WebSearchViewModel, fragment: Fragment, view: View?, view1: View?) {
         var recyclerView : RecyclerView?
         var webSearchAdapter : WebSearchAdapter? = null
-        var progressDialog: Dialog = progressDialog(context)
+        //var progressDialog: Dialog = progressDialog(context)
         MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             input { _, charSequence ->
-                progressDialog.show()
+                //progressDialog.show()
                 webSearchViewModel.search(charSequence.toString(), context, 0)
                 webSearchViewModel.getListResults().removeObservers(fragment.viewLifecycleOwner)
                 webSearchViewModel.getListResults().observe(fragment.viewLifecycleOwner, Observer {
@@ -114,7 +114,7 @@ class Utils {
                                 (layoutManager as GridLayoutManager).spanSizeLookup
                                 adapter = webSearchAdapter
                                 webSearchAdapter?.notifyDataSetChanged()
-                                progressDialog.hide()
+                                //progressDialog.hide()
                             }
 
                             dialog.onDismiss {
@@ -152,7 +152,6 @@ class Utils {
             .capture(true)
             .spanCount(4)
             .captureStrategy(CaptureStrategy(true, "com.timenoteco.timenote.fileprovider", "TIMENOTE"))
-            .maxSelectable(3)
             .addFilter(GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))
             .gridExpectedSize(context.resources.getDimensionPixelSize(R.dimen.grid))
             .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)

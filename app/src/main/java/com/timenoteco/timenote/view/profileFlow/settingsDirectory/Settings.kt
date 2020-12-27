@@ -2,11 +2,15 @@ package com.timenoteco.timenote.view.profileFlow.settingsDirectory
 
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.Handler
+import android.text.InputType
+import android.text.TextUtils
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -26,6 +30,7 @@ import com.timenoteco.timenote.viewModel.LoginViewModel
 import com.timenoteco.timenote.viewModel.MeViewModel
 import com.timenoteco.timenote.webService.ProfileModifyData
 import kotlinx.android.synthetic.main.fragment_settings.*
+import kotlinx.android.synthetic.main.fragment_signup.*
 import java.lang.reflect.Type
 
 class Settings : Fragment(), View.OnClickListener {
@@ -37,7 +42,6 @@ class Settings : Fragment(), View.OnClickListener {
     private lateinit var profileModifyData: ProfileModifyData
     private lateinit var dsactv : TextView
     private lateinit var userInfoDTO: UserInfoDTO
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,9 +92,9 @@ class Settings : Fragment(), View.OnClickListener {
                         loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer { newAccessToken ->
                             tokenId = newAccessToken
                             meViewModel.modifyProfile(tokenId!!, UpdateUserInfoDTO(
-                                profilModifyModel?.givenName, profilModifyModel?.familyName, profilModifyModel?.picture,
-                                profilModifyModel?.location, profilModifyModel?.birthday, profilModifyModel?.description,
-                                profilModifyModel?.gender, profilModifyModel?.status!!, profilModifyModel.dateFormat, profilModifyModel.socialMedias
+                                profilModifyModel.givenName, profilModifyModel.familyName, profilModifyModel.picture,
+                                profilModifyModel.location, profilModifyModel.birthday, profilModifyModel.description,
+                                profilModifyModel.gender, profilModifyModel.status, profilModifyModel.dateFormat, profilModifyModel.socialMedias
                             ))
                         })
                     }
@@ -154,37 +158,41 @@ class Settings : Fragment(), View.OnClickListener {
                 }
                 lifecycleOwner(this@Settings)
             }
-            profile_settings_change_password -> MaterialDialog(
-                requireContext(),
-                BottomSheet(LayoutMode.WRAP_CONTENT)
-            ).show {
+            profile_settings_change_password -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.change_password)
-                input(hintRes = R.string.actual_password) { _, oldPassword ->
+                message(R.string.cant_start_with_password)
+                input(hintRes = R.string.new_password, inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD) { _, newPassword ->
                     MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                         title(R.string.change_password)
-                        input(hintRes = R.string.new_password) { _, newPassword ->
-                            MaterialDialog(
-                                requireContext(),
-                                BottomSheet(LayoutMode.WRAP_CONTENT)
-                            ).show {
-                                title(R.string.change_password)
-                                input(hintRes = R.string.new_password_again) { _, newPasswordAgain ->
-                                    if (newPassword == newPasswordAgain) {
-
+                        message(R.string.cant_start_with_password)
+                        input(hintRes = R.string.new_password_again, inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD) { _, newPasswordAgain ->
+                            if (newPassword == newPasswordAgain) {
+                                meViewModel.changePassword(tokenId!!, newPasswordAgain.toString()).observe(viewLifecycleOwner, Observer { rsp ->
+                                    if (rsp.code() == 401) {
+                                        loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer { newToken ->
+                                                tokenId = newToken
+                                                meViewModel.changePassword(tokenId!!, newPasswordAgain.toString()).observe(viewLifecycleOwner, Observer { resp ->
+                                                    if (resp.isSuccessful) {
+                                                        Toast.makeText(requireContext(), "Password changed successfully", Toast.LENGTH_SHORT).show()
+                                                    } else Toast.makeText(requireContext(), "Error. Please try again", Toast.LENGTH_SHORT).show()
+                                                })
+                                            })
                                     }
-                                }
-                                lifecycleOwner(this@Settings)
+
+                                    if (rsp.isSuccessful) {
+                                        Toast.makeText(requireContext(), "Password changed successfully", Toast.LENGTH_SHORT).show()
+                                    } else Toast.makeText(requireContext(), "Error. Please try again", Toast.LENGTH_SHORT).show()
+                                })
                             }
                         }
                         lifecycleOwner(this@Settings)
                     }
-                    lifecycleOwner(this@Settings)
                 }
+                lifecycleOwner(this@Settings)
             }
             profile_settings_disconnect ->{
-                //prefs.edit().putString("nearby",  Gson().toJson(NearbyRequestBody(Location(0.0, 0.0, Address("","", "","")), 10, listOf(), "2020-10-12T15:51:53.448Z", Price(0, ""), 2))).apply()
                 prefs.edit().putString(accessToken, null).apply()
-                //loginViewModel.markAsUnauthenticated()
+                prefs.edit().putString("UserInfoDTO", null).apply()
                 loginViewModel.markAsDisconnected()
             }
             profile_settings_asked_sent -> findNavController().navigate(

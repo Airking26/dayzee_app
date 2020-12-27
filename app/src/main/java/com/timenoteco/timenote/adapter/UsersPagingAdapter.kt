@@ -15,10 +15,10 @@ import com.timenoteco.timenote.model.UserInfoDTO
 import kotlinx.android.synthetic.main.item_user.view.*
 
 class UsersPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>,
-    val timenoteInfoDTO: TimenoteInfoDTO?,
-    val searchPeopleListener: SearchPeopleListener,
-    val mine: Boolean?,
-    val followers: Int?
+                         val timenoteInfoDTO: TimenoteInfoDTO?,
+                         private val searchPeopleListener: SearchPeopleListener,
+                         private val mine: Boolean?,
+                         val followers: Int?
 )
     : PagingDataAdapter<UserInfoDTO, UsersPagingAdapter.UserViewHolder>(diffCallback){
 
@@ -47,36 +47,39 @@ class UsersPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>,
 
     class UserViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         fun bindUser(
-            item: UserInfoDTO?,
+            userInfoDTO: UserInfoDTO?,
             searchPeopleListener: SearchPeopleListener,
             mine: Boolean?,
             followers: Int?
         ) {
 
+            if(userInfoDTO?.certified!!) itemView.name_user.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_certification, 0)
+            else itemView.name_user.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0)
+
             if(mine != null && mine == true){
                 if(followers != null && followers == 0){
                     itemView.user_unfollow.visibility = View.VISIBLE
-                    itemView.user_unfollow.setOnClickListener { searchPeopleListener.onUnfollow(item?.id!!) }
+                    itemView.user_unfollow.setOnClickListener { searchPeopleListener.onUnfollow(userInfoDTO.id!!) }
                 } else {
                     itemView.user_remove.visibility = View.VISIBLE
-                    itemView.user_remove.setOnClickListener { searchPeopleListener.onRemove(item?.id!!) }
+                    itemView.user_remove.setOnClickListener { searchPeopleListener.onRemove(userInfoDTO.id!!) }
                 }
             }
 
             Glide
                 .with(itemView)
-                .load(item?.picture)
+                .load(userInfoDTO.picture)
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .apply(RequestOptions.circleCropTransform())
                 .placeholder(R.drawable.circle_pic)
                 .into(itemView.user_imageview)
 
-            itemView.name_user.text = item?.userName
-            if(item?.givenName.isNullOrBlank()) itemView.givenName.visibility = View.GONE else {
+            itemView.name_user.text = userInfoDTO.userName
+            if(userInfoDTO.givenName.isNullOrBlank()) itemView.givenName.visibility = View.GONE else {
                 itemView.givenName.visibility = View.VISIBLE
-                itemView.givenName.text = item?.givenName
+                itemView.givenName.text = userInfoDTO.givenName
             }
-            itemView.setOnClickListener { searchPeopleListener.onSearchClicked(item!!) }
+            itemView.setOnClickListener { searchPeopleListener.onSearchClicked(userInfoDTO) }
         }
 
     }

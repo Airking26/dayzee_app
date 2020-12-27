@@ -14,13 +14,17 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.preference.PreferenceManager
+import com.afollestad.materialdialogs.LayoutMode
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.bottomsheets.BottomSheet
+import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.google.gson.Gson
 import com.timenoteco.timenote.R
+import com.timenoteco.timenote.androidView.dialog.input
 import com.timenoteco.timenote.model.UserSignUpBody
 import com.timenoteco.timenote.model.accessToken
 import com.timenoteco.timenote.model.refreshToken
 import com.timenoteco.timenote.viewModel.LoginViewModel
-import com.timenoteco.timenote.viewModel.MeViewModel
 import kotlinx.android.synthetic.main.fragment_signup.*
 
 
@@ -29,15 +33,17 @@ class Signup: Fragment(), View.OnClickListener {
     private var availableIdentifiant: Boolean? = null
     private var emailValidForm : Boolean = false
     private var usernameValidForm: Boolean = false
+    private var passwordValidForm : Boolean = false
     private var availableMail : Boolean? = null
-    private val viewModel: LoginViewModel by activityViewModels()
-    private val meViewModel: MeViewModel by activityViewModels()
+    private val loginViewModel: LoginViewModel by activityViewModels()
     private var isOnLogin: Boolean = true
     private val TRIGGER_AUTO_COMPLETE = 200
     private val AUTO_COMPLETE_DELAY: Long = 200
     private lateinit var handlerMail: Handler
     private lateinit var handlerIdentifiant: Handler
     private lateinit var handlerMailUsername: Handler
+    private lateinit var handlerPasswordLogin: Handler
+    private lateinit var handlerPasswordSignup: Handler
     private lateinit var prefs: SharedPreferences
 
 
@@ -48,13 +54,36 @@ class Signup: Fragment(), View.OnClickListener {
         signup_signup_btn.setOnClickListener(this)
         signup_signin_btn.setOnClickListener(this)
         guest_btn.setOnClickListener(this)
+        signup_forgotten_password.setOnClickListener(this)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
+
+        handlerPasswordSignup = Handler{
+            if(it.what == TRIGGER_AUTO_COMPLETE){
+                if(!TextUtils.isEmpty(signup_password.text)){
+                    if(signup_password.text.toString().startsWith("dayzee-", true)){
+                        signup_password.error = getString(R.string.cant_start_with_password)
+                    } else passwordValidForm = true
+                }
+            }
+            false
+        }
+
+        handlerPasswordLogin = Handler{
+            if(it.what == TRIGGER_AUTO_COMPLETE){
+                if(!TextUtils.isEmpty(signin_password.text)){
+                 if(signin_password.text.toString().startsWith("dayzee-", true)){
+                     prefs.edit().putBoolean("temporary_password", true).apply()
+                 } else prefs.edit().putBoolean("temporary_password", false).apply()
+                }
+            }
+            false
+        }
 
         handlerMailUsername = Handler {
             if (it.what == TRIGGER_AUTO_COMPLETE) {
                 if (!TextUtils.isEmpty(signin_mail_username.text)) {
                     if (signin_mail_username.text.toString().contains('@')) {
-                        if (!viewModel.isValidEmail(signin_mail_username.text.toString()))
+                        if (!loginViewModel.isValidEmail(signin_mail_username.text.toString()))
                             signin_mail_username.error = getString(R.string.not_valid_mail_form)
                     }
                 }
@@ -66,8 +95,8 @@ class Signup: Fragment(), View.OnClickListener {
         handlerMail = Handler { msg ->
             if (msg.what == TRIGGER_AUTO_COMPLETE) {
                 if (!TextUtils.isEmpty(signup_mail.text)) {
-                    if (viewModel.isValidEmail(signup_mail.text.toString())) {
-                        viewModel.checkIfEmailAvailable(signup_mail.text.toString())
+                    if (loginViewModel.isValidEmail(signup_mail.text.toString())) {
+                        loginViewModel.checkIfEmailAvailable(signup_mail.text.toString())
                             .observe(viewLifecycleOwner, Observer {
                                 if (it.code() == 200) availableMail = it.body()?.isAvailable!!
                                 if (!availableMail!! && !isOnLogin) signup_mail.error =
@@ -86,8 +115,8 @@ class Signup: Fragment(), View.OnClickListener {
         handlerIdentifiant = Handler(Handler.Callback { msg ->
             if (msg.what == TRIGGER_AUTO_COMPLETE) {
                 if (!TextUtils.isEmpty(signup_identifiant.text)) {
-                    if(!viewModel.isValidUsername(signup_identifiant.text.toString())){
-                        viewModel.checkIfUsernameAvailable(signup_identifiant.text.toString()).observe(viewLifecycleOwner, Observer {
+                    if(!loginViewModel.isValidUsername(signup_identifiant.text.toString())){
+                        loginViewModel.checkIfUsernameAvailable(signup_identifiant.text.toString()).observe(viewLifecycleOwner, Observer {
                             if(it.code() == 200) availableIdentifiant = it.body()?.isAvailable!!
                             if(!availableIdentifiant!! && !isOnLogin) signup_identifiant.error = getString(R.string.usermane_already_exists)
                             else usernameValidForm = true
@@ -98,6 +127,27 @@ class Signup: Fragment(), View.OnClickListener {
                 }
             }
             false
+        })
+
+
+        signup_password.addTextChangedListener(object : TextWatcher{
+            override fun afterTextChanged(s: Editable?) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                handlerPasswordSignup.removeMessages(TRIGGER_AUTO_COMPLETE)
+                handlerPasswordSignup.sendEmptyMessageDelayed(TRIGGER_AUTO_COMPLETE, AUTO_COMPLETE_DELAY)
+            }
+
+        })
+
+        signin_password.addTextChangedListener(object: TextWatcher{
+            override fun afterTextChanged(s: Editable?) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                handlerPasswordLogin.removeMessages(TRIGGER_AUTO_COMPLETE)
+                handlerPasswordLogin.sendEmptyMessageDelayed(TRIGGER_AUTO_COMPLETE, AUTO_COMPLETE_DELAY)
+            }
+
         })
 
         signin_mail_username.addTextChangedListener(object: TextWatcher{
@@ -135,8 +185,21 @@ class Signup: Fragment(), View.OnClickListener {
     }
     override fun onClick(v: View?) {
         when(v){
-            guest_btn -> viewModel.markAsGuest()
+            guest_btn -> loginViewModel.markAsGuest()
+            signup_forgotten_password -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                title(R.string.mail)
+                message(R.string.enter_mail)
+                input{ _, mail ->
+                    loginViewModel.forgotPassword(mail.toString().trim()).observe(viewLifecycleOwner, Observer {
+                        if(it.isSuccessful && it.body()?.changed!!){
+                            Toast.makeText(requireContext(), "A mail has just been sent", Toast.LENGTH_SHORT).show()
+                        } else Toast.makeText(requireContext(), "An error has occured. Please try again", Toast.LENGTH_SHORT).show()
+                    })
+                }
+                lifecycleOwner(this@Signup)
+            }
             signup_signin_btn -> {
+                signup_forgotten_password.visibility = View.VISIBLE
 
                 isOnLogin = true
                 signup_signup_btn.apply {
@@ -163,10 +226,10 @@ class Signup: Fragment(), View.OnClickListener {
                 email_label.text = getString(R.string.username_email)
 
                 if(isOnLogin && !signin_mail_username.text.toString().isBlank() && !signin_password.text.toString().isBlank()){
-                    viewModel.login(signin_mail_username.text.toString(), signin_password.text.toString(), viewModel.isValidEmail(signin_mail_username.text.toString())).observe(viewLifecycleOwner, Observer {
+                    loginViewModel.login(signin_mail_username.text.toString(), signin_password.text.toString(), loginViewModel.isValidEmail(signin_mail_username.text.toString())).observe(viewLifecycleOwner, Observer {
                         when(it.code()){
                             201 -> {
-                                viewModel.markAsAuthenticated()
+                                loginViewModel.markAsAuthenticated()
                                 prefs.edit().putString(accessToken, it.body()?.token).apply()
                                 prefs.edit().putString(refreshToken, it.body()?.refreshToken).apply()
                                 prefs.edit().putString("UserInfoDTO", Gson().toJson(it.body()?.user)).apply()
@@ -188,6 +251,8 @@ class Signup: Fragment(), View.OnClickListener {
                 }
             }
             signup_signup_btn -> {
+
+                signup_forgotten_password.visibility = View.GONE
 
                 signup_signin_btn.apply {
                     setBorderColor(resources.getColor(R.color.colorBackground))
@@ -214,11 +279,11 @@ class Signup: Fragment(), View.OnClickListener {
                 email_label.text = getString(R.string.mail)
 
                 if(availableIdentifiant != null && availableMail != null){
-                    if(!isOnLogin && availableIdentifiant!! && availableMail!!){
-                        viewModel.checkAddUser(UserSignUpBody(signup_mail.text.toString(), signup_identifiant.text.toString(), signup_password.text.toString())).observe(viewLifecycleOwner, Observer {
+                    if(!isOnLogin && availableIdentifiant!! && availableMail!! && passwordValidForm){
+                        loginViewModel.checkAddUser(UserSignUpBody(signup_mail.text.toString(), signup_identifiant.text.toString(), signup_password.text.toString())).observe(viewLifecycleOwner, Observer {
                             when(it.code()){
                                 201 -> {
-                                    viewModel.markAsAuthenticated()
+                                    loginViewModel.markAsAuthenticated()
                                     //findNavController().navigate(SignupDirections.actionSignupToPreferenceCategory(true))
                                     prefs.edit().putString(accessToken, it.body()?.token).apply()
                                     prefs.edit().putString(refreshToken, it.body()?.refreshToken).apply()

@@ -78,7 +78,7 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
     }
 
     override fun onNotificationClicked(notification: Notification) {
-        if(notification.type.toInt() == 0 || notification.type.toInt() == 1){
+        if(notification.type.toInt() == 0 || notification.type.toInt() == 1|| notification.type.toInt() == 5){
             timenoteViewModel.getSpecificTimenote(tokenId!!, notification.id).observe(viewLifecycleOwner, Observer {
                 if(it.code() == 401){
                     authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer { newAccessToken ->

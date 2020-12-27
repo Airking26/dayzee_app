@@ -16,4 +16,5 @@ class MeViewModel: ViewModel() {
     fun getSpecificUser(token: String, id: String) = flow { emit(meService.getSpecificUser("Bearer $token", id))}.asLiveData(viewModelScope.coroutineContext)
     fun modifyProfile(token: String, updateUserInfo: UpdateUserInfoDTO) = flow { emit(meService.modifyMyInfos("Bearer $token", updateUserInfo)) }.asLiveData(viewModelScope.coroutineContext)
     fun getMyProfile(token: String) = flow { emit(meService.getMyInfos("Bearer $token")) }.asLiveData(viewModelScope.coroutineContext)
+    fun changePassword(token: String, password: String) = flow { emit(meService.changePassword("Bearer $token", password)) }.asLiveData(viewModelScope.coroutineContext)
 }

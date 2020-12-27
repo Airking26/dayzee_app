@@ -26,6 +26,8 @@
                 tools:layout_editor_absoluteX="16dp">
 
                 <TextView
+                    android:drawablePadding="2dp"
+                    tools:text="samz"
                     android:id="@+id/profile_name_toolbar"
                     style="@style/AppTheme.Toolbar.Title"
                     app:layout_constraintBottom_toBottomOf="parent"

@@ -57,6 +57,11 @@ class NearbyFilterData(context: Context) {
         notifyNearbyFilterChanged()
     }
 
+    fun setID(id: String){
+        nearbyFilterModel?.userID = id
+        notifyNearbyFilterChanged()
+    }
+
     fun clear(){}
 
 
