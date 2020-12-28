@@ -152,7 +152,7 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
                 profile_account_private.visibility = View.VISIBLE
             }
             else {
-                profileEventPagerAdapter = ProfileEventPagerAdapter(childFragmentManager, lifecycle, showFilterBar, this, args.from, userInfoDTO?.id!!)
+                profileEventPagerAdapter = ProfileEventPagerAdapter(childFragmentManager, lifecycle, showFilterBar, this, args.from, userInfoDTO?.id!!, false)
                 profile_vp?.apply {
                     adapter = profileEventPagerAdapter
                     isUserInputEnabled = false

@@ -30,7 +30,8 @@ import java.util.*
 class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<TimenoteInfoDTO>,
                                 private val timenoteOptionsListener: TimenoteOptionsListener,
                                 private val onCardClicked: ItemProfileCardListener,
-                                private val isMine: String?, private val isUpcoming: Boolean, private val listOfAlarms: MutableList<AlarmInfoDTO>)
+                                private val isMine: String?, private val isUpcoming: Boolean,
+                                private val listOfAlarms: MutableList<AlarmInfoDTO>, private val isOnMyProfile: Boolean)
     : PagingDataAdapter<TimenoteInfoDTO, RecyclerView.ViewHolder>(diffUtilCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -44,7 +45,8 @@ class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<Timenote
                 getItem(position)!!,
                 timenoteOptionsListener,
                 onCardClicked,
-                isMine, isUpcoming, listOfAlarms)
+                isMine, isUpcoming,
+                listOfAlarms, isOnMyProfile)
     }
 
 
@@ -62,7 +64,8 @@ class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         onCardClicked: ItemProfileCardListener,
         isMine: String?,
         isUpcoming: Boolean,
-        listOfAlarms: MutableList<AlarmInfoDTO>
+        listOfAlarms: MutableList<AlarmInfoDTO>,
+        isOnMyProfile: Boolean
     ) {
         val DATE_FORMAT_DAY_AND_TIME = "EEE, d MMM yyyy hh:mm aaa"
         val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
@@ -86,7 +89,7 @@ class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
                 itemView.profile_item_date_event.text = if(isUpcoming) Utils().inTime(event.startingAt) else Utils().sinceTime(event.endingAt)
             }
         }
-        itemView.profile_item_options.setOnClickListener { createOptionsOnTimenote(itemView.context, isMine, timenoteOptionsListener, event, listOfAlarms) }
+        itemView.profile_item_options.setOnClickListener { createOptionsOnTimenote(itemView.context, isMine, timenoteOptionsListener, event, listOfAlarms, isOnMyProfile) }
         if(!event.pictures.isNullOrEmpty()) {
             Glide
                 .with(itemView)
@@ -108,50 +111,108 @@ class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         isMine: String?,
         timenoteListenerListener: TimenoteOptionsListener,
         event: TimenoteInfoDTO,
-        listOfAlarms: MutableList<AlarmInfoDTO>
+        listOfAlarms: MutableList<AlarmInfoDTO>,
+        isOnMyProfile: Boolean
     ){
         val dateFormat = SimpleDateFormat("dd.MM.yyyy")
         val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
         var li: MutableList<String> = mutableListOf()
 
-        if(listOfAlarms.isEmpty()){
+        if(isOnMyProfile) {
+            if(listOfAlarms.isEmpty()){
+                    li = if (isMine!! == event.createdBy.id) {
+                        mutableListOf(
+                            context.getString(R.string.share_to),
+                            context.getString(R.string.create_alarm),
+                            context.getString(R.string.duplicate),
+                            context.getString(
+                                R.string.edit
+                            ),
+                            context.getString(R.string.delete)
+                        )
+                    } else {
+                        mutableListOf(
+                            context.getString(R.string.share_to),
+                            context.getString(R.string.create_alarm),
+                            context.getString(R.string.duplicate),
+                            context.getString(R.string.report),
+                            context.getString(
+                                R.string.hide_to_others
+                            )
+                        )
+                    }
+            } else for (alrm in listOfAlarms) {
+                if (alrm.timenote == event.id) {
+                    if (isMine!! == event.createdBy.id) {
+                        li = mutableListOf(
+                            context.getString(R.string.share_to),
+                            context.getString(R.string.update_alarm),
+                            context.getString(R.string.delete_alarm),
+                            context.getString(R.string.duplicate),
+                            context.getString(R.string.edit),
+                            context.getString(R.string.delete)
+                        )
+                        break
+                    } else {
+                        li = mutableListOf(
+                            context.getString(R.string.share_to),
+                            context.getString(R.string.update_alarm),
+                            context.getString(R.string.delete_alarm),
+                            context.getString(R.string.duplicate),
+                            context.getString(R.string.report),
+                            context.getString(R.string.hide_to_others)
+                        )
+                        break
+                    }
+                } else {
+                    li = if (isMine!! == event.createdBy.id) {
+                        mutableListOf(
+                            context.getString(R.string.share_to),
+                            context.getString(R.string.create_alarm),
+                            context.getString(R.string.duplicate),
+                            context.getString(
+                                R.string.edit
+                            ),
+                            context.getString(R.string.delete)
+                        )
+                    } else {
+                        mutableListOf(
+                            context.getString(R.string.share_to),
+                            context.getString(R.string.create_alarm),
+                            context.getString(R.string.duplicate),
+                            context.getString(R.string.report),
+                            context.getString(
+                                R.string.hide_to_others
+                            )
+                        )
+                    }
+                }
+            }
+        } else {
             li = if (isMine!! == event.createdBy.id) {
-                mutableListOf(context.getString(R.string.duplicate),  context.getString(R.string.create_alarm), context.getString(
-                    R.string.edit), context.getString(R.string.delete))
+                mutableListOf(
+                    context.getString(R.string.share_to),
+                    context.getString(R.string.duplicate),
+                    context.getString(
+                        R.string.edit
+                    ),
+                    context.getString(R.string.delete)
+                )
             } else {
-                mutableListOf(context.getString(R.string.duplicate), context.getString(R.string.create_alarm), context.getString(R.string.report), context.getString(
-                    R.string.hide_to_others))
+                mutableListOf(
+                    context.getString(R.string.share_to),
+                    context.getString(R.string.duplicate),
+                    context.getString(R.string.report)
+
+                )
             }
-        }
-
-        for(alrm in listOfAlarms){
-            if(alrm.timenote == event.id) {
-                if(isMine!! == event.createdBy.id){
-                    li = mutableListOf(context.getString(R.string.duplicate), context.getString(R.string.update_alarm), context.getString(R.string.delete_alarm), context.getString(R.string.edit), context.getString(R.string.delete))
-                    break
-                } else {
-                    li = mutableListOf(context.getString(R.string.duplicate), context.getString(R.string.update_alarm),  context.getString(R.string.delete_alarm),context.getString(R.string.report), context.getString(R.string.hide_to_others))
-                    break
-                }
-            } else {
-                li = if (isMine!! == event.createdBy.id) {
-                    mutableListOf(context.getString(R.string.duplicate),  context.getString(R.string.create_alarm), context.getString(
-                        R.string.edit), context.getString(R.string.delete))
-                } else {
-                    mutableListOf(context.getString(R.string.duplicate), context.getString(R.string.create_alarm), context.getString(R.string.report), context.getString(
-                        R.string.hide_to_others))
-                }
-            }
-        }
-
-        listOfAlarms.forEach { alrm ->
-
         }
 
         MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             title(text = "Posted : " + dateFormat.format(SimpleDateFormat(ISO).parse(event.createdAt).time))
             listItems (items = li){ _, _, text ->
                 when(text.toString()){
+                    context.getString(R.string.share_to) -> timenoteListenerListener.onShareClicked(event)
                     context.getString(R.string.duplicate) -> timenoteListenerListener.onDuplicateClicked(event)
                     context.getString(R.string.edit) -> timenoteListenerListener.onEditClicked(event)
                     context.getString(R.string.report) -> timenoteListenerListener.onReportClicked(event)

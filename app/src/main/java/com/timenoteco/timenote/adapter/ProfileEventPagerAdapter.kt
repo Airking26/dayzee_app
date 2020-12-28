@@ -7,10 +7,10 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.timenoteco.timenote.view.profileFlow.ProfileEvents
 
 
-class ProfileEventPagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle, b: Boolean, fragment: Fragment, from: Int, id: String): FragmentStateAdapter(fragmentManager, lifecycle) {
+class ProfileEventPagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle, b: Boolean, fragment: Fragment, from: Int, id: String, onMyProfile: Boolean): FragmentStateAdapter(fragmentManager, lifecycle) {
 
-    private val profileFutureEvents: ProfileEvents = ProfileEvents.newInstance(b, fragment, from, id, true)
-    private val profilePastEvents: ProfileEvents = ProfileEvents.newInstance(b, fragment, from, id, false)
+    private val profileFutureEvents: ProfileEvents = ProfileEvents.newInstance(b, fragment, from, id, true, onMyProfile)
+    private val profilePastEvents: ProfileEvents = ProfileEvents.newInstance(b, fragment, from, id, false, onMyProfile)
 
     override fun getItemCount(): Int = 2
 

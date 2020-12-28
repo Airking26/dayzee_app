@@ -248,7 +248,7 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
                     })
 
 
-            profileEventPagerAdapter = ProfileEventPagerAdapter(childFragmentManager, lifecycle, showFilterBar, this, 1, userInfoDTO?.id!!)
+            profileEventPagerAdapter = ProfileEventPagerAdapter(childFragmentManager, lifecycle, showFilterBar, this, 1, userInfoDTO?.id!!, true)
             profile_vp?.apply {
                 adapter = profileEventPagerAdapter
                 isUserInputEnabled = false

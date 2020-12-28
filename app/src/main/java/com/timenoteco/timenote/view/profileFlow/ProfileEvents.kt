@@ -56,6 +56,7 @@ private const val ARG_PARAM1 = "showHideFilterBar"
 private const val ARG_PARAM2 = "from"
 private const val ARG_PARAM3 = "id"
 private const val ARG_PARAM4 = "is_future"
+private const val ARG_PARAM5 = "is_on_my_profile"
 
 class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarListener,
     ItemProfileCardListener, UsersPagingAdapter.SearchPeopleListener,
@@ -71,6 +72,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
     private var showHideFilterBar: Boolean = false
     private var from: Int? = null
     private lateinit var id: String
+    private var isOnMyProfile : Boolean = false
     private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
     private val ISOX = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     private var isFuture = true
@@ -92,6 +94,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
             from = it.getInt(ARG_PARAM2)
             id = it.getString(ARG_PARAM3)!!
             isFuture = it.getBoolean(ARG_PARAM4)
+            isOnMyProfile = it.getBoolean(ARG_PARAM5)
         }
     }
 
@@ -137,7 +140,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
             this,
             this,
             userInfoDTO.id,
-            isFuture, listOfAlarms.getAlarms())
+            isFuture, listOfAlarms.getAlarms(), isOnMyProfile)
         profile_rv.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = profileEventPagingAdapter
@@ -523,7 +526,8 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
             context: Fragment,
             from: Int,
             id: String,
-            isFuture : Boolean
+            isFuture : Boolean,
+            onMyProfile: Boolean
         ) =
             ProfileEvents().apply {
                 arguments = Bundle().apply {
@@ -531,6 +535,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
                     putInt(ARG_PARAM2, from)
                     putString(ARG_PARAM3, id)
                     putBoolean(ARG_PARAM4, isFuture)
+                    putBoolean(ARG_PARAM5, onMyProfile)
                     setListener(context as OnRemoveFilterBarListener)
                 }
             }

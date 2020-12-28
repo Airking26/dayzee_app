@@ -313,4 +313,5 @@
     <string name="this_is_temporary_password">This is a temporary password. Please change it in order to continue</string>
     <string name="enter_mail">Please enter the mail link to your Dayzee account in order to receive a temporary password</string>
     <string name="certify">Certify</string>
+    <string name="update_temporary_password">Update temporary password</string>
 </resources>

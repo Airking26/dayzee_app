@@ -17,6 +17,6 @@
     <color name="colorDivider">#60FFFFFF</color>
     <color name="colorBackgroundSettings">#121212</color>
     <color name="colorElevated">#282828</color>
-    <color name="colorHashtag">#4A3E8F</color>
+    <color name="colorHashtag">#ffcc33</color>
 
 </resources>

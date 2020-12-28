@@ -120,9 +120,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
             onRefreshPicBottomNavListener.onrefreshPicBottomNav(userInfoDTO)
         }
         when(loginViewModel.getAuthenticationState().value){
-            //LoginViewModel.AuthenticationState.GUEST -> loginViewModel.markAsUnauthenticated()
             LoginViewModel.AuthenticationState.UNAUTHENTICATED -> loginViewModel.markAsUnauthenticated()
-            else -> ""
         }
 
     }
@@ -177,8 +175,8 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                 MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                     cancelOnTouchOutside(false)
                     cancelable(false)
-                    title(R.string.change_password)
-                    message(R.string.this_is_temporary_password)
+                    title(R.string.update_temporary_password)
+                    message(R.string.cant_start_with_password)
                     input(hintRes = R.string.new_password, inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD) { _, newPassword ->
                         MaterialDialog(
                             requireContext(),
@@ -186,7 +184,8 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                         ).show {
                             cancelOnTouchOutside(false)
                             cancelable(false)
-                            title(R.string.change_password)
+                            title(R.string.update_temporary_password)
+                            message(R.string.cant_start_with_password)
                             input(hintRes = R.string.new_password_again, inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD) { _, newPasswordAgain ->
                                 if (newPassword.toString() == newPasswordAgain.toString()) {
                                     meViewModel.changePassword(tokenId!!, newPasswordAgain.toString()).observe(viewLifecycleOwner, Observer { rsp ->
@@ -196,11 +195,9 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                                                     meViewModel.changePassword(tokenId!!, newPasswordAgain.toString()).observe(viewLifecycleOwner, Observer { resp ->
                                                         if (resp.isSuccessful) {
                                                             prefs.edit().putBoolean("temporary_password", false).apply()
-                                                            Toast.makeText(
-                                                                requireContext(),
-                                                                "Password changed successfully",
-                                                                Toast.LENGTH_SHORT
-                                                            ).show()
+                                                            Toast.makeText(requireContext(), "Password changed successfully", Toast.LENGTH_SHORT).show()
+                                                        } else {
+                                                            changePasswordTemporary()
                                                         }
                                                     })
                                                 })
@@ -208,12 +205,8 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
                                         if (rsp.isSuccessful) {
                                             prefs.edit().putBoolean("temporary_password", false).apply()
-                                            Toast.makeText(
-                                                requireContext(),
-                                                "Password changed successfully",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
+                                            Toast.makeText(requireContext(), "Password changed successfully", Toast.LENGTH_SHORT).show()
+                                        } else changePasswordTemporary()
                                     })
                                 }
                             }
