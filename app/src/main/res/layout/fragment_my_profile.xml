@@ -325,9 +325,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
-        <androidx.core.widget.NestedScrollView
+        <ScrollView
             android:background="@color/colorBackground"
             android:id="@+id/scrollable"
+            android:nestedScrollingEnabled="true"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fillViewport="false"
@@ -340,7 +341,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-        </androidx.core.widget.NestedScrollView>
+        </ScrollView>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

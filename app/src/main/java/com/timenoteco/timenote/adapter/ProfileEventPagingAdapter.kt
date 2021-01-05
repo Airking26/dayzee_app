@@ -26,6 +26,7 @@ import com.timenoteco.timenote.model.TimenoteInfoDTO
 import kotlinx.android.synthetic.main.item_profile_timenote_list_style.view.*
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.time.ExperimentalTime
 
 class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<TimenoteInfoDTO>,
                                 private val timenoteOptionsListener: TimenoteOptionsListener,
@@ -39,6 +40,7 @@ class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<Timenote
 
     }
 
+    @ExperimentalTime
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             (holder as TimenoteListHolder).bindListStyleItem(
@@ -57,6 +59,7 @@ class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<Timenote
 }
 
 class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    @ExperimentalTime
     @RequiresApi(Build.VERSION_CODES.O)
     fun bindListStyleItem(
         event: TimenoteInfoDTO,

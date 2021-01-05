@@ -44,7 +44,7 @@
             android:textAllCaps="true"
             android:maxLines="1"
             android:ellipsize="end"
-            tools:text="beach Volley"
+            tools:text="nice - nantes"
             app:layout_constraintEnd_toStartOf="@id/profile_item_options"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@+id/item_card"
@@ -58,7 +58,7 @@
             android:fontFamily="sans-serif-light"
             android:id="@+id/profile_item_address_event"
             android:layout_marginStart="8dp"
-            tools:text="18 avenue de la Goulardi, Paris"
+            tools:text="Orange Vélodrome"
             android:textColor="@color/colorText"
             android:textSize="14sp"
             app:layout_constraintTop_toBottomOf="@id/profile_item_name_event"
@@ -79,7 +79,6 @@
             android:layout_marginStart="8dp"
             app:layout_constraintStart_toEndOf="@id/item_card"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:src="@drawable/ic_pref_movie"
             android:layout_width="24dp"
             android:layout_height="24dp"/>
 
@@ -94,7 +93,7 @@
             android:maxLines="1"
             android:ellipsize="end"
             android:layout_marginEnd="8dp"
-            tools:text="mystic tournament this is a long test to text"
+            tools:text="ligue 1"
             app:layout_constraintTop_toTopOf="@id/profile_item_pic_profile_imageview"
             app:layout_constraintBottom_toBottomOf="@id/profile_item_pic_profile_imageview"
             android:layout_width="0dp"
@@ -103,7 +102,7 @@
         <TextView
             android:fontFamily="sans-serif-light"
             android:id="@+id/profile_item_date_event"
-            tools:text="Dans 12 jours"
+            tools:text="In 3 days and 8 hours"
             android:textColor="@color/colorText"
             android:textSize="13sp"
             android:layout_marginEnd="8dp"

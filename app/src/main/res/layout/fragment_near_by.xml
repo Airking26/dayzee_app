@@ -126,12 +126,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/scrollable"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scrollbars="none">
-
             <LinearLayout
                 android:gravity="center"
                 android:focusableInTouchMode="true"
@@ -169,7 +163,6 @@
 
             </LinearLayout>
 
-        </androidx.core.widget.NestedScrollView>
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

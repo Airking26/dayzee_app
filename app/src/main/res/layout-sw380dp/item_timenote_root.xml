@@ -28,7 +28,7 @@
         android:shadowDx="1"
         android:shadowDy="1"
         android:shadowRadius="1.5"
-        android:text="BEACH PARTY"
+        android:text="Marseille - Nantes"
         android:textAllCaps="true"
         android:textColor="@android:color/white"
         android:textSize="18sp"

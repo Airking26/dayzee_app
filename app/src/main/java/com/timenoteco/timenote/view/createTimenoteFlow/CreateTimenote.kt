@@ -1199,7 +1199,6 @@ class CreateTimenote : Fragment(), View.OnClickListener,
 
     @RequiresApi(Build.VERSION_CODES.N)
     fun pushPic(file: File){
-        //amazonClient.setRegion(Region.getRegion(Regions.EU_WEST_3))
         val transferUtiliy = TransferUtility(am, requireContext())
         val key = "timenote/${UUID.randomUUID().mostSignificantBits}"
         val transferObserver = transferUtiliy.upload("timenote-dev-images", key, file, CannedAccessControlList.Private)

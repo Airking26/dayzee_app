@@ -142,7 +142,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
             userInfoDTO.id,
             isFuture, listOfAlarms.getAlarms(), isOnMyProfile)
         profile_rv.apply {
-            layoutManager = LinearLayoutManager(requireContext())
+            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             adapter = profileEventPagingAdapter
         }
 
@@ -218,7 +218,6 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
                 val cal = Calendar.getInstance()
                 cal.timeInMillis = SimpleDateFormat(ISOX, Locale.getDefault()).parse(timenoteInfoDTO.startingAt).time
                 dateTimePicker (currentDateTime = cal) { _, datetime ->
-                    val o = SimpleDateFormat(ISO).format(datetime.time.time)
                     alarmViewModel.createAlarm(tokenId!!, AlarmCreationDTO(timenoteInfoDTO.createdBy.id!!, timenoteInfoDTO.id, SimpleDateFormat(ISO).format(datetime.time.time))).observe(viewLifecycleOwner, Observer {
                         if(it.code() == 401){
                             authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
@@ -253,7 +252,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
             else -> {
                 MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                     val cal = Calendar.getInstance()
-                    cal.timeInMillis = SimpleDateFormat(ISO, Locale.getDefault()).parse(timenoteInfoDTO.startingAt).time
+                    cal.timeInMillis = SimpleDateFormat(ISOX, Locale.getDefault()).parse(timenoteInfoDTO.startingAt).time
                     dateTimePicker (currentDateTime = cal) { _, datetime ->
                         alarmViewModel.updateAlarm(tokenId!!, timenoteInfoDTO.id, AlarmCreationDTO(timenoteInfoDTO.createdBy.id!!, timenoteInfoDTO.id, SimpleDateFormat(ISO).format(datetime.time.time))).observe(viewLifecycleOwner, Observer {
                             if(it.code() == 401){

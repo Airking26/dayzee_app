@@ -51,10 +51,9 @@ class ScreenSlideTimenoteImageFragment : Fragment() {
 
         if(isNullOrEmpty!!){
             if(!url.isNullOrEmpty() && !url.isNullOrBlank()) create_timenote_pic.setBackgroundColor((Color.parseColor(if(url?.contains("#")!!) url else  "#${url}")))
-        } else
-        Glide.with(this)
+        } else Glide.with(this)
             .load(Uri.parse(url))
-            .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
             .placeholder(R.drawable.loader)
             .into(create_timenote_pic)
 

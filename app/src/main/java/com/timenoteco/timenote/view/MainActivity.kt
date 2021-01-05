@@ -166,7 +166,6 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
             )
 
 
-
         val controller = bottomNavView.setupWithNavController(
             navGraphIds = navGraphIds,
             fragmentManager = supportFragmentManager,
@@ -184,7 +183,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
         setPicBottomNav(userInfoDTO)
 
         controller.observe(this, Observer {
-            it.addOnDestinationChangedListener { navController, destination, arguments ->
+            it.addOnDestinationChangedListener { navController, destination, _ ->
 
                 control = navController
                 when (destination.id) {
@@ -292,6 +291,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
     }
 
     override fun onSupportNavigateUp(): Boolean {
+        val o = currentNavController?.value?.navigateUp()
         return currentNavController?.value?.navigateUp() ?: true
     }
 

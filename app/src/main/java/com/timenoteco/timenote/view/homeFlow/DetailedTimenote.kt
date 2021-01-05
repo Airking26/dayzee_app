@@ -62,6 +62,7 @@ import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.time.ExperimentalTime
 
 
 class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.CommentPicUserListener,
@@ -368,6 +369,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             detailed_timenote_btn_back.setOnClickListener { findNavController().popBackStack() }
     }
 
+    @ExperimentalTime
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onClick(v: View?) {
         when(v){
@@ -546,6 +548,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     }
 
 
+    @ExperimentalTime
     @RequiresApi(Build.VERSION_CODES.O)
     private fun showInTime(
         utils: Utils,

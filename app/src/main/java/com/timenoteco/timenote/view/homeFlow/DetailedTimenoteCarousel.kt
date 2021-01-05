@@ -65,6 +65,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
+import kotlin.time.ExperimentalTime
 
 
 class DetailedTimenoteCarousel : Fragment(), View.OnClickListener, CommentAdapter.CommentPicUserListener,
@@ -194,7 +195,7 @@ class DetailedTimenoteCarousel : Fragment(), View.OnClickListener, CommentAdapte
                 View.GONE
 
 
-            screenSlideCreationTimenotePagerAdapter = ScreenSlideTimenotePagerAdapter(this, if (args.event?.pictures.isNullOrEmpty()) listOf(args.event?.colorHex!!) else args.event?.pictures, true, args.event?.pictures.isNullOrEmpty()) { i: Int, i1: Int ->
+            /*screenSlideCreationTimenotePagerAdapter = ScreenSlideTimenotePagerAdapter(this, if (args.event?.pictures.isNullOrEmpty()) listOf(args.event?.colorHex!!) else args.event?.pictures, true, args.event?.pictures.isNullOrEmpty()) { i: Int, i1: Int ->
                 if(i1 == 0){
                 if (args.event?.price?.price!! >= 0 && !args.event?.url.isNullOrBlank()) {
                     timenote_buy_cl.visibility = View.VISIBLE
@@ -245,7 +246,7 @@ class DetailedTimenoteCarousel : Fragment(), View.OnClickListener, CommentAdapte
 
             timenote_vp.adapter = screenSlideCreationTimenotePagerAdapter
             timenote_indicator.setViewPager(timenote_vp)
-            screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(timenote_indicator.adapterDataObserver)
+            screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(timenote_indicator.adapterDataObserver)*/
 
             timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal))
             if (args.event?.isParticipating!! || userInfoDTO.id == args.event?.createdBy?.id) timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal_plein_gradient))
@@ -426,6 +427,7 @@ class DetailedTimenoteCarousel : Fragment(), View.OnClickListener, CommentAdapte
             detailed_timenote_btn_back.setOnClickListener { findNavController().popBackStack() }
     }
 
+    @ExperimentalTime
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onClick(v: View?) {
         when(v){
@@ -604,6 +606,7 @@ class DetailedTimenoteCarousel : Fragment(), View.OnClickListener, CommentAdapte
     }
 
 
+    @ExperimentalTime
     @RequiresApi(Build.VERSION_CODES.O)
     private fun showInTime(
         utils: Utils,

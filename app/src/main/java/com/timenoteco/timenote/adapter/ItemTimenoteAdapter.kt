@@ -14,7 +14,10 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SnapHelper
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
@@ -29,8 +32,10 @@ import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.TimenoteInfoDTO
 import kotlinx.android.synthetic.main.item_timenote.view.*
 import kotlinx.android.synthetic.main.item_timenote_root.view.*
+import kotlinx.android.synthetic.main.widget_collapsible_calendarview.view.*
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.time.ExperimentalTime
 
 class ItemTimenoteAdapter(
     private val timenotes: List<TimenoteInfoDTO>,
@@ -48,6 +53,7 @@ class ItemTimenoteAdapter(
 
     override fun getItemCount(): Int = timenotes.size
 
+    @ExperimentalTime
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: TimenoteViewHolder, position: Int) {
             holder.bindTimenote(
@@ -55,12 +61,12 @@ class ItemTimenoteAdapter(
                 timenoteListenerListener,
                 fragment,
                 isFromFuture,
-                utils,
-            createdBy)
+                utils, createdBy)
 
     }
 
     class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
+        @ExperimentalTime
         @RequiresApi(Build.VERSION_CODES.O)
         fun bindTimenote(
             timenote: TimenoteInfoDTO,
@@ -168,9 +174,7 @@ class ItemTimenoteAdapter(
                             .apply(RequestOptions.circleCropTransform())
                             .into(itemView.timenote_pic_participant_three)
                     }
-                }
-            }
-            else {
+                } } else {
                 if(timenote.joinedBy?.count!! > 0){
                     addedBy = "Saved by ${timenote.joinedBy.count} people"
                     val addedByFormated = SpannableStringBuilder(addedBy)
@@ -187,6 +191,14 @@ class ItemTimenoteAdapter(
                     itemView.timenote_fl.visibility = View.GONE
                 }
             }
+
+            /*val ad = ImageAdapter(listOf())
+            itemView.timenote_vp.layoutManager = LinearLayoutManager(itemView.context, LinearLayoutManager.HORIZONTAL, false)
+            val snapHelper = LinearSnapHelper()
+            snapHelper.attachToRecyclerView(itemView.timenote_vp)
+            if(!timenote.pictures.isNullOrEmpty())
+                itemView.timenote_vp.adapter = ImageAdapter(timenote.pictures)*/
+
 
             val screenSlideCreationTimenotePagerAdapter =  ScreenSlideTimenotePagerAdapter(fragment, if(timenote.pictures.isNullOrEmpty()) listOf(timenote.colorHex!!) else timenote.pictures, true, timenote.pictures.isNullOrEmpty()){ _ : Int, i1: Int ->
                 if(i1 == 0) {
@@ -224,6 +236,7 @@ class ItemTimenoteAdapter(
             screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(itemView.timenote_indicator.adapterDataObserver)
             itemView.timenote_username.text = timenote.createdBy.userName
             if(timenote.location != null) itemView.timenote_place.text = timenote.location.address.address.plus(", ").plus(timenote.location.address.city).plus(" ").plus(timenote.location.address.country)
+            else itemView.timenote_place.text = ""
 
            val hashTagHelper = HashTagHelper.Creator.create(R.color.colorAccent, object : HashTagHelper.OnHashTagClickListener{
                 override fun onHashTagClicked(hashTag: String?) {
@@ -232,24 +245,6 @@ class ItemTimenoteAdapter(
 
             }, null, itemView.resources)
             hashTagHelper.handle(itemView.timenote_username_desc)
-
-            /*if(timenote.hashtags.isNullOrEmpty() && timenote.description.isNullOrBlank()){
-                itemView.timenote_username_desc.visibility = View.GONE
-            } else if(timenote.hashtags.isNullOrEmpty() && !timenote.description.isNullOrBlank()){
-                val desc = SpannableStringBuilder(timenote.description)
-                desc.setSpan(light, 0, timenote.description.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
-                itemView.timenote_username_desc.text = username.append(" ").append(desc)
-            } else if(!timenote.hashtags.isNullOrEmpty() && timenote.description.isNullOrBlank()){
-                val hashtags = SpannableStringBuilder(timenote.hashtags.joinToString(separator = ""))
-                hashtags.setSpan(bold, 0, hashtags.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
-                itemView.timenote_username_desc.text = username.append(" ").append(hashtags)
-            } else {
-                val hashtags = SpannableStringBuilder(timenote.hashtags?.joinToString(separator = ""))
-                val completeDesc = SpannableStringBuilder(timenote.hashtags?.joinToString(separator = "")).append(" ${timenote.description}")
-                completeDesc.setSpan(bold, 0, hashtags.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
-                completeDesc.setSpan(light, hashtags.length, completeDesc.toString().length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
-                itemView.timenote_username_desc.text = username.append(" ").append(completeDesc)
-            }*/
 
             if(timenote.description.isNullOrBlank()){
                 itemView.timenote_username_desc.visibility = View.GONE
@@ -331,6 +326,7 @@ class ItemTimenoteAdapter(
             itemView.timenote_fl.setOnClickListener{timenoteListenerListener.onSeeParticipants(timenote)}
         }
 
+        @ExperimentalTime
         @RequiresApi(Build.VERSION_CODES.O)
         private fun showInTime(
             isFromFuture: Boolean,

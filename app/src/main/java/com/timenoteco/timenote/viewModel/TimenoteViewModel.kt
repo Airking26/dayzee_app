@@ -6,23 +6,22 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.timenoteco.timenote.model.CreationTimenoteDTO
-import com.timenoteco.timenote.model.FilterLocationDTO
-import com.timenoteco.timenote.model.ShareTimenoteDTO
-import com.timenoteco.timenote.model.TimenoteCreationSignalementDTO
+import com.timenoteco.timenote.model.*
 import com.timenoteco.timenote.paging.TimenoteAroundPagingSource
 import com.timenoteco.timenote.paging.TimenoteRecentPagingSource
 import com.timenoteco.timenote.paging.TimenotePagingSource
 import com.timenoteco.timenote.paging.UsersParticipatingPagingSource
 import com.timenoteco.timenote.webService.repo.DayzeeRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 class TimenoteViewModel: ViewModel() {
 
     private val timenoteService = DayzeeRepository().getTimenoteService()
 
-    fun getRecentTimenotePagingFlow(token: String, sharedPreferences: SharedPreferences) = Pager(PagingConfig(pageSize = 1)){ TimenoteRecentPagingSource(token, timenoteService, sharedPreferences)}.flow.cachedIn(viewModelScope)
+    fun getRecentTimenotePagingFlow(token: String, sharedPreferences: SharedPreferences) : Flow<PagingData<TimenoteInfoDTO>> = Pager(PagingConfig(pageSize = 1)){ TimenoteRecentPagingSource(token, timenoteService, sharedPreferences)}.flow.cachedIn(viewModelScope)
     fun getUpcomingTimenotePagingFlow(token: String, upcoming: Boolean, sharedPreferences: SharedPreferences) = Pager(PagingConfig(pageSize = 1)){ TimenotePagingSource(token, timenoteService, upcoming, sharedPreferences) }.flow.cachedIn(viewModelScope)
     fun getAroundTimenotePagingFlow(token: String, filterLocationDTO: FilterLocationDTO, sharedPreferences: SharedPreferences) = Pager(PagingConfig(pageSize = 1)){ TimenoteAroundPagingSource(token, timenoteService, filterLocationDTO, sharedPreferences) }.flow.cachedIn(viewModelScope)
     fun getSpecificTimenote(token: String, id: String) = flow { emit(timenoteService.getTimenoteId("Bearer $token",id)) }.asLiveData(viewModelScope.coroutineContext)

@@ -18,6 +18,7 @@ import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.model.TimenoteInfoDTO
 import kotlinx.android.synthetic.main.item_timenote_recent.view.*
 import kotlinx.android.synthetic.main.item_timenote_root.view.*
+import kotlin.time.ExperimentalTime
 
 class ItemTimenoteRecentAdapter(private val timenotesToCome: List<TimenoteInfoDTO>, val timenoteRecentClicked: TimenoteRecentClicked):
     RecyclerView.Adapter<ItemTimenoteRecentAdapter.TimenoteToComeViewHolder>(){
@@ -34,6 +35,7 @@ class ItemTimenoteRecentAdapter(private val timenotesToCome: List<TimenoteInfoDT
         return timenotesToCome.size
     }
 
+    @ExperimentalTime
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: TimenoteToComeViewHolder, position: Int) {
         holder.bindItem(timenotesToCome[position], timenoteRecentClicked)
@@ -41,6 +43,7 @@ class ItemTimenoteRecentAdapter(private val timenotesToCome: List<TimenoteInfoDT
 
 
     class TimenoteToComeViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+        @ExperimentalTime
         @RequiresApi(Build.VERSION_CODES.O)
         fun bindItem(timenote: TimenoteInfoDTO, timenoteClicked: TimenoteRecentClicked){
 
@@ -51,7 +54,7 @@ class ItemTimenoteRecentAdapter(private val timenotesToCome: List<TimenoteInfoDT
                 Glide
                     .with(itemView)
                     .load(timenote.pictures[0])
-                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                     .centerCrop()
                     .placeholder(R.drawable.loader)
                     .into(itemView.timenote_recent_pic_imageview)
@@ -60,7 +63,7 @@ class ItemTimenoteRecentAdapter(private val timenotesToCome: List<TimenoteInfoDT
             Glide
                 .with(itemView)
                 .load(timenote.createdBy.picture)
-                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .apply(RequestOptions.circleCropTransform())
                 .placeholder(R.drawable.circle_pic)
                 .into(itemView.timenote_recent_pic_user_imageview)

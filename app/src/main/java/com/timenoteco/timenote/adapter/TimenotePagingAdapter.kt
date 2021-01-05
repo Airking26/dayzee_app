@@ -11,10 +11,12 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.TimenoteInfoDTO
+import kotlin.time.ExperimentalTime
 
 class TimenotePagingAdapter(diffCallbacks: DiffUtil.ItemCallback<TimenoteInfoDTO>,
                             private val timenoteListenerListener: TimenoteOptionsListener,
-                            val fragment: Fragment, private val isFromFuture: Boolean, private val utils: Utils, private val createdBy: String?
+                            val fragment: Fragment, private val isFromFuture: Boolean,
+                            private val utils: Utils, private val createdBy: String?
 )
     : PagingDataAdapter<TimenoteInfoDTO, ItemTimenoteAdapter.TimenoteViewHolder>(diffCallbacks){
 
@@ -23,6 +25,7 @@ class TimenotePagingAdapter(diffCallbacks: DiffUtil.ItemCallback<TimenoteInfoDTO
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemTimenoteAdapter.TimenoteViewHolder =
         ItemTimenoteAdapter.TimenoteViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_timenote, parent, false))
 
+    @ExperimentalTime
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: ItemTimenoteAdapter.TimenoteViewHolder, position: Int) =
         holder.bindTimenote(
@@ -38,7 +41,20 @@ class TimenotePagingAdapter(diffCallbacks: DiffUtil.ItemCallback<TimenoteInfoDTO
 object TimenoteComparator : DiffUtil.ItemCallback<TimenoteInfoDTO>(){
 
     override fun areItemsTheSame(oldItem: TimenoteInfoDTO, newItem: TimenoteInfoDTO): Boolean {
-        return oldItem.startingAt == newItem.startingAt
+        return oldItem.id == newItem.id
+    }
+
+    override fun areContentsTheSame(oldItem: TimenoteInfoDTO, newItem: TimenoteInfoDTO): Boolean {
+        return oldItem == newItem
+    }
+
+}
+
+
+object TimenoteComparatorTest : DiffUtil.ItemCallback<TimenoteInfoDTO>(){
+
+    override fun areItemsTheSame(oldItem: TimenoteInfoDTO, newItem: TimenoteInfoDTO): Boolean {
+        return oldItem.id == newItem.id
     }
 
     override fun areContentsTheSame(oldItem: TimenoteInfoDTO, newItem: TimenoteInfoDTO): Boolean {

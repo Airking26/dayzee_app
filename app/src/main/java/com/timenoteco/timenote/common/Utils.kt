@@ -53,6 +53,10 @@ import java.text.SimpleDateFormat
 import java.time.*
 import java.util.*
 import kotlin.math.abs
+import kotlin.time.DurationUnit
+import kotlin.time.ExperimentalTime
+import kotlin.time.milliseconds
+import kotlin.time.toDuration
 
 class Utils {
 
@@ -436,6 +440,7 @@ class Utils {
         return formatDate(YEAR, startingAt)
     }
 
+    @ExperimentalTime
     fun inTime(startDate: String): String {
         val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
         val nbrYear : Int
@@ -443,15 +448,16 @@ class Utils {
         val nbrDay : Int
         val nbrHours : Int
         val nbrMin : Int
+        val nbrSec : Int
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val period = Period.between(LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC).toLocalDate()
                 , LocalDateTime.ofInstant(Instant.parse(startDate), ZoneOffset.UTC).toLocalDate())
 
             nbrYear = period.years
             nbrMonth = period.minusYears(nbrYear.toLong()).months
-            nbrDay = period.minusYears(nbrYear.toLong()).minusMonths(nbrMonth.toLong()).days - 1
 
             val duration = Duration.between(Instant.now(), Instant.parse(startDate))
+            nbrDay = duration.toDays().toInt()
             nbrHours = duration.minusDays(duration.toDays()).toHours().toInt()
             nbrMin = duration.minusDays(duration.toDays()).minusHours(duration.minusDays(duration.toDays()).toHours()).toMinutes().toInt()
 
@@ -464,6 +470,7 @@ class Utils {
             nbrDay = c.get(Calendar.DAY_OF_MONTH) - 1
             nbrHours = c.get(Calendar.HOUR) + 12
             nbrMin = c.get(Calendar.MINUTE)
+            nbrSec = c.get(Calendar.SECOND) * 1000
         }
 
         return formatInTime(nbrYear, nbrMonth, nbrDay, nbrHours, nbrMin)
@@ -555,9 +562,9 @@ class Utils {
 
             nbrYear = period.years
             nbrMonth = period.minusYears(nbrYear.toLong()).months
-            nbrDay = period.minusYears(nbrYear.toLong()).minusMonths(nbrMonth.toLong()).days - 1
 
             val duration = Duration.between(Instant.now(), Instant.parse(startDate))
+            nbrDay = duration.toDays().toInt()
             nbrHours = duration.minusDays(duration.toDays()).toHours().toInt()
             nbrMin = duration.minusDays(duration.toDays()).minusHours(duration.minusDays(duration.toDays()).toHours()).toMinutes().toInt()
 

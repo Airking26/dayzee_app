@@ -15,12 +15,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
@@ -48,6 +50,9 @@ import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
 import io.branch.referral.util.LinkProperties
 import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_home.home_future_timeline
+import kotlinx.android.synthetic.main.fragment_home.home_past_timeline
+import kotlinx.android.synthetic.main.fragment_home.home_swipe_refresh
 import kotlinx.android.synthetic.main.friends_search_cl.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
@@ -56,7 +61,7 @@ import java.lang.reflect.Type
 
 class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListener,
     UsersPagingAdapter.SearchPeopleListener, ItemTimenoteRecentAdapter.TimenoteRecentClicked, UsersShareWithPagingAdapter.SearchPeopleListener,
-    UsersShareWithPagingAdapter.AddToSend {
+    UsersShareWithPagingAdapter.AddToSend{
 
     private lateinit var goToProfileLisner : GoToProfile
     private var sendTo: MutableList<String> = mutableListOf()
@@ -70,6 +75,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     private val meViewModel : MeViewModel by activityViewModels()
     private var timenotePagingAdapter: TimenotePagingAdapter? = null
     private var timenoteRecentPagingAdapter: TimenoteRecentPagingAdapter? = null
+   // private var timenotePagingAdapterTest :TimenotePagingAdapterTest?= null
     private lateinit var onGoToNearby: OnGoToNearby
     private lateinit var onRefreshPicBottomNavListener: RefreshPicBottomNavListener
     private lateinit var prefs: SharedPreferences
@@ -112,9 +118,11 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         onRefreshPicBottomNavListener = context as RefreshPicBottomNavListener
     }
 
+    @ExperimentalPagingApi
     override fun onResume() {
         super.onResume()
         if(tokenId != null) {
+            if(timenoteRecentPagingAdapter == null || timenotePagingAdapter == null || home_nothing_to_display?.visibility == View.VISIBLE || home_posted_recently.visibility == View.GONE) loadUpcomingData()
             tokenId = prefs.getString(accessToken, null)
             retrieveCurrentRegistrationToken(prefs.getString(accessToken, null)!!)
             onRefreshPicBottomNavListener.onrefreshPicBottomNav(userInfoDTO)
@@ -159,9 +167,6 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                 if(home_future_timeline.drawable.bytesEqualTo(resources.getDrawable(R.drawable.ic_futur_ok)) && home_future_timeline.drawable.pixelsEqualTo(resources.getDrawable(R.drawable.ic_futur_ok))) loadPastData()
                 else if(home_past_timeline.drawable.bytesEqualTo(resources.getDrawable(R.drawable.ic_passe_ok)) && home_past_timeline.drawable.pixelsEqualTo(resources.getDrawable(R.drawable.ic_passe_ok))) loadUpcomingData()
             }
-
-            if(timenoteRecentPagingAdapter == null || timenotePagingAdapter == null || home_nothing_to_display?.visibility == View.VISIBLE) loadUpcomingData()
-
 
             home_past_timeline.setOnClickListener(this)
             home_future_timeline.setOnClickListener(this)
@@ -240,28 +245,28 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
         home_swipe_refresh?.isRefreshing = true
 
-        timenoteRecentPagingAdapter = TimenoteRecentPagingAdapter(TimenoteComparator, this)
-        LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        lifecycleScope.launch {
-            timenoteViewModel.getRecentTimenotePagingFlow(tokenId!!, prefs).collectLatest {
-                timenoteRecentPagingAdapter?.submitData(it)
-            }
-        }
-
-        timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils, userInfoDTO.id)
+        timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparatorTest, this, this, true, utils, userInfoDTO.id)
         lifecycleScope.launch {
             timenoteViewModel.getUpcomingTimenotePagingFlow(tokenId!!, true, prefs).collectLatest {
                 timenotePagingAdapter?.submitData(it)
             }
         }
 
+        timenoteRecentPagingAdapter = TimenoteRecentPagingAdapter(TimenoteComparator, this)
+        lifecycleScope.launch {
+            timenoteViewModel.getRecentTimenotePagingFlow(tokenId!!, prefs).collectLatest {
+                timenoteRecentPagingAdapter?.submitData(it)
+            }
+        }
+
+        home_rv?.apply {
+            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            adapter = timenotePagingAdapter
+        }
+
         home_recent_rv?.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
             adapter = timenoteRecentPagingAdapter
-        }
-        home_rv?.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = timenotePagingAdapter
         }
 
         timenotePagingAdapter?.addDataRefreshListener {

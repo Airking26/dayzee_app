@@ -26,7 +26,7 @@
         android:textSize="15sp"
         app:layout_constraintStart_toEndOf="@id/timenote_pic_user_imageview"
         app:layout_constraintTop_toTopOf="@id/timenote_pic_user_imageview"
-        tools:text="Samuel" />
+        tools:text="ligue 1" />
 
     <TextView
         android:id="@+id/timenote_place"
@@ -42,7 +42,7 @@
         app:layout_constraintStart_toEndOf="@id/timenote_pic_user_imageview"
         app:layout_constraintTop_toBottomOf="@id/timenote_username"
         app:layout_constraintBottom_toBottomOf="@id/timenote_pic_user_imageview"
-        tools:text="34 Ohio Street" />
+        tools:text="Orange Vélodrome" />
 
     <ImageView
         android:id="@+id/timenote_options"
