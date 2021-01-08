@@ -165,6 +165,10 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if(!tokenId.isNullOrBlank()) {
 
+            profile_name_toolbar.setOnClickListener {
+
+            }
+
             val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
             userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
 
@@ -256,6 +260,11 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
                 post {
                     profile_vp?.setCurrentItem(1, false)
                 }
+            }
+
+            profile_name_toolbar.setOnClickListener {
+                if(profileEventPagerAdapter != null)
+                    profileEventPagerAdapter?.scrollToTop()
             }
 
             profile_modify_btn.setOnClickListener(this)

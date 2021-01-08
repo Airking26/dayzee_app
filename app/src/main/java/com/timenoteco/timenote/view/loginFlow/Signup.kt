@@ -203,17 +203,17 @@ class Signup: Fragment(), View.OnClickListener {
 
                 isOnLogin = true
                 signup_signup_btn.apply {
-                    setBorderColor(resources.getColor(R.color.colorBackground))
+                    setBorderColor(resources.getColor(android.R.color.white))
                     setBorderWidth(2)
                     setBackgroundColor(resources.getColor( android.R.color.transparent))
-                    setTextColor(resources.getColor(R.color.colorBackground))
+                    setTextColor(resources.getColor(android.R.color.white))
                 }
 
                 signup_signin_btn.apply {
                     setBorderWidth(0)
                     setBorderColor(resources.getColor(android.R.color.transparent))
-                    setBackgroundColor(resources.getColor(R.color.colorBackground))
-                    setTextColor(resources.getColor(R.color.colorText))
+                    setBackgroundColor(resources.getColor(android.R.color.white))
+                    setTextColor(resources.getColor(android.R.color.black))
                 }
                 signup_password.visibility = View.INVISIBLE
                 signup_mail.visibility = View.INVISIBLE
@@ -255,16 +255,16 @@ class Signup: Fragment(), View.OnClickListener {
                 signup_forgotten_password.visibility = View.GONE
 
                 signup_signin_btn.apply {
-                    setBorderColor(resources.getColor(R.color.colorBackground))
+                    setBorderColor(resources.getColor(android.R.color.white))
                     setBorderWidth(2)
                     setBackgroundColor(resources.getColor( android.R.color.transparent))
-                    setTextColor(resources.getColor(R.color.colorBackground))
+                    setTextColor(resources.getColor(android.R.color.white))
                 }
 
                 signup_signup_btn.apply {
                     setBorderWidth(0)
-                    setBackgroundColor(resources.getColor(R.color.colorBackground))
-                    setTextColor(resources.getColor(R.color.colorText))
+                    setBackgroundColor(resources.getColor(android.R.color.white))
+                    setTextColor(resources.getColor(android.R.color.black))
                 }
 
                 signup_password.visibility = View.VISIBLE

@@ -169,6 +169,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
             }
 
             home_past_timeline.setOnClickListener(this)
+            dayzee.setOnClickListener(this)
             home_future_timeline.setOnClickListener(this)
         }
 
@@ -335,6 +336,10 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                     home_past_timeline.setImageDrawable(resources.getDrawable(R.drawable.ic_passe_ok))
                     loadUpcomingData()
                 }
+            }
+            dayzee -> {
+                if(home_rv.layoutManager != null)
+                    home_rv.layoutManager?.smoothScrollToPosition(home_rv, null, 0)
             }
         }
     }

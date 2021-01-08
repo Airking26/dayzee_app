@@ -344,7 +344,10 @@ class ItemTimenoteAdapter(
                 else itemView.timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_oval, 0,0, 0)
                 itemView.timenote_in_label.text = utils.inTime(timenote.startingAt)
             }
-            else itemView.timenote_in_label.text = utils.sinceTime(timenote.endingAt)
+            else {
+                itemView.timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0,0, 0)
+                itemView.timenote_in_label.text = utils.sinceTime(timenote.endingAt)
+            }
         }
 
         private fun createOptionsOnTimenote(

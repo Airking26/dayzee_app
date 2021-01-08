@@ -32,4 +32,10 @@ class ProfileEventPagerAdapter(fragmentManager: FragmentManager, lifecycle: Life
             }
     }
 
+
+    fun scrollToTop(){
+        profileFutureEvents.scrollToTop()
+        profilePastEvents.scrollToTop()
+    }
+
 }

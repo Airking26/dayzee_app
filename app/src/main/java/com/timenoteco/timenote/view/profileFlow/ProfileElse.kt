@@ -36,7 +36,26 @@ import io.branch.indexing.BranchUniversalObject
 import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
 import io.branch.referral.util.LinkProperties
+import kotlinx.android.synthetic.main.fragment_my_profile.*
 import kotlinx.android.synthetic.main.fragment_profile_else.*
+import kotlinx.android.synthetic.main.fragment_profile_else.profile_account_private
+import kotlinx.android.synthetic.main.fragment_profile_else.profile_calendar_btn
+import kotlinx.android.synthetic.main.fragment_profile_else.profile_day_name_calendar
+import kotlinx.android.synthetic.main.fragment_profile_else.profile_day_number_calendar
+import kotlinx.android.synthetic.main.fragment_profile_else.profile_desc
+import kotlinx.android.synthetic.main.fragment_profile_else.profile_followers_label
+import kotlinx.android.synthetic.main.fragment_profile_else.profile_following_label
+import kotlinx.android.synthetic.main.fragment_profile_else.profile_infos
+import kotlinx.android.synthetic.main.fragment_profile_else.profile_name
+import kotlinx.android.synthetic.main.fragment_profile_else.profile_name_toolbar
+import kotlinx.android.synthetic.main.fragment_profile_else.profile_nbr_followers
+import kotlinx.android.synthetic.main.fragment_profile_else.profile_nbr_following
+import kotlinx.android.synthetic.main.fragment_profile_else.profile_notif_btn
+import kotlinx.android.synthetic.main.fragment_profile_else.profile_pic_imageview
+import kotlinx.android.synthetic.main.fragment_profile_else.profile_settings_btn
+import kotlinx.android.synthetic.main.fragment_profile_else.profile_tablayout
+import kotlinx.android.synthetic.main.fragment_profile_else.profile_vp
+import kotlinx.android.synthetic.main.fragment_profile_else.scrollable
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
@@ -188,6 +207,10 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
             }
 
             if ((userInfoDTO?.status == STATUS.PRIVATE.ordinal && userInfoDTO?.isInFollowers!!)||(userInfoDTO?.status == STATUS.PUBLIC.ordinal)){
+                profile_name_toolbar.setOnClickListener {
+                    if(profileEventPagerAdapter != null)
+                        profileEventPagerAdapter?.scrollToTop()
+                }
                 profile_settings_btn.setOnClickListener(this)
                 profile_followers_label.setOnClickListener(this)
                 profile_nbr_followers.setOnClickListener(this)

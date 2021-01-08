@@ -11,11 +11,9 @@ class TimenotePagingSource(val token: String?, val timenoteService: TimenoteServ
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, TimenoteInfoDTO> {
         return try {
             val nextPageNumber = params.key ?: 0
-            var response = timenoteService.getUpcomingTimenotes("Bearer $token", nextPageNumber)
-                //if(upcoming) timenoteService.getUpcomingTimenotes("Bearer $token", nextPageNumber) else timenoteService.getPastTimenotes("Bearer $token", nextPageNumber)
+            var response = if(upcoming) timenoteService.getUpcomingTimenotes("Bearer $token", nextPageNumber) else timenoteService.getPastTimenotes("Bearer $token", nextPageNumber)
             if(response.code() == 401) {
-                response = timenoteService.getUpcomingTimenotes("Bearer $token", nextPageNumber)
-                //if(upcoming) timenoteService.getUpcomingTimenotes("Bearer ${Utils().refreshToken(sharedPreferences)}", nextPageNumber) else timenoteService.getPastTimenotes("Bearer ${Utils().refreshToken(sharedPreferences)}", nextPageNumber)
+                response = if(upcoming) timenoteService.getUpcomingTimenotes("Bearer ${Utils().refreshToken(sharedPreferences)}", nextPageNumber) else timenoteService.getPastTimenotes("Bearer ${Utils().refreshToken(sharedPreferences)}", nextPageNumber)
             }
             LoadResult.Page(
                 data = response.body()!!,

@@ -166,7 +166,7 @@ class Settings : Fragment(), View.OnClickListener {
                         title(R.string.change_password)
                         message(R.string.cant_start_with_password)
                         input(hintRes = R.string.new_password_again, inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD) { _, newPasswordAgain ->
-                            if (newPassword == newPasswordAgain) {
+                            if (newPassword.toString() == newPasswordAgain.toString()) {
                                 meViewModel.changePassword(tokenId!!, newPasswordAgain.toString()).observe(viewLifecycleOwner, Observer { rsp ->
                                     if (rsp.code() == 401) {
                                         loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer { newToken ->

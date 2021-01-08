@@ -1,33 +1,24 @@
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cl"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <com.google.android.material.appbar.AppBarLayout
-        android:elevation="0dp"
-        app:elevation="0dp"
-        style="@style/AppTheme.Toolbar"
-        android:layout_height="wrap_content"
-        android:background="@color/colorBackground">
-
-        <com.google.android.material.appbar.CollapsingToolbarLayout
-            android:elevation="0dp"
-            app:elevation="0dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_scrollFlags="scroll|snapMargins|enterAlwaysCollapsed">
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground">
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/home_ll"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <ImageView
-
                     android:layout_width="80dp"
-                    android:layout_height="50dp"
+                    android:layout_height="40dp"
                     android:src="@drawable/dayzee"
+                    android:id="@+id/dayzee"
                     android:text="@string/timeline"
                     app:layout_constraintEnd_toStartOf="@id/home_future_timeline"
                     app:layout_constraintStart_toEndOf="@id/home_past_timeline"
@@ -59,9 +50,40 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"/>
 
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:background="@color/colorBackground"
+    android:fitsSystemWindows="false"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/home_ll">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:elevation="0dp"
+        app:elevation="0dp"
+        style="@style/AppTheme.Toolbar"
+        android:layout_height="wrap_content"
+        android:background="@color/colorBackground">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:elevation="0dp"
+            app:elevation="0dp"
+            android:layout_width="match_parent"
+            app:layoutDescription="@xml/motion_scene_profile"
+            android:layout_height="wrap_content"
+            app:layout_scrollFlags="scroll|snap|enterAlwaysCollapsed">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
                 <TextView
+                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/div"
                     android:id="@+id/home_posted_recently"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -135,3 +157,4 @@
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

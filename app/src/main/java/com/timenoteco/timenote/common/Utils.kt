@@ -455,9 +455,10 @@ class Utils {
 
             nbrYear = period.years
             nbrMonth = period.minusYears(nbrYear.toLong()).months
+            val nD = period.minusYears(nbrYear.toLong()).minusMonths(nbrMonth.toLong()).days
 
             val duration = Duration.between(Instant.now(), Instant.parse(startDate))
-            nbrDay = duration.toDays().toInt()
+            nbrDay = if(duration.toDays().toInt() < nD) duration.toDays().toInt() else nD
             nbrHours = duration.minusDays(duration.toDays()).toHours().toInt()
             nbrMin = duration.minusDays(duration.toDays()).minusHours(duration.minusDays(duration.toDays()).toHours()).toMinutes().toInt()
 
@@ -562,9 +563,11 @@ class Utils {
 
             nbrYear = period.years
             nbrMonth = period.minusYears(nbrYear.toLong()).months
+            val nD = period.minusYears(nbrYear.toLong()).minusMonths(nbrMonth.toLong()).days
+
 
             val duration = Duration.between(Instant.now(), Instant.parse(startDate))
-            nbrDay = duration.toDays().toInt()
+            nbrDay = if(duration.toDays().toInt() < nD) duration.toDays().toInt() else nD
             nbrHours = duration.minusDays(duration.toDays()).toHours().toInt()
             nbrMin = duration.minusDays(duration.toDays()).minusHours(duration.minusDays(duration.toDays()).toHours()).toMinutes().toInt()
 

@@ -91,7 +91,7 @@
                 android:fitsSystemWindows="false"
                 android:minHeight="48dp"
                 app:layoutDescription="@xml/motion_scene_profile"
-                app:layout_scrollFlags="scroll|enterAlways|snap|exitUntilCollapsed"
+                app:layout_scrollFlags="scroll|snap|enterAlwaysCollapsed"
                 tools:context=".view.profileFlow.Profile">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -308,7 +308,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
-        <androidx.core.widget.NestedScrollView
+        <ScrollView
             android:background="@color/colorBackground"
             android:id="@+id/scrollable"
             android:layout_width="match_parent"
@@ -323,7 +323,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-        </androidx.core.widget.NestedScrollView>
+        </ScrollView>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

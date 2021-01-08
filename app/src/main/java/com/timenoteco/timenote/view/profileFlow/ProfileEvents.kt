@@ -479,6 +479,11 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
         notifyAdapterUpdate()
     }
 
+    fun scrollToTop(){
+        if(profile_rv?.layoutManager != null)
+            profile_rv?.layoutManager?.smoothScrollToPosition(profile_rv, null, 0)
+    }
+
     @ExperimentalPagingApi
     fun switchFilters(
         view: View,

@@ -76,8 +76,8 @@ class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         itemView.setOnClickListener { onCardClicked.onCardClicked(event) }
 
         itemView.profile_item_name_event.text = event.title
-        if(event.location != null)
-            itemView.profile_item_address_event.text = event.location.address.address.plus(", ").plus(event.location.address.city).plus(" ").plus(event.location.address.country)
+        if(event.location != null) itemView.profile_item_address_event.text = event.location.address.address.plus(", ").plus(event.location.address.city).plus(" ").plus(event.location.address.country)
+        else itemView.profile_item_address_event.text = ""
         itemView.profile_item_name_owner.text = event.createdBy.userName
         itemView.profile_item_date_event.text = if(isUpcoming) Utils().inTime(event.startingAt) else Utils().sinceTime(event.endingAt)
         itemView.profile_item_date_event.setOnClickListener {

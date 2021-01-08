@@ -105,7 +105,7 @@
                 android:fitsSystemWindows="false"
                 android:minHeight="48dp"
                 app:layoutDescription="@xml/motion_scene_profile"
-                app:layout_scrollFlags="scroll|enterAlways|snap|exitUntilCollapsed"
+                app:layout_scrollFlags="scroll|snap|enterAlwaysCollapsed"
                 tools:context=".view.profileFlow.Profile">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
