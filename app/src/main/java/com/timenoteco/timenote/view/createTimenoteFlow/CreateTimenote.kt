@@ -589,7 +589,6 @@ class CreateTimenote : Fragment(), View.OnClickListener,
             for(image in r!!){
                 ImageCompressor.compressBitmap(requireContext(), File(getPath(image)!!)){
                     images?.add(it)
-                    //images?.add("file://${it.absolutePath}")
                 }
             }
             screenSlideCreationTimenotePagerAdapter.images = images
@@ -1225,7 +1224,6 @@ class CreateTimenote : Fragment(), View.OnClickListener,
             }
 
             override fun onError(id: Int, ex: java.lang.Exception?) {
-                val k = ex?.message
             }
 
         })

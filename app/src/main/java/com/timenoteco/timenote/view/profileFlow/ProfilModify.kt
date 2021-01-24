@@ -61,6 +61,7 @@ import com.timenoteco.timenote.R
 import com.timenoteco.timenote.adapter.WebSearchAdapter
 import com.timenoteco.timenote.androidView.dialog.input
 import com.timenoteco.timenote.androidView.matisse.Matisse
+import com.timenoteco.timenote.common.ImageCompressor
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.common.stringLiveData
 import com.timenoteco.timenote.listeners.RefreshPicBottomNavListener
@@ -77,6 +78,7 @@ import io.branch.indexing.BranchUniversalObject
 import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
 import io.branch.referral.util.LinkProperties
+import kotlinx.android.synthetic.main.fragment_create_timenote.*
 import kotlinx.android.synthetic.main.fragment_profil_modify.*
 import java.io.File
 import java.io.FileOutputStream
@@ -635,9 +637,8 @@ class ProfilModify: Fragment(), View.OnClickListener,
         }
     }
 
-    fun pushPic(file: File, bitmap: Bitmap){
+    private fun pushPic(file: File){
         val transferUtiliy = TransferUtility(am, requireContext())
-        compressFile(file, bitmap)
         val key = "timenote/${UUID.randomUUID().mostSignificantBits}"
         val transferObserver = transferUtiliy.upload(
             "timenote-dev-images", key,
@@ -737,37 +738,18 @@ class ProfilModify: Fragment(), View.OnClickListener,
         }
     }
 
-    private fun saveImage(image: Bitmap, dialog: MaterialDialog): String? {
-        var savedImagePath: String? = null
-        val imageFileName = "JPEG_${Timestamp(System.currentTimeMillis())}.jpg"
-        val storageDir = File(
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-                .toString() + "/TIMENOTE_PICTURES"
-        )
-        var success = true
-        if (!storageDir.exists()) {
-            success = storageDir.mkdirs()
+
+    private fun saveTemporary(image: Bitmap, dialog: MaterialDialog){
+        val outputDir = requireContext().cacheDir
+        val name = "IMG_${System.currentTimeMillis()}"
+        val outputFile = File.createTempFile(name, ".jpg", outputDir)
+        val outputStream = FileOutputStream(outputFile)
+        image.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+        outputStream.close()
+        ImageCompressor.compressBitmap(requireContext(), outputFile){
+            pushPic(it)
+            dialog.dismiss()
         }
-        if (success) {
-            val imageFile = File(storageDir, imageFileName)
-            savedImagePath = imageFile.absolutePath
-            compressFile(imageFile, image)
-
-            galleryAddPic(savedImagePath, dialog)
-        }
-
-
-        return savedImagePath
-    }
-
-    private fun galleryAddPic(imagePath: String?, dialog: MaterialDialog) {
-        val mediaScanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
-        val f = File(imagePath!!)
-        val contentUri = Uri.fromFile(f)
-        mediaScanIntent.data = contentUri
-        requireActivity().sendBroadcast(mediaScanIntent)
-        dialog.dismiss()
-        utils.createImagePicker(this, requireContext())
     }
 
     override fun onImageSelectedFromWeb(bitmap: String, dialog: MaterialDialog) {
@@ -775,7 +757,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
         webSearchViewModel.decodeSampledBitmapFromResource(URL(bitmap), Rect(), 100, 100)
         webSearchViewModel.getBitmap().observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             if (it != null) {
-                saveImage(it, dialog)
+                saveTemporary(it, dialog)
                 webSearchViewModel.clearBitmap()
                 webSearchViewModel.getBitmap().removeObservers(viewLifecycleOwner)
             }
@@ -815,7 +797,9 @@ class ProfilModify: Fragment(), View.OnClickListener,
                 picturePickerUser()
             }
         } else if(requestCode == 112 && resultCode == Activity.RESULT_OK){
-            pushPic(File(Matisse.obtainPathResult(data)[0]), MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, Matisse.obtainResult(data)[0]))
+            ImageCompressor.compressBitmap(requireContext(), File(Matisse.obtainPathResult(data)[0])){
+                pushPic(it)
+            }
         }
         super.onActivityResult(requestCode, resultCode, data)
     }

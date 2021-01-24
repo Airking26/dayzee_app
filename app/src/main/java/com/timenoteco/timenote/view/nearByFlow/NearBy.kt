@@ -202,7 +202,6 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
             }
         }
 
-        nearbyFilterData.clear()
         prefs.stringLiveData("nearby", Gson().toJson(nearbyFilterData.loadNearbyFilter())).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             val typeNearby: Type = object : TypeToken<NearbyRequestBody?>() {}.type
             val nearbyModifyModel : NearbyRequestBody? = Gson().fromJson<NearbyRequestBody>(it, typeNearby)
@@ -238,13 +237,13 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
                 }
 
         timenotePagingAdapter.addDataRefreshListener { isEmpty ->
-            nearby_swipe_refresh.isRefreshing = false
+            nearby_swipe_refresh?.isRefreshing = false
             if (isEmpty) {
-                nearby_rv.visibility = View.GONE
-                nearby_nothing_to_display.visibility = View.VISIBLE
+                nearby_rv?.visibility = View.GONE
+                nearby_nothing_to_display?.visibility = View.VISIBLE
             } else {
-                nearby_rv.visibility = View.VISIBLE
-                nearby_nothing_to_display.visibility = View.GONE
+                nearby_rv?.visibility = View.VISIBLE
+                nearby_nothing_to_display?.visibility = View.GONE
             }
         }
     }
@@ -306,7 +305,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
                 val place = it.result?.placeLikelihoods?.get(0)?.place
                 googleMap?.addMarker(MarkerOptions().position(LatLng(place?.latLng?.latitude!!, place.latLng?.longitude!!)))
                 googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(place?.latLng?.latitude!!, place.latLng?.longitude!!), 15F))
-                nearbyViewModel.fetchLocation(place?.id!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer { detailedPlace ->
+                if(view != null) nearbyViewModel.fetchLocation(place?.id!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer { detailedPlace ->
                     if(detailedPlace.isSuccessful) nearbyFilterData.setWhere(Utils().setLocation(detailedPlace.body()!!, false, null))
                     firstTime = false
                 })

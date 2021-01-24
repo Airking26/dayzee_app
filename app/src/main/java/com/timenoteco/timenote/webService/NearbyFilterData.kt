@@ -62,7 +62,9 @@ class NearbyFilterData(context: Context) {
         notifyNearbyFilterChanged()
     }
 
-    fun clear(){}
-
+    fun clearData(nearbyRequestBody: NearbyRequestBody){
+        nearbyFilterModel = NearbyRequestBody(nearbyRequestBody.location,10, listOf(), SimpleDateFormat(ISO, Locale.getDefault()).format(System.currentTimeMillis()), Price(0, ""), 2)
+        notifyNearbyFilterChanged()
+    }
 
 }

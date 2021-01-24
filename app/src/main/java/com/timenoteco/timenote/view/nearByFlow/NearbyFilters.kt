@@ -92,6 +92,7 @@ class NearbyFilters : Fragment(), View.OnClickListener {
         nearby_filter_paid_timenote.setOnClickListener(this)
         nearby_filter_when.setOnClickListener(this)
         nearby_filter_where.setOnClickListener(this)
+        nearby_filter_clear_btn.setOnClickListener(this)
 
         nearby_distance_seekbar.onSeekChangeListener = object: OnSeekChangeListener{
             override fun onSeeking(seekParams: SeekParams?) {
@@ -191,6 +192,9 @@ class NearbyFilters : Fragment(), View.OnClickListener {
             nearby_filter_where -> startActivityForResult(
                 Autocomplete.IntentBuilder(
                     AutocompleteActivityMode.OVERLAY, placesList).build(requireContext()), AUTOCOMPLETE_REQUEST_CODE)
+            nearby_filter_clear_btn -> {
+                nearbyFilterData.clearData(nearbyFilterData.loadNearbyFilter()!!)
+            }
         }
     }
 

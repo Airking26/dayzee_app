@@ -88,11 +88,6 @@
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_stat_notif" />
 
-        <activity
-            android:name="com.yalantis.ucrop.UCropActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-
         <activity android:name="com.timenoteco.timenote.androidView.matisse.ui.MatisseActivity"/>
         <activity android:name="com.timenoteco.timenote.androidView.matisse.internal.ui.AlbumPreviewActivity"/>
         <activity android:name="com.timenoteco.timenote.androidView.matisse.internal.ui.SelectedPreviewActivity"/>

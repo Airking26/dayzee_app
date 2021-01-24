@@ -64,6 +64,8 @@ class ProfileCalendar: Fragment(), ItemCalendarAdapter.CalendarEventClicked {
         simpleDateFormatMonth = SimpleDateFormat("M", Locale.getDefault())
         simpleDateFormatDay = SimpleDateFormat("d", Locale.getDefault())
 
+        calendarAdapter = ItemCalendarAdapter(mutableListOf(), events, this)
+
         val today =
             Day(simpleDateFormatYear.format(System.currentTimeMillis()).toInt(),
                 simpleDateFormatMonth.format(System.currentTimeMillis()).toInt() - 1,

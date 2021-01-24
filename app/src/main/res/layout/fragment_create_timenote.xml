@@ -5,8 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorBackground"
     xmlns:fancy="http://schemas.android.com/apk/res-auto"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".view.createTimenoteFlow.CreateTimenote">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:id="@+id/create_timenote_ll"
