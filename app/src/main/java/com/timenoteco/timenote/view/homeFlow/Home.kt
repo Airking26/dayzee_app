@@ -15,14 +15,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Toast
-import androidx.core.view.ViewCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
 import androidx.preference.PreferenceManager
-import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
@@ -50,9 +48,6 @@ import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
 import io.branch.referral.util.LinkProperties
 import kotlinx.android.synthetic.main.fragment_home.*
-import kotlinx.android.synthetic.main.fragment_home.home_future_timeline
-import kotlinx.android.synthetic.main.fragment_home.home_past_timeline
-import kotlinx.android.synthetic.main.fragment_home.home_swipe_refresh
 import kotlinx.android.synthetic.main.friends_search_cl.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
@@ -93,7 +88,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         tokenId = prefs.getString(accessToken, null)
         refreshTokenId = prefs.getString(refreshToken, null)
-        if(!tokenId.isNullOrBlank()) loginViewModel.markAsAuthenticated() else findNavController().navigate(HomeDirections.actionGlobalNavigation())
+        if(!tokenId.isNullOrBlank()) loginViewModel.markAsAuthenticated() else loginViewModel.markAsGuest()
         loginViewModel.getAuthenticationState().observe(requireActivity(), Observer {
             when (it) {
                 LoginViewModel.AuthenticationState.UNAUTHENTICATED -> { findNavController().navigate(HomeDirections.actionGlobalNavigation()) }
@@ -261,13 +256,20 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         }
 
         home_rv?.apply {
+            setHasFixedSize(true)
+
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            adapter = timenotePagingAdapter
+            adapter = timenotePagingAdapter!!.withLoadStateFooter(
+                footer = TimenoteLoadStateAdapter{ timenotePagingAdapter!!.retry() }
+            )
         }
 
         home_recent_rv?.apply {
+            setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-            adapter = timenoteRecentPagingAdapter
+            adapter = timenoteRecentPagingAdapter!!.withLoadStateFooter(
+                footer = TimenoteRecentLoadStateAdapter{timenoteRecentPagingAdapter!!.retry()}
+            )
         }
 
         timenotePagingAdapter?.addDataRefreshListener {

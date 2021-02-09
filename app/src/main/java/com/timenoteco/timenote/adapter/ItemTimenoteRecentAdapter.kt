@@ -54,18 +54,19 @@ class ItemTimenoteRecentAdapter(private val timenotesToCome: List<TimenoteInfoDT
                 Glide
                     .with(itemView)
                     .load(timenote.pictures[0])
-                    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                    .thumbnail(0.1f)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .centerCrop()
-                    .placeholder(R.drawable.loader)
                     .into(itemView.timenote_recent_pic_imageview)
             }
 
             Glide
                 .with(itemView)
                 .load(timenote.createdBy.picture)
-                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                .apply(RequestOptions.circleCropTransform())
+                .thumbnail(0.1f)
                 .placeholder(R.drawable.circle_pic)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .apply(RequestOptions.circleCropTransform())
                 .into(itemView.timenote_recent_pic_user_imageview)
 
             itemView.timenote_recent_title.text = timenote.title

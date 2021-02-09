@@ -22,7 +22,7 @@ class TimenoteViewModel: ViewModel() {
     private val timenoteService = DayzeeRepository().getTimenoteService()
 
     fun getRecentTimenotePagingFlow(token: String, sharedPreferences: SharedPreferences) : Flow<PagingData<TimenoteInfoDTO>> = Pager(PagingConfig(pageSize = 1)){ TimenoteRecentPagingSource(token, timenoteService, sharedPreferences)}.flow.cachedIn(viewModelScope)
-    fun getUpcomingTimenotePagingFlow(token: String, upcoming: Boolean, sharedPreferences: SharedPreferences) = Pager(PagingConfig(pageSize = 1)){ TimenotePagingSource(token, timenoteService, upcoming, sharedPreferences) }.flow.cachedIn(viewModelScope)
+    fun getUpcomingTimenotePagingFlow(token: String, upcoming: Boolean, sharedPreferences: SharedPreferences) = Pager(PagingConfig(pageSize = 2)){ TimenotePagingSource(token, timenoteService, upcoming, sharedPreferences) }.flow.cachedIn(viewModelScope)
     fun getAroundTimenotePagingFlow(token: String, filterLocationDTO: FilterLocationDTO, sharedPreferences: SharedPreferences) = Pager(PagingConfig(pageSize = 1)){ TimenoteAroundPagingSource(token, timenoteService, filterLocationDTO, sharedPreferences) }.flow.cachedIn(viewModelScope)
     fun getSpecificTimenote(token: String, id: String) = flow { emit(timenoteService.getTimenoteId("Bearer $token",id)) }.asLiveData(viewModelScope.coroutineContext)
     fun modifySpecificTimenote(token: String, id: String, timenoteBody: CreationTimenoteDTO) =  flow {emit(timenoteService.modifyTimenote("Bearer $token",id, timenoteBody))}.asLiveData(viewModelScope.coroutineContext)

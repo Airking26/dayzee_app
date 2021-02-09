@@ -56,7 +56,7 @@ class ItemTimenoteAdapter(
     @ExperimentalTime
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: TimenoteViewHolder, position: Int) {
-            holder.bindTimenote(
+        holder.bindTimenote(
                 timenotes[position],
                 timenoteListenerListener,
                 fragment,
@@ -90,9 +90,10 @@ class ItemTimenoteAdapter(
             Glide
                 .with(itemView)
                 .load(timenote.createdBy.picture)
-                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                .apply(RequestOptions.circleCropTransform())
+                .thumbnail(0.1f)
                 .placeholder(R.drawable.circle_pic)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .apply(RequestOptions.circleCropTransform())
                 .into(itemView.timenote_pic_user_imageview)
 
             if(timenote.commentAccount!! > 0){
@@ -130,7 +131,9 @@ class ItemTimenoteAdapter(
                         Glide
                             .with(itemView)
                             .load(timenote.joinedBy.users[0].picture)
-                            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                            .thumbnail(0.1f)
+                            .placeholder(R.drawable.circle_pic)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
                             .apply(RequestOptions.circleCropTransform())
                             .into(itemView.timenote_pic_participant_three)
                         itemView.timenote_pic_participant_two_rl.visibility = View.GONE
@@ -140,14 +143,18 @@ class ItemTimenoteAdapter(
                         Glide
                             .with(itemView)
                             .load(timenote.joinedBy.users[0].picture)
-                            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                            .thumbnail(0.1f)
+                            .placeholder(R.drawable.circle_pic)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
                             .apply(RequestOptions.circleCropTransform())
                             .into(itemView.timenote_pic_participant_two)
 
                         Glide
                             .with(itemView)
                             .load(timenote.joinedBy.users[1].picture)
-                            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                            .thumbnail(0.1f)
+                            .placeholder(R.drawable.circle_pic)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
                             .apply(RequestOptions.circleCropTransform())
                             .into(itemView.timenote_pic_participant_three)
                         itemView.timenote_pic_participant_one_rl.visibility = View.GONE
@@ -156,21 +163,27 @@ class ItemTimenoteAdapter(
                         Glide
                             .with(itemView)
                             .load(timenote.joinedBy?.users?.get(0)?.picture)
-                            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                            .thumbnail(0.1f)
+                            .placeholder(R.drawable.circle_pic)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
                             .apply(RequestOptions.circleCropTransform())
                             .into(itemView.timenote_pic_participant_one)
 
                         Glide
                             .with(itemView)
                             .load(timenote.joinedBy?.users?.get(1)?.picture)
-                            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                            .thumbnail(0.1f)
+                            .placeholder(R.drawable.circle_pic)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
                             .apply(RequestOptions.circleCropTransform())
                             .into(itemView.timenote_pic_participant_two)
 
                         Glide
                             .with(itemView)
                             .load(timenote.joinedBy?.users?.get(2)?.picture)
-                            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                            .thumbnail(0.1f)
+                            .placeholder(R.drawable.circle_pic)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
                             .apply(RequestOptions.circleCropTransform())
                             .into(itemView.timenote_pic_participant_three)
                     }
@@ -249,6 +262,7 @@ class ItemTimenoteAdapter(
             if(timenote.description.isNullOrBlank()){
                 itemView.timenote_username_desc.visibility = View.GONE
             } else {
+                itemView.timenote_username_desc.visibility = View.VISIBLE
                 val ellipzise = "..."
                 val ellipsizeClickable = SpannableString(ellipzise)
                 val clickalbleEllipsize = object : ClickableSpan(){

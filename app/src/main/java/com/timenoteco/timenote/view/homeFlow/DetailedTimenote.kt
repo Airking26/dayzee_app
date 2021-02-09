@@ -365,6 +365,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         separator_1.setOnClickListener(this)
         separator_2.setOnClickListener(this)
         timenote_in_label.setOnClickListener(this)
+        detailed_timenote_username.setOnClickListener(this)
 
             detailed_timenote_btn_back.setOnClickListener { findNavController().popBackStack() }
     }
@@ -373,6 +374,8 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onClick(v: View?) {
         when(v){
+            detailed_timenote_username -> {
+                if(userInfoDTO.id != args.event?.createdBy?.id) findNavController().navigate(DetailedTimenoteDirections.actionGlobalProfileElse(args.from).setUserInfoDTO(args.event?.createdBy)) }
             timenote_comment -> {
                 comments_edittext.requestFocus()
                 imm.showSoftInput(comments_edittext, InputMethodManager.SHOW_IMPLICIT)

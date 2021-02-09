@@ -38,7 +38,6 @@
 
         <TextView
             android:shadowDy="1"
-            android:fontFamily="sans-serif-light"
             android:shadowDx="1"
             android:shadowRadius="1.5"
             android:shadowColor="@android:color/black"
@@ -71,7 +70,6 @@
         <TextView
             android:background="@drawable/gradient_timenote_bottom"
             android:shadowDy="1"
-            android:fontFamily="sans-serif-light"
             android:shadowDx="1"
             android:shadowRadius="1.5"
             android:shadowColor="@android:color/black"
