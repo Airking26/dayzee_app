@@ -251,8 +251,7 @@
                 android:layout_centerInParent="true"
                 android:id="@+id/timenote_pic_participant_one"
                 android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/beach" />
+                android:layout_height="24dp"/>
 
         </RelativeLayout>
 
@@ -268,8 +267,7 @@
                 android:layout_centerInParent="true"
                 android:id="@+id/timenote_pic_participant_two"
                 android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/beach" />
+                android:layout_height="24dp" />
 
         </RelativeLayout>
 
@@ -285,8 +283,7 @@
                 android:layout_centerInParent="true"
                 android:id="@+id/timenote_pic_participant_three"
                 android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/beach" />
+                android:layout_height="24dp" />
 
         </RelativeLayout>
 

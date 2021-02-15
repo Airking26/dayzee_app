@@ -91,7 +91,8 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         if(!tokenId.isNullOrBlank()) loginViewModel.markAsAuthenticated() else loginViewModel.markAsGuest()
         loginViewModel.getAuthenticationState().observe(requireActivity(), Observer {
             when (it) {
-                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> { findNavController().navigate(HomeDirections.actionGlobalNavigation()) }
+                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> {
+                    findNavController().navigate(HomeDirections.actionGlobalNavigation()) }
 
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> {
                     tokenId = prefs.getString(accessToken, null)
@@ -265,11 +266,8 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         }
 
         home_recent_rv?.apply {
-            setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-            adapter = timenoteRecentPagingAdapter!!.withLoadStateFooter(
-                footer = TimenoteRecentLoadStateAdapter{timenoteRecentPagingAdapter!!.retry()}
-            )
+            adapter = timenoteRecentPagingAdapter!!.withLoadStateFooter(footer = TimenoteRecentLoadStateAdapter{timenoteRecentPagingAdapter!!.retry()})
         }
 
         timenotePagingAdapter?.addDataRefreshListener {
@@ -279,7 +277,8 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                 home_rv?.visibility = View.GONE
                 home_posted_recently?.visibility = View.GONE
                 home_nothing_to_display?.visibility = View.VISIBLE
-            } else {
+            }
+            else {
                 home_recent_rv?.visibility = View.VISIBLE
                 home_rv?.visibility = View.VISIBLE
                 home_posted_recently?.visibility = View.VISIBLE
@@ -300,9 +299,12 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         }
 
         home_rv?.apply {
+            setHasFixedSize(true)
+
             layoutManager = LinearLayoutManager(requireContext())
-            adapter = timenotePagingAdapter
-        }
+            adapter = timenotePagingAdapter!!.withLoadStateFooter(
+                footer = TimenoteLoadStateAdapter{ timenotePagingAdapter!!.retry() }
+            )        }
 
         timenotePagingAdapter?.addDataRefreshListener {
             home_swipe_refresh?.isRefreshing = false

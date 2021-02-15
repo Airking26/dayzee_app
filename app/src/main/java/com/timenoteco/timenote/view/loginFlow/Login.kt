@@ -28,7 +28,7 @@ class Login : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         button1.setOnClickListener {
-            findNavController().navigate(LoginDirections.actionLoginToSignup())
+            //findNavController().navigate(LoginDirections.actionLoginToSignup())
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             viewModel.refuseAuthentication()

@@ -6,19 +6,7 @@
     app:startDestination="@id/home">
     <navigation
         android:id="@+id/navigation"
-        app:startDestination="@id/login">
-        <fragment
-            android:id="@+id/login"
-            android:name="com.timenoteco.timenote.view.loginFlow.Login"
-            android:label="fragment_login"
-            tools:layout="@layout/fragment_login">
-            <action
-                android:id="@+id/action_login_to_signup"
-                app:destination="@id/signup" />
-            <argument
-                android:name="x"
-                app:argType="boolean" />
-        </fragment>
+        app:startDestination="@id/signup">
         <fragment
             android:id="@+id/preferenceSubCategory"
             android:name="com.timenoteco.timenote.view.loginFlow.PreferenceSubCategory"
@@ -55,6 +43,7 @@
         <fragment
             android:id="@+id/signup"
             android:name="com.timenoteco.timenote.view.loginFlow.Signup"
+            tools:layout="@layout/fragment_signup"
             android:label="Signup">
             <action
                 android:id="@+id/action_signup_to_preferenceCategory"

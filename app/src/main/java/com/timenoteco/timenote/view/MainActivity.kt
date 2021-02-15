@@ -187,7 +187,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
 
                 control = navController
                 when (destination.id) {
-                    R.id.login -> {
+                    R.id.signup -> {
                         utils.hideStatusBar(this)
                         bottomNavView.visibility = View.GONE
                     }

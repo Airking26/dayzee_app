@@ -154,6 +154,7 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
 
         })
         profile_tablayout.setSelectedTabIndicatorColor(resources.getColor(android.R.color.darker_gray))
+        if(profile_vp.adapter != null)
         TabLayoutMediator(profile_tablayout, profile_vp) { _, _ -> }.attach()
     }
 

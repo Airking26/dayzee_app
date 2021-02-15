@@ -122,7 +122,9 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
 
             detailed_timenote_comments_rv.apply {
                 layoutManager = LinearLayoutManager(requireContext())
-                adapter = commentAdapter
+                adapter = commentAdapter.withLoadStateFooter(
+                        footer = TimenoteLoadStateAdapter{ commentAdapter.retry() }
+                )
             }
 
             lifecycleScope.launch {

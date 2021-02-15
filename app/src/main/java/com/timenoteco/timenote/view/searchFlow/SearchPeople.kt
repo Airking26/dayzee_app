@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
+import com.timenoteco.timenote.adapter.TimenoteLoadStateAdapter
 import com.timenoteco.timenote.adapter.UsersPagingAdapter
 import com.timenoteco.timenote.model.UserInfoDTO
 import com.timenoteco.timenote.viewModel.SearchViewModel
@@ -50,7 +51,9 @@ class SearchPeople: Fragment(), UsersPagingAdapter.SearchPeopleListener {
         )
         search_people_rv.apply {
             layoutManager = LinearLayoutManager(requireContext())
-            adapter = userAdapter
+            adapter =  userAdapter!!.withLoadStateFooter(
+                footer = TimenoteLoadStateAdapter{ userAdapter!!.retry() }
+            )
         }
 
         searchViewModel.getUserSearchLiveData().observe(viewLifecycleOwner, Observer {

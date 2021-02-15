@@ -31,10 +31,7 @@ import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
-import com.timenoteco.timenote.adapter.TimenoteComparator
-import com.timenoteco.timenote.adapter.TimenotePagingAdapter
-import com.timenoteco.timenote.adapter.UsersPagingAdapter
-import com.timenoteco.timenote.adapter.UsersShareWithPagingAdapter
+import com.timenoteco.timenote.adapter.*
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.GoToProfile
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
@@ -95,7 +92,9 @@ class TimenoteTAG: Fragment(), TimenoteOptionsListener, View.OnClickListener,
         timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils, userInfoDTO.id)
         timenote_tag_rv.apply {
             layoutManager = LinearLayoutManager(requireContext())
-            adapter = timenotePagingAdapter
+            adapter =  timenotePagingAdapter!!.withLoadStateFooter(
+                footer = TimenoteLoadStateAdapter{ timenotePagingAdapter!!.retry() }
+            )
         }
 
         lifecycleScope.launch {

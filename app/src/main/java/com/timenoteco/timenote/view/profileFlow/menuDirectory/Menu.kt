@@ -1,5 +1,8 @@
 package com.timenoteco.timenote.view.profileFlow.menuDirectory
 
+import android.Manifest
+import android.accounts.AccountManager
+import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -7,24 +10,36 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.google.android.gms.common.AccountPicker
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.BuildConfig
 import com.timenoteco.timenote.R
+import com.timenoteco.timenote.common.SynchronizeCalendars
 import com.timenoteco.timenote.model.UserInfoDTO
 import kotlinx.android.synthetic.main.fragment_menu.*
 import java.lang.reflect.Type
+import java.util.*
 
 
 class Menu : Fragment(), View.OnClickListener {
 
+    private val IS_EMAIL_LINKED = "is_email_linked"
+    private val GMAIL = "gmail"
     private lateinit var userInfoDTO: UserInfoDTO
     private lateinit var prefs : SharedPreferences
+    private val PERMISSIONS_CALENDAR = arrayOf(
+        Manifest.permission.READ_CALENDAR,
+        Manifest.permission.WRITE_CALENDAR
+    )
+    private val PERMISSION_CALENDAR_CODE = 12
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,7 +74,13 @@ class Menu : Fragment(), View.OnClickListener {
         when(v){
             menu_settings_cv -> findNavController().navigate(MenuDirections.actionMenuToSettings())
             menu_profile_cv -> findNavController().navigate(MenuDirections.actionGlobalProfileElse(4).setUserInfoDTO(userInfoDTO))
-            menu_preferences_cv -> findNavController().navigate(MenuDirections.actionMenuToPreferenceCategory())
+            menu_preferences_cv -> {
+                if(!hasPermissions(PERMISSIONS_CALENDAR)) requestPermissions(PERMISSIONS_CALENDAR, PERMISSION_CALENDAR_CODE)
+                else {
+                    SynchronizeCalendars().syncCalendars(requireContext())
+                    SynchronizeCalendars().readCalendar(requireContext(), 0, 0)
+                }
+            }
             menu_invite_friends_cv -> {
                 try {
                     val shareIntent = Intent(Intent.ACTION_SEND)
@@ -84,6 +105,15 @@ class Menu : Fragment(), View.OnClickListener {
         }
     }
 
+    private fun hasPermissions(permissions: Array<String>): Boolean {
+            for (permission in permissions) {
+                if (ActivityCompat.checkSelfPermission(requireContext(), permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false
+                }
+            }
+        return true
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -93,6 +123,22 @@ class Menu : Fragment(), View.OnClickListener {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 findNavController().navigate(MenuDirections.actionMenuToContacts())
             }
+        } else if( requestCode == PERMISSION_CALENDAR_CODE){
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                val intent = AccountPicker.newChooseAccountIntent(null, null, null, false, null, null, null, null)
+                startActivityForResult(intent, 13)
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(requestCode == 13 && resultCode == RESULT_OK){
+            val mEmail = Objects.requireNonNull<Intent>(data).getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
+            PreferenceManager.getDefaultSharedPreferences(requireContext()).edit().putString(GMAIL, mEmail).apply()
+            PreferenceManager.getDefaultSharedPreferences(requireContext()).edit().putBoolean(IS_EMAIL_LINKED, true).apply()
+            SynchronizeCalendars().syncCalendars(requireContext())
+            SynchronizeCalendars().readCalendar(requireContext(), 0, 0)
         }
     }
 }

@@ -37,10 +37,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
-import com.timenoteco.timenote.adapter.TimenoteComparator
-import com.timenoteco.timenote.adapter.TimenotePagingAdapter
-import com.timenoteco.timenote.adapter.UsersPagingAdapter
-import com.timenoteco.timenote.adapter.UsersShareWithPagingAdapter
+import com.timenoteco.timenote.adapter.*
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.GoToProfile
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
@@ -113,7 +110,9 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
         timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils, userInfoDTO.id)
         timenote_around_rv.apply {
             layoutManager = LinearLayoutManager(requireContext())
-            adapter = timenotePagingAdapter
+            adapter =  timenotePagingAdapter!!.withLoadStateFooter(
+                footer = TimenoteLoadStateAdapter{ timenotePagingAdapter!!.retry() }
+            )
         }
 
         lifecycleScope.launch {

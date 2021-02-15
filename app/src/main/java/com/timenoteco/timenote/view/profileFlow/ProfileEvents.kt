@@ -143,7 +143,9 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
             isFuture, listOfAlarms.getAlarms(), isOnMyProfile)
         profile_rv.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            adapter = profileEventPagingAdapter
+            adapter =  profileEventPagingAdapter!!.withLoadStateFooter(
+                footer = TimenoteLoadStateAdapter{ profileEventPagingAdapter!!.retry() }
+            )
         }
 
         lifecycleScope.launch {

@@ -31,10 +31,7 @@ import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.timenoteco.timenote.R
-import com.timenoteco.timenote.adapter.TimenoteComparator
-import com.timenoteco.timenote.adapter.TimenotePagingAdapter
-import com.timenoteco.timenote.adapter.UsersPagingAdapter
-import com.timenoteco.timenote.adapter.UsersShareWithPagingAdapter
+import com.timenoteco.timenote.adapter.*
 import com.timenoteco.timenote.common.Utils
 import com.timenoteco.timenote.listeners.TimenoteOptionsListener
 import com.timenoteco.timenote.model.*
@@ -86,7 +83,9 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
             val userAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils, userInfoDTO.id)
             search_tag_rv.apply {
                 layoutManager = LinearLayoutManager(requireContext())
-                adapter = userAdapter
+                adapter =  userAdapter!!.withLoadStateFooter(
+                    footer = TimenoteLoadStateAdapter{ userAdapter!!.retry() }
+                )
             }
             searchViewModel.getTagSearchLiveData().observe(viewLifecycleOwner, Observer {
                 lifecycleScope.launch {

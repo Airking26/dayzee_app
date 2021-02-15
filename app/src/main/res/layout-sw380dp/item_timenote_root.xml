@@ -11,8 +11,6 @@
         android:id="@+id/timenote_vp"
         android:layout_width="match_parent"
         android:layout_height="250dp"
-        android:scaleType="centerCrop"
-        android:background="@drawable/ex"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
@@ -86,7 +84,7 @@
         android:shadowDx="1"
         android:shadowDy="1"
         android:shadowRadius="1.5"
-        android:text="11 Aug\n15:30"
+        android:text="11\nAug"
         android:textColor="@android:color/white"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@id/separator_2"
@@ -126,7 +124,6 @@
         android:layout_marginTop="16dp"
         android:visibility="gone"
         android:id="@+id/timenote_in_label"
-        android:fontFamily="sans-serif-light"
         android:textSize="16sp"
         android:shadowColor="@android:color/black"
         android:shadowDx="1"
@@ -260,8 +257,7 @@
                 android:layout_centerInParent="true"
                 android:id="@+id/timenote_pic_participant_one"
                 android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/beach" />
+                android:layout_height="24dp" />
 
         </RelativeLayout>
 
@@ -277,8 +273,7 @@
             android:layout_centerInParent="true"
             android:id="@+id/timenote_pic_participant_two"
             android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/beach" />
+            android:layout_height="24dp" />
 
         </RelativeLayout>
 
@@ -294,8 +289,7 @@
             android:layout_centerInParent="true"
             android:id="@+id/timenote_pic_participant_three"
             android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/beach" />
+            android:layout_height="24dp" />
 
         </RelativeLayout>
 

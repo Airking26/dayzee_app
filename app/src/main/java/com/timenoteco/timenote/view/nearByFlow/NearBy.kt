@@ -121,7 +121,8 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
                     tokenId = prefs.getString(accessToken, null)
                     findNavController().popBackStack(R.id.nearBy, false)
                 }
-                LoginViewModel.AuthenticationState.GUEST -> findNavController().popBackStack(R.id.nearBy, false)
+                LoginViewModel.AuthenticationState.GUEST ->
+                    findNavController().popBackStack(R.id.nearBy, false)
             }
         })
         Places.initialize(requireContext(), "AIzaSyBhM9HQo1fzDlwkIVqobfmrRmEMCWTU1CA")
@@ -228,7 +229,9 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     @ExperimentalPagingApi
     private fun loadData(nearbyModifyModel: NearbyRequestBody?) {
         timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, Utils(), userInfoDTO?.id)
-        nearby_rv.adapter = timenotePagingAdapter
+        nearby_rv.adapter =  timenotePagingAdapter.withLoadStateFooter(
+            footer = TimenoteLoadStateAdapter{ timenotePagingAdapter.retry() }
+        )
         nearby_rv.layoutManager = LinearLayoutManager(requireContext())
                 lifecycleScope.launch {
                     nearbyViewModel.getNearbyResults(nearbyModifyModel!!, prefs).collectLatest { pagingData ->
@@ -631,10 +634,5 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     override fun onRemove(id: String) {
     }
 
-    override fun onPause() {
-        super.onPause()
-        if(loginViewModel.getAuthenticationState().value == LoginViewModel.AuthenticationState.GUEST){
-            loginViewModel.markAsUnauthenticated()
-        }
-    }
+
 }
