@@ -572,16 +572,27 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     }
 
     override fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO) {
+        val map: MutableMap<Long, String> = Gson().fromJson(prefs.getString("mapEventIdToTimenote", null), object : TypeToken<MutableMap<Long, String>>() {}.type) ?: mutableMapOf()
         timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {
-            if(it.code() == 401) {
+            if(it.isSuccessful) {
+                timenotePagingAdapter?.refresh()
+                if(map.isNotEmpty() && map.filterValues { id -> id == timenoteInfoDTO.id }.keys.isNotEmpty()) {
+                    map.remove(map.filterValues { id -> id == timenoteInfoDTO.id }.keys.first())
+                    prefs.edit().putString("mapEventIdToTimenote", Gson().toJson(map)).apply()
+                }
+            }
+            else if(it.code() == 401) {
                 loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer { newAccessToken ->
                     tokenId = newAccessToken
                     timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {tid ->
                         if(tid.isSuccessful) timenotePagingAdapter?.refresh()
+                        if(map.isNotEmpty() && map.filterValues { id -> id == timenoteInfoDTO.id }.keys.isNotEmpty()) {
+                            map.remove(map.filterValues { id -> id == timenoteInfoDTO.id }.keys.first())
+                            prefs.edit().putString("mapEventIdToTimenote", Gson().toJson(map)).apply()
+                        }
                     })
                 })
             }
-            if(it.isSuccessful) timenotePagingAdapter?.refresh()
         })
     }
 

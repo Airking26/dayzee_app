@@ -15,6 +15,7 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.location.Geocoder
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
@@ -42,6 +43,7 @@ import com.timenoteco.timenote.androidView.matisse.MimeType
 import com.timenoteco.timenote.androidView.matisse.engine.impl.GlideEngine
 import com.timenoteco.timenote.androidView.matisse.filter.Filter
 import com.timenoteco.timenote.androidView.matisse.internal.entity.CaptureStrategy
+import com.timenoteco.timenote.model.Address
 import com.timenoteco.timenote.model.DetailedPlace
 import com.timenoteco.timenote.model.Location
 import com.timenoteco.timenote.model.accessToken
@@ -53,10 +55,7 @@ import java.text.SimpleDateFormat
 import java.time.*
 import java.util.*
 import kotlin.math.abs
-import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
-import kotlin.time.milliseconds
-import kotlin.time.toDuration
 
 class Utils {
 
@@ -264,7 +263,7 @@ class Utils {
         val DATE_FORMAT_DAY = "d MMM yyyy"
         val DATE_FORMAT_TIME = "hh:mm aaa"
         val DATE_FORMAT_TIME_FORMATED = "d\nMMM"
-        val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = "d MMM.\nhh:mm"
+        val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = "d MMM\nhh:mm"
         val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
         val test = "2020-11-13T12:00:00.000-04:00"
@@ -441,7 +440,7 @@ class Utils {
     }
 
     @ExperimentalTime
-    fun inTime(startDate: String): String {
+    fun inTime(startDate: String, context: Context): String {
         val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
         val nbrYear : Int
         val nbrMonth: Int
@@ -474,10 +473,17 @@ class Utils {
             nbrSec = c.get(Calendar.SECOND) * 1000
         }
 
-        return formatInTime(nbrYear, nbrMonth, nbrDay, nbrHours, nbrMin)
+        return formatInTime(nbrYear, nbrMonth, nbrDay, nbrHours, nbrMin, context)
     }
 
-    private fun formatInTime(nbrYear: Int, nbrMonth: Int, nbrDay: Int, nbrHour: Int, nbrMin: Int): String {
+    private fun formatInTime(
+        nbrYear: Int,
+        nbrMonth: Int,
+        nbrDay: Int,
+        nbrHour: Int,
+        nbrMin: Int,
+        context: Context
+    ): String {
 
         val decountTime: String
         if(nbrYear <= 0 && nbrMonth <= 0 && nbrDay <= 0 && nbrHour <= 0 && nbrMin < 0){
@@ -488,60 +494,60 @@ class Utils {
                 if(nbrDay <= 0){
                     decountTime = if(nbrHour > 1){
                         if(nbrMin > 1){
-                            "In $nbrHour hours and $nbrMin minutes"
+                            context.resources.getQuantityString(R.plurals.hours_plural_minutes_vary, nbrMin, nbrHour, nbrMin)
                         } else {
-                            "In $nbrHour hours and $nbrMin minute"
+                            context.resources.getQuantityString(R.plurals.hours_plural_minutes_vary, nbrMin, nbrHour, nbrMin)
                         }
                     } else if(nbrHour == 1){
                         if(nbrMin > 1){
-                            "In $nbrHour hour and $nbrMin minutes"
+                            context.resources.getQuantityString(R.plurals.hours_singular_minutes_vary,nbrMin,  nbrHour, nbrMin)
                         } else {
-                            "In $nbrHour hour and $nbrMin minute"
+                            context.resources.getQuantityString(R.plurals.hours_singular_minutes_vary,nbrMin,  nbrHour, nbrMin)
                         }
                     } else {
                         if(nbrMin > 1){
-                            "In $nbrMin minutes"
+                            context.resources.getQuantityString(R.plurals.no_hour_minutes_vary, nbrMin, nbrHour, nbrMin)
                         } else {
-                            "In $nbrMin minute"
+                            context.resources.getQuantityString(R.plurals.no_hour_minutes_vary, nbrMin, nbrHour, nbrMin)
                         }
                     }
                 } else {
                     decountTime = if(nbrDay > 1){
-                        if(nbrHour > 1) "In $nbrDay days and $nbrHour hours"
-                        else "In $nbrDay days and $nbrHour hour"
+                        if(nbrHour > 1) context.resources.getQuantityString(R.plurals.days_plural_hours_vary, nbrHour, nbrDay, nbrHour)
+                        else context.resources.getQuantityString(R.plurals.days_plural_hours_vary, nbrHour, nbrDay, nbrHour)
                     } else {
-                        if(nbrHour > 1) "In $nbrDay day and $nbrHour hours"
-                        else "In $nbrDay day and $nbrHour hour"
+                        if(nbrHour > 1) context.resources.getQuantityString(R.plurals.days_singular_hours_vary, nbrHour, nbrDay, nbrHour)
+                        else context.resources.getQuantityString(R.plurals.days_singular_hours_vary, nbrHour, nbrHour, nbrHour)
                     }
 
                 }
             } else {
                 decountTime = if(nbrMonth > 1){
                     if(nbrDay > 1){
-                        "In $nbrMonth months and $nbrDay days"
+                        context.resources.getQuantityString(R.plurals.months_plural_days_vary, nbrDay, nbrMonth, nbrDay)
                     } else {
-                        "In $nbrMonth months and $nbrDay day"
+                        context.resources.getQuantityString(R.plurals.months_plural_days_vary, nbrDay, nbrMonth, nbrDay)
                     }
                 } else {
                     if(nbrDay >1){
-                        "In $nbrMonth month and $nbrDay days"
+                        context.resources.getQuantityString(R.plurals.months_singular_days_vary, nbrDay, nbrMonth, nbrDay)
                     } else {
-                        "In $nbrMonth month and $nbrDay day"
+                        context.resources.getQuantityString(R.plurals.months_singular_days_vary, nbrDay, nbrMonth, nbrDay)
                     }
                 }
             }
         } else {
             decountTime = if(nbrYear > 1){
                 if(nbrMonth > 1) {
-                    "In $nbrYear years and $nbrMonth months"
+                    context.resources.getQuantityString(R.plurals.years_plural_months_vary, nbrMonth, nbrYear, nbrMonth)
                 } else {
-                    "In $nbrYear years and $nbrMonth month"
+                    context.resources.getQuantityString(R.plurals.years_plural_months_vary, nbrMonth, nbrYear, nbrMonth)
                 }
             } else {
                 if(nbrMonth > 1){
-                    "In $nbrYear year and $nbrMonth months"
+                    context.resources.getQuantityString(R.plurals.years_singular_month_vary, nbrMonth, nbrYear, nbrMonth)
                 } else {
-                    "In $nbrYear year and $nbrMonth month"
+                    context.resources.getQuantityString(R.plurals.years_singular_month_vary, nbrMonth, nbrYear, nbrMonth)
                 }
             }
         }
@@ -550,7 +556,7 @@ class Utils {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun sinceTime(startDate: String): String {
+    fun sinceTime(startDate: String, context: Context): String {
         val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
         val nbrYear : Int
         val nbrMonth: Int
@@ -582,14 +588,16 @@ class Utils {
             nbrMin = c.get(Calendar.MINUTE)
         }
 
-        return formatSinceTime(abs(nbrYear), abs(nbrMonth), abs(nbrDay), abs(nbrHours), abs(nbrMin)) }
+        return formatSinceTime(abs(nbrYear), abs(nbrMonth), abs(nbrDay), abs(nbrHours), abs(nbrMin), context)
+    }
 
     private fun formatSinceTime(
         nbrYear: Int,
         nbrMonth: Int,
         nbrDay: Int,
         nbrHours: Int,
-        nbrMin: Int
+        nbrMin: Int,
+        context: Context
     ): String {
         val decountTime: String
         if(nbrYear == 0){
@@ -597,54 +605,54 @@ class Utils {
                 if(nbrDay == 0){
                     decountTime = if(nbrHours > 1){
                         if(nbrMin > 1){
-                            "Since $nbrHours hours and $nbrMin minutes"
+                            context.resources.getQuantityString(R.plurals.since_hours_plural_minutes_vary, nbrMin, nbrHours, nbrMin)
                         } else {
-                            "Since $nbrHours hours and $nbrMin minute"
+                            context.resources.getQuantityString(R.plurals.since_hours_plural_minutes_vary, nbrMin, nbrHours, nbrMin)
                         }
                     } else {
                         if(nbrMin > 1){
-                            "Since $nbrHours hour and $nbrMin minutes"
+                            context.resources.getQuantityString(R.plurals.since_hours_singular_minutes_vary, nbrMin, nbrHours, nbrMin)
                         } else {
-                            "Since $nbrHours hour and $nbrMin minute"
+                            context.resources.getQuantityString(R.plurals.since_hours_singular_minutes_vary, nbrMin, nbrHours, nbrMin)
                         }
                     }
                 } else {
                     decountTime = if(nbrDay > 1){
-                        if(nbrHours > 1) "Since $nbrDay days and $nbrHours hours"
-                        else "Since $nbrDay days and $nbrHours hour"
+                        if(nbrHours > 1) context.resources.getQuantityString(R.plurals.since_days_plural_hours_vary, nbrHours, nbrDay, nbrHours)
+                        else context.resources.getQuantityString(R.plurals.since_days_plural_hours_vary, nbrHours, nbrDay, nbrHours)
                     } else {
-                        if(nbrHours > 1) "Since $nbrDay day and $nbrHours hours"
-                        else "Since $nbrDay day and $nbrHours hour"
+                        if(nbrHours > 1) context.resources.getQuantityString(R.plurals.since_days_singular_hours_vary, nbrHours, nbrDay, nbrHours)
+                        else context.resources.getQuantityString(R.plurals.since_days_singular_hours_vary, nbrHours, nbrDay, nbrHours)
                     }
 
                 }
             } else {
                 decountTime = if(nbrMonth > 1){
                     if(nbrDay > 1){
-                        "Since $nbrMonth months and $nbrDay days"
+                        context.resources.getQuantityString(R.plurals.since_months_plural_days_vary, nbrDay, nbrMonth, nbrDay)
                     } else {
-                        "Since $nbrMonth months and $nbrDay day"
+                        context.resources.getQuantityString(R.plurals.since_months_plural_days_vary, nbrDay, nbrMonth, nbrDay)
                     }
                 } else {
                     if(nbrDay >1){
-                        "Since $nbrMonth month and $nbrDay days"
+                        context.resources.getQuantityString(R.plurals.since_months_singular_days_vary, nbrDay, nbrMonth, nbrDay)
                     } else {
-                        "Since $nbrMonth month and $nbrDay day"
+                        context.resources.getQuantityString(R.plurals.since_months_singular_days_vary, nbrDay, nbrMonth, nbrDay)
                     }
                 }
             }
         } else {
             decountTime = if(nbrYear > 1){
                 if(nbrMonth > 1) {
-                    "Since $nbrYear years and $nbrMonth months"
+                    context.resources.getQuantityString(R.plurals.since_years_plural_months_vary, nbrMonth, nbrYear, nbrMonth)
                 } else {
-                    "Since $nbrYear years and $nbrMonth month"
+                    context.resources.getQuantityString(R.plurals.since_years_plural_months_vary, nbrMonth, nbrYear, nbrMonth)
                 }
             } else {
                 if(nbrMonth > 1){
-                    "Since $nbrYear year and $nbrMonth months"
+                    context.resources.getQuantityString(R.plurals.since_years_singular_month_vary, nbrMonth, nbrYear, nbrMonth)
                 } else {
-                    "Since $nbrYear year and $nbrMonth month"
+                    context.resources.getQuantityString(R.plurals.since_years_singular_month_vary, nbrMonth, nbrYear, nbrMonth)
                 }
             }
         }
@@ -664,7 +672,7 @@ class Utils {
             if(n.types.contains("country")) country = n.long_name
         }
         return Location( detailedPlace.result.geometry.location.lng, detailedPlace.result.geometry.location.lat,
-            com.timenoteco.timenote.model.Address(detailedPlace.result.name, zipcode, city, country))
+            Address(detailedPlace.result.name, zipcode, city, country))
     }
 
     private fun formatOffset(hours: Int, minutes: Int, sharedPreferences: SharedPreferences){
@@ -696,6 +704,14 @@ class Utils {
         val newAccessToken = authService.refreshAccessToken(sharedPreferences.getString(com.timenoteco.timenote.model.refreshToken, null)!!)
         sharedPreferences.edit().putString(accessToken, newAccessToken.body()?.accessToken).apply()
         return newAccessToken.body()?.accessToken
+    }
+
+    fun getLocaFromFromAddress(context: Context, address: String): Location? {
+        val geo = Geocoder(context)
+        val g = if(!address.isBlank()) geo.getFromLocationName(address, 5) else listOf()
+        return if(g.isNotEmpty())
+            Location(g[0].longitude, g[0].latitude, Address(address, "", "", ""))
+        else null
     }
 }
 

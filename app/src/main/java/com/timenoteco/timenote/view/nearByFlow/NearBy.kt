@@ -22,6 +22,7 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
 import androidx.preference.PreferenceManager
@@ -125,7 +126,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
                     findNavController().popBackStack(R.id.nearBy, false)
             }
         })
-        Places.initialize(requireContext(), "AIzaSyBhM9HQo1fzDlwkIVqobfmrRmEMCWTU1CA")
+        Places.initialize(requireContext(), "AIzaSyD_FbqxSgC2WpoixqcP81vFmfrVZH42RVY")
         placesClient = Places.createClient(requireContext())
 
 
@@ -600,14 +601,30 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
 
     override fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         if(userInfoDTO == null) loginViewModel.markAsUnauthenticated()
-        else timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            if(it.code() == 401) {
-                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer {newAccessToken ->
-                    tokenId = newAccessToken
-                    timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id)
-                })
-            }
-        })
+        else {
+            val map: MutableMap<Long, String> = Gson().fromJson(prefs.getString("mapEventIdToTimenote", null), object : TypeToken<MutableMap<Long, String>>() {}.type) ?: mutableMapOf()
+            timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                if(it.isSuccessful) {
+                    timenotePagingAdapter?.refresh()
+                    if(map.isNotEmpty() && map.filterValues { id -> id == timenoteInfoDTO.id }.keys.isNotEmpty()) {
+                        map.remove(map.filterValues { id -> id == timenoteInfoDTO.id }.keys.first())
+                        prefs.edit().putString("mapEventIdToTimenote", Gson().toJson(map)).apply()
+                    }
+                }
+                else if(it.code() == 401) {
+                    loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer { newAccessToken ->
+                        tokenId = newAccessToken
+                        timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, androidx.lifecycle.Observer {tid ->
+                            if(tid.isSuccessful) timenotePagingAdapter?.refresh()
+                            if(map.isNotEmpty() && map.filterValues { id -> id == timenoteInfoDTO.id }.keys.isNotEmpty()) {
+                                map.remove(map.filterValues { id -> id == timenoteInfoDTO.id }.keys.first())
+                                prefs.edit().putString("mapEventIdToTimenote", Gson().toJson(map)).apply()
+                            }
+                        })
+                    })
+                }
+            })
+        }
     }
 
     override fun onDuplicateClicked(timenoteInfoDTO: TimenoteInfoDTO) {

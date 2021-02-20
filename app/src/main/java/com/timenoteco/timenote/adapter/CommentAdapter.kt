@@ -94,7 +94,7 @@ class CommentAdapter(
                 sdf.parse(createdAt).time
             }
             val c: Calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"))
-            c.timeInMillis = System.currentTimeMillis() + 5000 - d
+            c.timeInMillis = System.currentTimeMillis() + 10000 - d
             val mYear: Int = c.get(Calendar.YEAR) - 1970
             val mMonth: Int = c.get(Calendar.MONTH)
             val mDay: Int = c.get(Calendar.DAY_OF_MONTH) - 1
@@ -105,28 +105,28 @@ class CommentAdapter(
             if(mYear <= 0){
                 if(mMonth <= 0){
                     if(mDay <=0){
-                        if(mHours <= 0){
+                        timeSince = if(mHours <= 0){
                             if(mMin <= 0){
-                                timeSince = "few seconds ago"
+                                itemView.context.getString(R.string.few_sec_ago)
                             } else {
-                                if(mMin > 1) timeSince = "$mMin minutes"
-                                else timeSince = "$mMin minute"
+                                if(mMin > 1) itemView.context.resources.getQuantityString(R.plurals.time_minutes_comment, mMin, mMin)
+                                else itemView.context.resources.getQuantityString(R.plurals.time_minutes_comment, mMin, mMin)
                             }
                         } else {
-                            if(mHours > 1) timeSince = "$mHours hours"
-                            else timeSince = "$mHours hour"
+                            if(mHours > 1) itemView.context.resources.getQuantityString(R.plurals.time_hours_comment, mHours, mHours)
+                            else itemView.context.resources.getQuantityString(R.plurals.time_hours_comment, mHours, mHours)
                         }
                     } else {
-                        if(mDay > 1) timeSince = "$mDay days"
-                        else timeSince = "$mDay day"
+                        timeSince = if(mDay > 1) itemView.context.resources.getQuantityString(R.plurals.time_days_comment, mDay, mDay)
+                        else itemView.context.resources.getQuantityString(R.plurals.time_days_comment, mDay, mDay)
                     }
                 } else {
-                    if(mMonth > 1) timeSince = "$mMonth months"
-                    else timeSince = "$mMonth month"
+                    timeSince = if(mMonth > 1) itemView.context.resources.getQuantityString(R.plurals.time_months_comment, mMonth, mMonth)
+                    else itemView.context.resources.getQuantityString(R.plurals.time_months_comment, mMonth, mMonth)
                 }
             } else {
-                if(mYear > 1) timeSince = "$mYear years"
-                else timeSince = "$mYear year"
+                timeSince = if(mYear > 1) itemView.context.resources.getQuantityString(R.plurals.time_years_comment, mYear, mYear)
+                else  itemView.context.resources.getQuantityString(R.plurals.time_years_comment, mYear, mYear)
             }
 
             return timeSince

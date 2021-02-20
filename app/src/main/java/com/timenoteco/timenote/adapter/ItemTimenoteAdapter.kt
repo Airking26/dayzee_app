@@ -96,10 +96,12 @@ class ItemTimenoteAdapter(
                 .apply(RequestOptions.circleCropTransform())
                 .into(itemView.timenote_pic_user_imageview)
 
+
+
             if(timenote.commentAccount!! > 0){
                 itemView.timenote_comment_account.visibility = View.VISIBLE
-                if(timenote.commentAccount == 1) itemView.timenote_comment_account.text = "See comment"
-                else itemView.timenote_comment_account.text = "See the ${timenote.commentAccount} comments"
+                if(timenote.commentAccount == 1) itemView.timenote_comment_account.text = itemView.context.getString(R.string.see_comment)
+                else itemView.timenote_comment_account.text = String.format(itemView.context.getString(R.string.see_comments), timenote.commentAccount)
             } else {
                 itemView.timenote_comment_account.visibility = View.GONE
             }
@@ -113,17 +115,17 @@ class ItemTimenoteAdapter(
 
             if(!timenote.joinedBy?.users.isNullOrEmpty()){
                 when {
-                    timenote.joinedBy?.count == 1 -> addedBy = "Saved by ${timenote.joinedBy.users[0].userName}"
-                    timenote.joinedBy?.count in 1..20 -> addedBy = "Saved by ${timenote.joinedBy?.users?.get(0)?.userName} and ${timenote.joinedBy?.count!! - 1} other people"
-                    timenote.joinedBy?.count in 21..100 -> addedBy = "Saved by ${timenote.joinedBy?.users?.get(0)?.userName} and tens of other people"
-                    timenote.joinedBy?.count in 101..2000 -> addedBy = "Saved by ${timenote.joinedBy?.users?.get(0)?.userName} and hundreds of other people"
-                    timenote.joinedBy?.count in 2001..2000000 -> addedBy = "Saved by ${timenote.joinedBy?.users?.get(0)?.userName} and thousands of other people"
-                    timenote.joinedBy?.count!! > 2000000 -> addedBy = "Saved by ${timenote.joinedBy?.users?.get(0)?.userName} and millions of other people"
+                    timenote.joinedBy?.count == 1 -> addedBy = String.format(itemView.context.getString(R.string.saved_by_one), timenote.joinedBy.users[0].userName)
+                    timenote.joinedBy?.count in 1..20 -> addedBy = String.format(itemView.context.getString(R.string.saved_by_one_and_other, timenote.joinedBy?.users?.get(0)?.userName, timenote.joinedBy?.count!! - 1))
+                    timenote.joinedBy?.count in 21..100 -> addedBy = String.format(itemView.context.getString(R.string.saved_by_tens), timenote.joinedBy?.users?.get(0)?.userName)
+                    timenote.joinedBy?.count in 101..2000 -> addedBy = String.format(itemView.context.getString(R.string.saved_by_hundreds), timenote.joinedBy?.users?.get(0)?.userName)
+                    timenote.joinedBy?.count in 2001..2000000 -> addedBy = String.format(itemView.context.getString(R.string.saved_by_thousands), timenote.joinedBy?.users?.get(0)?.userName)
+                    timenote.joinedBy?.count!! > 2000000 -> addedBy = String.format(itemView.context.getString(R.string.saved_by_millions), timenote.joinedBy?.users?.get(0)?.userName)
                 }
 
                 addedByFormated = SpannableStringBuilder(addedBy)
-                addedByFormated.setSpan(light, 0, 8, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
-                addedByFormated.setSpan(bold, 9, addedBy.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+                addedByFormated.setSpan(light, 0, addedBy.split(" ")[0].length + addedBy.split(" ")[1].length + 1, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+                addedByFormated.setSpan(bold, addedBy.split(" ")[0].length + addedBy.split(" ")[1].length + 2, addedBy.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
                 itemView.timenote_added_by.text = addedByFormated
 
                 when (timenote.joinedBy?.users?.size) {
@@ -189,10 +191,10 @@ class ItemTimenoteAdapter(
                     }
                 } } else {
                 if(timenote.joinedBy?.count!! > 0){
-                    addedBy = "Saved by ${timenote.joinedBy.count} people"
+                    addedBy = itemView.context.resources.getQuantityString(R.plurals.saved_by_count, timenote.joinedBy.count, timenote.joinedBy.count)
                     val addedByFormated = SpannableStringBuilder(addedBy)
-                    addedByFormated.setSpan(light, 0, 8, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
-                    addedByFormated.setSpan(bold, 9, addedBy.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+                    addedByFormated.setSpan(light, 0, addedBy.split(" ")[0].length + addedBy.split(" ")[1].length + 1, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+                    addedByFormated.setSpan(bold, addedBy.split(" ")[0].length + addedBy.split(" ")[1].length + 2, addedBy.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
                     itemView.timenote_added_by.text = addedByFormated
                     itemView.timenote_pic_participant_two_rl.visibility = View.GONE
                     itemView.timenote_pic_participant_three_rl.visibility = View.GONE
@@ -354,13 +356,13 @@ class ItemTimenoteAdapter(
             itemView.timenote_year.visibility = View.INVISIBLE
             itemView.timenote_in_label.visibility = View.VISIBLE
             if (isFromFuture) {
-                if(utils.inTime(timenote.startingAt) != "LIVE") itemView.timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0,0, 0)
+                if(utils.inTime(timenote.startingAt, itemView.context) != "LIVE") itemView.timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0,0, 0)
                 else itemView.timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_oval, 0,0, 0)
-                itemView.timenote_in_label.text = utils.inTime(timenote.startingAt)
+                itemView.timenote_in_label.text = utils.inTime(timenote.startingAt, itemView.context)
             }
             else {
                 itemView.timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0,0, 0)
-                itemView.timenote_in_label.text = utils.sinceTime(timenote.endingAt)
+                itemView.timenote_in_label.text = utils.sinceTime(timenote.endingAt, itemView.context)
             }
         }
 
@@ -374,7 +376,7 @@ class ItemTimenoteAdapter(
             val ISO =  "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
             val listItems: MutableList<String> = if(createdBy == timenote.createdBy.id) mutableListOf(context.getString(R.string.share_to) ,context.getString(R.string.duplicate), context.getString(R.string.edit), context.getString(R.string.delete)) else mutableListOf(context.getString(R.string.share_to) ,context.getString(R.string.duplicate), context.getString(R.string.report))
             MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                title(text = "Posted : " + dateFormat.format(SimpleDateFormat(ISO).parse(timenote.createdAt).time))
+                title(text = dateFormat.format(SimpleDateFormat(ISO).parse(timenote.createdAt).time))
                 listItems (items = listItems){ _, _, text ->
                     when(text.toString()){
                         context.getString(R.string.duplicate) -> timenoteListenerListener.onDuplicateClicked(timenote)

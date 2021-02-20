@@ -212,23 +212,17 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             if (!args.event?.joinedBy?.users.isNullOrEmpty()) {
 
                 when {
-                    args.event?.joinedBy?.count == 1 -> addedBy =
-                        "Saved by ${args.event?.joinedBy?.users?.get(0)?.userName}"
-                    args.event?.joinedBy?.count in 1..20 -> addedBy =
-                        "Saved by ${args.event?.joinedBy?.users?.get(0)?.userName} and ${args.event?.joinedBy?.count!! - 1} other people"
-                    args.event?.joinedBy?.count in 21..100 -> addedBy =
-                        "Saved by ${args.event?.joinedBy?.users?.get(0)?.userName} and tens of other people"
-                    args.event?.joinedBy?.count in 101..2000 -> addedBy =
-                        "Saved by ${args.event?.joinedBy?.users?.get(0)?.userName} and hundreds of other people"
-                    args.event?.joinedBy?.count in 2001..2000000 -> addedBy =
-                        "Saved by ${args.event?.joinedBy?.users?.get(0)?.userName} and thousands of other people"
-                    args.event?.joinedBy?.count!! > 2000000 -> addedBy =
-                        "Saved by ${args.event?.joinedBy?.users?.get(0)?.userName} and millions of other people"
+                    args?.event?.joinedBy?.count == 1 -> addedBy = String.format(getString(R.string.saved_by_one), args.event?.joinedBy?.users?.get(0)?.userName)
+                    args?.event?.joinedBy?.count in 1..20 -> addedBy = String.format(getString(R.string.saved_by_one_and_other, args.event?.joinedBy?.users?.get(0)?.userName, args.event?.joinedBy?.count!! - 1))
+                    args?.event?.joinedBy?.count in 21..100 -> addedBy = String.format(getString(R.string.saved_by_tens), args.event?.joinedBy?.users?.get(0)?.userName)
+                    args?.event?.joinedBy?.count in 101..2000 -> addedBy = String.format(getString(R.string.saved_by_hundreds), args.event?.joinedBy?.users?.get(0)?.userName)
+                    args?.event?.joinedBy?.count in 2001..2000000 -> addedBy = String.format(getString(R.string.saved_by_thousands), args.event?.joinedBy?.users?.get(0)?.userName)
+                    args?.event?.joinedBy?.count!! > 2000000 -> addedBy = String.format(getString(R.string.saved_by_millions), args.event?.joinedBy?.users?.get(0)?.userName)
                 }
 
                 addedByFormated = SpannableStringBuilder(addedBy)
-                addedByFormated.setSpan(light, 0, 8, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
-                addedByFormated.setSpan(bold, 9, addedBy.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+                addedByFormated.setSpan(light, 0, addedBy.split(" ")[0].length + addedBy.split(" ")[1].length + 1, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+                addedByFormated.setSpan(bold, addedBy.split(" ")[0].length + addedBy.split(" ")[1].length + 2, addedBy.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
                 timenote_added_by.text = addedByFormated
 
                 when (args.event?.joinedBy?.users?.size) {
@@ -277,10 +271,10 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                 }
             } else {
                 if(args.event?.joinedBy?.count!! > 0){
-                    addedBy = "Saved by ${args.event?.joinedBy?.count!!} people"
+                    addedBy = resources.getQuantityString(R.plurals.saved_by_count, args.event?.joinedBy?.count!!, args.event?.joinedBy?.count)
                     addedByFormated = SpannableStringBuilder(addedBy)
-                    addedByFormated.setSpan(light, 0, 8, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
-                    addedByFormated.setSpan(bold, 9, addedBy.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+                    addedByFormated.setSpan(light, 0, addedBy.split(" ")[0].length + addedBy.split(" ")[1].length + 1, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+                    addedByFormated.setSpan(bold, addedBy.split(" ")[0].length + addedBy.split(" ")[1].length + 2, addedBy.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
                     timenote_added_by.text = addedByFormated
                     timenote_pic_participant_two_rl.visibility = View.GONE
                     timenote_pic_participant_three_rl.visibility = View.GONE
@@ -571,11 +565,11 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         o.timeZone = TimeZone.getDefault()
         val k = o.format(m)
         if (SimpleDateFormat(ISO, Locale.getDefault()).parse(k).time > System.currentTimeMillis()){
-            if(utils.inTime(timenote.startingAt) == "LIVE") timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_oval, 0,0, 0)
+            if(utils.inTime(timenote.startingAt, requireContext()) == "LIVE") timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_oval, 0,0, 0)
             else timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0,0, 0)
-            timenote_in_label.text = utils.inTime(timenote.startingAt)
+            timenote_in_label.text = utils.inTime(timenote.startingAt, requireContext())
         }
-        else timenote_in_label.text = utils.sinceTime(timenote.endingAt)
+        else timenote_in_label.text = utils.sinceTime(timenote.endingAt, requireContext())
     }
 
     private fun createOptionsOnTimenote(context: Context, isMine: Boolean){

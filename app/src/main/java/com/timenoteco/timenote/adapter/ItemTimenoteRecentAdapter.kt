@@ -72,7 +72,7 @@ class ItemTimenoteRecentAdapter(private val timenotesToCome: List<TimenoteInfoDT
             itemView.timenote_recent_title.text = timenote.title
             //if(Utils().inTime(timenote.startingAt) == "LIVE") itemView.timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_oval, 0,0, 0)
             //else itemView.timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0,0, 0)
-            itemView.timenote_recent_date.text = Utils().inTime(timenote.startingAt)
+            itemView.timenote_recent_date.text = Utils().inTime(timenote.startingAt, itemView.context)
             itemView.setOnClickListener { timenoteClicked.onTimenoteRecentClicked(timenote) }
         }
     }

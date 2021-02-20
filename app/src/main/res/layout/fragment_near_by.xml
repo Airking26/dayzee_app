@@ -111,7 +111,7 @@
                         fancy:fb_borderWidth="1dp"
                         fancy:fb_defaultColor="@android:color/transparent"
                         fancy:fb_radius="5dp"
-                        fancy:fb_text="FILTERS"
+                        fancy:fb_text="@string/filters_all_cap"
                         fancy:fb_textColor="@android:color/black" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -9,12 +9,14 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.provider.CalendarContract
-import android.text.format.DateUtils
+import android.widget.Toast
 import androidx.preference.PreferenceManager
+import com.timenoteco.timenote.R
+import com.timenoteco.timenote.listeners.SynchronizeWithGoogleCalendarListener
 import com.timenoteco.timenote.model.CalendarEvent
 import java.util.*
 
-class SynchronizeCalendars{
+class SynchronizeCalendars(val synchronizeWithGoogleCalendarListener: SynchronizeWithGoogleCalendarListener){
 
     private val IS_EMAIL_LINKED = "is_email_linked"
     private val GMAIL = "gmail"
@@ -35,12 +37,11 @@ class SynchronizeCalendars{
                 arrayOf(sharedPref.getString(GMAIL, null))
             val contentResolver = context.contentResolver
             val uri = CalendarContract.Calendars.CONTENT_URI
-            @SuppressLint("MissingPermission") val cursor =
+            val cursor =
                 contentResolver.query(uri, EVENT_PROJECTION, selection, selectionArgs, null)
             val calendarIds = getCalenderIds(cursor)
-            val eventMap = HashMap<String, List<CalendarEvent>>()
             val idCal = getGoogleCalendarId(context)
-            for (id in calendarIds) {
+            calendarIds.forEachIndexed { index, id ->
                 if (id.equals(idCal.toString(), ignoreCase = true)) {
                     val builder = Uri.parse("content://com.android.calendar/instances/when").buildUpon()
                     val now = System.currentTimeMillis()
@@ -54,13 +55,13 @@ class SynchronizeCalendars{
                             CalendarContract.Events.ALL_DAY,
                             CalendarContract.Instances.EVENT_ID,
                             CalendarContract.Events.EVENT_LOCATION,
-                            CalendarContract.Events.SELF_ATTENDEE_STATUS
+                            CalendarContract.Events.SELF_ATTENDEE_STATUS,
+                            CalendarContract.Events.DESCRIPTION
                         ),
                         CalendarContract.Events.CALENDAR_ID + "=" + id,
                         null,
                         "startDay ASC, startMinute ASC"
                     )
-                    println("eventCursor count=" + (Objects.requireNonNull(eventCursor)?.count ?: ""))
                     if (eventCursor!!.count > 0) {
                         eventCursor.moveToNext()
                         var ce = loadEvent(eventCursor)
@@ -72,10 +73,11 @@ class SynchronizeCalendars{
                         }
 
                         mEventsList.sort()
-                        eventMap[id] = mEventsList
-                    }
+                        synchronizeWithGoogleCalendarListener.onSynchronize(mEventsList)
+                    } else Toast.makeText(context, context.getString(R.string.no_event_to_synchronize), Toast.LENGTH_SHORT).show()
                 }
             }
+            println("DONE")
         }
     }
 
@@ -138,7 +140,8 @@ class SynchronizeCalendars{
             csr.getString(3) != "0",
             csr.getLong(4),
             csr.getString(5),
-            csr.getInt(6)
+            csr.getInt(6),
+            csr.getString(7)
         )
     }
 

@@ -261,7 +261,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                     creationTimenoteViewModel.setSharedWith(listOf(userInfoDTO.id!!))
                 }
                 1 -> {
-                    shareWithTv.text = if(accountType == 1) "Followers" else "Everyone"
+                    shareWithTv.text = if(accountType == 1) getString(R.string.everyone) else getString(R.string.everyone)
                     creationTimenoteViewModel.setSharedWith(listOf())
                 }
             }
@@ -450,16 +450,14 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                 create_timenote_organizers_btn.compoundDrawableTintList = ColorStateList.valueOf(resources.getColor(R.color.colorText))
                 create_timenote_organizers_btn.setTextColor(resources.getColor(R.color.colorText))
             }
-            if(it.organizers?.size == 1) create_timenote_organizers_btn.text =
-                "${it.organizers?.size.toString()} Organizer"
-            else create_timenote_organizers_btn.text =
-                "${it.organizers?.size.toString()} Organizers"
+            if(it.organizers?.size == 1) create_timenote_organizers_btn.text = resources.getQuantityText(R.plurals.nbr_orga, it.organizers?.size!!)
+            else create_timenote_organizers_btn.text = resources.getQuantityText(R.plurals.nbr_orga, it.organizers?.size!!)
         }
         when {
-            it.sharedWith.isNullOrEmpty() -> create_timenote_share_with.text = if(accountType == 1) "Followers" else "Everyone"
+            it.sharedWith.isNullOrEmpty() -> create_timenote_share_with.text = if(accountType == 1) getString(R.string.followers) else getString(R.string.everyone)
             else -> {
-                if(it.sharedWith?.size == 1 && it.sharedWith?.get(0) == it.createdBy) create_timenote_share_with.text = "Only Me"
-                else create_timenote_share_with.text = "Shared"
+                if(it.sharedWith?.size == 1 && it.sharedWith?.get(0) == it.createdBy) create_timenote_share_with.text = getString(R.string.only_me)
+                else create_timenote_share_with.text = getString(R.string.shared)
             }
         }
 
@@ -978,8 +976,9 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     private fun shareWith() {
         MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             title(R.string.share_with)
-            val all = if(accountType == 1) "Followers" else "Everyone"
-            listItems(items = listOf(all, "Only me", "Groups", "Friends", "Create a new group")) { _, index, text ->
+            val all = if(accountType == 1) getString(R.string.followers) else getString(R.string.everyone)
+            listItems(items = listOf(all, getString(R.string.only_me), getString(R.string.groups), getString(
+                            R.string.friends), getString(R.string.create_new_group))) { _, index, text ->
                 when (index) {
                     0 -> creationTimenoteViewModel.setSharedWith(listOf())
                     1 -> creationTimenoteViewModel.setSharedWith(listOf(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.createdBy!!))

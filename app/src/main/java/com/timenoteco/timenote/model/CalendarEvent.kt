@@ -9,7 +9,8 @@ data class CalendarEvent (
     val allDay: Boolean,
     val id: Long,
     val location: String,
-    val eventStatus: Int
+    val eventStatus: Int,
+    val description: String
 ) : Comparable<CalendarEvent> {
     override fun compareTo(other: CalendarEvent): Int {
         return begin.compareTo(other.begin)

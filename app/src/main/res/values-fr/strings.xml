@@ -1,0 +1,444 @@
+<resources>
+    <string name="app_name">Dayzee</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="preferrence">Préférences</string>
+    <string name="next">Suivant</string>
+    <string name="select_what_you_like">Choisissez ce que vous aimez</string>
+    <string name="my_city">Ma Ville</string>
+    <string name="sports">Sports</string>
+    <string name="music">Musique</string>
+    <string name="esports">Esports</string>
+    <string name="youtube">Youtube</string>
+    <string name="religions">Religions</string>
+    <string name="culture_n_amp_loisirs"><![CDATA[Culture \n & Loisirs]]></string>
+    <string name="films_n_amp_series"><![CDATA[Films \n & Séries]]></string>
+    <string name="shopping">Shopping</string>
+    <string name="holidays">Vacances</string>
+    <string name="calendrier_n_interessant">Calendrier \n Interessant</string>
+    <string name="done">OK</string>
+    <string name="how_much_do_you_like_it">Combien aimez vous ce sujet ?</string>
+    <string name="back">Retour</string>
+    <string name="suggestions">Suggestions</string>
+    <string name="ok">OK</string>
+    <string name="we_found_some_account_you_might_like">Voici quelques propositions qui pourraient vous interesser :</string>
+    <string name="followers">Abonnés</string>
+    <string name="following">Abonnements</string>
+    <string name="share_profile">PARTAGER PROFILE</string>
+    <string name="modify">Modifier</string>
+    <string name="follow">Suivre</string>
+    <string name="name_you_want_to_appear">Nom d\'apparance</string>
+    <string name="your_name">Nom</string>
+    <string name="from">Depuis</string>
+    <string name="birthday">Anniversaire</string>
+    <string name="gender">Genre</string>
+    <string name="account_status">Statut du compte</string>
+    <string name="timenote_date_format">Format de la date</string>
+    <string name="youtube_channel">Chaine Youtube</string>
+    <string name="describe_yourself">Description</string>
+    <string name="settings">Réglages</string>
+    <string name="general">GENERAL</string>
+    <string name="edit_my_personnals_informations">Modifier mes informations personnelles</string>
+    <string name="change_password">Changer le mot de passe</string>
+    <string name="private_account">Compte privé</string>
+    <string name="asked_sent">Demandes envoyées</string>
+    <string name="push">PUSH</string>
+    <string name="push_notifications">Notifications Push</string>
+    <string name="certified_push_notifications">Notifications push certifiées </string>
+    <string name="default_settings">REGLAGES PAR DEFAUT</string>
+    <string name="timenote_visibility_format">Visibilité des Dayzee</string>
+    <string name="timenote_visibility">Visibilité des Dayzee</string>
+    <string name="others">AUTRES</string>
+    <string name="confidentiality_politic">Politique de confidentialité</string>
+    <string name="send_comments">Envoyer un commentaire</string>
+    <string name="disconnect">SE DECONNECTER</string>
+    <string name="new_timenote">Nouveau Dayzee</string>
+    <string name="take_add_a_picture">AJOUTER UNE PHOTO</string>
+    <string name="choose_a_color">OU CHOISISSER UN FOND DE COULEUR</string>
+    <string name="when">Quand</string>
+    <string name="to">A</string>
+    <string name="where">Où</string>
+    <string name="share_with">Partager Avec</string>
+    <string name="category">Catégories</string>
+    <string name="none">Aucune</string>
+    <string name="title">Titre</string>
+    <string name="preview">Aperçu</string>
+    <string name="share_to">Partager</string>
+    <string name="filters">Filtres</string>
+    <string name="clear">Réinitialiser</string>
+    <string name="distance">Distance</string>
+    <string name="distance_km">Distance (km)</string>
+    <string name="timeline">Timeline</string>
+    <string name="see_more">Voir plus</string>
+    <string name="timenote_to_come">DAYZEE A VENIR</string>
+    <string name="posted_recently">POSTÉS RÉCEMMENTS</string>
+    <string name="notifications">Notifications</string>
+    <string name="notification_manager">Notification Manager</string>
+    <string name="allow_notifications_for">Autoriser les notifications pour :</string>
+    <string name="notification_manager_settings">Notification manager</string>
+    <string name="comments">Commentaires</string>
+    <string name="publish">Publier</string>
+    <string name="add_a_comment">Ajouter un commentaire…</string>
+    <string name="large_text">
+        "Material is the metaphor.\n\n"
+
+        "A material metaphor is the unifying theory of a rationalized space and a system of motion."
+        "The material is grounded in tactile reality, inspired by the study of paper and ink, yet "
+        "technologically advanced and open to imagination and magic.\n"
+        "Surfaces and edges of the material provide visual cues that are grounded in reality. The "
+        "use of familiar tactile attributes helps users quickly understand affordances. Yet the "
+        "flexibility of the material creates new affordances that supercede those in the physical "
+        "world, without breaking the rules of physics.\n"
+        "The fundamentals of light, surface, and movement are key to conveying how objects move, "
+        "interact, and exist in space and in relation to each other. Realistic lighting shows "
+        "seams, divides space, and indicates moving parts.\n\n"
+
+        "Bold, graphic, intentional.\n\n"
+
+        "The foundational elements of print based design typography, grids, space, scale, color, "
+        "and use of imagery guide visual treatments. These elements do far more than please the "
+        "eye. They create hierarchy, meaning, and focus. Deliberate color choices, edge to edge "
+        "imagery, large scale typography, and intentional white space create a bold and graphic "
+        "interface that immerse the user in the experience.\n"
+        "An emphasis on user actions makes core functionality immediately apparent and provides "
+        "waypoints for the user.\n\n"
+
+        "Motion provides meaning.\n\n"
+
+        "Motion respects and reinforces the user as the prime mover. Primary user actions are "
+        "inflection points that initiate motion, transforming the whole design.\n"
+        "All action takes place in a single environment. Objects are presented to the user without "
+        "breaking the continuity of experience even as they transform and reorganize.\n"
+        "Motion is meaningful and appropriate, serving to focus attention and maintain continuity. "
+        "Feedback is subtle yet clear. Transitions are efﬁcient yet coherent.\n\n"
+
+        "3D world.\n\n"
+
+        "The material environment is a 3D space, which means all objects have x, y, and z "
+        "dimensions. The z-axis is perpendicularly aligned to the plane of the display, with the "
+        "positive z-axis extending towards the viewer. Every sheet of material occupies a single "
+        "position along the z-axis and has a standard 1dp thickness.\n"
+        "On the web, the z-axis is used for layering and not for perspective. The 3D world is "
+        "emulated by manipulating the y-axis.\n\n"
+
+        "Light and shadow.\n\n"
+
+        "Within the material environment, virtual lights illuminate the scene. Key lights create "
+        "directional shadows, while ambient light creates soft shadows from all angles.\n"
+        "Shadows in the material environment are cast by these two light sources. In Android "
+        "development, shadows occur when light sources are blocked by sheets of material at "
+        "various positions along the z-axis. On the web, shadows are depicted by manipulating the "
+        "y-axis only. The following example shows the card with a height of 6dp.\n\n"
+
+        "Resting elevation.\n\n"
+
+        "All material objects, regardless of size, have a resting elevation, or default elevation "
+        "that does not change. If an object changes elevation, it should return to its resting "
+        "elevation as soon as possible.\n\n"
+
+        "Component elevations.\n\n"
+
+        "The resting elevation for a component type is consistent across apps (e.g., FAB elevation "
+        "does not vary from 6dp in one app to 16dp in another app).\n"
+        "Components may have different resting elevations across platforms, depending on the depth "
+        "of the environment (e.g., TV has a greater depth than mobile or desktop).\n\n"
+
+        "Responsive elevation and dynamic elevation offsets.\n\n"
+
+        "Some component types have responsive elevation, meaning they change elevation in response "
+        "to user input (e.g., normal, focused, and pressed) or system events. These elevation "
+        "changes are consistently implemented using dynamic elevation offsets.\n"
+        "Dynamic elevation offsets are the goal elevation that a component moves towards, relative "
+        "to the component’s resting state. They ensure that elevation changes are consistent "
+        "across actions and component types. For example, all components that lift on press have "
+        "the same elevation change relative to their resting elevation.\n"
+        "Once the input event is completed or cancelled, the component will return to its resting "
+        "elevation.\n\n"
+
+        "Avoiding elevation interference.\n\n"
+
+        "Components with responsive elevations may encounter other components as they move between "
+        "their resting elevations and dynamic elevation offsets. Because material cannot pass "
+        "through other material, components avoid interfering with one another any number of ways, "
+        "whether on a per component basis or using the entire app layout.\n"
+        "On a component level, components can move or be removed before they cause interference. "
+        "For example, a floating action button (FAB) can disappear or move off screen before a "
+        "user picks up a card, or it can move if a snackbar appears.\n"
+        "On the layout level, design your app layout to minimize opportunities for interference. "
+        "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
+        "when a user tries to pick up one of cards.\n\n"
+    </string>
+    <string name="create_new_group">Créer un nouveau groupe</string>
+    <string name="contacts">Contacts</string>
+    <string name="name_group">Nom du groupe</string>
+    <string name="colors">Couleurs</string>
+    <string name="take_a_photo">Choisissez une photo</string>
+    <string name="choose_from_gallery">Sélection multiple</string>
+    <string name="resize">Redimensionner</string>
+    <string name="picture_successfully_added">PHOTO AJOUTER AVEC SUCCÈS</string>
+    <string name="man">Homme</string>
+    <string name="woman">Femme</string>
+    <string name="public_label">Publique</string>
+    <string name="private_label">Privé</string>
+    <string name="sorting">Trier</string>
+    <string name="error_message_filling">Veuillez remplir tous les champs demandés</string>
+    <string name="message">MESSAGE</string>
+    <string name="description">Description</string>
+    <string name="add_a_description">Ajouter une description</string>
+    <string name="search_on_web">Rechercher sur le web</string>
+    <string name="select_date">Selectionner une date</string>
+    <string name="select_date_and_time">Selectionner une date et une heure</string>
+    <string name="select_start_and_end_date">Selectionner une date de début et de fin</string>
+    <string name="loading">Chargement…</string>
+    <string name="location">Localisation</string>
+    <string name="no_location">Pas de localisation</string>
+    <string name="city">Ville</string>
+    <string name="address">Addresse</string>
+    <string name="posted_false">Posté le : 14/07/2020</string>
+    <string name="facebook">Facebook</string>
+    <string name="instagram">Instagram</string>
+    <string name="whatsapp">Whatsapp</string>
+    <string name="linkedin">Linkedin</string>
+    <string name="duplicate">Dupliquer</string>
+    <string name="edit">Modifier</string>
+    <string name="delete">Supprimer</string>
+    <string name="alarm">Alarme</string>
+    <string name="report">Signaler</string>
+    <string name="hide_to_others">Cacher aux autres</string>
+    <string name="add_end_date">Ajouter une Date de Fin</string>
+    <string name="paid_timenote">Coût</string>
+    <string name="no_answer">Pas de Réponses</string>
+    <string name="free">Gratuit</string>
+    <string name="paid">Payant</string>
+    <string name="price">Prix</string>
+    <string name="link">Lien</string>
+    <string name="monday">LUN</string>
+    <string name="tuesday">MAR</string>
+    <string name="wednesday">MER</string>
+    <string name="thursday">JEU</string>
+    <string name="friday">VEN</string>
+    <string name="saturday">SAM</string>
+    <string name="sunday">DIM</string>
+    <string name="free_and_paid">Gratuit et Payant</string>
+    <string name="menu">Menu</string>
+    <string name="invite_friends">Inviter des Amis</string>
+    <string name="profile_preview">Aperçu de mon Profile</string>
+    <string name="msg_token_fmt">token_fcm</string>
+    <string name="identifiant">Nom d\'Utilisateur</string>
+    <string name="mail">Email</string>
+    <string name="username_email">Email / Nom d\'Utilisateur</string>
+    <string name="mask_user">Masquer cet utilisateur</string>
+    <string name="add_an_url">Ajouter un lien</string>
+    <string name="public_and_private">Publique et Privé</string>
+    <string name="today">Aujourd\'hui</string>
+    <string name="unfollow">Se Désabonner</string>
+    <string name="email_already_exists">Cet Email existe déjà</string>
+    <string name="usermane_already_exists">Ce nom d\'utilisateur existe déjà</string>
+    <string name="field_cannot_be_empty">Ce champs ne peut pas être vide</string>
+    <string name="not_valid_mail_form">Ceci n\'est pas une addresse Email valide</string>
+    <string name="not_username_valid_form">Le nom d\'utilisateur ne peut pas contenir @</string>
+    <string name="accept">Accepter</string>
+    <string name="decline">Refuser</string>
+    <string name="default_settings_at_creation">réglages par défaut à la création</string>
+    <string name="date">Date</string>
+    <string name="countdown">Compte à rebours</string>
+    <string name="only_me">Seulement moi</string>
+    <string name="trim">Réduire</string>
+    <string name="actual_password">Mot de passe actuel</string>
+    <string name="new_password">Nouveau mot de passe</string>
+    <string name="new_password_again">Réecrire le nouveau mot de passe</string>
+    <string name="other">Autre</string>
+    <string name="max_price">Prix max</string>
+    <string name="all">Tous</string>
+    <string name="first">premier</string>
+    <string name="second">second</string>
+    <string name="users_participating">Utilisateurs Participant</string>
+    <string name="send">Envoyer</string>
+    <string name="cancel">Annuler</string>
+    <string name="organizers">Organisateurs</string>
+    <string name="confirm">Confirmer</string>
+    <string name="currency">Devise</string>
+    <string name="waiting_for_approval">En attente de confirmation</string>
+    <string name="channel_name">dayzee</string>
+    <string name="channel_description">dayzee channel</string>
+    <string name="nothing_to_show_add_some_people_or_center_of_interest_to_begin_your_adventure_with_dayzee">Aucun Dayzee, ajouter des amis et/ou des centres d\'intérets</string>
+    <string name="nothing_to_show_nearby">Aucun Dayzee aux alentours, essayer différents filtres</string>
+    <string name="nothing_to_show_profile">Rien de Prévu</string>
+    <string name="add_a_picture">Ajouter une photo</string>
+    <string name="default_notification_channel_id">dayzee_channel</string>
+    <string name="visibility">Visibilité</string>
+    <string name="subcategory">Sous-catégorie</string>
+    <string name="create">Créer</string>
+    <string name="clear_all_fields">Réinitialiser les champs</string>
+    <string name="remove">Supprimer</string>
+    <string name="action_search">Search</string>
+    <string name="back_vector_path" translatable="false">M50 25,L80 50,M20 50,L80 50,M50 75,L80 50</string>
+    <string name="menu_vector_path" translatable="false">M20 30,L80 30,M20 50,L80 50,M20 70,L80 70</string>
+    <string name="details">Détails</string>
+    <string name="add_a_label_to_appear">Ajouter un label d\'apparence</string>
+    <string name="label">Label</string>
+    <string name="find_out_more">En savoir plus</string>
+    <string name="create_alarm">Créer une Alarme</string>
+    <string name="update_alarm">Modifier une Alarme</string>
+    <string name="delete_alarm">Supprimer une Alarme</string>
+    <string name="discover">Découvrir</string>
+    <string name="friends">Amis</string>
+    <string name="album_name_all">All Media</string>
+
+    <string name="button_preview">Aperçu</string>
+    <string name="button_apply_default">Appliquer</string>
+    <string name="button_apply">Appliquer(%1$d)</string>
+    <string name="button_back">Retour</string>
+    <string name="photo_grid_capture">Camera</string>
+    <string name="empty_text">Pas de media</string>
+    <string name="button_ok">OK</string>
+
+    <string name="error_over_count_default">Vous avez atteint le seuil maximum de sélection</string>
+    <plurals name="error_over_count">
+        <item quantity="one">Vous ne pouvez selectioner que jusqu\'à %1$d fichier</item>
+        <item quantity="other">Vous ne pouvez selectioner que jusqu\'à %1$d fichiers</item>
+    </plurals>
+    <string name="error_over_count"></string>
+    <string name="error_under_quality">Qualité trop faible</string>
+    <string name="error_over_quality">Qualité trop importante</string>
+    <string name="error_file_type">Fichier non supporté</string>
+    <string name="error_type_conflict">Vous ne pouvez pas selectionner des images et des vidéos en même temps</string>
+    <string name="error_no_video_activity">Aucune application trouvée ne supporte l\'aperçu de vidéo</string>
+    <string name="error_over_original_size">Vous ne pouvez selectionner des images plus grandes que %1$d MB</string>
+    <string name="error_over_original_count">%1$d photos au dessus de %2$d MB. L\'original sera désélectionner</string>
+    <string name="button_original">Original</string>
+    <string name="button_sure_default">Sure</string>
+    <string name="button_sure">Sure(%1$d)</string>
+    <string name="cant_start_with_password">Votre mot de passe ne peut commencer avec \"dayzee-\"</string>
+    <string name="this_is_temporary_password">Ceci est un mot de passe temporaire, veuillez le changer afin de continuer</string>
+    <string name="enter_mail">Veuillez entrer votre mail lier à votre compte Dayzee afin de recevoir un mail</string>
+    <string name="certify">Certifier</string>
+    <string name="update_temporary_password">Mettre à jour le mot de passe temporaire</string>
+    <string name="dayzee_connection">Connexion à Dayzee</string>
+    <string name="password">Mot de passe</string>
+    <string name="forgotten_password">Mot de passe oublié ?</string>
+    <string name="sign_up">Inscription</string>
+    <string name="login">Connexion</string>
+    <string name="continue_as_guest">CONTINUER EN TANT QUE VISITEUR</string>
+    <string name="filters_all_cap">FILTRES</string>
+    <string name="people">People</string>
+    <string name="tags">Tags</string>
+    <string name="top">Top</string>
+    <string name="explore">Explorer</string>
+    <string name="search">Rechercher</string>
+    <string name="search_people_tags">Rechercher People et Tags</string>
+    <string name="few_sec_ago">il y\'a quelques instants</string>
+    <string name="see_comment">Voir le commentaire</string>
+    <string name="see_comments">Voir les %1$d commentaires</string>
+    <string name="saved_by_one">Enregistré par %1$s</string>
+    <string name="saved_by_tens">Enregistré par %1$s et des dizaines d\'autres</string>
+    <string name="saved_by_hundreds">Enregistré par %1$s et des centaines d\'autres</string>
+    <string name="saved_by_thousands">Enregistré par %1$s et des milliers d\'autres</string>
+    <string name="saved_by_millions">Enregistré par %1$s et des millions d\'autres</string>
+    <string name="saved_by_one_and_other">Enregistré par %1$s et %2$d autres personnes</string>
+    <string name="everyone">Tout le monde</string>
+    <string name="groups">Groupes</string>
+    <string name="shared">Partagé</string>
+    <string name="synchro">Synchronisation</string>
+    <string name="synchro_ok">La synchronisation a été effectuée avec succés</string>
+    <string name="no_event_to_synchronize">Aucun évènement trouvé</string>
+    <string name="error_try_again">Erreur, veuillez essayer à nouveau</string>
+    <plurals name="time_minutes_comment">
+        <item quantity="one">%1$d minute</item>
+        <item quantity="other">%1$d minutes</item>
+    </plurals>
+    <plurals name="time_hours_comment">
+        <item quantity="one">%1$d heure</item>
+        <item quantity="other">%1$d heures</item>
+    </plurals>
+    <plurals name="time_days_comment">
+        <item quantity="one">%1$d jour</item>
+        <item quantity="other">%1$d jours</item>
+    </plurals>
+    <plurals name="time_months_comment">
+        <item quantity="one">%1$d mois</item>
+        <item quantity="other">%1$d mois</item>
+    </plurals>
+    <plurals name="time_years_comment">
+        <item quantity="one">%1$d an</item>
+        <item quantity="other">%1$d ans</item>
+    </plurals>
+    <plurals name="saved_by_count">
+        <item quantity="one">Enregistré par %1$d personne</item>
+        <item quantity="other">Enregistré par %1$d personnes</item>
+    </plurals>
+    <plurals name="hours_plural_minutes_vary">
+        <item quantity="one">Dans %1$d heures et %2$d minute</item>
+        <item quantity="other">Dans %1$d heures et %2$d minutes</item>
+    </plurals>
+    <plurals name="hours_singular_minutes_vary">
+        <item quantity="one">Dans %1$d heure et %2$d minute</item>
+        <item quantity="other">Dans %1$d heure et %2$d minutes</item>
+    </plurals>
+    <plurals name="no_hour_minutes_vary">
+        <item quantity="one">Dans %1$d minute</item>
+        <item quantity="other">Dans %1$d minutes</item>
+    </plurals>
+    <plurals name="days_plural_hours_vary">
+        <item quantity="one">Dans %1$d jours et %2$d heure</item>
+        <item quantity="other">Dans %1$d jours et %2$d heures</item>
+    </plurals>
+    <plurals name="days_singular_hours_vary">
+        <item quantity="one">Dans %1$d jour et %2$d heure</item>
+        <item quantity="other">Dans %1$d jour et %2$d heures</item>
+    </plurals>
+    <plurals name="months_plural_days_vary">
+        <item quantity="one">Dans %1$d mois et %2$d jour</item>
+        <item quantity="other">Dans %1$d mois et %2$d jours</item>
+    </plurals>
+    <plurals name="months_singular_days_vary">
+        <item quantity="one">Dans %1$d mois et %2$d jour</item>
+        <item quantity="other">Dans %1$d mois et %2$d jours</item>
+    </plurals>
+    <plurals name="years_plural_months_vary">
+        <item quantity="one">Dans %1$d ans et %2$d mois</item>
+        <item quantity="other">Dans %1$d ans et %2$d mois</item>
+    </plurals>
+    <plurals name="years_singular_month_vary">
+        <item quantity="one">Dans %1$d an et %2$d mois</item>
+        <item quantity="other">Dans %1$d an et %2$d mois</item>
+    </plurals>
+    <plurals name="since_hours_plural_minutes_vary">
+        <item quantity="one">Depuis %1$d heures et %2$d minute</item>
+        <item quantity="other">Depuis %1$d heures et %2$d minutes</item>
+    </plurals>
+    <plurals name="since_hours_singular_minutes_vary">
+        <item quantity="one">Depuis %1$d heure et %2$d minute</item>
+        <item quantity="other">Depuis %1$d heure et %2$d minutes</item>
+    </plurals>
+    <plurals name="since_no_hour_minutes_vary">
+        <item quantity="one">Depuis %1$d minute</item>
+        <item quantity="other">Depuis %1$d minutes</item>
+    </plurals>
+    <plurals name="since_days_plural_hours_vary">
+        <item quantity="one">Depuis %1$d jours et %2$d heure</item>
+        <item quantity="other">Depuis %1$d jours et %2$d heures</item>
+    </plurals>
+    <plurals name="since_days_singular_hours_vary">
+        <item quantity="one">Depuis %1$d jour et %2$d heure</item>
+        <item quantity="other">Depuis %1$d jour et %2$d heures</item>
+    </plurals>
+    <plurals name="since_months_plural_days_vary">
+        <item quantity="one">Depuis %1$d mois et %2$d jour</item>
+        <item quantity="other">Depuis %1$d mois et %2$d jours</item>
+    </plurals>
+    <plurals name="since_months_singular_days_vary">
+        <item quantity="one">Depuis %1$d mois et %2$d jour</item>
+        <item quantity="other">Depuis %1$d mois et %2$d jours</item>
+    </plurals>
+    <plurals name="since_years_plural_months_vary">
+        <item quantity="one">Depuis %1$d ans et %2$d mois</item>
+        <item quantity="other">Depuis %1$d ans et %2$d mois</item>
+    </plurals>
+    <plurals name="since_years_singular_month_vary">
+        <item quantity="one">Depuis %1$d an et %2$d mois</item>
+        <item quantity="other">Depuis %1$d an et %2$d mois</item>
+    </plurals>
+
+</resources>

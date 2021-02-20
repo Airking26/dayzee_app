@@ -618,8 +618,8 @@ class DetailedTimenoteCarousel : Fragment(), View.OnClickListener, CommentAdapte
         timenote_time.visibility = View.INVISIBLE
         timenote_year.visibility = View.INVISIBLE
         timenote_in_label.visibility = View.VISIBLE
-        if (SimpleDateFormat(ISO).parse(timenote.endingAt).time > System.currentTimeMillis()) timenote_in_label.text = utils.inTime(timenote.startingAt)
-        else timenote_in_label.text = utils.sinceTime(timenote.endingAt)
+        if (SimpleDateFormat(ISO).parse(timenote.endingAt).time > System.currentTimeMillis()) timenote_in_label.text = utils.inTime(timenote.startingAt, requireContext())
+        else timenote_in_label.text = utils.sinceTime(timenote.endingAt, requireContext())
     }
 
     private fun createOptionsOnTimenote(context: Context, isMine: Boolean){

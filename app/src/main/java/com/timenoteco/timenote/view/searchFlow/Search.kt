@@ -126,12 +126,12 @@ class Search : BaseThroughFragment() {
 
 
             if(isEnabled){
-                search_tablayout.getTabAt(0)?.text = "People"
-                search_tablayout.getTabAt(1)?.text = "Tags"
+                search_tablayout.getTabAt(0)?.text = getString(R.string.people)
+                search_tablayout.getTabAt(1)?.text = getString(R.string.tags)
                 search_viewpager.adapter = viewPeopleTagPagerAdapter
             } else {
-                search_tablayout.getTabAt(0)?.text = "Top"
-                search_tablayout.getTabAt(1)?.text = "Explore"
+                search_tablayout.getTabAt(0)?.text = getString(R.string.top)
+                search_tablayout.getTabAt(1)?.text = getString(R.string.explore)
                 search_viewpager.adapter = viewTopExplorePagerAdapter
             }
 
@@ -143,12 +143,12 @@ class Search : BaseThroughFragment() {
                 override fun onSearchStateChanged(enabled: Boolean) {
                     isEnabled = enabled
                     if (enabled) {
-                        search_tablayout.getTabAt(0)?.text = "People"
-                        search_tablayout.getTabAt(1)?.text = "Tags"
+                        search_tablayout.getTabAt(0)?.text = getString(R.string.people)
+                        search_tablayout.getTabAt(1)?.text = getString(R.string.tags)
                         search_viewpager.adapter = viewPeopleTagPagerAdapter
                     } else {
-                        search_tablayout.getTabAt(0)?.text = "Top"
-                        search_tablayout.getTabAt(1)?.text = "Explore"
+                        search_tablayout.getTabAt(0)?.text = getString(R.string.top)
+                        search_tablayout.getTabAt(1)?.text = getString(R.string.explore)
                         search_viewpager.adapter = viewTopExplorePagerAdapter
                     }
                 }

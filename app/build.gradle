@@ -128,4 +128,15 @@ dependencies {
 
     implementation 'com.google.apis:google-api-services-customsearch:v1-rev51-1.22.0'
 
+
+
+    implementation 'com.google.android.gms:play-services-auth:19.0.0'
+    implementation 'pub.devrel:easypermissions:0.3.0'
+    implementation('com.google.api-client:google-api-client-android:1.23.0') {
+        exclude group: 'org.apache.httpcomponents'
+    }
+    implementation('com.google.apis:google-api-services-calendar:v3-rev84-1.18.0-rc') {
+        exclude group: 'org.apache.httpcomponents'
+    }
+
 }

@@ -79,7 +79,7 @@ class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         if(event.location != null) itemView.profile_item_address_event.text = event.location.address.address.plus(", ").plus(event.location.address.city).plus(" ").plus(event.location.address.country)
         else itemView.profile_item_address_event.text = ""
         itemView.profile_item_name_owner.text = event.createdBy.userName
-        itemView.profile_item_date_event.text = if(isUpcoming) Utils().inTime(event.startingAt) else Utils().sinceTime(event.endingAt)
+        itemView.profile_item_date_event.text = if(isUpcoming) Utils().inTime(event.startingAt, itemView.context) else Utils().sinceTime(event.endingAt, itemView.context)
         itemView.profile_item_date_event.setOnClickListener {
             if(itemView.profile_item_date_event.text.contains("In") || itemView.profile_item_date_event.text.contains("Since")){
                 val o = SimpleDateFormat(ISO)
@@ -89,7 +89,7 @@ class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
                 val k = o.format(m)
                 itemView.profile_item_date_event.text = SimpleDateFormat(DATE_FORMAT_DAY_AND_TIME, Locale.getDefault()).format(m.time)
             } else {
-                itemView.profile_item_date_event.text = if(isUpcoming) Utils().inTime(event.startingAt) else Utils().sinceTime(event.endingAt)
+                itemView.profile_item_date_event.text = if(isUpcoming) Utils().inTime(event.startingAt, itemView.context) else Utils().sinceTime(event.endingAt, itemView.context)
             }
         }
         itemView.profile_item_options.setOnClickListener { createOptionsOnTimenote(itemView.context, isMine, timenoteOptionsListener, event, listOfAlarms, isOnMyProfile) }

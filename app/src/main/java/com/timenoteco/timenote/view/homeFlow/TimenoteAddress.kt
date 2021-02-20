@@ -311,16 +311,27 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
             timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null, timenoteInfoDTO.urlTitle)))
     }
     override fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO) {
+        val map: MutableMap<Long, String> = Gson().fromJson(prefs.getString("mapEventIdToTimenote", null), object : TypeToken<MutableMap<Long, String>>() {}.type) ?: mutableMapOf()
         timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {
-            if(it.code() == 401) {
+            if(it.isSuccessful) {
+                timenotePagingAdapter?.refresh()
+                if(map.isNotEmpty() && map.filterValues { id -> id == timenoteInfoDTO.id }.keys.isNotEmpty()) {
+                    map.remove(map.filterValues { id -> id == timenoteInfoDTO.id }.keys.first())
+                    prefs.edit().putString("mapEventIdToTimenote", Gson().toJson(map)).apply()
+                }
+            }
+            else if(it.code() == 401) {
                 authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer { newAccessToken ->
                     tokenId = newAccessToken
                     timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {tid ->
                         if(tid.isSuccessful) timenotePagingAdapter?.refresh()
+                        if(map.isNotEmpty() && map.filterValues { id -> id == timenoteInfoDTO.id }.keys.isNotEmpty()) {
+                            map.remove(map.filterValues { id -> id == timenoteInfoDTO.id }.keys.first())
+                            prefs.edit().putString("mapEventIdToTimenote", Gson().toJson(map)).apply()
+                        }
                     })
                 })
             }
-            if(it.isSuccessful) timenotePagingAdapter?.refresh()
         })
     }
     override fun onSearchClicked(userInfoDTO: UserInfoDTO) {}
