@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <com.timenoteco.timenote.androidView.CollapsibleToolbar
+            <com.dayzeeco.dayzee.androidView.CollapsibleToolbar
                 android:layout_width="match_parent"
                 android:minHeight="150dp"
                 android:fitsSystemWindows="false"
@@ -115,7 +115,7 @@
                         fancy:fb_textColor="@android:color/black" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-            </com.timenoteco.timenote.androidView.CollapsibleToolbar>
+            </com.dayzeeco.dayzee.androidView.CollapsibleToolbar>
 
         </com.google.android.material.appbar.AppBarLayout>
 

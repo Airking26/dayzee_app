@@ -343,6 +343,9 @@
     <string name="synchro_ok">The synchronization has been successfull</string>
     <string name="no_event_to_synchronize">No event found</string>
     <string name="error_try_again">Error, please try again</string>
+    <string name="api_android_key">AIzaSyDozXNaca8OBwQO5hHQ_pdGYJ9IZmJTXQs</string>
+    <string name="api_web_key">AIzaSyAuNAWVp93EPzSoDxd6p5uMCFH0R-Lynr4</string>
+    <string name="deleted">Deleted</string>
     <plurals name="time_minutes_comment">
         <item quantity="one">%1$d minute</item>
         <item quantity="other">%1$d minutes</item>

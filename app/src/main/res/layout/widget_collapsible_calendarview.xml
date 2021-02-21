@@ -83,7 +83,7 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Jun 2015" />
 
-        <com.timenoteco.timenote.androidView.calendar.view.ExpandIconView
+        <com.dayzeeco.dayzee.androidView.calendar.view.ExpandIconView
             android:id="@+id/expandIcon"
             android:layout_width="20dp"
             android:layout_height="30dp"
@@ -119,7 +119,7 @@
         android:layout_height="wrap_content">
 
     </TableLayout>
-    <com.timenoteco.timenote.androidView.calendar.view.LockScrollView
+    <com.dayzeeco.dayzee.androidView.calendar.view.LockScrollView
         android:id="@+id/scroll_view_body"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -133,7 +133,7 @@
 
         </TableLayout>
 
-    </com.timenoteco.timenote.androidView.calendar.view.LockScrollView>
+    </com.dayzeeco.dayzee.androidView.calendar.view.LockScrollView>
 
 
 </LinearLayout>

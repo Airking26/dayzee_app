@@ -98,7 +98,7 @@
             android:layout_height="wrap_content"
             android:background="@color/colorBackground">
 
-            <com.timenoteco.timenote.androidView.CollapsibleToolbar
+            <com.dayzeeco.dayzee.androidView.CollapsibleToolbar
                 android:id="@+id/motionLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -308,7 +308,7 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-            </com.timenoteco.timenote.androidView.CollapsibleToolbar>
+            </com.dayzeeco.dayzee.androidView.CollapsibleToolbar>
         </com.google.android.material.appbar.AppBarLayout>
 
         <TextView

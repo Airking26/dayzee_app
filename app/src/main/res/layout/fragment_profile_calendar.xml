@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <com.timenoteco.timenote.androidView.calendar.widget.CollapsibleCalendar
+    <com.dayzeeco.dayzee.androidView.calendar.widget.CollapsibleCalendar
         android:id="@+id/calendarView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

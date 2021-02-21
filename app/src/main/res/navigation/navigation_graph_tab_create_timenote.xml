@@ -6,7 +6,7 @@
     app:startDestination="@id/createTimenote">
     <fragment
         android:id="@+id/detailedTimenote"
-        android:name="com.timenoteco.timenote.view.homeFlow.DetailedTimenote"
+        android:name="com.dayzeeco.dayzee.view.homeFlow.DetailedTimenote"
         android:label="fragment_detailed_timenote"
         tools:layout="@layout/fragment_detailed_fragment">
         <argument
@@ -14,7 +14,7 @@
             app:argType="integer" />
         <argument
             android:name="event"
-            app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
+            app:argType="com.dayzeeco.dayzee.model.TimenoteInfoDTO"
             app:nullable="true" />
     </fragment>
     <navigation
@@ -22,7 +22,7 @@
         app:startDestination="@id/signup">
         <fragment
             android:id="@+id/preferenceSubCategory"
-            android:name="com.timenoteco.timenote.view.loginFlow.PreferenceSubCategory"
+            android:name="com.dayzeeco.dayzee.view.loginFlow.PreferenceSubCategory"
             android:label="fragment_preference_sub_category"
             tools:layout="@layout/fragment_preference_sub_category">
             <action
@@ -34,7 +34,7 @@
         </fragment>
         <fragment
             android:id="@+id/preferenceSuggestion"
-            android:name="com.timenoteco.timenote.view.loginFlow.PreferenceSuggestion"
+            android:name="com.dayzeeco.dayzee.view.loginFlow.PreferenceSuggestion"
             android:label="fragment_preference_suggestion"
             tools:layout="@layout/fragment_preference_suggestion">
             <argument
@@ -43,7 +43,7 @@
         </fragment>
         <fragment
             android:id="@+id/preferenceCategory"
-            android:name="com.timenoteco.timenote.view.loginFlow.PreferenceCategory"
+            android:name="com.dayzeeco.dayzee.view.loginFlow.PreferenceCategory"
             android:label="fragment_preference_category"
             tools:layout="@layout/fragment_preference_category">
             <action
@@ -56,7 +56,7 @@
         <fragment
             tools:layout="@layout/fragment_signup"
             android:id="@+id/signup"
-            android:name="com.timenoteco.timenote.view.loginFlow.Signup"
+            android:name="com.dayzeeco.dayzee.view.loginFlow.Signup"
             android:label="Signup">
             <action
                 android:id="@+id/action_signup_to_preferenceCategory"
@@ -65,7 +65,7 @@
     </navigation>
     <fragment
         android:id="@+id/createTimenote"
-        android:name="com.timenoteco.timenote.view.createTimenoteFlow.CreateTimenote"
+        android:name="com.dayzeeco.dayzee.view.createTimenoteFlow.CreateTimenote"
         android:label="fragment_create_timenote"
         tools:layout="@layout/fragment_create_timenote" >
         <argument
@@ -79,7 +79,7 @@
             app:nullable="true" />
         <argument
             android:name="timenoteBody"
-            app:argType="com.timenoteco.timenote.model.CreationTimenoteDTO"
+            app:argType="com.dayzeeco.dayzee.model.CreationTimenoteDTO"
             app:nullable="true"
             android:defaultValue="@null" />
         <argument

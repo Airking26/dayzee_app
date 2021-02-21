@@ -8,7 +8,7 @@
     android:background="@android:color/white"
     tools:context=".view.searchFlow.Search">
 
-    <com.timenoteco.timenote.androidView.materialsearchbar.MaterialSearchBar
+    <com.dayzeeco.dayzee.androidView.materialsearchbar.MaterialSearchBar
         android:paddingHorizontal="8dp"
         android:paddingVertical="16dp"
         app:mt_roundedSearchBarEnabled="true"

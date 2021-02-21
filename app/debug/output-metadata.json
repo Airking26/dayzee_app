@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "com.dayzeeco.dayzee",
+  "variantName": "debug",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "properties": [],
+      "versionCode": 46,
+      "versionName": "46.0",
+      "enabled": true,
+      "outputFile": "app-debug.apk"
+    }
+  ]
+}

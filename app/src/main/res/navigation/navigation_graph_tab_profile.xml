@@ -9,7 +9,7 @@
         app:startDestination="@id/signup">
         <fragment
             android:id="@+id/preferenceSubCategory"
-            android:name="com.timenoteco.timenote.view.loginFlow.PreferenceSubCategory"
+            android:name="com.dayzeeco.dayzee.view.loginFlow.PreferenceSubCategory"
             android:label="fragment_preference_sub_category"
             tools:layout="@layout/fragment_preference_sub_category">
             <action
@@ -21,7 +21,7 @@
         </fragment>
         <fragment
             android:id="@+id/preferenceSuggestion"
-            android:name="com.timenoteco.timenote.view.loginFlow.PreferenceSuggestion"
+            android:name="com.dayzeeco.dayzee.view.loginFlow.PreferenceSuggestion"
             android:label="fragment_preference_suggestion"
             tools:layout="@layout/fragment_preference_suggestion">
             <argument
@@ -30,7 +30,7 @@
         </fragment>
         <fragment
             android:id="@+id/preferenceCategory"
-            android:name="com.timenoteco.timenote.view.loginFlow.PreferenceCategory"
+            android:name="com.dayzeeco.dayzee.view.loginFlow.PreferenceCategory"
             android:label="fragment_preference_category"
             tools:layout="@layout/fragment_preference_category">
             <action
@@ -42,7 +42,7 @@
         </fragment>
         <fragment
             android:id="@+id/signup"
-            android:name="com.timenoteco.timenote.view.loginFlow.Signup"
+            android:name="com.dayzeeco.dayzee.view.loginFlow.Signup"
             android:label="Signup">
             <action
                 android:id="@+id/action_signup_to_preferenceCategory"
@@ -51,19 +51,19 @@
     </navigation>
     <fragment
         android:id="@+id/profilModify"
-        android:name="com.timenoteco.timenote.view.profileFlow.ProfilModify"
+        android:name="com.dayzeeco.dayzee.view.profileFlow.ProfilModify"
         android:label="ProfilModify" >
         <argument
             android:name="isNotMine"
             app:argType="boolean" />
         <argument
             android:name="userInfoDTO"
-            app:argType="com.timenoteco.timenote.model.UserInfoDTO"
+            app:argType="com.dayzeeco.dayzee.model.UserInfoDTO"
             app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/profileCalendar"
-        android:name="com.timenoteco.timenote.view.profileFlow.ProfileCalendar"
+        android:name="com.dayzeeco.dayzee.view.profileFlow.ProfileCalendar"
         android:label="ProfileCalendar" >
         <argument
             android:name="id"
@@ -71,12 +71,12 @@
     </fragment>
     <fragment
         android:id="@+id/notifications"
-        android:name="com.timenoteco.timenote.view.profileFlow.Notifications"
+        android:name="com.dayzeeco.dayzee.view.profileFlow.Notifications"
         android:label="fragment_notifications"
         tools:layout="@layout/fragment_notifications" />
     <fragment
         android:id="@+id/settings"
-        android:name="com.timenoteco.timenote.view.profileFlow.settingsDirectory.Settings"
+        android:name="com.dayzeeco.dayzee.view.profileFlow.settingsDirectory.Settings"
         android:label="fragment_settings"
         tools:layout="@layout/fragment_settings" >
         <action
@@ -85,12 +85,12 @@
     </fragment>
     <fragment
         android:id="@+id/notificationManager"
-        android:name="com.timenoteco.timenote.view.profileFlow.settingsDirectory.NotificationManager"
+        android:name="com.dayzeeco.dayzee.view.profileFlow.settingsDirectory.NotificationManager"
         android:label="fragment_notification_manager"
         tools:layout="@layout/fragment_notification_manager" />
     <fragment
         android:id="@+id/followPage"
-        android:name="com.timenoteco.timenote.view.profileFlow.FollowPage"
+        android:name="com.dayzeeco.dayzee.view.profileFlow.FollowPage"
         android:label="fragment_follow_page"
         tools:layout="@layout/fragment_follow_page" >
         <argument
@@ -108,7 +108,7 @@
             app:argType="integer" />
     </fragment>
     <fragment
-        android:name="com.timenoteco.timenote.view.profileFlow.menuDirectory.Menu"
+        android:name="com.dayzeeco.dayzee.view.profileFlow.menuDirectory.Menu"
         android:id="@+id/menu"
         android:label="fragment_menu"
         tools:layout="@layout/fragment_menu" >
@@ -124,7 +124,7 @@
     </fragment>
     <fragment
         android:id="@+id/preferenceCategory"
-        android:name="com.timenoteco.timenote.view.loginFlow.PreferenceCategory"
+        android:name="com.dayzeeco.dayzee.view.loginFlow.PreferenceCategory"
         android:label="fragment_preference_category"
         tools:layout="@layout/fragment_preference_category" >
         <action
@@ -137,7 +137,7 @@
     </fragment>
     <fragment
         android:id="@+id/preferenceSubCategory"
-        android:name="com.timenoteco.timenote.view.loginFlow.PreferenceSubCategory"
+        android:name="com.dayzeeco.dayzee.view.loginFlow.PreferenceSubCategory"
         android:label="fragment_preference_sub_category"
         tools:layout="@layout/fragment_preference_sub_category" >
         <action
@@ -150,7 +150,7 @@
     </fragment>
     <fragment
         android:id="@+id/preferenceSuggestion"
-        android:name="com.timenoteco.timenote.view.loginFlow.PreferenceSuggestion"
+        android:name="com.dayzeeco.dayzee.view.loginFlow.PreferenceSuggestion"
         android:label="fragment_preference_suggestion"
         tools:layout="@layout/fragment_preference_suggestion" >
         <argument
@@ -160,7 +160,7 @@
     </fragment>
     <fragment
         android:id="@+id/createTimenote"
-        android:name="com.timenoteco.timenote.view.createTimenoteFlow.CreateTimenote"
+        android:name="com.dayzeeco.dayzee.view.createTimenoteFlow.CreateTimenote"
         android:label="fragment_create_timenote"
         tools:layout="@layout/fragment_create_timenote" >
         <argument
@@ -174,7 +174,7 @@
             app:nullable="true" />
         <argument
             android:name="timenoteBody"
-            app:argType="com.timenoteco.timenote.model.CreationTimenoteDTO"
+            app:argType="com.dayzeeco.dayzee.model.CreationTimenoteDTO"
             app:nullable="true"
             android:defaultValue="@null" />
         <argument
@@ -184,11 +184,11 @@
     </fragment>
     <fragment
         android:id="@+id/contacts"
-        android:name="com.timenoteco.timenote.view.profileFlow.menuDirectory.Contacts"
+        android:name="com.dayzeeco.dayzee.view.profileFlow.menuDirectory.Contacts"
         android:label="Contacts" />
     <fragment
         android:id="@+id/detailedTimenote"
-        android:name="com.timenoteco.timenote.view.homeFlow.DetailedTimenote"
+        android:name="com.dayzeeco.dayzee.view.homeFlow.DetailedTimenote"
         android:label="fragment_detailed_fragment"
         tools:layout="@layout/fragment_detailed_fragment" >
         <argument
@@ -196,16 +196,16 @@
             app:argType="integer" />
         <argument
             android:name="event"
-            app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
+            app:argType="com.dayzeeco.dayzee.model.TimenoteInfoDTO"
             app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/timenoteTAG"
-        android:name="com.timenoteco.timenote.view.homeFlow.TimenoteTAG"
+        android:name="com.dayzeeco.dayzee.view.homeFlow.TimenoteTAG"
         android:label="TimenoteTAG" >
         <argument
             android:name="timenoteInfoDTO"
-            app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
+            app:argType="com.dayzeeco.dayzee.model.TimenoteInfoDTO"
             app:nullable="true" />
         <argument
             android:name="from"
@@ -217,12 +217,12 @@
     </fragment>
     <fragment
         android:id="@+id/timenoteAddress"
-        android:name="com.timenoteco.timenote.view.homeFlow.TimenoteAddress"
+        android:name="com.dayzeeco.dayzee.view.homeFlow.TimenoteAddress"
         android:label="fragment_timenote_address"
         tools:layout="@layout/fragment_timenote_address" >
         <argument
             android:name="timenoteInfoDTO"
-            app:argType="com.timenoteco.timenote.model.TimenoteInfoDTO"
+            app:argType="com.dayzeeco.dayzee.model.TimenoteInfoDTO"
             app:nullable="true" />
         <argument
             android:name="from"
@@ -237,7 +237,7 @@
     <action android:id="@+id/action_global_navigation" app:destination="@id/navigation" />
     <fragment
         android:id="@+id/myProfile"
-        android:name="com.timenoteco.timenote.view.profileFlow.MyProfile"
+        android:name="com.dayzeeco.dayzee.view.profileFlow.MyProfile"
         android:label="MyProfile" >
         <action
             android:id="@+id/action_myProfile_to_notifications"
@@ -249,11 +249,11 @@
     <action android:id="@+id/action_global_profileCalendar" app:destination="@id/profileCalendar" />
     <fragment
         android:id="@+id/profileElse"
-        android:name="com.timenoteco.timenote.view.profileFlow.ProfileElse"
+        android:name="com.dayzeeco.dayzee.view.profileFlow.ProfileElse"
         android:label="ProfileElse" >
         <argument
             android:name="userInfoDTO"
-            app:argType="com.timenoteco.timenote.model.UserInfoDTO"
+            app:argType="com.dayzeeco.dayzee.model.UserInfoDTO"
             app:nullable="true"
             android:defaultValue="@null" />
         <argument

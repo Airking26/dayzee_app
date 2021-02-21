@@ -8,17 +8,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:39040998101:android:9b28e046239271da1be05c",
+        "mobilesdk_app_id": "1:39040998101:android:67ac10f772dde4831be05c",
         "android_client_info": {
-          "package_name": "com.timenoteco.timenote"
+          "package_name": "com.dayzeeco.dayzee"
         }
       },
       "oauth_client": [
         {
-          "client_id": "39040998101-4mbe7j37lm2jn298kudd201q1qhv7c2o.apps.googleusercontent.com",
+          "client_id": "39040998101-kb0es8p9aooqrt2e6ir5u82vc44ug8t6.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.timenoteco.timenote",
+            "package_name": "com.dayzeeco.dayzee",
             "certificate_hash": "57225b60b40713ee756b9ddb1171ee688f06ac15"
           }
         },
@@ -38,6 +38,14 @@
             {
               "client_id": "39040998101-c0vofsrtipn95r2poqfu8p5a23fmj31f.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "39040998101-s1j7hb0bu0gh5aq3038mknkirqpgmk2i.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ronny.TimeNote",
+                "app_store_id": "968738944"
+              }
             }
           ]
         }
