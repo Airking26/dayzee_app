@@ -594,7 +594,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                     )
                         .show()
                     context.getString(R.string.delete) -> {
-                        val map: MutableMap<Long, String> = Gson().fromJson(prefs.getString("mapEventIdToTimenote", null), object : TypeToken<MutableMap<Long, String>>() {}.type) ?: mutableMapOf()
+                        val map: MutableMap<Long, String> = Gson().fromJson(prefs.getString("mapEventIdToTimenote", null), object : TypeToken<MutableMap<String, String>>() {}.type) ?: mutableMapOf()
                         timenoteViewModel.deleteTimenote(tokenId!!, args.event?.id!!).observe(viewLifecycleOwner, Observer {
                             if(it.isSuccessful) {
                                 if(map.isNotEmpty() && map.filterValues { id -> id == args.event?.id!! }.keys.isNotEmpty()) {

@@ -57,7 +57,6 @@ import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.WebSearchAdapter
 import com.dayzeeco.dayzee.androidView.dialog.input
-import com.dayzeeco.dayzee.androidView.matisse.Matisse
 import com.dayzeeco.dayzee.common.ImageCompressor
 import com.dayzeeco.dayzee.common.Utils
 import com.dayzeeco.dayzee.common.stringLiveData
@@ -711,7 +710,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
                     ) == PackageManager.PERMISSION_GRANTED) {
                     when (index) {
                         0 -> {
-                            utils.createImagePicker(this@ProfilModify, requireContext())
+                            //utils.createImagePicker(this@ProfilModify, requireContext())
                             profileModifyPicIv.visibility = View.GONE
                             profileModifyPb.visibility = View.VISIBLE
                         }
@@ -790,10 +789,6 @@ class ProfilModify: Fragment(), View.OnClickListener,
         } else if(requestCode == 2){
             if (resultCode == Activity.RESULT_OK){
                 picturePickerUser()
-            }
-        } else if(requestCode == 112 && resultCode == Activity.RESULT_OK){
-            ImageCompressor.compressBitmap(requireContext(), File(Matisse.obtainPathResult(data)[0])){
-                pushPic(it)
             }
         }
         super.onActivityResult(requestCode, resultCode, data)

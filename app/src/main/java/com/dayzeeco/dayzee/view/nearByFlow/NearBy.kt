@@ -600,7 +600,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     override fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         if(userInfoDTO == null) loginViewModel.markAsUnauthenticated()
         else {
-            val map: MutableMap<Long, String> = Gson().fromJson(prefs.getString("mapEventIdToTimenote", null), object : TypeToken<MutableMap<Long, String>>() {}.type) ?: mutableMapOf()
+            val map: MutableMap<Long, String> = Gson().fromJson(prefs.getString("mapEventIdToTimenote", null), object : TypeToken<MutableMap<String, String>>() {}.type) ?: mutableMapOf()
             timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                 if(it.isSuccessful) {
                     timenotePagingAdapter?.refresh()

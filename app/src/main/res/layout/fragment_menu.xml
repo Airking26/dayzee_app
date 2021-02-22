@@ -236,7 +236,7 @@
         android:layout_marginHorizontal="8dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="12dp"
-        android:visibility="visible"
+        android:visibility="gone"
         app:cardCornerRadius="10dp"
         app:layout_constraintEnd_toEndOf="@id/menu_settings_cv"
         app:layout_constraintEnd_toStartOf="@id/menu_preferences_cv"

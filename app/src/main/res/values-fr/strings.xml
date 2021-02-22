@@ -293,7 +293,8 @@
     <string name="photo_grid_capture">Camera</string>
     <string name="empty_text">Pas de media</string>
     <string name="button_ok">OK</string>
-
+    <string name="deleted">Supprimé</string>
+    <string name="synchro_google">Synchroniser Google Calendar</string>
     <string name="error_over_count_default">Vous avez atteint le seuil maximum de sélection</string>
     <plurals name="error_over_count">
         <item quantity="one">Vous ne pouvez selectioner que jusqu\'à %1$d fichier</item>

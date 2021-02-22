@@ -1,11 +1,9 @@
 package com.dayzeeco.dayzee.view.profileFlow.menuDirectory
 
-import android.Manifest
 import android.accounts.AccountManager
 import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.app.Dialog
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -17,9 +15,9 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
+import androidx.work.*
 import com.amazonaws.mobile.auth.core.internal.util.ThreadUtils.runOnUiThread
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -35,22 +33,22 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.BuildConfig
 import com.dayzeeco.dayzee.R
-import com.dayzeeco.dayzee.common.SynchronizeCalendars
 import com.dayzeeco.dayzee.common.Utils
 import com.dayzeeco.dayzee.listeners.SynchronizeWithGoogleCalendarListener
 import com.dayzeeco.dayzee.model.*
 import com.dayzeeco.dayzee.viewModel.LoginViewModel
 import com.dayzeeco.dayzee.viewModel.TimenoteViewModel
+import com.dayzeeco.dayzee.webService.service.TimenoteService
+import com.dayzeeco.dayzee.worker.MyWorkerFactory
+import com.dayzeeco.dayzee.worker.SynchronizeGoogleCalendarWorker
+import com.dayzeeco.dayzee.worker.token_id
+import com.dayzeeco.dayzee.worker.user_id
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GooglePlayServicesUtil
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.google.api.client.json.JsonFactory
+import com.google.api.services.calendar.model.Event
 import kotlinx.android.synthetic.main.fragment_menu.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
-import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
@@ -120,20 +118,7 @@ class Menu : Fragment(), View.OnClickListener, SynchronizeWithGoogleCalendarList
         when(v){
             menu_settings_cv -> findNavController().navigate(MenuDirections.actionMenuToSettings())
             menu_profile_cv -> findNavController().navigate(MenuDirections.actionGlobalProfileElse(4).setUserInfoDTO(userInfoDTO))
-            menu_synchro_cv -> {
-
-                sync_pb.visibility =View.VISIBLE
-                menu_synchro_iv.visibility = View.INVISIBLE
-                refreshResults()
-
-
-                /*startActivityForResult(cre.newChooseAccountIntent(), 13)
-                if(!hasPermissions(PERMISSIONS_CALENDAR)) requestPermissions(PERMISSIONS_CALENDAR, PERMISSION_CALENDAR_CODE)
-                else {
-                    val intent = AccountPicker.newChooseAccountIntent(null, null, null, false, null, null, null, null)
-                    startActivityForResult(intent, 13)
-                }*/
-            }
+            menu_synchro_cv -> { }
             menu_invite_friends_cv -> {
                 try {
                     val shareIntent = Intent(Intent.ACTION_SEND)
@@ -150,20 +135,8 @@ class Menu : Fragment(), View.OnClickListener, SynchronizeWithGoogleCalendarList
         }
     }
 
-    private fun hasPermissions(permissions: Array<String>): Boolean {
-            for (permission in permissions) {
-                if (ActivityCompat.checkSelfPermission(requireContext(), permission) != PackageManager.PERMISSION_GRANTED) {
-                    return false
-                }
-            }
-        return true
-    }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if(requestCode == 10){
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 findNavController().navigate(MenuDirections.actionMenuToContacts())
@@ -199,15 +172,6 @@ class Menu : Fragment(), View.OnClickListener, SynchronizeWithGoogleCalendarList
                 chooseAccount()
             }
         }
-
-        /*if(requestCode == 13 && resultCode == RESULT_OK){
-            val mEmail = Objects.requireNonNull<Intent>(data).getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
-            PreferenceManager.getDefaultSharedPreferences(requireContext()).edit().putString(GMAIL, mEmail).apply()
-            PreferenceManager.getDefaultSharedPreferences(requireContext()).edit().putBoolean(IS_EMAIL_LINKED, true).apply()
-            sync = SynchronizeCalendars(this)
-            sync.syncCalendars(requireContext())
-            sync.readCalendar(requireContext(), 0, 0)
-        }*/
     }
 
     private fun refreshResults() {
@@ -218,7 +182,7 @@ class Menu : Fragment(), View.OnClickListener, SynchronizeWithGoogleCalendarList
                 Thread(Runnable {
                     try {
                         val li = service.events()?.list("primary")?.setMaxResults(10)?.setTimeMin(DateTime( System.currentTimeMillis()))?.setOrderBy("startTime")?.setSingleEvents(true)?.execute()
-                        val ite = li?.items
+                        val ite : MutableList<Event>? = li?.items
                         val mm = ""
                     } catch (e : UserRecoverableAuthIOException){
                         startActivityForResult(e.intent, REQUEST_AUTHORIZATION);
@@ -230,7 +194,6 @@ class Menu : Fragment(), View.OnClickListener, SynchronizeWithGoogleCalendarList
 
         }
     }
-
 
     private fun chooseAccount() {
         startActivityForResult(credential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER)
@@ -247,8 +210,7 @@ class Menu : Fragment(), View.OnClickListener, SynchronizeWithGoogleCalendarList
         return true
     }
 
-    private fun showGooglePlayServicesAvailabilityErrorDialog(
-        connectionStatusCode: Int) {
+    private fun showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode: Int) {
         runOnUiThread {
             val dialog: Dialog = GooglePlayServicesUtil.getErrorDialog(
                 connectionStatusCode,
@@ -259,9 +221,6 @@ class Menu : Fragment(), View.OnClickListener, SynchronizeWithGoogleCalendarList
     }
 
     override fun onSynchronize(mEventsList: ArrayList<CalendarEvent>) {
-
-        val map: MutableMap<Long, String> = Gson().fromJson(prefs.getString("mapEventIdToTimenote", null), object : TypeToken<MutableMap<Long, String>>() {}.type) ?: mutableMapOf()
-        loopThroughCalendar(mEventsList.iterator(), map)
 
         /*mEventsList.forEach {
                 val creationTimenoteDTO = CreationTimenoteDTO(

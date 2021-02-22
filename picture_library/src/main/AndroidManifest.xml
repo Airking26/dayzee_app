@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.dayzeeco.picture_library">
+
+    <uses-sdk tools:overrideLibrary="androidx.camera.view,
+    androidx.camera:camera-camera2,
+    androidx.camera.camera2,androidx.camera.lifecycle,
+    androidx.camera.core" />
+
+    <application>
+        <provider
+            android:name="com.dayzeeco.picture_library.PictureFileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity
+            android:name="com.dayzeeco.picture_library.PictureSelectorActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+
+        <activity
+            android:name="com.dayzeeco.picture_library.instagram.PictureSelectorInstagramStyleActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+
+        <activity android:name="com.dayzeeco.picture_library.instagram.process.InstagramMediaProcessActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+
+        <activity
+            android:name="com.dayzeeco.picture_library.PictureSelectorWeChatStyleActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+        <activity
+            android:name="com.dayzeeco.picture_library.PictureSelectorCameraEmptyActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/Picture.Theme.Translucent" />
+        <activity
+            android:name="com.dayzeeco.picture_library.PictureCustomCameraActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+
+        <activity
+            android:name="com.dayzeeco.picture_library.PicturePreviewActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+        <activity
+            android:name="com.dayzeeco.picture_library.PictureSelectorPreviewWeChatStyleActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+        <activity
+            android:name="com.dayzeeco.picture_library.PictureVideoPlayActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="sensor" />
+        <activity
+            android:name="com.dayzeeco.picture_library.PictureExternalPreviewActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+
+        <activity
+            android:name="com.dayzeeco.picture_library.PicturePlayAudioActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+
+        <activity
+            android:name="com.dayzeeco.ucrop.UCropActivity"
+            android:theme="@style/Base.Theme.NoActionBar" />
+        <activity
+            android:name="com.dayzeeco.ucrop.PictureMultiCuttingActivity"
+            android:theme="@style/Base.Theme.NoActionBar" />
+
+    </application>
+
+</manifest>

@@ -180,7 +180,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
             bottomNavView.menu[4].iconTintMode = null
         }
 
-        setPicBottomNav(userInfoDTO.picture)
+        if(userInfoDTO != null) setPicBottomNav(userInfoDTO.picture)
 
         controller.observe(this, Observer {
             it.addOnDestinationChangedListener { navController, destination, _ ->

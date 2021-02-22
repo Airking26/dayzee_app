@@ -43,6 +43,8 @@ import com.dayzeeco.dayzee.listeners.RefreshPicBottomNavListener
 import com.dayzeeco.dayzee.listeners.TimenoteOptionsListener
 import com.dayzeeco.dayzee.model.*
 import com.dayzeeco.dayzee.viewModel.*
+import com.dayzeeco.picture_library.instagram.InsGallery
+import com.dayzeeco.picture_library.instagram.PictureSelectorInstagramStyleActivity
 import io.branch.indexing.BranchUniversalObject
 import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
@@ -571,7 +573,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     }
 
     override fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        val map: MutableMap<Long, String> = Gson().fromJson(prefs.getString("mapEventIdToTimenote", null), object : TypeToken<MutableMap<Long, String>>() {}.type) ?: mutableMapOf()
+        val map: MutableMap<Long, String> = Gson().fromJson(prefs.getString("mapEventIdToTimenote", null), object : TypeToken<MutableMap<String, String>>() {}.type) ?: mutableMapOf()
         timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {
             if(it.isSuccessful) {
                 timenotePagingAdapter?.refresh()

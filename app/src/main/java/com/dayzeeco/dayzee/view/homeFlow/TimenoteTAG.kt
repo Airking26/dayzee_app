@@ -140,7 +140,7 @@ class TimenoteTAG: Fragment(), TimenoteOptionsListener, View.OnClickListener,
     }
 
     override fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        val map: MutableMap<Long, String> = Gson().fromJson(prefs.getString("mapEventIdToTimenote", null), object : TypeToken<MutableMap<Long, String>>() {}.type) ?: mutableMapOf()
+        val map: MutableMap<Long, String> = Gson().fromJson(prefs.getString("mapEventIdToTimenote", null), object : TypeToken<MutableMap<String, String>>() {}.type) ?: mutableMapOf()
         timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {
             if(it.isSuccessful) {
                 timenotePagingAdapter?.refresh()

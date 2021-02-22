@@ -38,11 +38,6 @@ import com.afollestad.materialdialogs.list.listItems
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.WebSearchAdapter
 import com.dayzeeco.dayzee.androidView.dialog.input
-import com.dayzeeco.dayzee.androidView.matisse.Matisse
-import com.dayzeeco.dayzee.androidView.matisse.MimeType
-import com.dayzeeco.dayzee.androidView.matisse.engine.impl.GlideEngine
-import com.dayzeeco.dayzee.androidView.matisse.filter.Filter
-import com.dayzeeco.dayzee.androidView.matisse.internal.entity.CaptureStrategy
 import com.dayzeeco.dayzee.model.Address
 import com.dayzeeco.dayzee.model.DetailedPlace
 import com.dayzeeco.dayzee.model.Location
@@ -58,31 +53,6 @@ import kotlin.math.abs
 import kotlin.time.ExperimentalTime
 
 class Utils {
-
-
-    fun picturePickerTimenote(context: Context, resources: Resources, view: View, view1: View, fragment: Fragment, webSearchViewModel: WebSearchViewModel) {
-        val PERMISSIONS_STORAGE = arrayOf(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
-
-        MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-            title(R.string.take_add_a_picture)
-            listItems(items = listOf(resources.getString(R.string.add_a_picture), resources.getString(R.string.search_on_web))) { _, index, text ->
-                if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-                    && ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    view.visibility = View.GONE
-                    view1.visibility = View.VISIBLE
-                    when (text) {
-                        resources.getString(R.string.add_a_picture) -> createImagePicker(fragment, context)
-                        //resources.getString(R.string.choose_from_gallery) -> createPictureMultipleBS(fragment.childFragmentManager, "multiple")
-                        resources.getString(R.string.search_on_web) -> createWebSearchDialog(context, webSearchViewModel, fragment, view, view1)
-                    }
-                } else fragment.requestPermissions(PERMISSIONS_STORAGE, 2)
-            }
-            lifecycleOwner(fragment)
-        }
-    }
 
     fun createWebSearchDialog(context: Context, webSearchViewModel: WebSearchViewModel, fragment: Fragment, view: View?, view1: View?) {
         var recyclerView : RecyclerView?
@@ -147,24 +117,6 @@ class Utils {
         }
     }
 
-    fun createImagePicker(fragment: Fragment, context: Context){
-        Matisse.from(fragment)
-            .choose(MimeType.ofImage())
-            .theme(R.style.Matisse_Dracula)
-            .countable(false)
-            .capture(true)
-            .spanCount(4)
-            .captureStrategy(CaptureStrategy(true, "com.dayzeeco.dayzee.fileprovider", "TIMENOTE"))
-            .addFilter(GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))
-            .gridExpectedSize(context.resources.getDimensionPixelSize(R.dimen.grid))
-            .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
-            .thumbnailScale(0.85f)
-            .imageEngine(GlideEngine())
-            .maxOriginalSize(10)
-            .autoHideToolbarOnSingleTap(true)
-            .forResult(112)
-    }
-
     fun hideStatusBar(activity: Activity){
         activity.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_IMMERSIVE
     }
@@ -188,75 +140,11 @@ class Utils {
         return circularProgressDrawable
     }
 
-    fun progressDialog(context: Context): Dialog {
-        val dialog = Dialog(context)
-        val inflate = LayoutInflater.from(context).inflate(R.layout.progress_dialog, null)
-        dialog.setContentView(inflate)
-        dialog.setCancelable(false)
-        dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        return dialog
-    }
 
     fun formatDate(format: String, timestamp: Long): String {
         val dateFormat = SimpleDateFormat(format, Locale.getDefault())
         return if(timestamp == 0L) ""
         else dateFormat.format(timestamp)
-    }
-
-    fun setFormatedStartDatePreview(startDate: String, endDate: String): String{
-        val DATE_FORMAT_DAY = "d MMM yyyy"
-        val DATE_FORMAT_TIME = "hh:mm aaa"
-        val DATE_FORMAT_TIME_FORMATED = "d\nMMM"
-        val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = "d MMM.\nhh:mm"
-        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
-
-        val formatedStartDate: String
-
-
-        val startingAt = SimpleDateFormat(ISO, Locale.getDefault()).parse(startDate).time
-        val endingAt = SimpleDateFormat(ISO, Locale.getDefault()).parse(endDate).time
-
-
-        if(formatDate(DATE_FORMAT_DAY, startingAt) == formatDate(DATE_FORMAT_DAY, endingAt)){
-            if(formatDate(DATE_FORMAT_TIME, startingAt) == formatDate(DATE_FORMAT_TIME, endingAt)){
-                formatedStartDate = formatDate(DATE_FORMAT_TIME_FORMATED, startingAt)
-            } else {
-                formatedStartDate = formatDate(DATE_FORMAT_TIME_FORMATED, startingAt)
-            }
-        } else {
-            formatedStartDate = formatDate(DATE_FORMAT_SAME_DAY_DIFFERENT_TIME, startingAt)
-        }
-
-        return formatedStartDate
-    }
-
-    fun setFormatedEndDatePreview(startDate: String, endDate: String):String{
-
-        val DATE_FORMAT_DAY = "d MMM yyyy"
-        val DATE_FORMAT_TIME = "hh:mm aaa"
-        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
-        val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = "d MMM\nhh:mm"
-
-
-        var formatedEndDate: String
-
-        val startingAt = SimpleDateFormat(ISO, Locale.getDefault()).parse(startDate).time
-        val endingAt = SimpleDateFormat(ISO, Locale.getDefault()).parse(endDate).time
-
-
-        formatedEndDate =
-            if(formatDate(DATE_FORMAT_DAY, startingAt) == formatDate(DATE_FORMAT_DAY, endingAt)){
-                if(formatDate(DATE_FORMAT_TIME, startingAt) == formatDate(DATE_FORMAT_TIME, endingAt)){
-                    formatDate(DATE_FORMAT_TIME, startingAt)
-                } else {
-                    formatDate(DATE_FORMAT_TIME, startingAt) + "\n" + formatDate(DATE_FORMAT_TIME, endingAt)
-                }
-            } else {
-                formatDate(DATE_FORMAT_SAME_DAY_DIFFERENT_TIME, endingAt)
-            }
-
-        return formatedEndDate
-
     }
 
     fun setFormatedStartDate(startDate: String, endDate: String) : String{
@@ -429,14 +317,6 @@ class Utils {
             SimpleDateFormat(ISO, Locale.getDefault()).parse(k).time
         }
         return formatDate(YEAR, starting)
-    }
-
-    fun setYearPreview(startDate: String): String{
-        val YEAR = "yyyy"
-        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
-
-        val startingAt = SimpleDateFormat(ISO).parse(startDate).time
-        return formatDate(YEAR, startingAt)
     }
 
     @ExperimentalTime

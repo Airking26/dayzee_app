@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission
         android:name="android.permission.AUTHENTICATE_ACCOUNTS"
         android:maxSdkVersion="22" />
@@ -100,9 +101,10 @@
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_stat_notif" />
 
-        <activity android:name="com.dayzeeco.dayzee.androidView.matisse.ui.MatisseActivity"/>
-        <activity android:name="com.dayzeeco.dayzee.androidView.matisse.internal.ui.AlbumPreviewActivity"/>
-        <activity android:name="com.dayzeeco.dayzee.androidView.matisse.internal.ui.SelectedPreviewActivity"/>
+        <provider
+            android:name="androidx.work.impl.WorkManagerInitializer"
+            android:authorities="${applicationId}.workmanager-init"
+            tools:node="remove" />
 
     </application>
 

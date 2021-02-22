@@ -128,7 +128,9 @@ dependencies {
 
     implementation 'com.google.apis:google-api-services-customsearch:v1-rev51-1.22.0'
 
+    implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
 
+    implementation project(':picture_library')
 
     implementation 'com.google.android.gms:play-services-auth:19.0.0'
     implementation 'pub.devrel:easypermissions:0.3.0'
@@ -138,5 +140,9 @@ dependencies {
     implementation('com.google.apis:google-api-services-calendar:v3-rev84-1.18.0-rc') {
         exclude group: 'org.apache.httpcomponents'
     }
+
+    implementation "androidx.camera:camera-camera2:1.1.0-alpha01"
+    // Kotlin + coroutines
+    implementation "androidx.work:work-runtime-ktx:2.5.0"
 
 }

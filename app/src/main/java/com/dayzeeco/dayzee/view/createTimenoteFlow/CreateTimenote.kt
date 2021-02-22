@@ -1,13 +1,18 @@
 package com.dayzeeco.dayzee.view.createTimenoteFlow
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
+import android.content.res.Configuration
 import android.database.Cursor
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -27,6 +32,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -56,6 +62,27 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.CannedAccessControlList
+import com.dayzeeco.dayzee.R
+import com.dayzeeco.dayzee.adapter.ScreenSlideCreationTimenotePagerAdapter
+import com.dayzeeco.dayzee.adapter.UsersPagingAdapter
+import com.dayzeeco.dayzee.adapter.UsersShareWithPagingAdapter
+import com.dayzeeco.dayzee.adapter.WebSearchAdapter
+import com.dayzeeco.dayzee.androidView.dialog.input
+import com.dayzeeco.dayzee.androidView.instaLike.GlideEngine
+import com.dayzeeco.dayzee.common.HashTagHelper
+import com.dayzeeco.dayzee.common.ImageCompressor
+import com.dayzeeco.dayzee.common.Utils
+import com.dayzeeco.dayzee.common.stringLiveData
+import com.dayzeeco.dayzee.listeners.BackToHomeListener
+import com.dayzeeco.dayzee.listeners.GoToProfile
+import com.dayzeeco.dayzee.listeners.RefreshPicBottomNavListener
+import com.dayzeeco.dayzee.listeners.TimenoteCreationPicListeners
+import com.dayzeeco.dayzee.model.*
+import com.dayzeeco.dayzee.viewModel.*
+import com.dayzeeco.picture_library.config.PictureMimeType
+import com.dayzeeco.picture_library.entity.LocalMedia
+import com.dayzeeco.picture_library.instagram.InsGallery
+import com.dayzeeco.picture_library.listener.OnResultCallbackListener
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.PlacesClient
@@ -64,20 +91,6 @@ import com.google.android.libraries.places.widget.AutocompleteActivity
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.dayzeeco.dayzee.R
-import com.dayzeeco.dayzee.adapter.ScreenSlideCreationTimenotePagerAdapter
-import com.dayzeeco.dayzee.adapter.UsersPagingAdapter
-import com.dayzeeco.dayzee.adapter.UsersShareWithPagingAdapter
-import com.dayzeeco.dayzee.adapter.WebSearchAdapter
-import com.dayzeeco.dayzee.androidView.dialog.input
-import com.dayzeeco.dayzee.androidView.matisse.Matisse
-import com.dayzeeco.dayzee.common.*
-import com.dayzeeco.dayzee.listeners.BackToHomeListener
-import com.dayzeeco.dayzee.listeners.GoToProfile
-import com.dayzeeco.dayzee.listeners.RefreshPicBottomNavListener
-import com.dayzeeco.dayzee.listeners.TimenoteCreationPicListeners
-import com.dayzeeco.dayzee.model.*
-import com.dayzeeco.dayzee.viewModel.*
 import kotlinx.android.synthetic.main.fragment_create_timenote.*
 import kotlinx.android.synthetic.main.friends_search_cl.view.*
 import kotlinx.coroutines.flow.collectLatest
@@ -97,6 +110,10 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     HashTagHelper.OnHashTagClickListener, UsersPagingAdapter.SearchPeopleListener,
     UsersShareWithPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.AddToSend {
 
+    private val PERMISSIONS_STORAGE = arrayOf(
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE
+    )
     private lateinit var goToProfileLisner : GoToProfile
     private var accountType: Int = -1
     private var sendTo: MutableList<String> = mutableListOf()
@@ -223,6 +240,13 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         inflater.inflate(R.layout.fragment_create_timenote, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        when (context?.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
+            Configuration.UI_MODE_NIGHT_YES -> { InsGallery.setCurrentTheme(InsGallery.THEME_STYLE_DARK) }
+            Configuration.UI_MODE_NIGHT_NO -> {InsGallery.setCurrentTheme(InsGallery.THEME_STYLE_DEFAULT)}
+            Configuration.UI_MODE_NIGHT_UNDEFINED -> {InsGallery.setCurrentTheme(InsGallery.THEME_STYLE_DARK_BLUE)}
+        }
+
         am = AmazonS3Client(CognitoCachingCredentialsProvider(
             requireContext(),
             "us-east-1:a1e54ce4-a26d-44b1-83ea-9ca1d0d7903a", // ID du groupe d'identités
@@ -586,20 +610,6 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                 }
             }
             return
-        } else if(requestCode == 112 && resultCode == Activity.RESULT_OK){
-            val r = Matisse.obtainResult(data)
-            for(image in r!!){
-                ImageCompressor.compressBitmap(requireContext(), File(getPath(image)!!)){
-                    images?.add(it)
-                }
-            }
-            screenSlideCreationTimenotePagerAdapter.images = images
-            screenSlideCreationTimenotePagerAdapter.notifyDataSetChanged()
-            indicator.setViewPager(vp_pic)
-            pic_cl.visibility = View.VISIBLE
-            progressBar.visibility = View.GONE
-            takeAddPicTv.visibility = View.GONE
-            hideChooseBackground()
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
@@ -607,14 +617,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if (requestCode == 2) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                utils.picturePickerTimenote(
-                    requireContext(),
-                    resources,
-                    takeAddPicTv,
-                    progressBar,
-                    this,
-                    webSearchViewModel
-                )
+                openDialogToChoosePic()
             }
         }
     }
@@ -820,14 +823,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
             }
             create_timenote_take_add_pic -> {
                 images?.clear()
-                utils.picturePickerTimenote(
-                    requireContext(),
-                    resources,
-                    takeAddPicTv,
-                    progressBar,
-                    this,
-                    webSearchViewModel
-                )
+                openDialogToChoosePic()
             }
             paid_timenote_cardview -> MaterialDialog(
                 requireContext(),
@@ -931,6 +927,81 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                 }
             }
 
+        }
+    }
+
+    private fun openDialogToChoosePic() {
+        MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            title(R.string.take_add_a_picture)
+            listItems(
+                items = listOf(
+                    resources.getString(R.string.add_a_picture),
+                    resources.getString(R.string.search_on_web)
+                )
+            ) { _, index, text ->
+                if (ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                    ) == PackageManager.PERMISSION_GRANTED
+                    && ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    when (text) {
+                        resources.getString(R.string.add_a_picture) -> {
+                            InsGallery
+                                .openGallery(
+                                    requireActivity(),
+                                    GlideEngine.createGlideEngine(),
+                                    object : OnResultCallbackListener<LocalMedia> {
+                                        override fun onResult(result: MutableList<LocalMedia>?) {
+                                            for (media in result!!) {
+                                                var path: String =
+                                                    if (media.isCut && !media.isCompressed) {
+                                                        media.cutPath
+                                                    } else if (media.isCompressed || media.isCut && media.isCompressed) {
+                                                        media.compressPath
+                                                    } else if (PictureMimeType.isHasVideo(media.mimeType) && !TextUtils.isEmpty(
+                                                            media.coverPath
+                                                        )
+                                                    ) {
+                                                        media.coverPath
+                                                    } else {
+                                                        media.path
+                                                    }
+                                                ImageCompressor.compressBitmap(
+                                                    requireContext(),
+                                                    File(path)
+                                                ) {
+                                                    images?.add(it)
+                                                }
+                                            }
+                                            screenSlideCreationTimenotePagerAdapter.images = images
+                                            screenSlideCreationTimenotePagerAdapter.notifyDataSetChanged()
+                                            indicator?.setViewPager(vp_pic)
+                                            pic_cl?.visibility = View.VISIBLE
+                                            progressBar.visibility = View.GONE
+                                            takeAddPicTv.visibility = View.GONE
+                                            hideChooseBackground()
+                                        }
+
+                                        override fun onCancel() {
+                                        }
+
+                                    })
+                        }
+                        resources.getString(R.string.search_on_web) -> utils.createWebSearchDialog(
+                            context,
+                            webSearchViewModel,
+                            this@CreateTimenote,
+                            takeAddPicTv,
+                            progressBar
+                        )
+                    }
+                } else requestPermissions(PERMISSIONS_STORAGE, 2)
+            }
+            lifecycleOwner(this@CreateTimenote)
         }
     }
 
@@ -1266,27 +1337,11 @@ class CreateTimenote : Fragment(), View.OnClickListener,
             })
     }
 
-    fun getPath(uri: Uri?): String? {
-        val projection = arrayOf(MediaStore.Images.Media.DATA)
-        val cursor: Cursor = requireActivity().managedQuery(uri, projection, null, null, null)
-        requireActivity().startManagingCursor(cursor)
-        val column_index: Int = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-        cursor.moveToFirst()
-        return cursor.getString(column_index)
-    }
-
     override fun onCropPicClicked(uri: Uri?) {
     }
 
     override fun onAddClicked() {
-        utils.picturePickerTimenote(
-            requireContext(),
-            resources,
-            takeAddPicTv,
-            progressBar,
-            this,
-            webSearchViewModel
-        )
+        openDialogToChoosePic()
     }
 
     override fun onDeleteClicked(uri: Uri?) {
