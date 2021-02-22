@@ -989,7 +989,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                                         override fun onCancel() {
                                         }
 
-                                    })
+                                    }, 4)
                         }
                         resources.getString(R.string.search_on_web) -> utils.createWebSearchDialog(
                             context,

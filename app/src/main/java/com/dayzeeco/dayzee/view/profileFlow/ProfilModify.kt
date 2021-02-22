@@ -8,11 +8,13 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.text.InputType
+import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -57,6 +59,7 @@ import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.WebSearchAdapter
 import com.dayzeeco.dayzee.androidView.dialog.input
+import com.dayzeeco.dayzee.androidView.instaLike.GlideEngine
 import com.dayzeeco.dayzee.common.ImageCompressor
 import com.dayzeeco.dayzee.common.Utils
 import com.dayzeeco.dayzee.common.stringLiveData
@@ -70,10 +73,16 @@ import com.dayzeeco.dayzee.viewModel.MeViewModel
 import com.dayzeeco.dayzee.viewModel.ProfileModifyViewModel
 import com.dayzeeco.dayzee.viewModel.WebSearchViewModel
 import com.dayzeeco.dayzee.webService.ProfileModifyData
+import com.dayzeeco.picture_library.config.PictureMimeType
+import com.dayzeeco.picture_library.entity.LocalMedia
+import com.dayzeeco.picture_library.instagram.InsGallery
+import com.dayzeeco.picture_library.listener.OnResultCallbackListener
+import com.google.android.material.switchmaterial.SwitchMaterial
 import io.branch.indexing.BranchUniversalObject
 import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
 import io.branch.referral.util.LinkProperties
+import kotlinx.android.synthetic.main.fragment_create_timenote.*
 import kotlinx.android.synthetic.main.fragment_profil_modify.*
 import java.io.File
 import java.io.FileOutputStream
@@ -87,6 +96,10 @@ import java.util.*
 class ProfilModify: Fragment(), View.OnClickListener,
     WebSearchAdapter.ImageChoosedListener, WebSearchAdapter.MoreImagesClicked{
 
+    val PERMISSIONS_STORAGE = arrayOf(
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE
+    )
     private lateinit var profilModifyModel: UserInfoDTO
     private var imagesUrl: String = ""
     private lateinit var am : AmazonS3Client
@@ -99,7 +112,6 @@ class ProfilModify: Fragment(), View.OnClickListener,
     private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     private val webSearchViewModel : WebSearchViewModel by activityViewModels()
     private val args : ProfilModifyArgs by navArgs()
-    private var images: String? = null
     private var tokenId: String? = null
     private lateinit var utils: Utils
     private lateinit var onRefreshPicBottomNavListener: RefreshPicBottomNavListener
@@ -144,6 +156,13 @@ class ProfilModify: Fragment(), View.OnClickListener,
     @SuppressLint("RestrictedApi")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        when (context?.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
+            Configuration.UI_MODE_NIGHT_YES -> { InsGallery.setCurrentTheme(InsGallery.THEME_STYLE_DARK) }
+            Configuration.UI_MODE_NIGHT_NO -> {InsGallery.setCurrentTheme(InsGallery.THEME_STYLE_DEFAULT)}
+            Configuration.UI_MODE_NIGHT_UNDEFINED -> {InsGallery.setCurrentTheme(InsGallery.THEME_STYLE_DARK_BLUE)}
+        }
+
         am = AmazonS3Client(
             CognitoCachingCredentialsProvider(
             requireContext(),
@@ -584,11 +603,58 @@ class ProfilModify: Fragment(), View.OnClickListener,
             }
             }
             profile_modify_pic_imageview -> {
-                picturePickerUser()
+                openGallery()
             }
             profile_modify_share_btn -> share()
             profile_modify_done_btn -> findNavController().popBackStack()
         }
+    }
+
+    private fun openGallery(){
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED
+            && ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED) {
+
+            profileModifyPicIv.visibility = View.GONE
+            profileModifyPb.visibility = View.VISIBLE
+
+            InsGallery
+                .openGallery(
+                    requireActivity(),
+                    GlideEngine.createGlideEngine(),
+                    object : OnResultCallbackListener<LocalMedia> {
+                        override fun onResult(result: MutableList<LocalMedia>?) {
+                            for (media in result!!) {
+                                var path: String =
+                                    if (media.isCut && !media.isCompressed) {
+                                        media.cutPath
+                                    } else if (media.isCompressed || media.isCut && media.isCompressed) {
+                                        media.compressPath
+                                    } else if (PictureMimeType.isHasVideo(media.mimeType) && !TextUtils.isEmpty(
+                                            media.coverPath
+                                        )
+                                    ) {
+                                        media.coverPath
+                                    } else {
+                                        media.path
+                                    }
+                                ImageCompressor.compressBitmap(requireContext(), File(path)) {
+                                    pushPic(it)
+                                }
+                            }
+                        }
+
+                        override fun onCancel() {
+
+                        }
+
+                    }, 1)
+        } else requestPermissions(PERMISSIONS_STORAGE, 2)
     }
 
 
@@ -626,7 +692,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
     ) {
         if(requestCode == 2){
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                picturePickerUser()
+                openGallery()
             }
         }
     }
@@ -663,73 +729,18 @@ class ProfilModify: Fragment(), View.OnClickListener,
 
     }
 
-    private fun compressFile(imageFile: File, image: Bitmap) {
-        try {
-            val fOut: OutputStream = FileOutputStream(imageFile)
-            image.compress(Bitmap.CompressFormat.JPEG, 100, fOut)
-            fOut.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
     private fun setStateSwitch(
-        switchActive: Switch,
-        switchInactive1: Switch,
-        switchInactive2: Switch,
-        switchInactive3: Switch,
-        switchInactive4: Switch
+        switchActive: SwitchMaterial,
+        switchInactive1: SwitchMaterial,
+        switchInactive2: SwitchMaterial,
+        switchInactive3: SwitchMaterial,
+        switchInactive4: SwitchMaterial
     ){
         switchActive.isChecked = true
         switchInactive1.isChecked = false
         switchInactive2.isChecked = false
         switchInactive3.isChecked = false
         switchInactive4.isChecked = false
-    }
-
-    private fun picturePickerUser() {
-        val PERMISSIONS_STORAGE = arrayOf(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
-
-        MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-            title(R.string.take_add_a_picture)
-            listItems(
-                items = listOf(
-                    getString(R.string.add_a_picture), getString(R.string.search_on_web), getString(R.string.delete)
-                )
-            ) { _, index, text ->
-                if (ContextCompat.checkSelfPermission(
-                        requireContext(),
-                        Manifest.permission.READ_EXTERNAL_STORAGE
-                    ) == PackageManager.PERMISSION_GRANTED
-                    && ContextCompat.checkSelfPermission(
-                        requireContext(),
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    ) == PackageManager.PERMISSION_GRANTED) {
-                    when (index) {
-                        0 -> {
-                            //utils.createImagePicker(this@ProfilModify, requireContext())
-                            profileModifyPicIv.visibility = View.GONE
-                            profileModifyPb.visibility = View.VISIBLE
-                        }
-                        1 -> utils.createWebSearchDialog(
-                            requireContext(),
-                            webSearchViewModel,
-                            this@ProfilModify,
-                            profileModifyPicIv,
-                            profileModifyPb
-                        )
-                        2 -> {
-                            images = null
-
-                        }
-                    }
-                } else requestPermissions(PERMISSIONS_STORAGE, 2)
-            }
-            lifecycleOwner(this@ProfilModify)
-        }
     }
 
 
@@ -788,7 +799,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
             return
         } else if(requestCode == 2){
             if (resultCode == Activity.RESULT_OK){
-                picturePickerUser()
+                openGallery()
             }
         }
         super.onActivityResult(requestCode, resultCode, data)

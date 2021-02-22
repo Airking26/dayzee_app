@@ -54,25 +54,18 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class Menu : Fragment(), View.OnClickListener, SynchronizeWithGoogleCalendarListener {
+class Menu : Fragment(), View.OnClickListener {
 
-    private val REQUEST_ACCOUNT_PICKER = 1000
-    private val REQUEST_AUTHORIZATION = 1001
-    private val REQUEST_GOOGLE_PLAY_SERVICES = 1002
     private lateinit var service: Calendar
     private lateinit var credential: GoogleAccountCredential
     private val transport = AndroidHttp.newCompatibleTransport()
     private val jsonFactory: JsonFactory = JacksonFactory.getDefaultInstance()
 
-    private val utils = Utils()
-    private val timenoteViewModel: TimenoteViewModel by activityViewModels()
-    private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
     private val GMAIL = "gmail"
     private lateinit var userInfoDTO: UserInfoDTO
     private lateinit var prefs : SharedPreferences
     private val PERMISSION_CALENDAR_CODE = 12
     private var tokenId: String? = null
-    private val loginViewModel: LoginViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -118,7 +111,6 @@ class Menu : Fragment(), View.OnClickListener, SynchronizeWithGoogleCalendarList
         when(v){
             menu_settings_cv -> findNavController().navigate(MenuDirections.actionMenuToSettings())
             menu_profile_cv -> findNavController().navigate(MenuDirections.actionGlobalProfileElse(4).setUserInfoDTO(userInfoDTO))
-            menu_synchro_cv -> { }
             menu_invite_friends_cv -> {
                 try {
                     val shareIntent = Intent(Intent.ACTION_SEND)
@@ -149,169 +141,4 @@ class Menu : Fragment(), View.OnClickListener, SynchronizeWithGoogleCalendarList
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        when (requestCode) {
-            REQUEST_GOOGLE_PLAY_SERVICES -> if (resultCode == RESULT_OK) {
-                refreshResults()
-            } else {
-                isGooglePlayServicesAvailable()
-            }
-            REQUEST_ACCOUNT_PICKER -> if (resultCode == RESULT_OK && data != null && data.extras != null) {
-                val accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
-                if (accountName != null) {
-                    credential.selectedAccountName = accountName
-                    prefs.edit().putString(GMAIL, accountName).apply()
-                    refreshResults()
-                }
-            } else if (resultCode == Activity.RESULT_CANCELED) {
-            }
-            REQUEST_AUTHORIZATION -> if (resultCode == Activity.RESULT_OK) {
-                refreshResults()
-            } else {
-                chooseAccount()
-            }
-        }
-    }
-
-    private fun refreshResults() {
-        if (credential.selectedAccountName == null) {
-            chooseAccount()
-        } else {
-            try {
-                Thread(Runnable {
-                    try {
-                        val li = service.events()?.list("primary")?.setMaxResults(10)?.setTimeMin(DateTime( System.currentTimeMillis()))?.setOrderBy("startTime")?.setSingleEvents(true)?.execute()
-                        val ite : MutableList<Event>? = li?.items
-                        val mm = ""
-                    } catch (e : UserRecoverableAuthIOException){
-                        startActivityForResult(e.intent, REQUEST_AUTHORIZATION);
-                    }
-                }).start()
-            } catch (e : UserRecoverableAuthIOException) {
-                startActivityForResult(e.intent, REQUEST_AUTHORIZATION);
-            }
-
-        }
-    }
-
-    private fun chooseAccount() {
-        startActivityForResult(credential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER)
-    }
-
-    private fun isGooglePlayServicesAvailable(): Boolean {
-        val connectionStatusCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(requireContext())
-        if (GooglePlayServicesUtil.isUserRecoverableError(connectionStatusCode)) {
-            showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode)
-            return false
-        } else if (connectionStatusCode != ConnectionResult.SUCCESS) {
-            return false
-        }
-        return true
-    }
-
-    private fun showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode: Int) {
-        runOnUiThread {
-            val dialog: Dialog = GooglePlayServicesUtil.getErrorDialog(
-                connectionStatusCode,
-                requireActivity(),
-                REQUEST_GOOGLE_PLAY_SERVICES)
-            dialog.show()
-        }
-    }
-
-    override fun onSynchronize(mEventsList: ArrayList<CalendarEvent>) {
-
-        /*mEventsList.forEach {
-                val creationTimenoteDTO = CreationTimenoteDTO(
-                    userInfoDTO.id!!,
-                    listOf(),
-                    it.title,
-                    it.description,
-                    listOf("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/toDL.jpg"),
-                    null,
-                    utils.getLocaFromFromAddress(requireContext(), it.location),
-                    null,
-                    SimpleDateFormat(ISO, Locale.getDefault()).format(it.begin.time),
-                    SimpleDateFormat(ISO, Locale.getDefault()).format(it.end.time),
-                    listOf(),
-                    null,
-                    Price(0, ""),
-                    listOf(userInfoDTO.id!!),
-                    null
-                )
-
-                timenoteViewModel.createTimenote(tokenId!!, creationTimenoteDTO).observe(viewLifecycleOwner, androidx.lifecycle.Observer {rsp ->
-                    if(rsp.isSuccessful) {
-                        println(creationTimenoteDTO.title)
-                        sync_pb.visibility =View.GONE
-                        menu_setting_iv.visibility = View.VISIBLE
-                    }
-                    else if(rsp.code() == 401){
-                        loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer { newToken ->
-                            tokenId = newToken
-                            timenoteViewModel.createTimenote(tokenId!!, creationTimenoteDTO).observe(viewLifecycleOwner, androidx.lifecycle.Observer { sdRsp ->
-                                if(sdRsp.isSuccessful) {
-                                    println(creationTimenoteDTO.title)
-                                    sync_pb.visibility =View.GONE
-                                    menu_setting_iv.visibility = View.VISIBLE
-                                }
-                            })
-                        })
-                    }
-                })
-
-            }*/
-    }
-
-    private fun loopThroughCalendar(mEventsList: Iterator<CalendarEvent>, map: MutableMap<Long, String>) {
-        if (mEventsList.hasNext()) {
-            val item = mEventsList.next()
-            if(!map.keys.contains(item.id)){
-                val creationTimenoteDTO = CreationTimenoteDTO(
-                    userInfoDTO.id!!,
-                    listOf(),
-                    item.title,
-                    item.description,
-                    listOf("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/toDL.jpg"),
-                    null,
-                    utils.getLocaFromFromAddress(requireContext(), item.location),
-                    null,
-                    SimpleDateFormat(ISO, Locale.getDefault()).format(item.begin.time),
-                    SimpleDateFormat(ISO, Locale.getDefault()).format(item.end.time),
-                    listOf(),
-                    null,
-                    Price(0, ""),
-                    listOf(userInfoDTO.id!!),
-                    null
-                )
-
-                timenoteViewModel.createTimenote(tokenId!!, creationTimenoteDTO).observe(viewLifecycleOwner, androidx.lifecycle.Observer { rsp ->
-                    if (rsp.isSuccessful) {
-                        println(creationTimenoteDTO.title)
-                        map[item.id] = rsp.body()?.id!!
-                        loopThroughCalendar(mEventsList.iterator(), map)
-                    } else if (rsp.code() == 401) {
-                        loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer { newToken ->
-                            tokenId = newToken
-                            timenoteViewModel.createTimenote(tokenId!!, creationTimenoteDTO).observe(viewLifecycleOwner, androidx.lifecycle.Observer { sdRsp ->
-                                if (sdRsp.isSuccessful) {
-                                    println(creationTimenoteDTO.title)
-                                    map[item.id] = rsp.body()?.id!!
-                                    loopThroughCalendar(mEventsList.iterator(), map)
-                                }
-                            })
-                        })
-                    }
-                })
-            } else {
-                loopThroughCalendar(mEventsList.iterator(), map)
-            }
-        } else {
-            sync_pb.visibility = View.GONE
-            menu_synchro_iv.visibility = View.VISIBLE
-            prefs.edit().putString("mapEventIdToTimenote", Gson().toJson(map)).apply()
-            Toast.makeText(requireContext(), getString(R.string.synchro_ok), Toast.LENGTH_SHORT).show()
-        }
-    }
 }

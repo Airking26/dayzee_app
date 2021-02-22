@@ -33,6 +33,7 @@ import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.androidView.dialog.input
 import com.dayzeeco.dayzee.common.Utils
+import com.dayzeeco.dayzee.common.booleanLiveData
 import com.dayzeeco.dayzee.common.stringLiveData
 import com.dayzeeco.dayzee.listeners.RefreshPicBottomNavListener
 import com.dayzeeco.dayzee.model.*
@@ -131,6 +132,10 @@ class Settings : Fragment(), View.OnClickListener {
         }
 
         profileModifyData = ProfileModifyData(requireContext())
+        prefs.booleanLiveData("googleCalendarSynchronized", false).observe(viewLifecycleOwner, Observer {
+            settings_switch_account_synchro_google.isChecked = it
+            if(!it) WorkManager.getInstance(requireContext()).cancelUniqueWork("synchronizeGoogleCalendarWorker")
+        })
         prefs.stringLiveData("UserInfoDTO", Gson().toJson(profileModifyData.loadProfileModifyModel())).observe(viewLifecycleOwner, Observer {
             val type: Type = object : TypeToken<UpdateUserInfoDTO?>() {}.type
             val profilModifyModel : UpdateUserInfoDTO? = Gson().fromJson<UpdateUserInfoDTO>(it, type)
@@ -182,9 +187,7 @@ class Settings : Fragment(), View.OnClickListener {
             else profileModifyData.setStatusAccount(0)
         }
         settings_switch_account_synchro_google.setOnCheckedChangeListener { _, isChecked ->
-            if(isChecked){
-                refreshResults()
-            }
+            prefs.edit().putBoolean("googleCalendarSynchronized", isChecked).apply()
         }
     }
 
@@ -287,7 +290,7 @@ class Settings : Fragment(), View.OnClickListener {
                 lifecycleScope.launch {
                     withContext(Dispatchers.IO){
                         try {
-                            li = service.events()?.list("primary")?.setMaxResults(10)?.setTimeMin(DateTime( System.currentTimeMillis()))?.setOrderBy("startTime")?.setSingleEvents(true)?.execute()
+                            li = service.events()?.list("primary")?.setMaxResults(Integer.MAX_VALUE)?.setTimeMin(DateTime( System.currentTimeMillis()))?.setOrderBy("startTime")?.setSingleEvents(true)?.execute()
                         } catch (e : UserRecoverableAuthIOException){
                             startActivityForResult(e.intent, REQUEST_AUTHORIZATION);
                         }
@@ -348,9 +351,9 @@ class Settings : Fragment(), View.OnClickListener {
         } else {
             prefs.edit().putString("mapEventIdToTimenote", Gson().toJson(map)).apply()
             val data = workDataOf(user_id to userInfoDTO.id, token_id to tokenId)
-            //val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).setRequiresCharging(true).build()
-            val worker = PeriodicWorkRequestBuilder<SynchronizeGoogleCalendarWorker>(30, TimeUnit.MINUTES).setInputData(data).build()
-            WorkManager.getInstance(requireContext()).enqueue(worker)
+            val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).setRequiresCharging(true).build()
+            val worker = PeriodicWorkRequestBuilder<SynchronizeGoogleCalendarWorker>(6, TimeUnit.HOURS).setConstraints(constraints).setInputData(data).build()
+            WorkManager.getInstance(requireContext()).enqueueUniquePeriodicWork("synchronizeGoogleCalendarWorker", ExistingPeriodicWorkPolicy.REPLACE ,worker)
         }
     }
 

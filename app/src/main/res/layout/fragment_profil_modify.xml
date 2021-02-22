@@ -162,7 +162,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
-                <Switch
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:layout_marginEnd="8dp"
                     android:id="@+id/profile_from_switch"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -309,7 +310,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
-                <Switch
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:layout_marginEnd="8dp"
                     android:id="@+id/profile_modify_youtube_switch"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -348,7 +350,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
-                <Switch
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:layout_marginEnd="8dp"
                     android:id="@+id/profile_modify_facebook_switch"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -387,7 +390,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
-                <Switch
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:layout_marginEnd="8dp"
                     android:id="@+id/profile_modify_insta_switch"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -426,7 +430,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
-                <Switch
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:layout_marginEnd="8dp"
                     android:id="@+id/profile_modify_whatsapp_switch"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -465,7 +470,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
-                <Switch
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:layout_marginEnd="8dp"
                     android:id="@+id/profile_modify_linkedin_switch"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
