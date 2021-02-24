@@ -57,8 +57,28 @@
     <string name="picture_choose_min_seconds">Impossible de sélectionner une vidéo en dessous de %1$ds</string>
     <string name="picture_choose_limit_seconds">Vous ne pouvez sélectionner que les vidéos dans les %1$ds à %2$ds</string>
 
-    <string name="picture_photo_pictures">Clic photo</string>
-    <string name="picture_photo_recording">Imagerie</string>
+
+    <string name="picture_go_setting">Réglages</string>
+    <string name="gallery">Gallerie</string>
+    <string name="photo">Photo</string>
+    <string name="video">Video</string>
+    <string name="press_to_record">Rester appuyer pour enregistrer.</string>
+    <string name="alert_record">Enregistrement Video au moins %d secondes.</string>
+    <string name="camera_access">Autoriser l\'accès à la Caméra</string>
+    <string name="camera_access_content">Autorisation de prendre des photos.</string>
+    <string name="enable">Activer</string>
+    <string name="done">Finir</string>
+    <string name="camera_init">Initialisation de la Caméra…</string>
     <string name="picture_know">Je sais</string>
-    <string name="picture_data_null">Pas de données…</string>
+    <string name="picture_data_null">Il n\'y a pas de données…</string>
+    <string name="next">Suivant</string>
+    <string name="discard_edits">Annuler Modifications ?</string>
+    <string name="discard_edits_alert">En retournant en arrière vos modifications seront annulées.</string>
+    <string name="discard">Annuler</string>
+    <string name="next_alert">Vous pouvez continuer après avoir choisi une image</string>
+    <string name="video_sound_off">Video Sans Son</string>
+    <string name="video_sound_on">Video Avec Son</string>
+    <string name="trim">Rogner</string>
+    <string name="cover">Couverture</string>
+    <string name="video_clip_failed">echec du clip vidéo !</string>
 </resources>

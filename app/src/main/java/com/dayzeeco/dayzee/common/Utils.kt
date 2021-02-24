@@ -16,10 +16,13 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.location.Geocoder
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -46,6 +49,7 @@ import com.dayzeeco.dayzee.viewModel.WebSearchViewModel
 import com.dayzeeco.dayzee.webService.repo.DayzeeRepository
 import kotlinx.android.synthetic.main.web_search_rv.view.*
 import java.io.ByteArrayOutputStream
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.time.*
 import java.util.*
@@ -586,12 +590,38 @@ class Utils {
         return newAccessToken.body()?.accessToken
     }
 
-    fun getLocaFromFromAddress(context: Context, address: String): Location? {
-        val geo = Geocoder(context)
-        val g = if(!address.isBlank()) geo.getFromLocationName(address, 5) else listOf()
-        return if(g.isNotEmpty())
-            Location(g[0].longitude, g[0].latitude, Address(address, "", "", ""))
-        else null
+    fun getLocaFromAddress(context: Context, address: String): Location? {
+        var loca: Location? = null
+        if(isNetworkAvailable(context)) {
+            val geo = Geocoder(context)
+            try {
+                val g = if (!address.isBlank()) geo.getFromLocationName(address, 5) else listOf()
+                loca = if (g.isNotEmpty())
+                    Location(g[0].longitude, g[0].latitude, Address(address, "", "", ""))
+                else null
+            } catch (e: IOException) {
+                Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show()
+            }
+        } else Toast.makeText(context, context.getString(R.string.error_network), Toast.LENGTH_SHORT).show()
+        return loca
+    }
+
+    private fun isNetworkAvailable(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val nw      = connectivityManager.activeNetwork ?: return false
+            val actNw = connectivityManager.getNetworkCapabilities(nw) ?: return false
+            return when {
+                actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                //for other device how are able to connect with Ethernet
+                actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+                else -> false
+            }
+        } else {
+            val nwInfo = connectivityManager.activeNetworkInfo ?: return false
+            return nwInfo.isConnected
+        }
     }
 }
 

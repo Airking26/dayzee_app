@@ -85,6 +85,7 @@ import com.dayzeeco.picture_library.instagram.InsGallery
 import com.dayzeeco.picture_library.listener.OnResultCallbackListener
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.AutocompleteActivity
@@ -574,6 +575,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         create_timenote_third_color.setOnClickListener(this)
         create_timenote_fourth_color.setOnClickListener(this)
         create_timenote_take_add_pic.setOnClickListener(this)
+        create_timenote_desc_btn.setOnClickListener(this)
         desc_cardview.setOnClickListener(this)
         when_cardview.setOnClickListener(this)
         addEndDateTv.setOnClickListener(this)
@@ -741,7 +743,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                 }
                 lifecycleOwner(this@CreateTimenote)
             }
-            descCv -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            descCv, descTv -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.description)
                 input(inputType = InputType.TYPE_CLASS_TEXT, prefill = creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.description, allowEmpty = true) { _, charSequence ->
                     descTv.text = charSequence.toString()

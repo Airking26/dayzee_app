@@ -69,7 +69,7 @@ class SynchronizeGoogleCalendarWorker(val context: Context, parameters: WorkerPa
                     item.description,
                     listOf("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/toDL.jpg"),
                     null,
-                    if(item.location != null) utils.getLocaFromFromAddress(context, item.location) else null,
+                    if(item.location != null) utils.getLocaFromAddress(context, item.location) else null,
                     null,
                     SimpleDateFormat(ISO, Locale.getDefault()).format(if(item.start.date == null) item.start.dateTime.value else item.start.date.value),
                     SimpleDateFormat(ISO, Locale.getDefault()).format(if(item.end.date == null) item.end.dateTime.value else item.end.date.value),

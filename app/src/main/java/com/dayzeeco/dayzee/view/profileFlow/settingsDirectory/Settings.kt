@@ -7,9 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.os.Handler
 import android.text.InputType
-import android.text.TextUtils
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -58,9 +56,7 @@ import com.google.api.services.calendar.CalendarScopes
 import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.Events
 import com.google.firebase.iid.FirebaseInstanceId
-import kotlinx.android.synthetic.main.fragment_menu.*
 import kotlinx.android.synthetic.main.fragment_settings.*
-import kotlinx.android.synthetic.main.fragment_signup.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -132,10 +128,8 @@ class Settings : Fragment(), View.OnClickListener {
         }
 
         profileModifyData = ProfileModifyData(requireContext())
-        prefs.booleanLiveData("googleCalendarSynchronized", false).observe(viewLifecycleOwner, Observer {
-            settings_switch_account_synchro_google.isChecked = it
-            if(!it) WorkManager.getInstance(requireContext()).cancelUniqueWork("synchronizeGoogleCalendarWorker")
-        })
+        settings_switch_account_synchro_google.isChecked = prefs.getBoolean("googleCalendarSynchronized", false)
+
         prefs.stringLiveData("UserInfoDTO", Gson().toJson(profileModifyData.loadProfileModifyModel())).observe(viewLifecycleOwner, Observer {
             val type: Type = object : TypeToken<UpdateUserInfoDTO?>() {}.type
             val profilModifyModel : UpdateUserInfoDTO? = Gson().fromJson<UpdateUserInfoDTO>(it, type)
@@ -188,6 +182,9 @@ class Settings : Fragment(), View.OnClickListener {
         }
         settings_switch_account_synchro_google.setOnCheckedChangeListener { _, isChecked ->
             prefs.edit().putBoolean("googleCalendarSynchronized", isChecked).apply()
+            settings_switch_account_synchro_google.isChecked = isChecked
+            if(isChecked) chooseAccount()
+            else WorkManager.getInstance(requireContext()).cancelUniqueWork("synchronizeGoogleCalendarWorker")
         }
     }
 
@@ -316,7 +313,7 @@ class Settings : Fragment(), View.OnClickListener {
                     item.description,
                     listOf("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/toDL.jpg"),
                     null,
-                    if(item.location != null) utils.getLocaFromFromAddress(requireContext(), item.location) else null,
+                    if(item.location != null) utils.getLocaFromAddress(requireActivity().applicationContext, item.location) else null,
                     null,
                     SimpleDateFormat(ISO, Locale.getDefault()).format(if(item.start.date == null) item.start.dateTime.value else item.start.date.value),
                     SimpleDateFormat(ISO, Locale.getDefault()).format(if(item.end.date == null) item.end.dateTime.value else item.end.date.value),
