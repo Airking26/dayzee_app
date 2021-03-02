@@ -72,7 +72,6 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     private val meViewModel : MeViewModel by activityViewModels()
     private var timenotePagingAdapter: TimenotePagingAdapter? = null
     private var timenoteRecentPagingAdapter: TimenoteRecentPagingAdapter? = null
-   // private var timenotePagingAdapterTest :TimenotePagingAdapterTest?= null
     private lateinit var onGoToNearby: OnGoToNearby
     private lateinit var onRefreshPicBottomNavListener: RefreshPicBottomNavListener
     private lateinit var prefs: SharedPreferences

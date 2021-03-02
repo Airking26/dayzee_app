@@ -128,6 +128,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     private var endDateDisplayed: String? = null
     private lateinit var am : AmazonS3Client
     private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
+    private val ISORECEIVED = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     private lateinit var args : CreateTimenoteArgs
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
     private val switchToPreviewDetailedTimenoteViewModel : SwitchToPreviewDetailedTimenoteViewModel by activityViewModels()
@@ -189,6 +190,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     private var imagesUrl: MutableList<String> = mutableListOf()
     private lateinit var userInfoDTO: UserInfoDTO
     private lateinit var onRefreshPicBottomNavListener: RefreshPicBottomNavListener
+    private var isCreatedOffset : Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -196,7 +198,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         tokenId = prefs.getString(accessToken, null)
         loginViewModel.getAuthenticationState().observe(
             requireActivity(),
-            androidx.lifecycle.Observer {
+            {
                 when (it) {
                     LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(
                         CreateTimenoteDirections.actionGlobalNavigation()
@@ -220,6 +222,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
 
     override fun onResume() {
         super.onResume()
+        isCreatedOffset = false
         if(!tokenId.isNullOrBlank()) onRefreshPicBottomNavListener.onrefreshPicBottomNav(userInfoDTO.picture)
         when(loginViewModel.getAuthenticationState().value){
             LoginViewModel.AuthenticationState.GUEST -> loginViewModel.markAsUnauthenticated()
@@ -256,31 +259,46 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         try {
             args = navArgs<CreateTimenoteArgs>().value
         } catch (i : InvocationTargetException){
-            val k = i.message
-            val m = i.targetException
         }
 
         if(!tokenId.isNullOrBlank()) {
             setUp()
 
             val type: Type = object : TypeToken<UserInfoDTO?>() {}.type
-            userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), type)
+            userInfoDTO = Gson().fromJson(prefs.getString("UserInfoDTO", ""), type)
             creationTimenoteViewModel.setCreatedBy(userInfoDTO.id!!)
             accountType = userInfoDTO.status
 
-            if (args.modify == 0) creationTimenoteViewModel.getCreateTimeNoteLiveData().observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-                    populateModel(it)
-                }) else {
+            if (args.modify == 0)
+                creationTimenoteViewModel.getCreateTimeNoteLiveData().observe(viewLifecycleOwner, {
+                populateModel(it)
+            }) else {
                 creationTimenoteViewModel.setDuplicateOrEdit(args.timenoteBody!!)
                 creationTimenoteViewModel.setCreatedBy(userInfoDTO.id!!)
-                populateModel(args.timenoteBody!!)
+                creationTimenoteViewModel.getCreateTimeNoteLiveData().observe(viewLifecycleOwner, {
+                    populateModel(args.timenoteBody!!)
+                })
             }
 
-            prefs.stringLiveData("offset", "0").observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-                if(creationTimenoteViewModel.getCreateTimeNoteLiveData().value != null && creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.startingAt?.isNotBlank()!!)
-                    creationTimenoteViewModel.setStartDateOffset(creationTimenoteViewModel.setOffset(ISO, creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.startingAt!!, it))
-                if(creationTimenoteViewModel.getCreateTimeNoteLiveData().value != null && creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.endingAt?.isNotBlank()!!)
-                    creationTimenoteViewModel.setEndDateOffset(creationTimenoteViewModel.setOffset(ISO, creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.endingAt!!, it))
+            prefs.stringLiveData("offset", "+00:00").observe(viewLifecycleOwner, {
+                if(isCreatedOffset) {
+                    if (creationTimenoteViewModel.getCreateTimeNoteLiveData().value != null && creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.startingAt?.isNotBlank()!!)
+                        creationTimenoteViewModel.setStartDateOffset(
+                            creationTimenoteViewModel.setOffset(
+                                ISO,
+                                creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.startingAt!!,
+                                it
+                            )
+                        )
+                    if (creationTimenoteViewModel.getCreateTimeNoteLiveData().value != null && creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.endingAt?.isNotBlank()!!)
+                        creationTimenoteViewModel.setEndDateOffset(
+                            creationTimenoteViewModel.setOffset(
+                                ISO,
+                                creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.endingAt!!,
+                                it
+                            )
+                        )
+                }
             })
 
             visibilityTimenote = prefs.getInt("default_settings_at_creation_time", 1)
@@ -296,6 +314,95 @@ class CreateTimenote : Fragment(), View.OnClickListener,
             }
         }
     }
+
+    private fun setUp() {
+        utils = Utils()
+        create_timenote_clear.paintFlags = create_timenote_clear.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+        dateFormatDateAndTime = SimpleDateFormat(DATE_FORMAT_DAY_AND_TIME, Locale.getDefault())
+        subcategoryCv = sub_category_cardview
+        addEndDateTv = profile_add_end_date
+        fromLabel = from_label
+        toLabel = to_label
+        paidTimenote = paid_timenote_cardview
+        fixedDate = create_timenote_fixed_date
+        fromTv = create_timenote_from
+        toTv = create_timenote_to
+        categoryTv = create_timenote_category
+        titleTv = create_timenote_title_btn
+        noAnswer = create_timenote_paid_timenote_status_no_answer
+        shareWithTv = create_timenote_share_with
+        moreColorTv = create_timenote_fifth_color
+        firstColorTv = create_timenote_first_color
+        secondColorTv = create_timenote_second_color
+        thirdColorTv = create_timenote_third_color
+        fourthColorTv = create_timenote_fourth_color
+        takeAddPicTv = create_timenote_take_add_pic
+        progressBar = create_timenote_pb
+        descTv = create_timenote_desc_btn
+        descCv = desc_cardview
+        titleError = create_timenote_title_error
+        whenError = create_timenote_when_error
+        subCatTv = create_timenote_sub_category
+        subCatLabelTv = create_timenote_sub_category_label
+        catLabelTv = create_timenote_category_label
+        paidLabelTv = create_timenote_paid_timenote_label
+        labelCv = url_title_cardview
+        picCl = pic_cl
+        vp = vp_pic
+        if(args.modify == 0) {
+            screenSlideCreationTimenotePagerAdapter = ScreenSlideCreationTimenotePagerAdapter(
+                this@CreateTimenote,
+                images,
+                hideIcons = false,
+                fromDuplicateOrEdit = false,
+                pictures = listOf()
+            )
+            vp_pic.apply {
+                adapter = screenSlideCreationTimenotePagerAdapter
+            }
+        } else {
+            screenSlideCreationTimenotePagerAdapter = ScreenSlideCreationTimenotePagerAdapter(
+                this@CreateTimenote,
+                images,
+                hideIcons = true,
+                fromDuplicateOrEdit = true,
+                pictures = args.timenoteBody?.pictures
+            )
+            vp_pic.apply {
+                adapter = screenSlideCreationTimenotePagerAdapter
+            }
+        }
+
+        indicator.setViewPager(vp_pic)
+        screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(indicator.adapterDataObserver)
+
+        create_timenote_next_btn.setOnClickListener(this)
+        from_label.setOnClickListener(this)
+        to_label.setOnClickListener(this)
+        where_cardview.setOnClickListener(this)
+        share_with_cardview.setOnClickListener(this)
+        category_cardview.setOnClickListener(this)
+        title_cardview.setOnClickListener(this)
+        create_timenote_fifth_color.setOnClickListener(this)
+        create_timenote_first_color.setOnClickListener(this)
+        create_timenote_second_color.setOnClickListener(this)
+        create_timenote_third_color.setOnClickListener(this)
+        create_timenote_fourth_color.setOnClickListener(this)
+        create_timenote_take_add_pic.setOnClickListener(this)
+        create_timenote_desc_btn.setOnClickListener(this)
+        desc_cardview.setOnClickListener(this)
+        when_cardview.setOnClickListener(this)
+        addEndDateTv.setOnClickListener(this)
+        paidTimenote.setOnClickListener(this)
+        noAnswer.setOnClickListener(this)
+        subcategoryCv.setOnClickListener(this)
+        create_timenote_btn_back.setOnClickListener(this)
+        url_cardview.setOnClickListener(this)
+        organizers_cv.setOnClickListener(this)
+        create_timenote_clear.setOnClickListener(this)
+        url_title_cardview.setOnClickListener(this)
+    }
+
 
     private fun populateModel(it: CreationTimenoteDTO) {
         when (it.price.price) {
@@ -401,15 +508,18 @@ class CreateTimenote : Fragment(), View.OnClickListener,
             fromLabel.visibility = View.VISIBLE
             toTv.visibility = View.VISIBLE
             fromTv.visibility = View.VISIBLE
-            fromTv.text = startDateDisplayed
-            toTv.text = endDateDisplayed
+            if(it.startingAt.contains("Z")) creationTimenoteViewModel.setStartDate(SimpleDateFormat(ISORECEIVED, Locale.getDefault()).parse(it.startingAt)!!.time, ISO)
+            fromTv.text = dateFormatDateAndTime.format(SimpleDateFormat(ISO, Locale.getDefault()).parse(it.startingAt)!!)
+            if(it.endingAt.contains("Z")) creationTimenoteViewModel.setEndDate(SimpleDateFormat(ISORECEIVED, Locale.getDefault()).parse(it.endingAt)!!.time, ISO)
+            toTv.text = dateFormatDateAndTime.format(SimpleDateFormat(ISO, Locale.getDefault()).parse(it.endingAt)!!)
         } else if(it.startingAt.isNotBlank() && it.endingAt.isNotBlank() && it.startingAt == it.endingAt) {
             fixedDate.visibility = View.VISIBLE
             toLabel.visibility = View.GONE
             fromLabel.visibility = View.GONE
             toTv.visibility = View.GONE
             fromTv.visibility = View.GONE
-            fixedDate.text = startDateDisplayed
+            if(it.startingAt.contains("Z")) creationTimenoteViewModel.setStartDate(SimpleDateFormat(ISORECEIVED, Locale.getDefault()).parse(it.startingAt)!!.time, ISO)
+            fixedDate.text = dateFormatDateAndTime.format(SimpleDateFormat(ISO, Locale.getDefault()).parse(it.startingAt)!!)
         } else if(it.startingAt.isEmpty() || it.startingAt.isBlank()){
             addEndDateTv.visibility = View.GONE
             fixedDate.visibility = View.GONE
@@ -500,94 +610,6 @@ class CreateTimenote : Fragment(), View.OnClickListener,
 
     }
 
-    private fun setUp() {
-        utils = Utils()
-        //progressDialog = utils.progressDialog(requireContext())
-        create_timenote_clear.paintFlags = create_timenote_clear.paintFlags or Paint.UNDERLINE_TEXT_FLAG
-        dateFormatDateAndTime = SimpleDateFormat(DATE_FORMAT_DAY_AND_TIME, Locale.getDefault())
-        subcategoryCv = sub_category_cardview
-        addEndDateTv = profile_add_end_date
-        fromLabel = from_label
-        toLabel = to_label
-        paidTimenote = paid_timenote_cardview
-        fixedDate = create_timenote_fixed_date
-        fromTv = create_timenote_from
-        toTv = create_timenote_to
-        categoryTv = create_timenote_category
-        titleTv = create_timenote_title_btn
-        noAnswer = create_timenote_paid_timenote_status_no_answer
-        shareWithTv = create_timenote_share_with
-        moreColorTv = create_timenote_fifth_color
-        firstColorTv = create_timenote_first_color
-        secondColorTv = create_timenote_second_color
-        thirdColorTv = create_timenote_third_color
-        fourthColorTv = create_timenote_fourth_color
-        takeAddPicTv = create_timenote_take_add_pic
-        progressBar = create_timenote_pb
-        descTv = create_timenote_desc_btn
-        descCv = desc_cardview
-        titleError = create_timenote_title_error
-        whenError = create_timenote_when_error
-        subCatTv = create_timenote_sub_category
-        subCatLabelTv = create_timenote_sub_category_label
-        catLabelTv = create_timenote_category_label
-        paidLabelTv = create_timenote_paid_timenote_label
-        labelCv = url_title_cardview
-        picCl = pic_cl
-        vp = vp_pic
-        if(args.modify == 0) {
-            screenSlideCreationTimenotePagerAdapter = ScreenSlideCreationTimenotePagerAdapter(
-                this@CreateTimenote,
-                images,
-                hideIcons = false,
-                fromDuplicateOrEdit = false,
-                pictures = listOf()
-            )
-            vp_pic.apply {
-                adapter = screenSlideCreationTimenotePagerAdapter
-            }
-        } else {
-            screenSlideCreationTimenotePagerAdapter = ScreenSlideCreationTimenotePagerAdapter(
-                this@CreateTimenote,
-                images,
-                hideIcons = true,
-                fromDuplicateOrEdit = true,
-                pictures = args.timenoteBody?.pictures
-            )
-            vp_pic.apply {
-                adapter = screenSlideCreationTimenotePagerAdapter
-            }
-        }
-
-        indicator.setViewPager(vp_pic)
-        screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(indicator.adapterDataObserver)
-
-        create_timenote_next_btn.setOnClickListener(this)
-        from_label.setOnClickListener(this)
-        to_label.setOnClickListener(this)
-        where_cardview.setOnClickListener(this)
-        share_with_cardview.setOnClickListener(this)
-        category_cardview.setOnClickListener(this)
-        title_cardview.setOnClickListener(this)
-        create_timenote_fifth_color.setOnClickListener(this)
-        create_timenote_first_color.setOnClickListener(this)
-        create_timenote_second_color.setOnClickListener(this)
-        create_timenote_third_color.setOnClickListener(this)
-        create_timenote_fourth_color.setOnClickListener(this)
-        create_timenote_take_add_pic.setOnClickListener(this)
-        create_timenote_desc_btn.setOnClickListener(this)
-        desc_cardview.setOnClickListener(this)
-        when_cardview.setOnClickListener(this)
-        addEndDateTv.setOnClickListener(this)
-        paidTimenote.setOnClickListener(this)
-        noAnswer.setOnClickListener(this)
-        subcategoryCv.setOnClickListener(this)
-        create_timenote_btn_back.setOnClickListener(this)
-        url_cardview.setOnClickListener(this)
-        organizers_cv.setOnClickListener(this)
-        create_timenote_clear.setOnClickListener(this)
-        url_title_cardview.setOnClickListener(this)
-    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
@@ -596,8 +618,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                     data?.let {
                         val place = Autocomplete.getPlaceFromIntent(data)
                         creationTimenoteViewModel.fetchLocation(place.id!!, getString(R.string.api_web_key)).observe(
-                            viewLifecycleOwner,
-                            androidx.lifecycle.Observer {
+                            viewLifecycleOwner, {
                                 creationTimenoteViewModel.setLocation(utils.setLocation(it.body()!!, true, prefs))
                             })
                     }
@@ -638,7 +659,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                     startDateDisplayed = dateFormatDateAndTime.format(datetime.time.time)
                     creationTimenoteViewModel.setStartDate(datetime.time.time, ISO)
                     startDate = datetime.time.time
-                    creationTimenoteViewModel.setEndDate(datetime.time.time)
+                    creationTimenoteViewModel.setEndDate(datetime.time.time, ISO)
                     addEndDateTv.visibility = View.VISIBLE
                 }
             }
@@ -652,7 +673,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                     fromLabel.visibility = View.VISIBLE
                     toTv.visibility = View.VISIBLE
                     fromTv.visibility = View.VISIBLE
-                    creationTimenoteViewModel.setEndDate(datetime.time.time)
+                    creationTimenoteViewModel.setEndDate(datetime.time.time, ISO)
                     startDateDisplayed = dateFormatDateAndTime.format(startDate)
                     endDateDisplayed = dateFormatDateAndTime.format(datetime.time.time)
                 }
@@ -669,7 +690,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                 dateTimePicker { dialog, datetime ->
                     endDate = datetime.time.time
                     endDateDisplayed = dateFormatDateAndTime.format(endDate)
-                    creationTimenoteViewModel.setEndDate(endDate!!)
+                    creationTimenoteViewModel.setEndDate(endDate!!, ISO)
                 }
                 lifecycleOwner(this@CreateTimenote)
             }
@@ -1257,11 +1278,12 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         }
         if(images.isNullOrEmpty() && values?.colorHex.isNullOrBlank() && creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.pictures.isNullOrEmpty()) formCompleted = false
         if(values?.location != null){
-            prefs.stringLiveData("offset", "0").observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            prefs.stringLiveData("offset", "+00:00").observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                 if(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.startingAt?.isNotBlank()!!)
                     creationTimenoteViewModel.setStartDateOffset(creationTimenoteViewModel.setOffset(ISO, creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.startingAt!!, it))
                 if(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.endingAt?.isNotBlank()!!)
                     creationTimenoteViewModel.setEndDateOffset(creationTimenoteViewModel.setOffset(ISO, creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.endingAt!!, it))
+
             })
         }
         if (!formCompleted) Toast.makeText(

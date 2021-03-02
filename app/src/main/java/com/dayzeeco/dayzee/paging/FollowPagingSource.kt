@@ -2,6 +2,7 @@ package com.dayzeeco.dayzee.paging
 
 import android.content.SharedPreferences
 import androidx.paging.PagingSource
+import androidx.paging.PagingState
 import com.dayzeeco.dayzee.common.Utils
 import com.dayzeeco.dayzee.model.UserInfoDTO
 import com.dayzeeco.dayzee.webService.service.FollowService
@@ -27,4 +28,5 @@ class FollowPagingSource(val token: String, val followService: FollowService, va
             LoadResult.Error(e)
         }
     }
+
 }

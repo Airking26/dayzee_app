@@ -47,11 +47,11 @@ class SearchExplore : Fragment(), SearchExploreCategoryAdapter.SearchSubCategory
             adapter = searchExploreAdapter
         }
 
-        prefrenceViewModel.getCategories().observe(viewLifecycleOwner, Observer { response ->
+        prefrenceViewModel.getCategories().observe(viewLifecycleOwner, { response ->
             if(response.code() == 401){
-                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
+                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { newAccessToken ->
                     tokenId = newAccessToken
-                    prefrenceViewModel.getCategories().observe(viewLifecycleOwner, Observer {lc ->
+                    prefrenceViewModel.getCategories().observe(viewLifecycleOwner, { lc ->
                         if(lc.isSuccessful){
                             response.body()?.groupBy { it.category }?.entries?.map { (name, group) -> explores.put(name, group.map { it.subcategory }.toMutableList()) }
                             searchExploreAdapter.notifyDataSetChanged()

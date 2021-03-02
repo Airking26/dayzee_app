@@ -21,8 +21,6 @@ import kotlin.math.abs
 
 class CreationTimenoteViewModel: ViewModel() {
 
-    private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
-
     private val timenoteLiveData = MutableLiveData<CreationTimenoteDTO>()
     private val createTimenoteData: CreationTimenoteData = CreationTimenoteData()
     private val placeService = PlaceRepository().getPlaceService()
@@ -44,7 +42,7 @@ class CreationTimenoteViewModel: ViewModel() {
     fun setStartDate(startDate: Long, format: String) = timenoteLiveData.postValue(createTimenoteData.setStartDate(formatDate(format, startDate)))
     fun setStartDateOffset(date: String) = timenoteLiveData.postValue(createTimenoteData.setStartDate(date))
     fun setEndDateOffset(date: String) = timenoteLiveData.postValue(createTimenoteData.setEndDate(date))
-    fun setEndDate(endDate: Long) = timenoteLiveData.postValue(createTimenoteData.setEndDate(formatDate(ISO, endDate)))
+    fun setEndDate(endDate: Long, format: String) = timenoteLiveData.postValue(createTimenoteData.setEndDate(formatDate(format, endDate)))
     fun setColor(color: String) = timenoteLiveData.postValue(createTimenoteData.setColor(color))
     fun setCreatedBy(id: String) = timenoteLiveData.postValue(createTimenoteData.setCreatedBy(id))
     fun setOrganizers(organizers: List<String>) = timenoteLiveData.postValue(createTimenoteData.setOrganizers(organizers))

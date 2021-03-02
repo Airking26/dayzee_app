@@ -1,6 +1,7 @@
 package com.dayzeeco.dayzee.paging
 
 import androidx.paging.PagingSource
+import androidx.paging.PagingState
 import com.dayzeeco.dayzee.model.Category
 import com.dayzeeco.dayzee.model.UserInfoDTO
 import com.dayzeeco.dayzee.webService.service.SearchService
@@ -20,4 +21,5 @@ class SearchUserByCategoryPagingSource(val token: String, val category: Category
             LoadResult.Error(e)
         }
     }
+
 }

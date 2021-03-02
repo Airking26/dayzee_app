@@ -154,7 +154,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
 
         profileEventPagingAdapter?.addDataRefreshListener {
             profile_pb?.visibility = View.GONE
-            if (it) {
+            if(it){
                 profile_nothing_to_display?.visibility = View.VISIBLE
                 profile_rv?.visibility = View.GONE
             } else {

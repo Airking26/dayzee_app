@@ -238,9 +238,9 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
                     }
                 }
 
-        timenotePagingAdapter.addDataRefreshListener { isEmpty ->
+        timenotePagingAdapter.addDataRefreshListener { i ->
             nearby_swipe_refresh?.isRefreshing = false
-            if (isEmpty) {
+            if(i){
                 nearby_rv?.visibility = View.GONE
                 nearby_nothing_to_display?.visibility = View.VISIBLE
             } else {

@@ -46,7 +46,7 @@ class SuggestionAdapter(private var suggestions: Map<String, List<UserInfoDTO>>,
             listener: SuggestionItemListener,
             picClicked: SuggestionItemPicListener
         ) {
-            itemView.suggestion_title_category.text = suggestions.keys.elementAt(position)
+            itemView.pref_sub_category_title_category.text = suggestions.keys.elementAt(position)
 
             itemView.suggestion_rv.apply {
                 layoutManager = LinearLayoutManager(itemView.context)

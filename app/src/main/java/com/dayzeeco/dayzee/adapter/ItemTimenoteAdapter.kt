@@ -8,10 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.text.*
 import android.text.style.ClickableSpan
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.ViewTreeObserver
+import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
@@ -245,7 +242,11 @@ class ItemTimenoteAdapter(
             if(timenote.pictures?.size == 1 || timenote.pictures.isNullOrEmpty()) itemView.timenote_indicator.visibility = View.GONE
             screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(itemView.timenote_indicator.adapterDataObserver)
             itemView.timenote_username.text = timenote.createdBy.userName
-            if(timenote.location != null) itemView.timenote_place.text = timenote.location.address.address.plus(", ").plus(timenote.location.address.city).plus(" ").plus(timenote.location.address.country)
+            if(timenote.location != null) {
+                if(timenote.location.address.city.isNotBlank() || timenote.location.address.city.isNotEmpty())
+                itemView.timenote_place.text = timenote.location.address.address.plus(", ").plus(timenote.location.address.city).plus(" ").plus(timenote.location.address.country)
+                else itemView.timenote_place.text = timenote.location.address.address
+            }
             else itemView.timenote_place.text = ""
 
            val hashTagHelper = HashTagHelper.Creator.create(R.color.colorAccent, object : HashTagHelper.OnHashTagClickListener{
@@ -321,6 +322,7 @@ class ItemTimenoteAdapter(
             itemView.timenote_comment_account.setOnClickListener { timenoteListenerListener.onSeeMoreClicked(timenote) }
             itemView.timenote_share.setOnClickListener{timenoteListenerListener.onShareClicked(timenote)}
             itemView.timenote_pic_user_imageview.setOnClickListener { timenoteListenerListener.onPictureClicked(timenote.createdBy) }
+            itemView.timenote_username.setOnClickListener { timenoteListenerListener.onPictureClicked(timenote.createdBy) }
             itemView.timenote_comment.setOnClickListener { timenoteListenerListener.onCommentClicked(timenote) }
             itemView.timenote_plus.setOnClickListener {
                 if(isFromFuture && createdBy != timenote.createdBy.id) {

@@ -132,7 +132,8 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                 }
             }
 
-            timenote_title.text = args.event?.title
+        timenote_title.text = args.event?.title
+        timenote_title.maxLines = 2
             if (args.event?.pictures?.size == 1 || args.event?.pictures.isNullOrEmpty()) timenote_indicator.visibility =
                 View.GONE
 
@@ -696,7 +697,8 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     }
 
     override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
-
+        if(userInfoDTO.id == this.userInfoDTO.id) goToProfileLisner.goToProfile()
+        else findNavController().navigate(HomeDirections.actionGlobalProfileElse(1).setUserInfoDTO(userInfoDTO))
     }
 
     override fun onUnfollow(id: String) {

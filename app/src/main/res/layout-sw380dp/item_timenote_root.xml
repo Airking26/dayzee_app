@@ -27,7 +27,9 @@
         android:shadowDx="1"
         android:shadowDy="1"
         android:shadowRadius="1.5"
-        tools:text="Marseille - Nantes"
+        android:maxLines="1"
+        android:ellipsize="end"
+        tools:text="Beach Party"
         android:textAllCaps="true"
         android:textColor="@android:color/white"
         android:textSize="18sp"
@@ -320,7 +322,7 @@
         app:layout_constraintEnd_toEndOf="@id/timenote_plus"
         app:layout_constraintTop_toBottomOf="@id/timenote_fl"
         tools:targetApi="m"
-        tools:text="#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party#Beach#Sunset#Love#Summer#Dance#Party" />
+        tools:text="#Beach חיים סגולות התזונה היפנית לאריכות ואיכות חיים" />
 
     <TextView
         tools:text="See the 877 comments"

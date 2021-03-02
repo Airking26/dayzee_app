@@ -11,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagingData
+import androidx.paging.filter
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
@@ -59,7 +60,7 @@ class SearchPeople: Fragment(), UsersPagingAdapter.SearchPeopleListener {
         searchViewModel.getUserSearchLiveData().observe(viewLifecycleOwner, Observer {
                 lifecycleScope.launch {
                     it.collectLatest {
-                        userAdapter.submitData(it.filterSync { userInfoDTO -> userInfoDTO.id != userInfoDTOPref.id })
+                        userAdapter.submitData(it.filter { userInfoDTO -> userInfoDTO.id != userInfoDTOPref.id })
                         userAdapter.notifyDataSetChanged()
                     }
                 }
