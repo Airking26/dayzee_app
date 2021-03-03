@@ -3,6 +3,7 @@ package com.dayzeeco.dayzee.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dayzeeco.dayzee.R
@@ -11,6 +12,7 @@ import com.warkiz.widget.IndicatorSeekBar
 import com.warkiz.widget.OnSeekChangeListener
 import com.warkiz.widget.SeekParams
 import kotlinx.android.synthetic.main.adapter_pref_sub_category_card.view.*
+import kotlinx.android.synthetic.main.item_category.view.*
 import kotlinx.android.synthetic.main.item_pref_sub_category.view.*
 
 class SubCategoryCardAdapter(private var categories: MutableMap<String, MutableList<String>>, private val listener: SubCategorySeekBarListener): RecyclerView.Adapter<SubCategoryCardAdapter.CardViewHolder>(){
@@ -38,6 +40,13 @@ class SubCategoryCardAdapter(private var categories: MutableMap<String, MutableL
 
             itemView.pref_sub_category_title_category.text = categories.keys.elementAt(position)
             itemView.pref_sub_category_rv.adapter = SubCategoryItemAdapter(categories.values.elementAt(position), listener, categories.keys.elementAt(position))
+            when(categories.keys.elementAt(position)){
+                itemView.context.getString(R.string.sports), itemView.context.getString(R.string.sport) -> itemView.subcategory_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_sport))
+                itemView.context.getString(R.string.esports), itemView.context.getString(R.string.esport) -> itemView.subcategory_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_esport))
+                else -> itemView.subcategory_iv.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.category_else))
+            }
 
         }
 

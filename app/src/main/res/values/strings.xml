@@ -5,9 +5,11 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="preferrence">Preferences</string>
     <string name="next">Next</string>
-    <string name="select_what_you_like">Select what you like</string>
+    <string name="select_what_you_like">Select What You Like</string>
     <string name="my_city">My City</string>
     <string name="sports">Sports</string>
+    <string name="esport">Esport</string>
+    <string name="sport">Sport</string>
     <string name="music">Music</string>
     <string name="esports">Esports</string>
     <string name="youtube">Youtube</string>
@@ -18,7 +20,7 @@
     <string name="holidays">Holidays</string>
     <string name="calendrier_n_interessant">Calendrier \n Interessant</string>
     <string name="done">Done</string>
-    <string name="how_much_do_you_like_it">How much do you like it?</string>
+    <string name="how_much_do_you_like_it">How Much Do You Like It?</string>
     <string name="back">Back</string>
     <string name="suggestions">Suggestions</string>
     <string name="ok">OK</string>

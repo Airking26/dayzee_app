@@ -124,6 +124,7 @@ class Menu : Fragment(), View.OnClickListener {
                     //e.toString();
                 }
             }
+            menu_preferences_cv -> findNavController().navigate(MenuDirections.actionMenuToPreferenceCategory())
         }
     }
 

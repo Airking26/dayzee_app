@@ -3,6 +3,8 @@ package com.dayzeeco.dayzee.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dayzeeco.dayzee.R
@@ -31,6 +33,13 @@ class SearchExploreCategoryAdapter(val explores: Map<String, List<String>>, val 
 
         fun bindCategory(list: Map<String, List<String>>, position: Int,  subCategoryListener: SearchSubCategoryListener) {
             itemView.search_explore_category.text = list.keys.elementAt(position)
+
+            when(list.keys.elementAt(position)){
+                itemView.context.getString(R.string.sports), itemView.context.getString(R.string.sport) -> itemView.search_explore_category_iv.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.category_sport))
+                itemView.context.getString(R.string.esports), itemView.context.getString(R.string.esport) -> itemView.search_explore_category_iv.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.category_esport))
+                else -> itemView.search_explore_category_iv.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.category_else))
+            }
+
             itemView.setOnClickListener {
                 if(!expanded) {
                     itemView.search_explore_rv.apply {
@@ -39,16 +48,16 @@ class SearchExploreCategoryAdapter(val explores: Map<String, List<String>>, val 
                         isNestedScrollingEnabled = false
                         adapter = SearchExploreSubCategoryAdapter(list.keys.elementAt(position), list.values.elementAt(position), subCategoryListener)
                     }
-                    itemView.search_explore_see_subcategory.setImageDrawable(itemView.context.getDrawable(R.drawable.ic_keyboard_arrow_up_black_24dp))
+                    //itemView.search_explore_see_subcategory.setImageDrawable(itemView.context.getDrawable(R.drawable.ic_keyboard_arrow_up_black_24dp))
                     expanded = !expanded
                 } else {
                     itemView.search_explore_rv.visibility = View.GONE
-                    itemView.search_explore_see_subcategory.setImageDrawable(itemView.context.getDrawable(R.drawable.ic_keyboard_arrow_down_black_24dp))
+                    //itemView.search_explore_see_subcategory.setImageDrawable(itemView.context.getDrawable(R.drawable.ic_keyboard_arrow_down_black_24dp))
                     expanded = !expanded
                 }
             }
             if(list.values.elementAt(position).isNullOrEmpty()) {
-                itemView.search_explore_see_subcategory.visibility = View.GONE
+                //itemView.search_explore_see_subcategory.visibility = View.GONE
                 itemView.search_explore_rv.visibility = View.GONE
             }
 
@@ -70,6 +79,20 @@ class SearchExploreSubCategoryAdapter(
     override fun getItemCount(): Int = subCategory.size
 
     override fun onBindViewHolder(holder: ItemSearchExploreHolder, position: Int) {
+        if (position == subCategory.lastIndex){
+            val params = holder.itemView.layoutParams as RecyclerView.LayoutParams
+            params.bottomMargin = 50
+            holder.itemView.layoutParams = params
+        } else if(position == 0){
+            val params = holder.itemView.layoutParams as RecyclerView.LayoutParams
+            params.topMargin = 25
+            holder.itemView.layoutParams = params
+        }
+        else{
+            val params = holder.itemView.layoutParams as RecyclerView.LayoutParams
+            params.bottomMargin = 0
+            holder.itemView.layoutParams = params
+        }
         holder.bindSubCategory(category, subCategory[position], subCategoryListener, position)
     }
 

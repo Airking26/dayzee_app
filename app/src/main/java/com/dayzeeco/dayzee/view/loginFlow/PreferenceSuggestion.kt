@@ -23,7 +23,7 @@ class PreferenceSuggestion : Fragment() {
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view =  inflater.inflate(R.layout.fragment_preference_suggestion, container, false)
-        view.isFocusableInTouchMode = true;
+        view.isFocusableInTouchMode = true
         view.requestFocus();
         view.setOnKeyListener { _, keyCode, event ->
             if (event.action == KeyEvent.ACTION_DOWN){

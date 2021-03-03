@@ -8,8 +8,10 @@
     <string name="select_what_you_like">Choisissez ce que vous aimez</string>
     <string name="my_city">Ma Ville</string>
     <string name="sports">Sports</string>
+    <string name="sport">Sport</string>
     <string name="music">Musique</string>
     <string name="esports">Esports</string>
+    <string name="esport">Esport</string>
     <string name="youtube">Youtube</string>
     <string name="religions">Religions</string>
     <string name="culture_n_amp_loisirs"><![CDATA[Culture \n & Loisirs]]></string>

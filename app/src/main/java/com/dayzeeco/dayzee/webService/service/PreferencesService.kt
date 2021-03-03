@@ -13,10 +13,8 @@ interface PreferencesService {
 
     @GET("preference/me")
     suspend fun getMyPreferences(@Header("Authorization") token: String) : Response<MutableList<SubCategoryRated>>
-
     @PATCH("preference/me")
     suspend fun modifyPreferences(@Header("Authorization") token: String, @Body preferences: Preferences) : Response<List<SubCategoryRated>>
-
     @GET("category/all")
     suspend fun getAllCategories() : Response<List<Category>>
 

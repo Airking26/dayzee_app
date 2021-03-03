@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
@@ -283,8 +284,8 @@ class Signup: Fragment(), View.OnClickListener {
                         loginViewModel.checkAddUser(UserSignUpBody(signup_mail.text.toString(), signup_identifiant.text.toString(), signup_password.text.toString())).observe(viewLifecycleOwner, Observer {
                             when(it.code()){
                                 201 -> {
-                                    loginViewModel.markAsAuthenticated()
-                                    //findNavController().navigate(SignupDirections.actionSignupToPreferenceCategory(true))
+                                    //loginViewModel.markAsAuthenticated()
+                                    findNavController().navigate(SignupDirections.actionSignupToPreferenceCategory(true))
                                     prefs.edit().putString(accessToken, it.body()?.token).apply()
                                     prefs.edit().putString(refreshToken, it.body()?.refreshToken).apply()
                                     prefs.edit().putString("UserInfoDTO", Gson().toJson(it.body()?.user)).apply()

@@ -12,10 +12,9 @@ xmlns:tools="http://schemas.android.com/tools">
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     android:layout_marginHorizontal="24dp"
-    android:layout_marginBottom="12dp"
-    android:textSize="18sp"
+    android:layout_marginTop="12dp"
+    android:textSize="16sp"
     tools:text="Football"
-    android:fontFamily="sans-serif-light"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"/>
 
