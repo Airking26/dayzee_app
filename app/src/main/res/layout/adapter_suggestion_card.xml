@@ -19,6 +19,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <ImageView
+            android:id="@+id/suggestions_iv"
+            android:scaleType="centerCrop"
+            android:src="@drawable/audiance"
+            app:layout_constraintBottom_toTopOf="@id/suggestion_rv"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_width="0dp"
+            android:layout_height="75dp"/>
+
         <TextView
             android:id="@+id/pref_sub_category_title_category"
             app:layout_constraintTop_toTopOf="parent"
@@ -28,12 +39,14 @@
             android:textSize="20sp"
             android:textAllCaps="true"
             android:shadowColor="@android:color/black"
+            app:layout_constraintEnd_toEndOf="parent"
             android:scaleX="1"
             android:scaleY="1"
             android:shadowRadius="1.5"
             tools:text="Sports"
+            android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@id/suggestion_rv"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"/>
 
         <androidx.recyclerview.widget.RecyclerView

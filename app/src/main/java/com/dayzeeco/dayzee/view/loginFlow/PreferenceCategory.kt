@@ -19,13 +19,14 @@ import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.CategoryAdapter
 import com.dayzeeco.dayzee.common.bytesEqualTo
 import com.dayzeeco.dayzee.common.pixelsEqualTo
-import com.dayzeeco.dayzee.model.Category
-import com.dayzeeco.dayzee.model.Preferences
-import com.dayzeeco.dayzee.model.SubCategoryRated
-import com.dayzeeco.dayzee.model.accessToken
+import com.dayzeeco.dayzee.common.stringLiveData
+import com.dayzeeco.dayzee.model.*
 import com.dayzeeco.dayzee.viewModel.PreferencesViewModel
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.fragment_preference_category.*
 import kotlinx.android.synthetic.main.item_category.view.*
+import java.lang.reflect.Type
 
 class PreferenceCategory : Fragment(), View.OnClickListener {
 
@@ -34,7 +35,7 @@ class PreferenceCategory : Fragment(), View.OnClickListener {
     private val preferencesViewModel: PreferencesViewModel by activityViewModels()
     private val preferenceCategoryArgs: PreferenceCategoryArgs by navArgs()
     private lateinit var prefs: SharedPreferences
-    private var preferencesCategoryRated: MutableList<SubCategoryRated> = mutableListOf()
+    private lateinit var preferencesCategoryRated: MutableList<SubCategoryRated>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,17 +50,19 @@ class PreferenceCategory : Fragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         pref_category_btn_next.setOnClickListener(this)
 
-        preferencesViewModel.getPreferences(tokenId!!).observe(viewLifecycleOwner, {
-            preferencesCategoryRated = it.body()!!
-            preferencesViewModel.getCategories().observe(viewLifecycleOwner, { resp ->
-                if(resp.isSuccessful){
-                    categories = resp.body()
-                    val adapterGV = CategoryAdapter(categories?.distinctBy { category -> category.category }, it.body()?.distinctBy { ca -> ca.category }?.map { subCategoryRated -> Category(subCategoryRated.category.category, subCategoryRated.category.subcategory) })
-                    category_gv.adapter = adapterGV
-                    category_pb.visibility = View.GONE
-                }
-            })
 
+        prefs.stringLiveData("listSubCatRated", Gson().toJson(prefs.getString("listSubCatRated", null))).observe(viewLifecycleOwner, {
+            val typeSubCat: Type = object : TypeToken<MutableList<SubCategoryRated?>>() {}.type
+            preferencesCategoryRated = Gson().fromJson(it, typeSubCat) ?: mutableListOf()
+        })
+
+        preferencesViewModel.getCategories().observe(viewLifecycleOwner, { resp ->
+            if(resp.isSuccessful){
+                categories = resp.body()
+                val adapterGV = CategoryAdapter(categories?.distinctBy { category -> category.category }, preferencesCategoryRated.distinctBy { ca -> ca.category }.map { subCategoryRated -> Category(subCategoryRated.category.category, subCategoryRated.category.subcategory) })
+                category_gv.adapter = adapterGV
+                category_pb.visibility = View.GONE
+            }
         })
 
 
@@ -69,7 +72,7 @@ class PreferenceCategory : Fragment(), View.OnClickListener {
                 preferencesCategoryRated.addAll(categories?.filter { category -> viewChild.category_tv.text == category.category }?.map { SubCategoryRated(it, 3) }!!)
             } else {
                 viewChild.category_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_uncheck))
-                preferencesCategoryRated.removeAll(categories?.filter { category -> viewChild.category_tv.text == category.category }?.map { SubCategoryRated(it, 3) }!!)
+                preferencesCategoryRated.removeAll { subCategoryRated -> viewChild.category_tv.text == subCategoryRated.category.category }
             }
         }
     }
@@ -80,7 +83,10 @@ class PreferenceCategory : Fragment(), View.OnClickListener {
             pref_category_btn_next -> {
                 if(preferencesCategoryRated.size > 0){
                     preferencesViewModel.modifyPreferences(tokenId!!, Preferences(preferencesCategoryRated)).observe(viewLifecycleOwner, {
-                        if(it.isSuccessful) view?.findNavController()?.navigate(PreferenceCategoryDirections.actionPreferenceCategoryToPreferenceSubCategory(preferenceCategoryArgs.isInLogin))
+                        prefs.edit().putString("listSubCatRated", Gson().toJson(preferencesCategoryRated)).apply()
+                        if(it.isSuccessful) {
+                            view?.findNavController()?.navigate(PreferenceCategoryDirections.actionPreferenceCategoryToPreferenceSubCategory(preferenceCategoryArgs.isInLogin))
+                        }
                     })
                 } else Toast.makeText(
                     requireContext(),

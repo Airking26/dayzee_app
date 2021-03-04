@@ -69,9 +69,10 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         tokenId = prefs.getString(accessToken, null)
         locaPref = prefs.getInt("locaPref", -1)
-        switchToNotifViewModel.getSwitchNotifLiveData().observe(requireActivity(), androidx.lifecycle.Observer { if(it) findNavController().navigate(MyProfileDirections.actionMyProfileToNotifications()) })
+        switchToNotifViewModel.getSwitchNotifLiveData().observe(requireActivity(),
+            { if(it) findNavController().navigate(MyProfileDirections.actionMyProfileToNotifications()) })
 
-        loginViewModel.getAuthenticationState().observe(requireActivity(), androidx.lifecycle.Observer {
+        loginViewModel.getAuthenticationState().observe(requireActivity(), {
             when (it) {
                 LoginViewModel.AuthenticationState.DISCONNECTED -> findNavController().navigate(SettingsDirections.actionGlobalNavigation())
                 LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(MyProfileDirections.actionGlobalNavigation())
@@ -101,22 +102,23 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
             LoginViewModel.AuthenticationState.GUEST -> loginViewModel.markAsUnauthenticated()
         }
 
-        prefs.stringLiveData("notifications", Gson().toJson(prefs.getString("notifications", null))).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            val typeNotification: Type = object : TypeToken<MutableList<Notification?>>() {}.type
-            notifications = Gson().fromJson<MutableList<Notification>>(it, typeNotification) ?: mutableListOf()
-            if(notifications.any { n -> !n.read }){
-                profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_notification_rouge))
-            } else {
-                profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_notifications_ok))
-            }
-        })
+        prefs.stringLiveData("notifications", Gson().toJson(prefs.getString("notifications", null))).observe(viewLifecycleOwner, {
+                val typeNotification: Type = object : TypeToken<MutableList<Notification?>>() {}.type
+                notifications = Gson().fromJson<MutableList<Notification>>(it, typeNotification) ?: mutableListOf()
+                if(notifications.any { n -> !n.read }){
+                    profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_notification_rouge))
+                } else {
+                    profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_notifications_ok))
+                }
+            })
 
-        switchToDetailedTimenote.getswitchToPreviewDetailedTimenoteViewModel().observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            if(it) {
-                findNavController().navigate(MyProfileDirections.actionGlobalDetailedTimenote(4, switchToDetailedTimenote.getTimenoteInfoDTO()))
-                switchToDetailedTimenote.switchToPreviewDetailedTimenoteViewModel(false)
-            }
-        })
+        switchToDetailedTimenote.getswitchToPreviewDetailedTimenoteViewModel().observe(viewLifecycleOwner,
+            {
+                if(it) {
+                    findNavController().navigate(MyProfileDirections.actionGlobalDetailedTimenote(4, switchToDetailedTimenote.getTimenoteInfoDTO()))
+                    switchToDetailedTimenote.switchToPreviewDetailedTimenoteViewModel(false)
+                }
+            })
         profile_tablayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabReselected(tab: TabLayout.Tab?) {
                 when(tab?.position){

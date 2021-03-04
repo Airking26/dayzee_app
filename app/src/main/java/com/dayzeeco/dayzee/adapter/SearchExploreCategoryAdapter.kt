@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.model.Category
 import kotlinx.android.synthetic.main.adapter_search_explore.view.*
+import kotlinx.android.synthetic.main.adapter_suggestion_card.view.*
 import kotlinx.android.synthetic.main.item_search_explore.view.*
 
 class SearchExploreCategoryAdapter(val explores: Map<String, List<String>>, val subCategoryListener: SearchSubCategoryListener) : RecyclerView.Adapter<SearchExploreCategoryAdapter.SearchExploreHolder>() {
@@ -35,9 +36,27 @@ class SearchExploreCategoryAdapter(val explores: Map<String, List<String>>, val 
             itemView.search_explore_category.text = list.keys.elementAt(position)
 
             when(list.keys.elementAt(position)){
-                itemView.context.getString(R.string.sports), itemView.context.getString(R.string.sport) -> itemView.search_explore_category_iv.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.category_sport))
-                itemView.context.getString(R.string.esports), itemView.context.getString(R.string.esport) -> itemView.search_explore_category_iv.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.category_esport))
-                else -> itemView.search_explore_category_iv.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.category_else))
+                itemView.context.getString(R.string.sports), itemView.context.getString(R.string.sport) -> itemView.search_explore_category_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_sport))
+                itemView.context.getString(R.string.esports), itemView.context.getString(R.string.esport) -> itemView.search_explore_category_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_esport))
+                itemView.context.getString(R.string.holidays), itemView.context.getString(R.string.holiday) -> itemView.search_explore_category_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_holidays))
+                itemView.context.getString(R.string.shopping) -> itemView.search_explore_category_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_shopping))
+                itemView.context.getString(R.string.films_n_amp_series) -> itemView.search_explore_category_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_film))
+                itemView.context.getString(R.string.culture_n_amp_loisirs) -> itemView.search_explore_category_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_culture))
+                itemView.context.getString(R.string.youtubers) -> itemView.search_explore_category_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_youtuber))
+                itemView.context.getString(R.string.religions) -> itemView.search_explore_category_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_religion))
+                itemView.context.getString(R.string.calendrier_n_interessant) -> itemView.search_explore_category_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_interesting_calendar))
+                itemView.context.getString(R.string.fair_trade) -> itemView.search_explore_category_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_else))
+                else -> itemView.search_explore_category_iv.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.audiance))
             }
 
             itemView.setOnClickListener {

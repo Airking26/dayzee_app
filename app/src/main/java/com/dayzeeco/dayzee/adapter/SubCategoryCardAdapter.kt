@@ -8,14 +8,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.SubCategoryCardAdapter.SubCategorySeekBarListener
+import com.dayzeeco.dayzee.model.SubCategoryRated
 import com.warkiz.widget.IndicatorSeekBar
 import com.warkiz.widget.OnSeekChangeListener
 import com.warkiz.widget.SeekParams
 import kotlinx.android.synthetic.main.adapter_pref_sub_category_card.view.*
+import kotlinx.android.synthetic.main.adapter_pref_sub_category_card.view.pref_sub_category_title_category
+import kotlinx.android.synthetic.main.adapter_suggestion_card.view.*
 import kotlinx.android.synthetic.main.item_category.view.*
 import kotlinx.android.synthetic.main.item_pref_sub_category.view.*
 
-class SubCategoryCardAdapter(private var categories: MutableMap<String, MutableList<String>>, private val listener: SubCategorySeekBarListener): RecyclerView.Adapter<SubCategoryCardAdapter.CardViewHolder>(){
+class SubCategoryCardAdapter(private var categories: MutableMap<String, MutableList<SubCategoryRated>>, private val listener: SubCategorySeekBarListener): RecyclerView.Adapter<SubCategoryCardAdapter.CardViewHolder>(){
 
     interface SubCategorySeekBarListener{
         fun onSeekBarModified(likedLevel: Int, subCategoryName: String)
@@ -32,7 +35,7 @@ class SubCategoryCardAdapter(private var categories: MutableMap<String, MutableL
 
     class CardViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
-        fun bindSubCategories(categories: MutableMap<String, MutableList<String>>, listener: SubCategorySeekBarListener, position: Int) {
+        fun bindSubCategories(categories: MutableMap<String, MutableList<SubCategoryRated>>, listener: SubCategorySeekBarListener, position: Int) {
             itemView.pref_sub_category_rv.apply {
                 layoutManager = LinearLayoutManager(itemView.context)
                 isNestedScrollingEnabled = false
@@ -45,7 +48,23 @@ class SubCategoryCardAdapter(private var categories: MutableMap<String, MutableL
                     ContextCompat.getDrawable(itemView.context, R.drawable.category_sport))
                 itemView.context.getString(R.string.esports), itemView.context.getString(R.string.esport) -> itemView.subcategory_iv.setImageDrawable(
                     ContextCompat.getDrawable(itemView.context, R.drawable.category_esport))
-                else -> itemView.subcategory_iv.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.category_else))
+                itemView.context.getString(R.string.holidays), itemView.context.getString(R.string.holiday) -> itemView.subcategory_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_holidays))
+                itemView.context.getString(R.string.shopping) -> itemView.subcategory_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_shopping))
+                itemView.context.getString(R.string.films_n_amp_series) -> itemView.subcategory_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_film))
+                itemView.context.getString(R.string.culture_n_amp_loisirs) -> itemView.subcategory_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_culture))
+                itemView.context.getString(R.string.youtubers) -> itemView.subcategory_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_youtuber))
+                itemView.context.getString(R.string.religions) -> itemView.subcategory_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_religion))
+                itemView.context.getString(R.string.calendrier_n_interessant) -> itemView.subcategory_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_interesting_calendar))
+                itemView.context.getString(R.string.fair_trade) -> itemView.subcategory_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_else))
+                else -> itemView.subcategory_iv.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.audiance))
             }
 
         }
@@ -54,7 +73,7 @@ class SubCategoryCardAdapter(private var categories: MutableMap<String, MutableL
 
 }
 
-class SubCategoryItemAdapter(private val categories: MutableList<String>, private val listener: SubCategorySeekBarListener, private val categoryName: String)
+class SubCategoryItemAdapter(private val categories: MutableList<SubCategoryRated>, private val listener: SubCategorySeekBarListener, private val categoryName: String)
     : RecyclerView.Adapter<SubCategoryItemAdapter.ItemViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
@@ -73,13 +92,14 @@ class SubCategoryItemAdapter(private val categories: MutableList<String>, privat
 
     class ItemViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
-        fun bindItem(categories: MutableList<String>, subCategoryPosition: Int, listener: SubCategorySeekBarListener, categoryName: String) {
-            itemView.pref_sub_category_title_sub_category.text = categories[subCategoryPosition]
+        fun bindItem(categories: MutableList<SubCategoryRated>, subCategoryPosition: Int, listener: SubCategorySeekBarListener, categoryName: String) {
+            itemView.pref_sub_category_title_sub_category.text = categories[subCategoryPosition].category.subcategory
+            itemView.pref_sub_category_seekbar.setProgress(categories[subCategoryPosition].rating.toFloat())
             itemView.pref_sub_category_seekbar.onSeekChangeListener = object: OnSeekChangeListener{
                 override fun onSeeking(seekParams: SeekParams?) {}
                 override fun onStartTrackingTouch(seekBar: IndicatorSeekBar?) {}
                 override fun onStopTrackingTouch(seekBar: IndicatorSeekBar?) {
-                    listener.onSeekBarModified(seekBar!!.progress, categories[subCategoryPosition])
+                    listener.onSeekBarModified(seekBar!!.progress, categories[subCategoryPosition].category.subcategory)
                 }
 
             }

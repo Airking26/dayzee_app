@@ -3,6 +3,7 @@ package com.dayzeeco.dayzee.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -10,11 +11,13 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.common.bytesEqualTo
 import com.dayzeeco.dayzee.common.pixelsEqualTo
+import com.dayzeeco.dayzee.model.SubCategoryRated
 import com.dayzeeco.dayzee.model.UserInfoDTO
 import kotlinx.android.synthetic.main.adapter_suggestion_card.view.*
+import kotlinx.android.synthetic.main.item_subcategory_category_removal.view.*
 import kotlinx.android.synthetic.main.item_suggestion.view.*
 
-class SuggestionAdapter(private var suggestions: Map<String, List<UserInfoDTO>>,
+class SuggestionAdapter(private var suggestions: Map<SubCategoryRated, List<UserInfoDTO>>,
                         private val listener: SuggestionItemListener,
                         private val picClicked: SuggestionItemPicListener
 ):
@@ -41,12 +44,36 @@ class SuggestionAdapter(private var suggestions: Map<String, List<UserInfoDTO>>,
     class CardViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
         fun bindSuggestions(
-            suggestions: Map<String, List<UserInfoDTO>>,
+            suggestions: Map<SubCategoryRated, List<UserInfoDTO>>,
             position: Int,
             listener: SuggestionItemListener,
             picClicked: SuggestionItemPicListener
         ) {
-            itemView.pref_sub_category_title_category.text = suggestions.keys.elementAt(position)
+            itemView.pref_sub_category_title_category.text = suggestions.keys.elementAt(position).category.subcategory
+
+            when(suggestions.keys.elementAt(position).category.category){
+                itemView.context.getString(R.string.sports), itemView.context.getString(R.string.sport) -> itemView.suggestions_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_sport))
+                itemView.context.getString(R.string.esports), itemView.context.getString(R.string.esport) -> itemView.suggestions_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_esport))
+                itemView.context.getString(R.string.holidays), itemView.context.getString(R.string.holiday) -> itemView.suggestions_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_holidays))
+                itemView.context.getString(R.string.shopping) -> itemView.suggestions_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_shopping))
+                itemView.context.getString(R.string.films_n_amp_series) -> itemView.suggestions_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_film))
+                itemView.context.getString(R.string.culture_n_amp_loisirs) -> itemView.suggestions_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_culture))
+                itemView.context.getString(R.string.youtubers) -> itemView.suggestions_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_youtuber))
+                itemView.context.getString(R.string.religions) -> itemView.suggestions_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_religion))
+                itemView.context.getString(R.string.calendrier_n_interessant) -> itemView.suggestions_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_interesting_calendar))
+                itemView.context.getString(R.string.fair_trade) -> itemView.suggestions_iv.setImageDrawable(
+                    ContextCompat.getDrawable(itemView.context, R.drawable.category_else))
+                else -> itemView.suggestions_iv.setImageDrawable(ContextCompat.getDrawable(itemView.context, R.drawable.audiance))
+            }
 
             itemView.suggestion_rv.apply {
                 layoutManager = LinearLayoutManager(itemView.context)
@@ -90,6 +117,7 @@ class SuggestionItemAdapter(
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .circleCrop()
                 .into(itemView.suggestion_imageview)
+
 
             itemView.suggestion_imageview.setOnClickListener { picClicked.onPicClicked(suggestions[position]) }
 

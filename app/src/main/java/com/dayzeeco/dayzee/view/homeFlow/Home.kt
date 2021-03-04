@@ -156,7 +156,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
             if(prefs.getString("alarms", null)== null) getAlarms()
 
             val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
-            userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
+            userInfoDTO = Gson().fromJson(prefs.getString("UserInfoDTO", ""), typeUserInfo)
 
             home_swipe_refresh.setColorSchemeResources(R.color.colorStartGradient, R.color.colorEndGradient)
             home_swipe_refresh.setOnRefreshListener {
@@ -487,10 +487,10 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
             positiveButton(R.string.send){
                 timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo)).observe(viewLifecycleOwner, Observer {
                     if(it.code() == 401) {
-                        loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
-                            tokenId = newAccessToken
-                            timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo))
-                        })
+                        loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner) { newAccessToken ->
+                                tokenId = newAccessToken
+                                timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo))
+                            }
                     }
                 })
             }
@@ -582,7 +582,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                 }
             }
             else if(it.code() == 401) {
-                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer { newAccessToken ->
+                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { newAccessToken ->
                     tokenId = newAccessToken
                     timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {tid ->
                         if(tid.isSuccessful) timenotePagingAdapter?.refresh()

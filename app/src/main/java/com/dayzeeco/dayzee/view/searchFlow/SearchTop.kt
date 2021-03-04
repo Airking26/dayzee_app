@@ -8,13 +8,16 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.SuggestionAdapter
+import com.dayzeeco.dayzee.model.SubCategoryRated
 import com.dayzeeco.dayzee.model.UserInfoDTO
 import com.dayzeeco.dayzee.model.accessToken
 import com.dayzeeco.dayzee.viewModel.FollowViewModel
+import com.dayzeeco.dayzee.viewModel.LoginViewModel
 import com.dayzeeco.dayzee.viewModel.SearchViewModel
 import kotlinx.android.synthetic.main.fragment_search_top.*
 
@@ -23,9 +26,10 @@ class SearchTop: Fragment(), SuggestionAdapter.SuggestionItemListener,
 
 
     private lateinit var topAdapter: SuggestionAdapter
-    private var tops: MutableMap<String, List<UserInfoDTO>> = mutableMapOf()
+    private var tops: MutableMap<SubCategoryRated, List<UserInfoDTO>> = mutableMapOf()
     private val followViewModel : FollowViewModel by activityViewModels()
     private val searchViewModel : SearchViewModel by activityViewModels()
+    private val loginViewModel: LoginViewModel by activityViewModels()
     private lateinit var prefs: SharedPreferences
     private var tokenId: String? = null
 
@@ -42,21 +46,34 @@ class SearchTop: Fragment(), SuggestionAdapter.SuggestionItemListener,
 
         topAdapter = SuggestionAdapter(tops, this, this)
         search_top_rv.apply {
-            layoutManager = LinearLayoutManager(view.context)
+            layoutManager = LinearLayoutManager(requireContext())
             adapter = topAdapter
         }
 
-        searchViewModel.getTop(tokenId!!).observe(viewLifecycleOwner, Observer { response ->
-            response.body()?.groupBy { it.category.subcategory }?.entries?.map { (name, group) -> tops.put(name, group.map { it.users[0] }) }
+        searchViewModel.getTop(tokenId!!).observe(viewLifecycleOwner, { response ->
+            response.body()?.forEach {
+                if(it.rating > 0 && it.users.isNotEmpty()) tops[SubCategoryRated(it.category, it.rating)] = if(it.users.size > it.rating) it.users.subList(0, it.rating) else it.users }
+            search_top_pb.visibility = View.GONE
+            topAdapter.notifyDataSetChanged()
         })
 
     }
 
     override fun onItemSelected(follow: Boolean, userInfoDTO: UserInfoDTO) {
-        //followViewModel.followPublicUser("", 0).observe(viewLifecycleOwner, Observer {})
+        followViewModel.followPublicUser(tokenId!!, userInfoDTO.id!!).observe(viewLifecycleOwner, {
+            if(it.isSuccessful) topAdapter.notifyDataSetChanged()
+            if(it.code() == 401) {
+                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner){ newAccessToken ->
+                    tokenId = newAccessToken
+                    followViewModel.followPublicUser(tokenId!!, userInfoDTO?.id!!).observe(viewLifecycleOwner){ rsp ->
+                        if(rsp.isSuccessful) topAdapter.notifyDataSetChanged()
+                    }
+                }
+            }
+        })
     }
 
     override fun onPicClicked(userInfoDTO: UserInfoDTO) {
-        //findNavController().navigate(SearchDirections.actionSearchToProfileSearch())
+        findNavController().navigate(SearchDirections.actionGlobalProfileElse(2).setUserInfoDTO(userInfoDTO))
     }
 }

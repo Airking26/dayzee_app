@@ -55,6 +55,7 @@ class SearchExplore : Fragment(), SearchExploreCategoryAdapter.SearchSubCategory
                         if(lc.isSuccessful){
                             response.body()?.groupBy { it.category }?.entries?.map { (name, group) -> explores.put(name, group.map { it.subcategory }.toMutableList()) }
                             searchExploreAdapter.notifyDataSetChanged()
+                            search_explore_pb.visibility = View.GONE
                         }
                     })
                 })
@@ -62,6 +63,7 @@ class SearchExplore : Fragment(), SearchExploreCategoryAdapter.SearchSubCategory
             if(response.isSuccessful){
             response.body()?.groupBy { it.category }?.entries?.map { (name, group) -> explores.put(name, group.map { it.subcategory }.toMutableList()) }
                 searchExploreAdapter.notifyDataSetChanged()
+                search_explore_pb.visibility = View.GONE
             }
         })
 

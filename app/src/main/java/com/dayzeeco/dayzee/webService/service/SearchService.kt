@@ -15,7 +15,7 @@ interface SearchService {
     @POST("search/category/users/{offset}")
     suspend fun searchBasedOnCategory(@Header("Authorization") token: String, @Body categories: Category, @Path("offset") offset: Int) : Response<List<UserInfoDTO>>
 
-    @GET("search/top")
+    @GET("search/tops")
     suspend fun getTop(@Header("Authorization") token: String) : Response<List<PreferenceResultDTO>>
 
 }

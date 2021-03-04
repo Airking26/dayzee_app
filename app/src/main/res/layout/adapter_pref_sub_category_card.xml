@@ -18,18 +18,18 @@
         android:layout_height="match_parent">
 
         <ImageView
+            app:layout_constraintBottom_toTopOf="@id/pref_sub_category_rv"
             android:id="@+id/subcategory_iv"
             android:scaleType="centerCrop"
             android:src="@drawable/audiance"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/card_line"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_width="0dp"
             android:layout_height="75dp"/>
 
         <TextView
-            app:layout_constraintBottom_toBottomOf="@id/card_line"
+            app:layout_constraintBottom_toBottomOf="@id/subcategory_iv"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -44,21 +44,14 @@
             android:scaleY="1"
             android:shadowRadius="1.5"
             tools:text="Sports"
-            app:layout_constraintBottom_toTopOf="@id/card_line"
             android:layout_width="0dp"
             android:layout_height="wrap_content"/>
 
-        <TextView
-            android:id="@+id/card_line"
-            app:layout_constraintTop_toBottomOf="@id/pref_sub_category_title_category"
-            style="@style/AppTheme.Divider.Toolbar"
-            tools:ignore="MissingConstraints" />
-
         <androidx.recyclerview.widget.RecyclerView
+            app:layout_constraintTop_toBottomOf="@id/pref_sub_category_title_category"
             android:background="@color/colorBackground"
             tools:listitem="@layout/item_pref_sub_category"
             android:id="@+id/pref_sub_category_rv"
-            app:layout_constraintTop_toBottomOf="@id/card_line"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_width="match_parent"
