@@ -13,8 +13,8 @@ object ImageCompressor {
     @Throws(Exception::class)
     fun compressBitmap(context: Context, originalImageFile: File, cb: ((File) -> Unit)? = null) {
         val bitmap = updateDecodeBounds(originalImageFile)
-        val file = context.getPicturesFile(originalImageFile.name)
-        val fOut = FileOutputStream(file)
+        val file = context.getExternalFilesDir(originalImageFile.name)
+        val fOut = FileOutputStream(file!!)
         bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fOut)
         fOut.flush() // Not really required
         fOut.close() // do not forget to close the stream

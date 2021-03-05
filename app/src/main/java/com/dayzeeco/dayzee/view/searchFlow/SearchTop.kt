@@ -13,9 +13,9 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.SuggestionAdapter
+import com.dayzeeco.dayzee.common.accessToken
 import com.dayzeeco.dayzee.model.SubCategoryRated
 import com.dayzeeco.dayzee.model.UserInfoDTO
-import com.dayzeeco.dayzee.model.accessToken
 import com.dayzeeco.dayzee.viewModel.FollowViewModel
 import com.dayzeeco.dayzee.viewModel.LoginViewModel
 import com.dayzeeco.dayzee.viewModel.SearchViewModel

@@ -18,9 +18,10 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.NotificationAdapter
+import com.dayzeeco.dayzee.common.accessToken
+import com.dayzeeco.dayzee.common.notifications_saved
 import com.dayzeeco.dayzee.common.stringLiveData
 import com.dayzeeco.dayzee.model.Notification
-import com.dayzeeco.dayzee.model.accessToken
 import com.dayzeeco.dayzee.viewModel.FollowViewModel
 import com.dayzeeco.dayzee.viewModel.LoginViewModel
 import com.dayzeeco.dayzee.viewModel.MeViewModel
@@ -49,7 +50,7 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
         inflater.inflate(R.layout.fragment_notifications, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        prefs.stringLiveData("notifications", Gson().toJson(prefs.getString("notifications", null))).observe(viewLifecycleOwner, Observer {
+        prefs.stringLiveData(notifications_saved, Gson().toJson(prefs.getString(notifications_saved, null))).observe(viewLifecycleOwner, Observer {
             val typeNotification: Type = object : TypeToken<MutableList<Notification?>>() {}.type
             notifications = Gson().fromJson<MutableList<Notification>>(it, typeNotification) ?: mutableListOf()
 
@@ -68,13 +69,13 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
         val notificationsUnread = notifications.filter { !it.read }.sortedBy { notification -> notification.time }.asReversed()
         val notificationReadedLastTen = notifications.filter { it.read }.sortedBy { notification -> notification.time }.takeLast(10).asReversed()
         val notifs = notificationsUnread.plus(notificationReadedLastTen)
-        prefs.edit().putString("notifications", Gson().toJson(notifs.toMutableList())).apply()
+        prefs.edit().putString(notifications_saved, Gson().toJson(notifs.toMutableList())).apply()
         return notifs.toMutableList()
     }
 
     private fun refreshNotifications(){
         notifications.map { it.read = true }
-        prefs.edit().putString("notifications", Gson().toJson(notifications)).apply()
+        prefs.edit().putString(notifications_saved, Gson().toJson(notifications)).apply()
     }
 
     override fun onNotificationClicked(notification: Notification) {
@@ -118,7 +119,7 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
                     followViewModel.acceptFollowingRequest(tokenId!!, notification.id).observe(viewLifecycleOwner, Observer { userInfoDTO ->
                         if(userInfoDTO.isSuccessful) {
                             notifications.remove(notification)
-                            prefs.edit().putString("notifications", Gson().toJson(notifications))
+                            prefs.edit().putString(notifications_saved, Gson().toJson(notifications))
                                 .apply()
                         }
                     })
@@ -126,7 +127,7 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
             }
             if(it.isSuccessful) {
                 notifications.remove(notification)
-                prefs.edit().putString("notifications", Gson().toJson(notifications)).apply()
+                prefs.edit().putString(notifications_saved, Gson().toJson(notifications)).apply()
             }
 
         })
@@ -141,7 +142,7 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
                     followViewModel.declineFollowingRequest(tokenId!!, notification.id).observe(viewLifecycleOwner, Observer { userInfoDTO ->
                         if(userInfoDTO.isSuccessful){
                             notifications.remove(notification)
-                            prefs.edit().putString("notifications", Gson().toJson(notifications)).apply()
+                            prefs.edit().putString(notifications_saved, Gson().toJson(notifications)).apply()
                         }
                     })
                 })
@@ -149,7 +150,7 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
 
             if(it.isSuccessful) {
                 notifications.remove(notification)
-                prefs.edit().putString("notifications", Gson().toJson(notifications)).apply()
+                prefs.edit().putString(notifications_saved, Gson().toJson(notifications)).apply()
             }
 
         })

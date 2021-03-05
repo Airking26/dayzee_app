@@ -32,6 +32,9 @@ import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.*
 import com.dayzeeco.dayzee.common.Utils
+import com.dayzeeco.dayzee.common.accessToken
+import com.dayzeeco.dayzee.common.map_event_id_to_timenote
+import com.dayzeeco.dayzee.common.user_info_dto
 import com.dayzeeco.dayzee.listeners.GoToProfile
 import com.dayzeeco.dayzee.listeners.TimenoteOptionsListener
 import com.dayzeeco.dayzee.model.*
@@ -82,7 +85,7 @@ class TimenoteTAG: Fragment(), TimenoteOptionsListener, View.OnClickListener,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
-        userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
+        userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString(user_info_dto, ""), typeUserInfo)
 
         timenote_tag_toolbar.text = "#${args.hashtag}"
 
@@ -118,7 +121,7 @@ class TimenoteTAG: Fragment(), TimenoteOptionsListener, View.OnClickListener,
                     timenoteViewModel.signalTimenote(tokenId!!, TimenoteCreationSignalementDTO(userInfoDTO.id!!, timenoteInfoDTO.id, "")).observe(viewLifecycleOwner, Observer { rsp ->
                         if(rsp.isSuccessful) Toast.makeText(
                             requireContext(),
-                            "Reported",
+                            getString(R.string.reported),
                             Toast.LENGTH_SHORT
                         ).show()
                     })
@@ -127,7 +130,7 @@ class TimenoteTAG: Fragment(), TimenoteOptionsListener, View.OnClickListener,
 
             if(it.isSuccessful) Toast.makeText(
                 requireContext(),
-                "Reported",
+                getString(R.string.reported),
                 Toast.LENGTH_SHORT
             ).show()
         })
@@ -140,13 +143,13 @@ class TimenoteTAG: Fragment(), TimenoteOptionsListener, View.OnClickListener,
     }
 
     override fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        val map: MutableMap<Long, String> = Gson().fromJson(prefs.getString("mapEventIdToTimenote", null), object : TypeToken<MutableMap<String, String>>() {}.type) ?: mutableMapOf()
+        val map: MutableMap<Long, String> = Gson().fromJson(prefs.getString(map_event_id_to_timenote, null), object : TypeToken<MutableMap<String, String>>() {}.type) ?: mutableMapOf()
         timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {
             if(it.isSuccessful) {
                 timenotePagingAdapter?.refresh()
                 if(map.isNotEmpty() && map.filterValues { id -> id == timenoteInfoDTO.id }.keys.isNotEmpty()) {
                     map.remove(map.filterValues { id -> id == timenoteInfoDTO.id }.keys.first())
-                    prefs.edit().putString("mapEventIdToTimenote", Gson().toJson(map)).apply()
+                    prefs.edit().putString(map_event_id_to_timenote, Gson().toJson(map)).apply()
                 }
             }
             else if(it.code() == 401) {
@@ -156,7 +159,7 @@ class TimenoteTAG: Fragment(), TimenoteOptionsListener, View.OnClickListener,
                         if(tid.isSuccessful) timenotePagingAdapter?.refresh()
                         if(map.isNotEmpty() && map.filterValues { id -> id == timenoteInfoDTO.id }.keys.isNotEmpty()) {
                             map.remove(map.filterValues { id -> id == timenoteInfoDTO.id }.keys.first())
-                            prefs.edit().putString("mapEventIdToTimenote", Gson().toJson(map)).apply()
+                            prefs.edit().putString(map_event_id_to_timenote, Gson().toJson(map)).apply()
                         }
                     })
                 })

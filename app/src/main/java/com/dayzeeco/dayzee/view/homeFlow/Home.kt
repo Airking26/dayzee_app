@@ -153,10 +153,10 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
             changePasswordTemporary()
 
-            if(prefs.getString("alarms", null)== null) getAlarms()
+            if(prefs.getString(alarms, null)== null) getAlarms()
 
             val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
-            userInfoDTO = Gson().fromJson(prefs.getString("UserInfoDTO", ""), typeUserInfo)
+            userInfoDTO = Gson().fromJson(prefs.getString(user_info_dto, ""), typeUserInfo)
 
             home_swipe_refresh.setColorSchemeResources(R.color.colorStartGradient, R.color.colorEndGradient)
             home_swipe_refresh.setOnRefreshListener {
@@ -172,7 +172,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     }
 
     private fun changePasswordTemporary() {
-        prefs.booleanLiveData("temporary_password", false).observe(viewLifecycleOwner, Observer {
+        prefs.booleanLiveData(temporary_password, false).observe(viewLifecycleOwner, Observer {
             if (it) {
                 MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                     cancelOnTouchOutside(false)
@@ -196,8 +196,9 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                                                     tokenId = newToken
                                                     meViewModel.changePassword(tokenId!!, newPasswordAgain.toString()).observe(viewLifecycleOwner, Observer { resp ->
                                                         if (resp.isSuccessful) {
-                                                            prefs.edit().putBoolean("temporary_password", false).apply()
-                                                            Toast.makeText(requireContext(), "Password changed successfully", Toast.LENGTH_SHORT).show()
+                                                            prefs.edit().putBoolean(
+                                                                temporary_password, false).apply()
+                                                            Toast.makeText(requireContext(), getString(R.string.password_changed_successfully), Toast.LENGTH_SHORT).show()
                                                         } else {
                                                             changePasswordTemporary()
                                                         }
@@ -206,8 +207,8 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                                         }
 
                                         if (rsp.isSuccessful) {
-                                            prefs.edit().putBoolean("temporary_password", false).apply()
-                                            Toast.makeText(requireContext(), "Password changed successfully", Toast.LENGTH_SHORT).show()
+                                            prefs.edit().putBoolean(temporary_password, false).apply()
+                                            Toast.makeText(requireContext(), getString(R.string.password_changed_successfully), Toast.LENGTH_SHORT).show()
                                         } else changePasswordTemporary()
                                     })
                                 }
@@ -229,11 +230,11 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                         tokenId = newAccessToken
                         alarmViewModel.getAlarms(tokenId!!)
                             .observe(viewLifecycleOwner, Observer { lst ->
-                                prefs.edit().putString("alarms", Gson().toJson(lst.body())).apply()
+                                prefs.edit().putString(alarms, Gson().toJson(lst.body())).apply()
                             })
                     })
             }
-            prefs.edit().putString("alarms", Gson().toJson(it.body())).apply()
+            prefs.edit().putString(alarms, Gson().toJson(it.body())).apply()
         })
     }
 
@@ -423,7 +424,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                     timenoteViewModel.signalTimenote(tokenId!!, TimenoteCreationSignalementDTO(userInfoDTO.id!!, timenoteInfoDTO.id, "essai")).observe(viewLifecycleOwner, Observer { rsp ->
                         if(rsp.isSuccessful) Toast.makeText(
                             requireContext(),
-                            "Reported",
+                            getString(R.string.reported),
                             Toast.LENGTH_SHORT
                         ).show()
                     })
@@ -432,7 +433,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
             if(it.isSuccessful) Toast.makeText(
                 requireContext(),
-                "Reported",
+                getString(R.string.reported),
                 Toast.LENGTH_SHORT
             ).show()
         })
@@ -451,12 +452,12 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
             .setContentDescription(timenoteInfoDTO.description)
             .setContentImageUrl(timenoteInfoDTO.pictures[0])
             .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
-            .setContentMetadata(ContentMetadata().addCustomMetadata("timenoteInfoDTO", Gson().toJson(timenoteInfoDTO)))
+            .setContentMetadata(ContentMetadata().addCustomMetadata(timenote_info_dto, Gson().toJson(timenoteInfoDTO)))
         else BranchUniversalObject()
             .setTitle(timenoteInfoDTO.title)
             .setContentDescription(timenoteInfoDTO.description)
             .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
-            .setContentMetadata(ContentMetadata().addCustomMetadata("timenoteInfoDTO", Gson().toJson(timenoteInfoDTO)))
+            .setContentMetadata(ContentMetadata().addCustomMetadata(timenote_info_dto, Gson().toJson(timenoteInfoDTO)))
 
         branchUniversalObject.generateShortUrl(requireContext(), linkProperties) { url, error ->
             BranchEvent("branch_url_created").logEvent(requireContext())
@@ -572,13 +573,13 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     }
 
     override fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        val map: MutableMap<Long, String> = Gson().fromJson(prefs.getString("mapEventIdToTimenote", null), object : TypeToken<MutableMap<String, String>>() {}.type) ?: mutableMapOf()
+        val map: MutableMap<Long, String> = Gson().fromJson(prefs.getString(map_event_id_to_timenote, null), object : TypeToken<MutableMap<String, String>>() {}.type) ?: mutableMapOf()
         timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {
             if(it.isSuccessful) {
                 timenotePagingAdapter?.refresh()
                 if(map.isNotEmpty() && map.filterValues { id -> id == timenoteInfoDTO.id }.keys.isNotEmpty()) {
                     map.remove(map.filterValues { id -> id == timenoteInfoDTO.id }.keys.first())
-                    prefs.edit().putString("mapEventIdToTimenote", Gson().toJson(map)).apply()
+                    prefs.edit().putString(map_event_id_to_timenote, Gson().toJson(map)).apply()
                 }
             }
             else if(it.code() == 401) {
@@ -588,7 +589,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                         if(tid.isSuccessful) timenotePagingAdapter?.refresh()
                         if(map.isNotEmpty() && map.filterValues { id -> id == timenoteInfoDTO.id }.keys.isNotEmpty()) {
                             map.remove(map.filterValues { id -> id == timenoteInfoDTO.id }.keys.first())
-                            prefs.edit().putString("mapEventIdToTimenote", Gson().toJson(map)).apply()
+                            prefs.edit().putString(map_event_id_to_timenote, Gson().toJson(map)).apply()
                         }
                     })
                 })

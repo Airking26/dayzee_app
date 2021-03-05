@@ -60,14 +60,11 @@ import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.WebSearchAdapter
 import com.dayzeeco.dayzee.androidView.dialog.input
 import com.dayzeeco.dayzee.androidView.instaLike.GlideEngine
-import com.dayzeeco.dayzee.common.ImageCompressor
-import com.dayzeeco.dayzee.common.Utils
-import com.dayzeeco.dayzee.common.stringLiveData
+import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.listeners.RefreshPicBottomNavListener
 import com.dayzeeco.dayzee.model.STATUS
 import com.dayzeeco.dayzee.model.UpdateUserInfoDTO
 import com.dayzeeco.dayzee.model.UserInfoDTO
-import com.dayzeeco.dayzee.model.accessToken
 import com.dayzeeco.dayzee.viewModel.LoginViewModel
 import com.dayzeeco.dayzee.viewModel.MeViewModel
 import com.dayzeeco.dayzee.viewModel.ProfileModifyViewModel
@@ -135,8 +132,8 @@ class ProfilModify: Fragment(), View.OnClickListener,
         AWSMobileClient.getInstance().initialize(requireContext()).execute()
         prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         tokenId = prefs.getString(accessToken, null)
-        if(prefs.getString("pmtc", "") == "")
-        prefs.edit().putString("pmtc", "").apply()
+        if(prefs.getString(pmtc, "") == "")
+        prefs.edit().putString(pmtc, "").apply()
         Places.initialize(requireContext(), getString(R.string.api_web_key))
         placesClient = Places.createClient(requireContext())
     }
@@ -166,7 +163,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
         am = AmazonS3Client(
             CognitoCachingCredentialsProvider(
             requireContext(),
-            "us-east-1:a1e54ce4-a26d-44b1-83ea-9ca1d0d7903a", // ID du groupe d'identités
+            identity_pool_id, // ID du groupe d'identités
             Regions.US_EAST_1 // Région
         )
         )
@@ -202,11 +199,11 @@ class ProfilModify: Fragment(), View.OnClickListener,
             profile_modify_linkedin_switch.visibility = View.VISIBLE
 
             profile_from_switch.isChecked =
-                prefs.getInt("locaPref", -1) == 1 || prefs.getInt("locaPref", -1) == 2
+                prefs.getInt(location_pref, -1) == 1 || prefs.getInt(location_pref, -1) == 2
 
             profile_from_switch.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) prefs.edit().putInt("locaPref", 1).apply()
-                else prefs.edit().putInt("locaPref", 0).apply()
+                if (isChecked) prefs.edit().putInt(location_pref, 1).apply()
+                else prefs.edit().putInt(location_pref, 0).apply()
             }
 
             profile_modify_youtube_switch.setOnCheckedChangeListener { _, isChecked ->
@@ -237,7 +234,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
     private fun setProfilModifyViewModel() {
         profileModifyData = ProfileModifyData(requireContext())
         prefs.stringLiveData(
-            "UserInfoDTO",
+            user_info_dto,
             Gson().toJson(profileModifyData.loadProfileModifyModel())
         ).observe(
             viewLifecycleOwner,
@@ -294,12 +291,12 @@ class ProfilModify: Fragment(), View.OnClickListener,
                     profile_modify_linkedin_switch.isChecked = false
                 }
 
-                if (prefs.getString("pmtc", "") != Gson().toJson(profileModifyData.loadProfileModifyModel())) {
+                if (prefs.getString(pmtc, "") != Gson().toJson(profileModifyData.loadProfileModifyModel())) {
                     modifyProfil(profilModifyModel)
                 }
 
                 prefs.edit().putString(
-                    "pmtc",
+                    pmtc,
                     Gson().toJson(profileModifyData.loadProfileModifyModel())
                 ).apply()
             })
@@ -328,9 +325,9 @@ class ProfilModify: Fragment(), View.OnClickListener,
             }
             if(usr.isSuccessful) {
                 onRefreshPicBottomNavListener.onrefreshPicBottomNav(usr.body()?.picture)
-                prefs.edit().putString("UserInfoDTO", Gson().toJson(usr.body())).apply()
-                prefs.edit().putInt("followers", usr.body()?.followers!!).apply()
-                prefs.edit().putInt("following", usr.body()?.following!!).apply()
+                prefs.edit().putString(user_info_dto, Gson().toJson(usr.body())).apply()
+                prefs.edit().putInt(followers, usr.body()?.followers!!).apply()
+                prefs.edit().putInt(following, usr.body()?.following!!).apply()
             }
         })
     }
@@ -667,12 +664,12 @@ class ProfilModify: Fragment(), View.OnClickListener,
             .setContentDescription(profilModifyModel.givenName)
             .setContentImageUrl(profilModifyModel.picture!!)
             .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
-            .setContentMetadata(ContentMetadata().addCustomMetadata("userInfoDTO", Gson().toJson(profilModifyModel)))
+            .setContentMetadata(ContentMetadata().addCustomMetadata(user_info_dto, Gson().toJson(profilModifyModel)))
         else BranchUniversalObject()
             .setTitle(profilModifyModel.userName!!)
             .setContentDescription(profilModifyModel.givenName)
             .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
-            .setContentMetadata(ContentMetadata().addCustomMetadata("userInfoDTO", Gson().toJson(profilModifyModel)))
+            .setContentMetadata(ContentMetadata().addCustomMetadata(user_info_dto, Gson().toJson(profilModifyModel)))
 
         branchUniversalObject.generateShortUrl(requireContext(), linkProperties) { url, error ->
             BranchEvent("branch_url_created").logEvent(requireContext())
@@ -701,7 +698,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
         val transferUtiliy = TransferUtility(am, requireContext())
         val key = "timenote/${UUID.randomUUID().mostSignificantBits}"
         val transferObserver = transferUtiliy.upload(
-            "timenote-dev-images", key,
+            bucket_dayzee_dev_image, key,
             file, CannedAccessControlList.Private
         )
         transferObserver.setTransferListener(object : TransferListener {
@@ -710,7 +707,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
                 if (state == TransferState.COMPLETED) {
                     profileModifyPb.visibility = View.GONE
                     profileModifyPicIv.visibility = View.VISIBLE
-                    imagesUrl = am.getResourceUrl("timenote-dev-images", key).toString()
+                    imagesUrl = am.getResourceUrl(bucket_dayzee_dev_image, key).toString()
                     profileModifyData.setPicture(imagesUrl)
                 }
 

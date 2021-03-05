@@ -69,10 +69,7 @@ import com.dayzeeco.dayzee.adapter.UsersShareWithPagingAdapter
 import com.dayzeeco.dayzee.adapter.WebSearchAdapter
 import com.dayzeeco.dayzee.androidView.dialog.input
 import com.dayzeeco.dayzee.androidView.instaLike.GlideEngine
-import com.dayzeeco.dayzee.common.HashTagHelper
-import com.dayzeeco.dayzee.common.ImageCompressor
-import com.dayzeeco.dayzee.common.Utils
-import com.dayzeeco.dayzee.common.stringLiveData
+import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.listeners.BackToHomeListener
 import com.dayzeeco.dayzee.listeners.GoToProfile
 import com.dayzeeco.dayzee.listeners.RefreshPicBottomNavListener
@@ -253,7 +250,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
 
         am = AmazonS3Client(CognitoCachingCredentialsProvider(
             requireContext(),
-            "us-east-1:a1e54ce4-a26d-44b1-83ea-9ca1d0d7903a", // ID du groupe d'identités
+            identity_pool_id, // ID du groupe d'identités
             Regions.US_EAST_1 // Région
         ))
         try {
@@ -265,7 +262,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
             setUp()
 
             val type: Type = object : TypeToken<UserInfoDTO?>() {}.type
-            userInfoDTO = Gson().fromJson(prefs.getString("UserInfoDTO", ""), type)
+            userInfoDTO = Gson().fromJson(prefs.getString(user_info_dto, ""), type)
             creationTimenoteViewModel.setCreatedBy(userInfoDTO.id!!)
             accountType = userInfoDTO.status
 
@@ -280,7 +277,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                 })
             }
 
-            prefs.stringLiveData("offset", "+00:00").observe(viewLifecycleOwner, {
+            prefs.stringLiveData(offset, "+00:00").observe(viewLifecycleOwner, {
                 if(isCreatedOffset) {
                     if (creationTimenoteViewModel.getCreateTimeNoteLiveData().value != null && creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.startingAt?.isNotBlank()!!)
                         creationTimenoteViewModel.setStartDateOffset(
@@ -301,7 +298,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                 }
             })
 
-            visibilityTimenote = prefs.getInt("default_settings_at_creation_time", 1)
+            visibilityTimenote = prefs.getInt(default_settings_at_creation_time, 1)
             when (visibilityTimenote) {
                 0 -> {
                     shareWithTv.text = getString(R.string.only_me)
@@ -1278,7 +1275,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         }
         if(images.isNullOrEmpty() && values?.colorHex.isNullOrBlank() && creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.pictures.isNullOrEmpty()) formCompleted = false
         if(values?.location != null){
-            prefs.stringLiveData("offset", "+00:00").observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            prefs.stringLiveData(offset, "+00:00").observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                 if(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.startingAt?.isNotBlank()!!)
                     creationTimenoteViewModel.setStartDateOffset(creationTimenoteViewModel.setOffset(ISO, creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.startingAt!!, it))
                 if(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.endingAt?.isNotBlank()!!)
@@ -1298,12 +1295,12 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     fun pushPic(file: File){
         val transferUtiliy = TransferUtility(am, requireContext())
         val key = "timenote/${UUID.randomUUID().mostSignificantBits}"
-        val transferObserver = transferUtiliy.upload("timenote-dev-images", key, file, CannedAccessControlList.Private)
+        val transferObserver = transferUtiliy.upload(bucket_dayzee_dev_image, key, file, CannedAccessControlList.Private)
         transferObserver.setTransferListener(object : TransferListener {
             override fun onStateChanged(id: Int, state: TransferState?) {
                 if (state == TransferState.COMPLETED) {
                     imagesUrl.add(
-                        am.getResourceUrl("timenote-dev-images", key).toString()
+                        am.getResourceUrl(bucket_dayzee_dev_image, key).toString()
                     )
                     if (images?.size == imagesUrl.size) {
                         creationTimenoteViewModel.setPicUser(imagesUrl)

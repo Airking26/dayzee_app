@@ -32,6 +32,9 @@ import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.*
 import com.dayzeeco.dayzee.common.Utils
+import com.dayzeeco.dayzee.common.accessToken
+import com.dayzeeco.dayzee.common.timenote_info_dto
+import com.dayzeeco.dayzee.common.user_info_dto
 import com.dayzeeco.dayzee.listeners.TimenoteOptionsListener
 import com.dayzeeco.dayzee.model.*
 import com.dayzeeco.dayzee.viewModel.*
@@ -69,7 +72,7 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         tokenId = prefs.getString(accessToken, null)
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
-        userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
+        userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString(user_info_dto, ""), typeUserInfo)
 
     }
 
@@ -111,7 +114,7 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
                     timenoteViewModel.signalTimenote(tokenId!!, TimenoteCreationSignalementDTO(userInfoDTO.id!!, timenoteInfoDTO.id, "")).observe(viewLifecycleOwner, Observer { rsp ->
                         if(rsp.isSuccessful) Toast.makeText(
                             requireContext(),
-                            "Reported",
+                            getString(R.string.reported),
                             Toast.LENGTH_SHORT
                         ).show()
                     })
@@ -120,7 +123,7 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
 
             if(it.isSuccessful) Toast.makeText(
                 requireContext(),
-                "Reported",
+                getString(R.string.reported),
                 Toast.LENGTH_SHORT
             ).show()
         })
@@ -227,12 +230,12 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
             .setContentDescription(timenoteInfoDTO.description)
             .setContentImageUrl(timenoteInfoDTO.pictures[0])
             .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
-            .setContentMetadata(ContentMetadata().addCustomMetadata("timenoteInfoDTO", Gson().toJson(timenoteInfoDTO)))
+            .setContentMetadata(ContentMetadata().addCustomMetadata(timenote_info_dto, Gson().toJson(timenoteInfoDTO)))
         else BranchUniversalObject()
             .setTitle(timenoteInfoDTO.title)
             .setContentDescription(timenoteInfoDTO.description)
             .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
-            .setContentMetadata(ContentMetadata().addCustomMetadata("timenoteInfoDTO", Gson().toJson(timenoteInfoDTO)))
+            .setContentMetadata(ContentMetadata().addCustomMetadata(timenote_info_dto, Gson().toJson(timenoteInfoDTO)))
 
         branchUniversalObject.generateShortUrl(requireContext(), linkProperties) { url, error ->
             BranchEvent("branch_url_created").logEvent(requireContext())

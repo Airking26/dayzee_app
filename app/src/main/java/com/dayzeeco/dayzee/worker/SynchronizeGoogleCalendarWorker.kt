@@ -5,6 +5,9 @@ import androidx.preference.PreferenceManager
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.dayzeeco.dayzee.common.Utils
+import com.dayzeeco.dayzee.common.gmail
+import com.dayzeeco.dayzee.common.map_event_id_to_timenote
+import com.dayzeeco.dayzee.common.refreshToken
 import com.dayzeeco.dayzee.model.CreationTimenoteDTO
 import com.dayzeeco.dayzee.model.Price
 import com.dayzeeco.dayzee.webService.service.AuthService
@@ -31,7 +34,6 @@ class SynchronizeGoogleCalendarWorker(val context: Context, parameters: WorkerPa
     private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
     private val transport = AndroidHttp.newCompatibleTransport()
     private val jsonFactory: JsonFactory = JacksonFactory.getDefaultInstance()
-    private val GMAIL = "gmail"
     private var idUser : String? = null
     private var tokenId : String? = null
     private lateinit var map : MutableMap<String, String>
@@ -42,14 +44,16 @@ class SynchronizeGoogleCalendarWorker(val context: Context, parameters: WorkerPa
         tokenId = inputData.getString(token_id)
         val credential = GoogleAccountCredential.usingOAuth2(context, listOf(CalendarScopes.CALENDAR_READONLY))
             .setBackOff(ExponentialBackOff())
-            .setSelectedAccountName(PreferenceManager.getDefaultSharedPreferences(context).getString(GMAIL, null))
+            .setSelectedAccountName(PreferenceManager.getDefaultSharedPreferences(context).getString(
+                gmail, null))
 
         val service = Calendar.Builder(
             transport, jsonFactory, credential)
             .setApplicationName("TestGoogleCalendar")
             .build()
 
-        map = Gson().fromJson(PreferenceManager.getDefaultSharedPreferences(context).getString("mapEventIdToTimenote", null), object : TypeToken<MutableMap<String, String>>() {}.type) ?: mutableMapOf()
+        map = Gson().fromJson(PreferenceManager.getDefaultSharedPreferences(context).getString(
+            map_event_id_to_timenote, null), object : TypeToken<MutableMap<String, String>>() {}.type) ?: mutableMapOf()
 
         val li = service.events()?.list("primary")?.setMaxResults(10)?.setTimeMin(DateTime( System.currentTimeMillis()))?.setOrderBy("startTime")?.setSingleEvents(true)?.execute()
         val end = if(li?.items!= null && li.items.isNotEmpty()) loopThroughCalendar(li.items.iterator()) else false
@@ -86,7 +90,7 @@ class SynchronizeGoogleCalendarWorker(val context: Context, parameters: WorkerPa
                     map[item.id] = currentTimenote.body()?.id!!
                 }
                 else if(currentTimenote.code() == 401){
-                    val refreshToken = this.loginService.refreshAccessToken(PreferenceManager.getDefaultSharedPreferences(context).getString(com.dayzeeco.dayzee.model.refreshToken, null)!!)
+                    val refreshToken = this.loginService.refreshAccessToken(PreferenceManager.getDefaultSharedPreferences(context).getString(refreshToken, null)!!)
                     tokenId = refreshToken.body()?.accessToken
                     currentTimenote = this.timenoteService.createTimenote("Bearer $tokenId", creationTimenoteDTO)
                     if(currentTimenote.isSuccessful) {
@@ -99,7 +103,8 @@ class SynchronizeGoogleCalendarWorker(val context: Context, parameters: WorkerPa
                 loopThroughCalendar(mEventsList.iterator())
             }
         } else {
-            PreferenceManager.getDefaultSharedPreferences(context).edit().putString("mapEventIdToTimenote", Gson().toJson(map)).apply()
+            PreferenceManager.getDefaultSharedPreferences(context).edit().putString(
+                map_event_id_to_timenote, Gson().toJson(map)).apply()
             return true
         }
 

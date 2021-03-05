@@ -17,9 +17,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.CategoryAdapter
-import com.dayzeeco.dayzee.common.bytesEqualTo
-import com.dayzeeco.dayzee.common.pixelsEqualTo
-import com.dayzeeco.dayzee.common.stringLiveData
+import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.model.*
 import com.dayzeeco.dayzee.viewModel.PreferencesViewModel
 import com.google.gson.Gson
@@ -51,7 +49,7 @@ class PreferenceCategory : Fragment(), View.OnClickListener {
         pref_category_btn_next.setOnClickListener(this)
 
 
-        prefs.stringLiveData("listSubCatRated", Gson().toJson(prefs.getString("listSubCatRated", null))).observe(viewLifecycleOwner, {
+        prefs.stringLiveData(list_subcategory_rated, Gson().toJson(prefs.getString(list_subcategory_rated, null))).observe(viewLifecycleOwner, {
             val typeSubCat: Type = object : TypeToken<MutableList<SubCategoryRated?>>() {}.type
             preferencesCategoryRated = Gson().fromJson(it, typeSubCat) ?: mutableListOf()
         })
@@ -83,14 +81,14 @@ class PreferenceCategory : Fragment(), View.OnClickListener {
             pref_category_btn_next -> {
                 if(preferencesCategoryRated.size > 0){
                     preferencesViewModel.modifyPreferences(tokenId!!, Preferences(preferencesCategoryRated)).observe(viewLifecycleOwner, {
-                        prefs.edit().putString("listSubCatRated", Gson().toJson(preferencesCategoryRated)).apply()
+                        prefs.edit().putString(list_subcategory_rated, Gson().toJson(preferencesCategoryRated)).apply()
                         if(it.isSuccessful) {
                             view?.findNavController()?.navigate(PreferenceCategoryDirections.actionPreferenceCategoryToPreferenceSubCategory(preferenceCategoryArgs.isInLogin))
                         }
                     })
                 } else Toast.makeText(
                     requireContext(),
-                    "Choose at least one category",
+                    getString(R.string.choose_at_least_one_category),
                     Toast.LENGTH_SHORT
                 ).show()
             }

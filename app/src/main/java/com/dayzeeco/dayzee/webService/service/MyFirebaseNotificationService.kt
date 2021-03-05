@@ -12,6 +12,7 @@ import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.R
+import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.model.Notification
 import com.dayzeeco.dayzee.view.MainActivity
 import java.lang.reflect.Type
@@ -19,14 +20,14 @@ import java.lang.reflect.Type
 class MyFirebaseNotificationService : FirebaseMessagingService() {
 
     private lateinit var prefs : SharedPreferences
-    private val CHANNEL_ID: String = "dayzee_channel"
     private var notifications: MutableList<Notification> = mutableListOf()
 
     override fun onCreate() {
         super.onCreate()
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
         val typeNotification: Type = object : TypeToken<MutableList<Notification?>>() {}.type
-        notifications = Gson().fromJson<MutableList<Notification>>(prefs.getString("notifications", null), typeNotification) ?: mutableListOf()
+        notifications = Gson().fromJson<MutableList<Notification>>(prefs.getString(
+            notifications_saved, null), typeNotification) ?: mutableListOf()
     }
 
     override fun onNewToken(token: String)  = sendRegistrationToserver(token)
@@ -41,24 +42,24 @@ class MyFirebaseNotificationService : FirebaseMessagingService() {
         super.onMessageReceived(message)
 
         /*test data */
-        val id: String? = if(message.data["type"]?.toInt() == 2 || message.data["type"]?.toInt() == 3 || message.data["type"]?.toInt() == 4){
-            message.data["userID"]
+        val id: String? = if(message.data[type]?.toInt() == 2 || message.data[type]?.toInt() == 3 || message.data[type]?.toInt() == 4){
+            message.data[user_id]
         } else {
-            message.data["timenoteID"]
+            message.data[timenote_id]
         }
-        val body = message.data["body"] ?: ""
-        val type = message.data["type"] ?: ""
-        val pictureUrl = message.data["userPictureURL"] ?: ""
-        val title = message.data["title"] ?: ""
+        val body = message.data[body] ?: ""
+        val type = message.data[type] ?: ""
+        val pictureUrl = message.data[user_picture_url] ?: ""
+        val title = message.data[title] ?: ""
 
         val bundle = Bundle()
-        bundle.putString("id", id)
-        bundle.putString("type", type)
+        bundle.putString(com.dayzeeco.dayzee.common.id, id)
+        bundle.putString(com.dayzeeco.dayzee.common.type, type)
         bundle.putString("google.sent_time", message.sentTime.toString())
         bundle.putString("google.message_id", message.messageId)
-        bundle.putString("title", title)
-        bundle.putString("body", body)
-        bundle.putString("userPictureURL", pictureUrl)
+        bundle.putString(com.dayzeeco.dayzee.common.type, title)
+        bundle.putString(com.dayzeeco.dayzee.common.body, body)
+        bundle.putString(user_picture_url, pictureUrl)
 
 
         val pi = NavDeepLinkBuilder(this)
@@ -68,10 +69,26 @@ class MyFirebaseNotificationService : FirebaseMessagingService() {
             .setArguments(bundle)
             .createPendingIntent()
 
-        notifications.add(Notification(false, message.messageId!!, message.sentTime, type, id!!, title, body, pictureUrl))
-        prefs.edit().putString("notifications", Gson().toJson(notifications) ?: Gson().toJson(mutableListOf<Notification>())).apply()
+        if(notifications.none { notification -> notification.id == id }) {
+            notifications.add(
+                Notification(
+                    false,
+                    message.messageId!!,
+                    message.sentTime,
+                    type,
+                    id!!,
+                    title,
+                    body,
+                    pictureUrl
+                )
+            )
+            prefs.edit().putString(
+                notifications_saved,
+                Gson().toJson(notifications) ?: Gson().toJson(mutableListOf<Notification>())
+            ).apply()
+        }
 
-        val builder = NotificationCompat.Builder(this, CHANNEL_ID)
+        val builder = NotificationCompat.Builder(this, channel_id)
             .setSmallIcon(R.drawable.ic_stat_notif)
             .setContentTitle(message.notification?.title)
             .setContentText(message.notification?.body)

@@ -5,7 +5,6 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.dayzeeco.dayzee.common.Utils
 import com.dayzeeco.dayzee.model.TimenoteInfoDTO
-import com.dayzeeco.dayzee.model.accessToken
 import com.dayzeeco.dayzee.webService.service.AuthService
 import com.dayzeeco.dayzee.webService.service.TimenoteService
 

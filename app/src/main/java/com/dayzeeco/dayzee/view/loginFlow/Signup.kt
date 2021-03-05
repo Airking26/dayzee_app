@@ -22,9 +22,8 @@ import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.google.gson.Gson
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.androidView.dialog.input
+import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.model.UserSignUpBody
-import com.dayzeeco.dayzee.model.accessToken
-import com.dayzeeco.dayzee.model.refreshToken
 import com.dayzeeco.dayzee.viewModel.LoginViewModel
 import kotlinx.android.synthetic.main.fragment_signup.*
 
@@ -61,7 +60,7 @@ class Signup: Fragment(), View.OnClickListener {
         handlerPasswordSignup = Handler{
             if(it.what == TRIGGER_AUTO_COMPLETE){
                 if(!TextUtils.isEmpty(signup_password.text)){
-                    if(signup_password.text.toString().startsWith("dayzee-", true)){
+                    if(signup_password.text.toString().startsWith(dayzee_prefix, true)){
                         signup_password.error = getString(R.string.cant_start_with_password)
                     } else passwordValidForm = true
                 }
@@ -72,9 +71,9 @@ class Signup: Fragment(), View.OnClickListener {
         handlerPasswordLogin = Handler{
             if(it.what == TRIGGER_AUTO_COMPLETE){
                 if(!TextUtils.isEmpty(signin_password.text)){
-                 if(signin_password.text.toString().startsWith("dayzee-", true)){
-                     prefs.edit().putBoolean("temporary_password", true).apply()
-                 } else prefs.edit().putBoolean("temporary_password", false).apply()
+                 if(signin_password.text.toString().startsWith(dayzee_prefix, true)){
+                     prefs.edit().putBoolean(temporary_password, true).apply()
+                 } else prefs.edit().putBoolean(temporary_password, false).apply()
                 }
             }
             false
@@ -193,8 +192,8 @@ class Signup: Fragment(), View.OnClickListener {
                 input{ _, mail ->
                     loginViewModel.forgotPassword(mail.toString().trim()).observe(viewLifecycleOwner, Observer {
                         if(it.isSuccessful && it.body()?.changed!!){
-                            Toast.makeText(requireContext(), "A mail has just been sent", Toast.LENGTH_SHORT).show()
-                        } else Toast.makeText(requireContext(), "An error has occured. Please try again", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), getString(R.string.email_has_been_sent), Toast.LENGTH_SHORT).show()
+                        } else Toast.makeText(requireContext(), getString(R.string.error_try_again), Toast.LENGTH_SHORT).show()
                     })
                 }
                 lifecycleOwner(this@Signup)
@@ -233,12 +232,12 @@ class Signup: Fragment(), View.OnClickListener {
                                 loginViewModel.markAsAuthenticated()
                                 prefs.edit().putString(accessToken, it.body()?.token).apply()
                                 prefs.edit().putString(refreshToken, it.body()?.refreshToken).apply()
-                                prefs.edit().putString("UserInfoDTO", Gson().toJson(it.body()?.user)).apply()
-                                prefs.edit().putInt("followers", it.body()?.user?.followers!!).apply()
-                                prefs.edit().putInt("following", it.body()?.user?.following!!).apply()
+                                prefs.edit().putString(user_info_dto, Gson().toJson(it.body()?.user)).apply()
+                                prefs.edit().putInt(followers, it.body()?.user?.followers!!).apply()
+                                prefs.edit().putInt(following, it.body()?.user?.following!!).apply()
                             }
                             else -> {
-                                Toast.makeText(requireContext(), "Invalid Authentication", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(requireContext(), getString(R.string.invalid_authentication), Toast.LENGTH_SHORT).show()
                             }
                         }
                     })
@@ -288,15 +287,15 @@ class Signup: Fragment(), View.OnClickListener {
                                     findNavController().navigate(SignupDirections.actionSignupToPreferenceCategory(true))
                                     prefs.edit().putString(accessToken, it.body()?.token).apply()
                                     prefs.edit().putString(refreshToken, it.body()?.refreshToken).apply()
-                                    prefs.edit().putString("UserInfoDTO", Gson().toJson(it.body()?.user)).apply()
-                                    prefs.edit().putInt("followers", it.body()?.user?.followers!!).apply()
-                                    prefs.edit().putInt("following", it.body()?.user?.following!!).apply()
+                                    prefs.edit().putString(user_info_dto, Gson().toJson(it.body()?.user)).apply()
+                                    prefs.edit().putInt(followers, it.body()?.user?.followers!!).apply()
+                                    prefs.edit().putInt(following, it.body()?.user?.following!!).apply()
                                 }
                                 409 -> {
-                                    Toast.makeText(requireContext(), "Invalid Authentication", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(requireContext(), getString(R.string.invalid_authentication), Toast.LENGTH_SHORT).show()
                                 }
                                 400 -> {
-                                    Toast.makeText(requireContext(), "Invalid Authentication", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(requireContext(), getString(R.string.invalid_authentication), Toast.LENGTH_SHORT).show()
                                 }
                             }
                         })

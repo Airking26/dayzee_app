@@ -50,9 +50,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.*
-import com.dayzeeco.dayzee.common.BaseThroughFragment
-import com.dayzeeco.dayzee.common.Utils
-import com.dayzeeco.dayzee.common.stringLiveData
+import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.listeners.*
 import com.dayzeeco.dayzee.model.*
 import com.dayzeeco.dayzee.viewModel.*
@@ -131,7 +129,6 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         makeBarVisibleListener.onBarAskedToShow()
         activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
-        //return getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_near_by)
         return inflater.inflate(R.layout.fragment_near_by, container, false)
     }
 
@@ -167,7 +164,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         nearby_filter_btn.setOnClickListener(this)
 
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
-        userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", null), typeUserInfo)
+        userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString(user_info_dto, null), typeUserInfo)
 
         if(userInfoDTO != null) nearbyFilterData.setID(userInfoDTO?.id!!)
 
@@ -202,7 +199,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
             }
         }
 
-        prefs.stringLiveData("nearby", Gson().toJson(nearbyFilterData.loadNearbyFilter())).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+        prefs.stringLiveData(nearby, Gson().toJson(nearbyFilterData.loadNearbyFilter())).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             val typeNearby: Type = object : TypeToken<NearbyRequestBody?>() {}.type
             val nearbyModifyModel : NearbyRequestBody? = Gson().fromJson<NearbyRequestBody>(it, typeNearby)
             nearby_place.text = nearbyModifyModel?.location?.address?.address
@@ -443,7 +440,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
                     timenoteViewModel.signalTimenote(tokenId!!, TimenoteCreationSignalementDTO(userInfoDTO?.id!!, timenoteInfoDTO.id, "")).observe(viewLifecycleOwner, androidx.lifecycle.Observer { rsp ->
                         if(rsp.isSuccessful) Toast.makeText(
                             requireContext(),
-                            "Reported",
+                            getString(R.string.reported),
                             Toast.LENGTH_SHORT
                         ).show()
                     })
@@ -452,7 +449,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
 
             if(it.isSuccessful) Toast.makeText(
                 requireContext(),
-                "Reported",
+                getString(R.string.reported),
                 Toast.LENGTH_SHORT
             ).show()
         })
@@ -480,12 +477,12 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
             .setContentDescription(timenoteInfoDTO.description)
             .setContentImageUrl(timenoteInfoDTO.pictures[0])
             .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
-            .setContentMetadata(ContentMetadata().addCustomMetadata("timenoteInfoDTO", Gson().toJson(timenoteInfoDTO)))
+            .setContentMetadata(ContentMetadata().addCustomMetadata(timenote_info_dto, Gson().toJson(timenoteInfoDTO)))
         else BranchUniversalObject()
             .setTitle(timenoteInfoDTO.title)
             .setContentDescription(timenoteInfoDTO.description)
             .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
-            .setContentMetadata(ContentMetadata().addCustomMetadata("timenoteInfoDTO", Gson().toJson(timenoteInfoDTO)))
+            .setContentMetadata(ContentMetadata().addCustomMetadata(timenote_info_dto, Gson().toJson(timenoteInfoDTO)))
 
         branchUniversalObject.generateShortUrl(requireContext(), linkProperties) { url, error ->
             BranchEvent("branch_url_created").logEvent(requireContext())
@@ -600,13 +597,14 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     override fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         if(userInfoDTO == null) loginViewModel.markAsUnauthenticated()
         else {
-            val map: MutableMap<Long, String> = Gson().fromJson(prefs.getString("mapEventIdToTimenote", null), object : TypeToken<MutableMap<String, String>>() {}.type) ?: mutableMapOf()
+            val map: MutableMap<Long, String> = Gson().fromJson(prefs.getString(
+                map_event_id_to_timenote, null), object : TypeToken<MutableMap<String, String>>() {}.type) ?: mutableMapOf()
             timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                 if(it.isSuccessful) {
                     timenotePagingAdapter?.refresh()
                     if(map.isNotEmpty() && map.filterValues { id -> id == timenoteInfoDTO.id }.keys.isNotEmpty()) {
                         map.remove(map.filterValues { id -> id == timenoteInfoDTO.id }.keys.first())
-                        prefs.edit().putString("mapEventIdToTimenote", Gson().toJson(map)).apply()
+                        prefs.edit().putString(map_event_id_to_timenote, Gson().toJson(map)).apply()
                     }
                 }
                 else if(it.code() == 401) {
@@ -616,7 +614,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
                             if(tid.isSuccessful) timenotePagingAdapter?.refresh()
                             if(map.isNotEmpty() && map.filterValues { id -> id == timenoteInfoDTO.id }.keys.isNotEmpty()) {
                                 map.remove(map.filterValues { id -> id == timenoteInfoDTO.id }.keys.first())
-                                prefs.edit().putString("mapEventIdToTimenote", Gson().toJson(map)).apply()
+                                prefs.edit().putString(map_event_id_to_timenote, Gson().toJson(map)).apply()
                             }
                         })
                     })

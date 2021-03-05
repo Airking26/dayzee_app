@@ -25,8 +25,7 @@ import com.bumptech.glide.request.transition.Transition
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.R
-import com.dayzeeco.dayzee.common.Utils
-import com.dayzeeco.dayzee.common.setupWithNavController
+import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.listeners.*
 import com.dayzeeco.dayzee.model.Notification
 import com.dayzeeco.dayzee.model.TimenoteInfoDTO
@@ -41,7 +40,6 @@ import java.lang.reflect.Type
 class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby, ShowBarListener, ExitCreationTimenote, RefreshPicBottomNavListener, GoToProfile {
 
     private lateinit var control: NavController
-    private val CHANNEL_ID: String = "dayzee_channel"
     private var currentNavController: LiveData<NavController>? = null
     private val utils = Utils()
     private var notifications: MutableList<Notification> = mutableListOf()
@@ -60,10 +58,10 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
         Branch.sessionBuilder(this).withCallback { referringParams, error ->
             if (error == null) {
                 if (referringParams?.getBoolean("+clicked_branch_link")!!) {
-                    if(referringParams.has("timenoteInfoDTO")) {
+                    if(referringParams.has(timenote_info_dto)) {
                         val typeTimenoteInfo: Type = object : TypeToken<TimenoteInfoDTO?>() {}.type
                         val timenoteInfoDTO = Gson().fromJson<TimenoteInfoDTO>(
-                            referringParams.getString("timenoteInfoDTO"),
+                            referringParams.getString(timenote_info_dto),
                             typeTimenoteInfo
                         )
                         control.navigate(
@@ -74,7 +72,8 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                         )
                     } else {
                         val typeUserInfoDTO: Type = object : TypeToken<UserInfoDTO?>() {}.type
-                        val userInfoDTO = Gson().fromJson<UserInfoDTO>(referringParams.getString("userInfoDTO"), typeUserInfoDTO)
+                        val userInfoDTO = Gson().fromJson<UserInfoDTO>(referringParams.getString(
+                            user_info_dto), typeUserInfoDTO)
                         goToProfile()
                         control.navigate(HomeDirections.actionGlobalProfileElse(1).setUserInfoDTO(userInfoDTO))
                     }
@@ -90,14 +89,15 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
             if (error == null) {
                 Log.i("BRANCH SDK START", referringParams.toString())
                 if (referringParams?.getBoolean("+clicked_branch_link")!!) {
-                    if(referringParams.has("timenoteInfoDTO")) {
+                    if(referringParams.has(timenote_info_dto)) {
                         val typeTimenoteInfo: Type = object : TypeToken<TimenoteInfoDTO?>() {}.type
-                        val timenoteInfoDTO = Gson().fromJson<TimenoteInfoDTO>(referringParams.getString("timenoteInfoDTO"), typeTimenoteInfo)
+                        val timenoteInfoDTO = Gson().fromJson<TimenoteInfoDTO>(referringParams.getString(
+                            timenote_info_dto), typeTimenoteInfo)
                         control.navigate(HomeDirections.actionGlobalDetailedTimenote(1, timenoteInfoDTO))
                     } else {
                         val typeUserInfoDTO: Type = object : TypeToken<UserInfoDTO?>() {}.type
                         val userInfoDTO = Gson().fromJson<UserInfoDTO>(
-                            referringParams.getString("userInfoDTO"),
+                            referringParams.getString(user_info_dto),
                             typeUserInfoDTO
                         )
                         control.navigate(HomeDirections.actionGlobalProfileElse(1).setUserInfoDTO(userInfoDTO))
@@ -118,21 +118,24 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
 
     override fun onResume() {
         super.onResume()
-        if(!intent.getStringExtra("type").isNullOrBlank()){
+        if(!intent.getStringExtra(type).isNullOrBlank()){
             val typeNotification: Type = object : TypeToken<MutableList<Notification?>>() {}.type
-            notifications = Gson().fromJson<MutableList<Notification>>(prefs.getString("notifications", null), typeNotification) ?: mutableListOf()
+            notifications = Gson().fromJson<MutableList<Notification>>(prefs.getString(
+                notifications_saved, null), typeNotification) ?: mutableListOf()
             val keys = intent.extras?.keySet()
             notifications.add(Notification(
                 false,
                 intent.getStringExtra("google.message_id")!!,
                 intent.getLongExtra("google.sent_time", 0),
-                intent.getStringExtra("type")!!,
-                if(intent.getStringExtra("type")?.toInt() == 2 || intent.getStringExtra("type")?.toInt() == 3 || intent.getStringExtra("type")?.toInt() == 4) intent.getStringExtra("userID") else intent.getStringExtra("timenoteID")!!,
-                intent.getStringExtra("title")!!,
-                intent.getStringExtra("body")!!,
-                intent.getStringExtra("userPictureURL") ?: ""))
+                intent.getStringExtra(type)!!,
+                if(intent.getStringExtra(type)?.toInt() == 2 || intent.getStringExtra(type)?.toInt() == 3 || intent.getStringExtra(
+                        type)?.toInt() == 4) intent.getStringExtra(user_id) else intent.getStringExtra(
+                    timenote_id)!!,
+                intent.getStringExtra(com.dayzeeco.dayzee.common.title)!!,
+                intent.getStringExtra(body)!!,
+                intent.getStringExtra(user_picture_url) ?: ""))
 
-            prefs.edit().putString("notifications", Gson().toJson(notifications) ?: Gson().toJson(mutableListOf<Notification>())).apply()
+            prefs.edit().putString(notifications_saved, Gson().toJson(notifications) ?: Gson().toJson(mutableListOf<Notification>())).apply()
             goToProfile()
             ViewModelProviders.of(this, object : ViewModelProvider.Factory {
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -148,7 +151,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
 
         createNotificationChannel()
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
-        val userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
+        val userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString(user_info_dto, ""), typeUserInfo)
 
         val view = this.currentFocus
         view?.let { v ->
@@ -259,7 +262,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
             val name = getString(R.string.channel_name)
             val descriptionText = getString(R.string.channel_description)
             val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+            val channel = NotificationChannel(channel_id, name, importance).apply {
                 description = descriptionText
             }
             val notificationManager: NotificationManager =

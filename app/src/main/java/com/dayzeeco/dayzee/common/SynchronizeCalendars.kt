@@ -18,8 +18,6 @@ import java.util.*
 
 class SynchronizeCalendars(val synchronizeWithGoogleCalendarListener: SynchronizeWithGoogleCalendarListener){
 
-    private val IS_EMAIL_LINKED = "is_email_linked"
-    private val GMAIL = "gmail"
     var mEventsList = ArrayList<CalendarEvent>()
     private val EVENT_PROJECTION = arrayOf(
         CalendarContract.Calendars._ID,
@@ -28,13 +26,14 @@ class SynchronizeCalendars(val synchronizeWithGoogleCalendarListener: Synchroniz
         CalendarContract.Calendars.OWNER_ACCOUNT
     )
 
+    @SuppressLint("MissingPermission")
     fun readCalendar(context: Context, days: Int, hours: Int) {
         val sharedPref =
             PreferenceManager.getDefaultSharedPreferences(context)
-        if (sharedPref.getBoolean(IS_EMAIL_LINKED, false)) {
+        if (sharedPref.getBoolean(email_linked, false)) {
             val selection = "((" + CalendarContract.Calendars.ACCOUNT_NAME + " = ?))"
             val selectionArgs =
-                arrayOf(sharedPref.getString(GMAIL, null))
+                arrayOf(sharedPref.getString(gmail, null))
             val contentResolver = context.contentResolver
             val uri = CalendarContract.Calendars.CONTENT_URI
             val cursor =
@@ -103,7 +102,7 @@ class SynchronizeCalendars(val synchronizeWithGoogleCalendarListener: Synchroniz
             do {
                 val id = calCursor.getLong(0)
                 val displayName = calCursor.getString(1)
-                val email = PreferenceManager.getDefaultSharedPreferences(context).getString(GMAIL, null)
+                val email = PreferenceManager.getDefaultSharedPreferences(context).getString(gmail, null)
                 if (displayName.contains(email.toString())) {
                     return id
                 }
@@ -118,12 +117,12 @@ class SynchronizeCalendars(val synchronizeWithGoogleCalendarListener: Synchroniz
             PreferenceManager.getDefaultSharedPreferences(context)
         val accountManager = AccountManager.get(context)
         val accounts = accountManager.getAccountsByType(null)
-        if (accounts.size != 0 && !sharedPref.getBoolean(IS_EMAIL_LINKED, false)) {
-            determineCalendar(context, sharedPref.getString(GMAIL, null))
+        if (accounts.size != 0 && !sharedPref.getBoolean(email_linked, false)) {
+            determineCalendar(context, sharedPref.getString(gmail, null))
         }
         val authority = CalendarContract.Calendars.CONTENT_URI.authority
         for (account in accounts) {
-            if (account.name == sharedPref.getString(GMAIL, null)) {
+            if (account.name == sharedPref.getString(gmail, null)) {
                 val extras = Bundle()
                 extras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true)
                 extras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true)
@@ -178,13 +177,13 @@ class SynchronizeCalendars(val synchronizeWithGoogleCalendarListener: Synchroniz
         val cursor =
             contentResolver.query(uri, EVENT_PROJECTION, selection, selectionArgs, null)
         if (cursor != null) {
-            editor.putString(GMAIL, accountName)
-            editor.putBoolean(IS_EMAIL_LINKED, true)
+            editor.putString(gmail, accountName)
+            editor.putBoolean(email_linked, true)
             editor.apply()
             cursor.close()
             return
         }
-        editor.putBoolean(IS_EMAIL_LINKED, false)
+        editor.putBoolean(email_linked, false)
         editor.apply()
     }
 

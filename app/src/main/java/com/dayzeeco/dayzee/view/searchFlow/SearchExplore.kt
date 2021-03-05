@@ -15,8 +15,8 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.SearchExploreCategoryAdapter
+import com.dayzeeco.dayzee.common.accessToken
 import com.dayzeeco.dayzee.model.Category
-import com.dayzeeco.dayzee.model.accessToken
 import com.dayzeeco.dayzee.viewModel.LoginViewModel
 import com.dayzeeco.dayzee.viewModel.PreferencesViewModel
 import kotlinx.android.synthetic.main.fragment_search_explore.*

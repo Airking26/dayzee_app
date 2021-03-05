@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
 import androidx.preference.PreferenceManager
+import com.dayzeeco.dayzee.common.alarms
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.model.AlarmCreationDTO
@@ -17,7 +18,8 @@ class AlarmData(context: Context) {
     private val type: Type = object : TypeToken<MutableList<AlarmInfoDTO?>>() {}.type
     private val listEmpty : MutableList<AlarmInfoDTO> = mutableListOf()
 
-    private var listOfAlarms: MutableList<AlarmInfoDTO> = Gson().fromJson<MutableList<AlarmInfoDTO>>(prefs.getString("alarms", Gson().toJson(listEmpty)), type)
+    private var listOfAlarms: MutableList<AlarmInfoDTO> = Gson().fromJson<MutableList<AlarmInfoDTO>>(prefs.getString(
+        alarms, Gson().toJson(listEmpty)), type)
 
     fun getAlarms(): MutableList<AlarmInfoDTO>{
         return listOfAlarms

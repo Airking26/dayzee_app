@@ -33,7 +33,7 @@ import com.google.gson.reflect.TypeToken
 import com.robertlevonyan.views.chip.Chip
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.*
-import com.dayzeeco.dayzee.common.onItemClick
+import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.listeners.ItemProfileCardListener
 import com.dayzeeco.dayzee.listeners.OnRemoveFilterBarListener
 import com.dayzeeco.dayzee.listeners.TimenoteOptionsListener
@@ -50,11 +50,6 @@ import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
 
-private const val ARG_PARAM1 = "showHideFilterBar"
-private const val ARG_PARAM2 = "from"
-private const val ARG_PARAM3 = "id"
-private const val ARG_PARAM4 = "is_future"
-private const val ARG_PARAM5 = "is_on_my_profile"
 
 class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarListener,
     ItemProfileCardListener, UsersPagingAdapter.SearchPeopleListener,
@@ -88,11 +83,11 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         tokenId = prefs.getString(accessToken, null)
         arguments?.let {
-            showHideFilterBar = it.getBoolean(ARG_PARAM1)
-            from = it.getInt(ARG_PARAM2)
-            id = it.getString(ARG_PARAM3)!!
-            isFuture = it.getBoolean(ARG_PARAM4)
-            isOnMyProfile = it.getBoolean(ARG_PARAM5)
+            showHideFilterBar = it.getBoolean(show_hide_filterbar)
+            from = it.getInt(com.dayzeeco.dayzee.common.from)
+            id = it.getString(com.dayzeeco.dayzee.common.id)!!
+            isFuture = it.getBoolean(is_future)
+            isOnMyProfile = it.getBoolean(is_on_my_profile)
         }
     }
 
@@ -107,11 +102,12 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
-        userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
+        userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString(user_info_dto, ""), typeUserInfo)
 
         listOfAlarms = AlarmData(requireContext())
 
-        val profileFilterChipAdapter = ProfileFilterChipAdapter(listOf("My Timenotes", "The Joined", "With Alarm", "Group Related"), this)
+        val profileFilterChipAdapter = ProfileFilterChipAdapter(listOf(getString(R.string.my_posts), getString(
+                    R.string.the_joined), getString(R.string.with_alarm), getString(R.string.group_related)), this)
         profile_filter_rv_chips_in_rv.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
             adapter = profileFilterChipAdapter
@@ -172,7 +168,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
                     timenoteViewModel.signalTimenote(tokenId!!, TimenoteCreationSignalementDTO(userInfoDTO?.id!!, timenoteInfoDTO.id, "")).observe(viewLifecycleOwner, Observer { rsp ->
                         if(rsp.isSuccessful) Toast.makeText(
                             requireContext(),
-                            "Reported",
+                            getString(R.string.reported),
                             Toast.LENGTH_SHORT
                         ).show()
                     })
@@ -181,7 +177,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
 
             if(it.isSuccessful) Toast.makeText(
                 requireContext(),
-                "Reported",
+                getString(R.string.reported),
                 Toast.LENGTH_SHORT
             ).show()
         })
@@ -203,7 +199,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
                         if(type == 2) alarmViewModel.deleteAlarm(tokenId!!, listOfAlarms.getAlarms().find { alr -> alr.timenote == timenoteInfoDTO.id }?.id!!).observe(viewLifecycleOwner, Observer {rsp ->
                             if(rsp.isSuccessful){
                                 listOfAlarms.deleteAlarm(listOfAlarms.getAlarms().find { alr -> alr.timenote == timenoteInfoDTO.id }?.id!!)
-                                Toast.makeText(requireContext(), "Alarm Deleted", Toast.LENGTH_SHORT).show()}
+                                Toast.makeText(requireContext(), getString(R.string.alarm_deleted), Toast.LENGTH_SHORT).show()}
                         })
 
                     })
@@ -211,7 +207,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
 
                 if(it.isSuccessful){
                     listOfAlarms.deleteAlarm(listOfAlarms.getAlarms().find { alr -> alr.timenote == timenoteInfoDTO.id }?.id!!)
-                    Toast.makeText(requireContext(), "Alarm Deleted", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), getString(R.string.alarm_deleted), Toast.LENGTH_SHORT).show()
                 }
             })
             0 -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
@@ -228,7 +224,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
 
                                         Toast.makeText(
                                             requireContext(),
-                                            "Alarm Created",
+                                            getString(R.string.alarm_created),
                                             Toast.LENGTH_SHORT
                                         )
                                             .show()
@@ -241,7 +237,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
 
                             Toast.makeText(
                                 requireContext(),
-                                "Alarm Created",
+                                getString(R.string.alarm_created),
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
@@ -261,13 +257,13 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
                                     alarmViewModel.updateAlarm(tokenId!!,timenoteInfoDTO.id, AlarmCreationDTO(timenoteInfoDTO.createdBy.id!!, timenoteInfoDTO.id, SimpleDateFormat(ISO).format(datetime.time.time))).observe(viewLifecycleOwner, Observer {rsp ->
                                         if(rsp.isSuccessful){
                                             listOfAlarms.updateAlarm(timenoteInfoDTO.id, rsp.body()!!)
-                                            Toast.makeText(requireContext(), "Alarm Updated", Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(requireContext(), getString(R.string.alarm_updated), Toast.LENGTH_SHORT).show()
                                         }
                                     })
                                 })
                             } else if(it.isSuccessful) {
                                 listOfAlarms.updateAlarm(timenoteInfoDTO.id, it.body()!!)
-                                Toast.makeText(requireContext(), "Alarm Updated", Toast.LENGTH_SHORT).show()}
+                                Toast.makeText(requireContext(), getString(R.string.alarm_updated), Toast.LENGTH_SHORT).show()}
                         })
                     }
                     lifecycleOwner(this@ProfileEvents)
@@ -277,13 +273,13 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
     }
 
     override fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        val map: MutableMap<Long, String> = Gson().fromJson(prefs.getString("mapEventIdToTimenote", null), object : TypeToken<MutableMap<String, String>>() {}.type) ?: mutableMapOf()
+        val map: MutableMap<Long, String> = Gson().fromJson(prefs.getString(map_event_id_to_timenote, null), object : TypeToken<MutableMap<String, String>>() {}.type) ?: mutableMapOf()
         timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {
             if(it.isSuccessful) {
                 profileEventPagingAdapter?.refresh()
                 if(map.isNotEmpty() && map.filterValues { id -> id == timenoteInfoDTO.id }.keys.isNotEmpty()) {
                     map.remove(map.filterValues { id -> id == timenoteInfoDTO.id }.keys.first())
-                    prefs.edit().putString("mapEventIdToTimenote", Gson().toJson(map)).apply()
+                    prefs.edit().putString(map_event_id_to_timenote, Gson().toJson(map)).apply()
                 }
             }
             else if(it.code() == 401) {
@@ -293,7 +289,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
                         if(tid.isSuccessful) profileEventPagingAdapter?.refresh()
                         if(map.isNotEmpty() && map.filterValues { id -> id == timenoteInfoDTO.id }.keys.isNotEmpty()) {
                             map.remove(map.filterValues { id -> id == timenoteInfoDTO.id }.keys.first())
-                            prefs.edit().putString("mapEventIdToTimenote", Gson().toJson(map)).apply()
+                            prefs.edit().putString(map_event_id_to_timenote, Gson().toJson(map)).apply()
                         }
                     })
                 })
@@ -313,10 +309,10 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
                 authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer { newAccessToken ->
                     tokenId = newAccessToken
                     timenoteViewModel.hideToOthers(tokenId!!, timenoteInfoDTO.id)
-                    Toast.makeText(requireContext(), "Hided", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), getString(R.string.hided), Toast.LENGTH_SHORT).show()
                 })
             }
-            if(it.isSuccessful) Toast.makeText(requireContext(), "Hided", Toast.LENGTH_SHORT).show()
+            if(it.isSuccessful) Toast.makeText(requireContext(), getString(R.string.hided), Toast.LENGTH_SHORT).show()
         })
     }
 
@@ -546,11 +542,11 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
         ) =
             ProfileEvents().apply {
                 arguments = Bundle().apply {
-                    putBoolean(ARG_PARAM1, showHideFilterBar)
-                    putInt(ARG_PARAM2, from)
-                    putString(ARG_PARAM3, id)
-                    putBoolean(ARG_PARAM4, isFuture)
-                    putBoolean(ARG_PARAM5, onMyProfile)
+                    putBoolean(show_hide_filterbar, showHideFilterBar)
+                    putInt(com.dayzeeco.dayzee.common.from, from)
+                    putString(com.dayzeeco.dayzee.common.id, id)
+                    putBoolean(is_future, isFuture)
+                    putBoolean(is_on_my_profile, onMyProfile)
                     setListener(context as OnRemoveFilterBarListener)
                 }
             }

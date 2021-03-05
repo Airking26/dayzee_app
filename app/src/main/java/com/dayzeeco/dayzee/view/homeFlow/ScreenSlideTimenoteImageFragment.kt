@@ -10,14 +10,10 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.dayzeeco.dayzee.R
+import com.dayzeeco.dayzee.common.hide_icons
+import com.dayzeeco.dayzee.common.is_null_or_empty
 import com.dayzeeco.dayzee.listeners.DoubleClickListener
 import kotlinx.android.synthetic.main.timenote_view_image.*
-
-private const val ARG_PARAM1 = "position"
-private const val ARG_PARAM2 = "url"
-private const val ARG_PARAM3 = "hideIcons"
-private const val ARG_PARAM4 = "isNullOrEmpty"
-
 
 class ScreenSlideTimenoteImageFragment : Fragment() {
     private lateinit var itemClickListener: (Int, Int) -> Unit
@@ -30,10 +26,10 @@ class ScreenSlideTimenoteImageFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            position = it.getInt(ARG_PARAM1)
-            url = it.getString(ARG_PARAM2)
-            hideIcons = it.getBoolean(ARG_PARAM3)
-            isNullOrEmpty = it.getBoolean(ARG_PARAM4)
+            position = it.getInt(com.dayzeeco.dayzee.common.position)
+            url = it.getString(com.dayzeeco.dayzee.common.url)
+            hideIcons = it.getBoolean(hide_icons)
+            isNullOrEmpty = it.getBoolean(is_null_or_empty)
         }
     }
 
@@ -93,10 +89,10 @@ class ScreenSlideTimenoteImageFragment : Fragment() {
         ) =
             ScreenSlideTimenoteImageFragment().apply {
                     arguments = Bundle().apply {
-                        putInt(ARG_PARAM1, position)
-                        putString(ARG_PARAM2, url)
-                        putBoolean(ARG_PARAM3, hideIcons)
-                        putBoolean(ARG_PARAM4, isNullOrEmpty)
+                        putInt(com.dayzeeco.dayzee.common.position, position)
+                        putString(com.dayzeeco.dayzee.common.url, url)
+                        putBoolean(hide_icons, hideIcons)
+                        putBoolean(is_null_or_empty, isNullOrEmpty)
                         setImageClickListener(itemClickListener)
                     }
                 }

@@ -22,9 +22,9 @@ import com.dayzeeco.dayzee.androidView.calendar.data.CalendarAdapter
 import com.dayzeeco.dayzee.androidView.calendar.data.Day
 import com.dayzeeco.dayzee.androidView.calendar.widget.CollapsibleCalendar
 import com.dayzeeco.dayzee.common.Utils
+import com.dayzeeco.dayzee.common.accessToken
 import com.dayzeeco.dayzee.model.TimenoteDateFilteredDTO
 import com.dayzeeco.dayzee.model.TimenoteInfoDTO
-import com.dayzeeco.dayzee.model.accessToken
 import com.dayzeeco.dayzee.viewModel.LoginViewModel
 import com.dayzeeco.dayzee.viewModel.ProfileViewModel
 import kotlinx.android.synthetic.main.fragment_profile_calendar.*

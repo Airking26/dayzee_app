@@ -23,9 +23,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.ProfileEventPagerAdapter
-import com.dayzeeco.dayzee.common.BaseThroughFragment
-import com.dayzeeco.dayzee.common.intLiveData
-import com.dayzeeco.dayzee.common.stringLiveData
+import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.listeners.GoToProfile
 import com.dayzeeco.dayzee.listeners.OnRemoveFilterBarListener
 import com.dayzeeco.dayzee.listeners.RefreshPicBottomNavListener
@@ -68,7 +66,7 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         tokenId = prefs.getString(accessToken, null)
-        locaPref = prefs.getInt("locaPref", -1)
+        locaPref = prefs.getInt(location_pref, -1)
         switchToNotifViewModel.getSwitchNotifLiveData().observe(requireActivity(),
             { if(it) findNavController().navigate(MyProfileDirections.actionMyProfileToNotifications()) })
 
@@ -80,7 +78,7 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
                     tokenId = prefs.getString(accessToken, null)
                     if(arguments == null || arguments?.isEmpty!!) findNavController().popBackStack(R.id.myProfile, false)
                     else arguments.let { bundle ->
-                        if(!bundle?.getString("type").isNullOrBlank())
+                        if(!bundle?.getString(type).isNullOrBlank())
                             findNavController().navigate(MyProfileDirections.actionMyProfileToNotifications())
                         else
                             findNavController().popBackStack(R.id.myProfile, false)
@@ -102,7 +100,7 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
             LoginViewModel.AuthenticationState.GUEST -> loginViewModel.markAsUnauthenticated()
         }
 
-        prefs.stringLiveData("notifications", Gson().toJson(prefs.getString("notifications", null))).observe(viewLifecycleOwner, {
+        prefs.stringLiveData(notifications_saved, Gson().toJson(prefs.getString(notifications_saved, null))).observe(viewLifecycleOwner, {
                 val typeNotification: Type = object : TypeToken<MutableList<Notification?>>() {}.type
                 notifications = Gson().fromJson<MutableList<Notification>>(it, typeNotification) ?: mutableListOf()
                 if(notifications.any { n -> !n.read }){
@@ -183,7 +181,7 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
             }
 
             val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
-            userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
+            userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString(user_info_dto, ""), typeUserInfo)
 
             val simpleDateFormatDayName = SimpleDateFormat("EEE.", Locale.getDefault())
             val simpleDateFormatDayNumber = SimpleDateFormat("dd", Locale.getDefault())
@@ -209,10 +207,10 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
             }
 
 
-                prefs.intLiveData("followers", userInfoDTO?.followers!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                prefs.intLiveData(followers, userInfoDTO?.followers!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                     profile_nbr_followers.text = it.toString()
                 })
-                prefs.intLiveData("following", userInfoDTO?.following!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                prefs.intLiveData(following, userInfoDTO?.following!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                     profile_nbr_following.text = it.toString()
                 })
 
@@ -222,8 +220,8 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
                             tokenId = newAccessToken
                             meViewModel.getMyProfile(tokenId!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer { response ->
                                 if(response.isSuccessful) {
-                                    prefs.edit().putInt("followers", response.body()?.followers!!).apply()
-                                    prefs.edit().putInt("following", response.body()?.following!!).apply()
+                                    prefs.edit().putInt(followers, response.body()?.followers!!).apply()
+                                    prefs.edit().putInt(following, response.body()?.following!!).apply()
 
                                     profile_nbr_followers.text = response.body()?.followers?.toString()
                                     profile_nbr_following.text = response.body()?.following?.toString()
@@ -234,8 +232,8 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
                         })
                     }
                     if(it.isSuccessful) {
-                        prefs.edit().putInt("followers", it.body()?.followers!!).apply()
-                        prefs.edit().putInt("following", it.body()?.following!!).apply()
+                        prefs.edit().putInt(followers, it.body()?.followers!!).apply()
+                        prefs.edit().putInt(following, it.body()?.following!!).apply()
 
                         profile_nbr_followers.text = it.body()?.followers?.toString()
                         profile_nbr_following.text = it.body()?.following?.toString()
@@ -247,7 +245,7 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
                 profile_modify_btn.visibility = View.VISIBLE
                 profileModifyData = ProfileModifyData(requireContext())
 
-                prefs.intLiveData("locaPref", -1)
+                prefs.intLiveData(location_pref, -1)
                     .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                         if (userInfoDTO?.location == null || it == -1 || it == 0) profile_location.visibility =
                             View.GONE
@@ -310,12 +308,12 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
             .setContentDescription(userInfoDTO?.givenName)
             .setContentImageUrl(userInfoDTO?.picture!!)
             .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
-            .setContentMetadata(ContentMetadata().addCustomMetadata("userInfoDTO", Gson().toJson(userInfoDTO)))
+            .setContentMetadata(ContentMetadata().addCustomMetadata(user_info_dto, Gson().toJson(userInfoDTO)))
         else BranchUniversalObject()
             .setTitle(userInfoDTO?.userName!!)
             .setContentDescription(userInfoDTO?.givenName)
             .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
-            .setContentMetadata(ContentMetadata().addCustomMetadata("userInfoDTO", Gson().toJson(userInfoDTO)))
+            .setContentMetadata(ContentMetadata().addCustomMetadata(user_info_dto, Gson().toJson(userInfoDTO)))
 
         branchUniversalObject.generateShortUrl(requireContext(), linkProperties) { url, error ->
             BranchEvent("branch_url_created").logEvent(requireContext())
@@ -344,9 +342,9 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
                 listItems(items = listOf(getString(R.string.no_location), getString(R.string.city), getString(
                                     R.string.address))) { dialog, index, text ->
                     when(index){
-                        0 -> prefs.edit().putInt("locaPref", index).apply()
-                        1 -> prefs.edit().putInt("locaPref", index).apply()
-                        2 -> prefs.edit().putInt("locaPref", index).apply()
+                        0 -> prefs.edit().putInt(location_pref, index).apply()
+                        1 -> prefs.edit().putInt(location_pref, index).apply()
+                        2 -> prefs.edit().putInt(location_pref, index).apply()
                     }
                 }
             }

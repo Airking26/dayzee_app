@@ -81,12 +81,11 @@ class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         itemView.profile_item_name_owner.text = event.createdBy.userName
         itemView.profile_item_date_event.text = if(isUpcoming) Utils().inTime(event.startingAt, itemView.context) else Utils().sinceTime(event.endingAt, itemView.context)
         itemView.profile_item_date_event.setOnClickListener {
-            if(itemView.profile_item_date_event.text.contains("In") || itemView.profile_item_date_event.text.contains("Since")){
+            if(itemView.profile_item_date_event.text.contains(itemView.context.getString(R.string.in_time), true) || itemView.profile_item_date_event.text.contains(itemView.context.getString(R.string.since_time), true)){
                 val o = SimpleDateFormat(ISO)
                 o.timeZone = TimeZone.getTimeZone("UTC")
                 val m = o.parse(event.startingAt)
                 o.timeZone = TimeZone.getDefault()
-                val k = o.format(m)
                 itemView.profile_item_date_event.text = SimpleDateFormat(DATE_FORMAT_DAY_AND_TIME, Locale.getDefault()).format(m.time)
             } else {
                 itemView.profile_item_date_event.text = if(isUpcoming) Utils().inTime(event.startingAt, itemView.context) else Utils().sinceTime(event.endingAt, itemView.context)
@@ -212,7 +211,7 @@ class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         }
 
         MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-            title(text = "Posted : " + dateFormat.format(SimpleDateFormat(ISO).parse(event.createdAt).time))
+            title(text = dateFormat.format(SimpleDateFormat(ISO).parse(event.createdAt).time))
             listItems (items = li){ _, _, text ->
                 when(text.toString()){
                     context.getString(R.string.share_to) -> timenoteListenerListener.onShareClicked(event)

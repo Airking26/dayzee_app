@@ -23,7 +23,7 @@ class WebSearchViewModel: ViewModel(){
     private var results: MutableList<String> = mutableListOf()
     private var bitmap: Bitmap? = null
     private val searchWebLiveData = MutableLiveData<MutableList<String>>()
-    private val transformImageLiveData = MutableLiveData<Bitmap>()
+    private val transformImageLiveData = MutableLiveData<Bitmap?>()
 
     fun getListResults(): LiveData<MutableList<String>>{
         searchWebLiveData.postValue(results)
@@ -35,8 +35,8 @@ class WebSearchViewModel: ViewModel(){
         this.context = context
     }
 
-    fun getBitmap(): LiveData<Bitmap>{
-        transformImageLiveData.postValue(bitmap)
+    fun getBitmap(): MutableLiveData<Bitmap?> {
+        transformImageLiveData.postValue(bitmap!!)
         return transformImageLiveData
     }
 

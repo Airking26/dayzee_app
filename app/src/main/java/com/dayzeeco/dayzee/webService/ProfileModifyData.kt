@@ -4,6 +4,7 @@ import com.dayzeeco.dayzee.model.SocialMedias
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
+import com.dayzeeco.dayzee.common.user_info_dto
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.model.*
@@ -15,7 +16,8 @@ class ProfileModifyData(context: Context) {
     private val type: Type = object : TypeToken<UserInfoDTO?>() {}.type
 
     private var profilModifyModel: UserInfoDTO? = Gson().fromJson<UserInfoDTO>(
-        prefs.getString("UserInfoDTO",
+        prefs.getString(
+            user_info_dto,
         Gson().toJson(UserInfoDTO(status = 0, dateFormat = 0, socialMedias =
         SocialMedias(
             Youtube("", false),

@@ -16,10 +16,11 @@ import com.google.gson.Gson
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.SubCategoryCardAdapter
 import com.dayzeeco.dayzee.adapter.SubCategoryChipAdapter
+import com.dayzeeco.dayzee.common.accessToken
+import com.dayzeeco.dayzee.common.list_subcategory_rated
 import com.dayzeeco.dayzee.common.stringLiveData
 import com.dayzeeco.dayzee.model.Preferences
 import com.dayzeeco.dayzee.model.SubCategoryRated
-import com.dayzeeco.dayzee.model.accessToken
 import com.dayzeeco.dayzee.viewModel.PreferencesViewModel
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.fragment_preference_sub_category.*
@@ -76,7 +77,8 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
             adapter = cardAdapter
         }
 
-        prefs.stringLiveData("listSubCatRated", Gson().toJson(prefs.getString("listSubCatRated", null))).observe(viewLifecycleOwner, {
+        prefs.stringLiveData(list_subcategory_rated, Gson().toJson(prefs.getString(
+            list_subcategory_rated, null))).observe(viewLifecycleOwner, {
             val typeSubCat: Type = object : TypeToken<MutableList<SubCategoryRated?>>() {}.type
             preferencesCategoryRated = Gson().fromJson(it, typeSubCat) ?: mutableListOf()
             updateListCategoryAndSubCategory(preferencesCategoryRated)
@@ -113,7 +115,7 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
 
     private fun saveAndNavigate() {
         preferencesViewModel.modifyPreferences(tokenId, Preferences(preferencesCategoryRated)).observe(viewLifecycleOwner, {
-            prefs.edit().putString("listSubCatRated", Gson().toJson(preferencesCategoryRated)).apply()
+            prefs.edit().putString(list_subcategory_rated, Gson().toJson(preferencesCategoryRated)).apply()
             if(it.isSuccessful){
                 findNavController().navigate(PreferenceSubCategoryDirections.actionPreferenceSubCategoryToPreferenceSuggestion(preferenceSubCategoryArgs.isInLogin))
             }
@@ -125,7 +127,7 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
         val category = chips[index]
         if(subcategories.containsKey(category)) subcategories.remove(category)
         preferencesCategoryRated.removeIf { subcategories -> subcategories.category.category == category }
-        prefs.edit().putString("listSubCatRated", Gson().toJson(preferencesCategoryRated)).apply()
+        prefs.edit().putString(list_subcategory_rated, Gson().toJson(preferencesCategoryRated)).apply()
     }
 
 

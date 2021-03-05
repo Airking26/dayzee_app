@@ -30,6 +30,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.common.Utils
+import com.dayzeeco.dayzee.common.nearby
 import com.dayzeeco.dayzee.common.stringLiveData
 import com.dayzeeco.dayzee.model.NearbyRequestBody
 import com.dayzeeco.dayzee.model.Price
@@ -108,9 +109,10 @@ class NearbyFilters : Fragment(), View.OnClickListener {
 
         }
 
-        prefs.stringLiveData("nearby", Gson().toJson(nearbyFilterData.loadNearbyFilter())).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+        prefs.stringLiveData(nearby, Gson().toJson(nearbyFilterData.loadNearbyFilter())).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             val type = object : TypeToken<NearbyRequestBody?>() {}.type
-            val nearbyModifyModel : NearbyRequestBody? = Gson().fromJson<NearbyRequestBody>(prefs.getString("nearby", null), type)
+            val nearbyModifyModel : NearbyRequestBody? = Gson().fromJson<NearbyRequestBody>(prefs.getString(
+                nearby, null), type)
             if(nearbyModifyModel?.categories?.isNullOrEmpty()!!) nearby_filter_category_tv.text = getString(R.string.none) else nearby_filter_category_tv.text = nearbyModifyModel.categories?.get(0)!!.subcategory
             when (nearbyModifyModel.type) {
                 Type.ALL.ordinal -> nearby_filter_from_tv.text = getString(R.string.all)

@@ -19,6 +19,7 @@ import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.TimenoteLoadStateAdapter
 import com.dayzeeco.dayzee.adapter.UsersPagingAdapter
+import com.dayzeeco.dayzee.common.user_info_dto
 import com.dayzeeco.dayzee.model.UserInfoDTO
 import com.dayzeeco.dayzee.viewModel.SearchViewModel
 import kotlinx.android.synthetic.main.fragment_search_people.*
@@ -41,7 +42,7 @@ class SearchPeople: Fragment(), UsersPagingAdapter.SearchPeopleListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
-        val userInfoDTOPref = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
+        val userInfoDTOPref = Gson().fromJson<UserInfoDTO>(prefs.getString(user_info_dto, ""), typeUserInfo)
 
         var userAdapter = UsersPagingAdapter(
             UsersPagingAdapter.UserComparator,

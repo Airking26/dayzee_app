@@ -8,34 +8,27 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.dayzeeco.dayzee.R
+import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.listeners.TimenoteCreationPicListeners
-import com.dayzeeco.dayzee.model.AWSFile
 import kotlinx.android.synthetic.main.timenote_view_image.*
-import java.io.File
-
-private const val ARG_PARAM1 = "position"
-private const val ARG_PARAM2 = "aws"
-private const val ARG_PARAM3 = "hideIcons"
-private const val ARG_PARAM4 = "fromDuplicateOrEdit"
-private const val ARG_PARAM5 = "picture"
 
 class ScreenSlideCreationTimenoteImageFragment: Fragment() {
-    private var param1: Int? = null
-    private var param2: String? = null
-    private var param3: Boolean? = null
-    private var param4: Boolean? = null
-    private var param5: String? =null
+    private var position: Int? = null
+    private var aws: String? = null
+    private var hideIcons: Boolean? = null
+    private var fromDuplicateOrEdit: Boolean? = null
+    private var picture: String? =null
 
     private lateinit var timenoteCreationPicListeners: TimenoteCreationPicListeners
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getInt(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-            param3 = it.getBoolean(ARG_PARAM3)
-            param4 = it.getBoolean(ARG_PARAM4)
-            param5 = it.getString(ARG_PARAM5)
+            position = it.getInt(com.dayzeeco.dayzee.common.position)
+            aws = it.getString(com.dayzeeco.dayzee.common.aws)
+            hideIcons = it.getBoolean(hide_icons)
+            fromDuplicateOrEdit = it.getBoolean(from_duplicate_or_edit)
+            picture = it.getString(com.dayzeeco.dayzee.common.picture)
         }
     }
 
@@ -48,15 +41,15 @@ class ScreenSlideCreationTimenoteImageFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        if(!param5.isNullOrBlank()){
+        if(!picture.isNullOrBlank()){
             Glide.with(view)
-                .load(param5)
+                .load(picture)
                 .into(create_timenote_pic)
         } else Glide.with(view)
-            .load(Uri.parse(param2))
+            .load(Uri.parse(aws))
             .into(create_timenote_pic)
 
-        if(param3!! || param4!!){
+        if(hideIcons!! || fromDuplicateOrEdit!!){
             timenote_crop_pic.visibility = View.GONE
             timenote_add_pic.visibility = View.GONE
             timenote_delete_pic.visibility = View.GONE
@@ -65,9 +58,13 @@ class ScreenSlideCreationTimenoteImageFragment: Fragment() {
             timenote_add_pic.visibility = View.VISIBLE
             timenote_delete_pic.visibility = View.VISIBLE
         }
-        timenote_crop_pic.setOnClickListener { timenoteCreationPicListeners.onCropPicClicked(Uri.parse(param2)) }
+        timenote_crop_pic.setOnClickListener { timenoteCreationPicListeners.onCropPicClicked(Uri.parse(
+            aws
+        )) }
         timenote_add_pic.setOnClickListener { timenoteCreationPicListeners.onAddClicked() }
-        timenote_delete_pic.setOnClickListener { timenoteCreationPicListeners.onDeleteClicked(Uri.parse(param2)) }
+        timenote_delete_pic.setOnClickListener { timenoteCreationPicListeners.onDeleteClicked(Uri.parse(
+            aws
+        )) }
     }
 
     companion object {
@@ -83,11 +80,11 @@ class ScreenSlideCreationTimenoteImageFragment: Fragment() {
             ScreenSlideCreationTimenoteImageFragment()
                 .apply {
                 arguments = Bundle().apply {
-                    putInt(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, uri)
-                    putBoolean(ARG_PARAM3, hideIcons)
-                    putBoolean(ARG_PARAM4, fromDuplicateOrEdit)
-                    putString(ARG_PARAM5, picture)
+                    putInt(com.dayzeeco.dayzee.common.position, param1)
+                    putString(com.dayzeeco.dayzee.common.aws, uri)
+                    putBoolean(hide_icons, hideIcons)
+                    putBoolean(from_duplicate_or_edit, fromDuplicateOrEdit)
+                    putString(com.dayzeeco.dayzee.common.picture, picture)
                     if(context is CreateTimenote) setListener(context as TimenoteCreationPicListeners)
                 }
             }

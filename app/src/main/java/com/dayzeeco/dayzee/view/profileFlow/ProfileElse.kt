@@ -26,7 +26,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.ProfileEventPagerAdapter
-import com.dayzeeco.dayzee.common.BaseThroughFragment
+import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.listeners.OnRemoveFilterBarListener
 import com.dayzeeco.dayzee.model.*
 import com.dayzeeco.dayzee.viewModel.FollowViewModel
@@ -82,7 +82,7 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         tokenId = prefs.getString(accessToken, null)
-        locaPref = prefs.getInt("locaPref", -1)
+        locaPref = prefs.getInt(location_pref, -1)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -93,7 +93,7 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
-        meInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
+        meInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString(user_info_dto, ""), typeUserInfo)
         userInfoDTO = args.userInfoDTO
 
             val simpleDateFormatDayName = SimpleDateFormat("EEE.", Locale.getDefault())
@@ -248,7 +248,7 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
                                         profileViewModel.certifyProfile(tokenId!!, userInfoDTO?.id!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {rsp ->
                                             if(rsp.isSuccessful) Toast.makeText(
                                                 requireContext(),
-                                                "Certified",
+                                                getString(R.string.certified),
                                                 Toast.LENGTH_SHORT
                                             ).show()
                                         })
@@ -257,7 +257,7 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
 
                                 if(it.isSuccessful) Toast.makeText(
                                     requireContext(),
-                                    "Certified",
+                                    getString(R.string.certified),
                                     Toast.LENGTH_SHORT
                                 )
                                     .show()
@@ -267,7 +267,7 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
                             )
                             context.getString(R.string.report) -> Toast.makeText(
                                 requireContext(),
-                                "Reported",
+                                getString(R.string.reported),
                                 Toast.LENGTH_SHORT
                             ).show()
                             context.getString(R.string.share_to) -> share(userInfoDTO!!)
@@ -321,12 +321,12 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
             .setContentDescription(userInfoDTO.givenName ?: "")
             .setContentImageUrl(userInfoDTO.picture!!)
             .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
-            .setContentMetadata(ContentMetadata().addCustomMetadata("timenoteInfoDTO", Gson().toJson(userInfoDTO)))
+            .setContentMetadata(ContentMetadata().addCustomMetadata(timenote_info_dto, Gson().toJson(userInfoDTO)))
         else BranchUniversalObject()
             .setTitle(userInfoDTO.userName!!)
             .setContentDescription(userInfoDTO.givenName ?: "")
             .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
-            .setContentMetadata(ContentMetadata().addCustomMetadata("timenoteInfoDTO", Gson().toJson(userInfoDTO)))
+            .setContentMetadata(ContentMetadata().addCustomMetadata(timenote_info_dto, Gson().toJson(userInfoDTO)))
 
         branchUniversalObject.generateShortUrl(requireContext(), linkProperties) { url, error ->
             BranchEvent("branch_url_created").logEvent(requireContext())
@@ -350,7 +350,7 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
                     })
                 }
                 if(it.isSuccessful) {
-                    prefs.edit().putInt("following", prefs.getInt("following", 0) - 1).apply()
+                    prefs.edit().putInt(following, prefs.getInt(following, 0) - 1).apply()
                     profile_follow_btn.apply {
                         setBorderColor(resources.getColor(android.R.color.transparent))
                         setBorderWidth(0)
@@ -369,7 +369,7 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
             .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                 if(it.code() == 400) Toast.makeText(
                     requireContext(),
-                    "Already Asked",
+                    getString(R.string.already_asked),
                     Toast.LENGTH_SHORT
                 )
                     .show()
@@ -403,7 +403,7 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
                     followPublicUser()
                 })
                 if(it.isSuccessful) {
-                    prefs.edit().putInt("following", prefs.getInt("following", 0) + 1).apply()
+                    prefs.edit().putInt(following, prefs.getInt(following, 0) + 1).apply()
                     profile_follow_btn.apply {
                         setBorderColor(resources.getColor(android.R.color.darker_gray))
                         setBorderWidth(1)

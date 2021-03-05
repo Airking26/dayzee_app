@@ -20,8 +20,8 @@ import com.dayzeeco.dayzee.adapter.SearchViewTopExplorePagerAdapter
 import com.dayzeeco.dayzee.adapter.SearchViewPeopleTagPagerAdapter
 import com.dayzeeco.dayzee.androidView.materialsearchbar.MaterialSearchBar
 import com.dayzeeco.dayzee.common.BaseThroughFragment
+import com.dayzeeco.dayzee.common.accessToken
 import com.dayzeeco.dayzee.listeners.RefreshPicBottomNavListener
-import com.dayzeeco.dayzee.model.accessToken
 import com.dayzeeco.dayzee.viewModel.LoginViewModel
 import com.dayzeeco.dayzee.viewModel.SearchViewModel
 import kotlinx.android.synthetic.main.fragment_search.*

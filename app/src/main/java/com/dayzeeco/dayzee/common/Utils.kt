@@ -44,7 +44,6 @@ import com.dayzeeco.dayzee.androidView.dialog.input
 import com.dayzeeco.dayzee.model.Address
 import com.dayzeeco.dayzee.model.DetailedPlace
 import com.dayzeeco.dayzee.model.Location
-import com.dayzeeco.dayzee.model.accessToken
 import com.dayzeeco.dayzee.viewModel.WebSearchViewModel
 import com.dayzeeco.dayzee.webService.repo.DayzeeRepository
 import kotlinx.android.synthetic.main.web_search_rv.view.*
@@ -158,62 +157,28 @@ class Utils {
         val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = "d MMM\nhh:mm"
         val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
-        val test = "2020-11-13T12:00:00.000-04:00"
-        val isoTest = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
-        val formatedStartDateTest: String
-
-        val startingTest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val ldt = OffsetDateTime.parse(test).toEpochSecond()
-            ldt * 1000
-            //Instant.parse(test).epochSecond * 1000
-        } else {
-            SimpleDateFormat(isoTest, Locale.getDefault()).parse(test).time
-        }
-
-        val endingTest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val ldt = OffsetDateTime.parse(test).toEpochSecond()
-            ldt * 1000
-            //Instant.parse(test).epochSecond * 1000
-        } else {
-            SimpleDateFormat(isoTest, Locale.getDefault()).parse(test).time
-        }
-
-        if(formatDate(DATE_FORMAT_DAY, startingTest) == formatDate(DATE_FORMAT_DAY, endingTest)){
-            if(formatDate(DATE_FORMAT_TIME, startingTest) == formatDate(DATE_FORMAT_TIME, endingTest)){
-                formatedStartDateTest = formatDate(DATE_FORMAT_TIME_FORMATED, startingTest)
-            } else {
-                formatedStartDateTest = formatDate(DATE_FORMAT_TIME_FORMATED, startingTest)
-            }
-        } else {
-            formatedStartDateTest = formatDate(DATE_FORMAT_SAME_DAY_DIFFERENT_TIME, startingTest)
-        }
-
-        val m = formatedStartDateTest
-
         val formatedStartDate: String
 
         val starting = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Instant.parse(startDate).epochSecond * 1000
         } else {
-            val o = SimpleDateFormat(ISO)
+            val o = SimpleDateFormat(ISO, Locale.getDefault())
             o.timeZone = TimeZone.getTimeZone("UTC")
             val m = o.parse(startDate)
             o.timeZone = TimeZone.getDefault()
             val k = o.format(m)
-            val c = SimpleDateFormat(ISO, Locale.getDefault()).parse(k).time
-            val ds = SimpleDateFormat(ISO, Locale.getDefault()).parse(startDate).time
-            SimpleDateFormat(ISO, Locale.getDefault()).parse(k).time
+            SimpleDateFormat(ISO, Locale.getDefault()).parse(k)!!.time
         }
 
         val ending = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Instant.parse(endDate).epochSecond * 1000
         } else {
-            val o = SimpleDateFormat(ISO)
+            val o = SimpleDateFormat(ISO, Locale.getDefault())
             o.timeZone = TimeZone.getTimeZone("UTC")
             val m = o.parse(endDate)
             o.timeZone = TimeZone.getDefault()
             val k = o.format(m)
-            SimpleDateFormat(ISO, Locale.getDefault()).parse(k).time
+            SimpleDateFormat(ISO, Locale.getDefault()).parse(k)!!.time
         }
 
 
@@ -237,61 +202,29 @@ class Utils {
         val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = "d MMM\nhh:mm"
         val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
-        val test = "2020-11-13T12:00:00.000-04:00"
-        val isoTest = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
-        val formatedStartDateTest: String
-
-        val startingTest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val ldt = OffsetDateTime.parse(test).toEpochSecond()
-            ldt * 1000
-            //Instant.parse(test).epochSecond * 1000
-        } else {
-            SimpleDateFormat(isoTest, Locale.getDefault()).parse(test).time
-        }
-
-        val endingTest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val ldt = OffsetDateTime.parse(test).toEpochSecond()
-            ldt * 1000
-            //Instant.parse(test).epochSecond * 1000
-        } else {
-            SimpleDateFormat(isoTest, Locale.getDefault()).parse(test).time
-        }
-
-        formatedStartDateTest = if(formatDate(DATE_FORMAT_DAY, startingTest) == formatDate(DATE_FORMAT_DAY, endingTest)){
-            if(formatDate(DATE_FORMAT_TIME, startingTest) == formatDate(DATE_FORMAT_TIME, endingTest)){
-                formatDate(DATE_FORMAT_TIME, startingTest)
-            } else {
-                formatDate(DATE_FORMAT_TIME, startingTest) + "\n" + formatDate(DATE_FORMAT_TIME, endingTest)
-            }
-        } else {
-            formatDate(DATE_FORMAT_SAME_DAY_DIFFERENT_TIME, endingTest)
-        }
-
-        val m = formatedStartDateTest
-
         var formatedEndDate: String
 
         val starting = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Instant.parse(startDate).epochSecond * 1000
         } else {
-            val o = SimpleDateFormat(ISO)
+            val o = SimpleDateFormat(ISO, Locale.getDefault())
             o.timeZone = TimeZone.getTimeZone("UTC")
             val m = o.parse(startDate)
             o.timeZone = TimeZone.getDefault()
             val k = o.format(m)
-            SimpleDateFormat(ISO, Locale.getDefault()).parse(k).time
+            SimpleDateFormat(ISO, Locale.getDefault()).parse(k)!!.time
             //SimpleDateFormat(ISO, Locale.getDefault()).parse(startDate).time
         }
 
         val ending = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Instant.parse(endDate).epochSecond * 1000
         } else {
-            val o = SimpleDateFormat(ISO)
+            val o = SimpleDateFormat(ISO, Locale.getDefault())
             o.timeZone = TimeZone.getTimeZone("UTC")
             val m = o.parse(endDate)
             o.timeZone = TimeZone.getDefault()
             val k = o.format(m)
-            SimpleDateFormat(ISO, Locale.getDefault()).parse(k).time
+            SimpleDateFormat(ISO, Locale.getDefault()).parse(k)!!.time
         }
         formatedEndDate =
             if(formatDate(DATE_FORMAT_DAY, starting) == formatDate(DATE_FORMAT_DAY, ending)){
@@ -313,12 +246,12 @@ class Utils {
         val starting = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Instant.parse(startDate).epochSecond * 1000
         } else {
-            val o = SimpleDateFormat(ISO)
+            val o = SimpleDateFormat(ISO, Locale.getDefault())
             o.timeZone = TimeZone.getTimeZone("UTC")
             val m = o.parse(startDate)
             o.timeZone = TimeZone.getDefault()
             val k = o.format(m)
-            SimpleDateFormat(ISO, Locale.getDefault()).parse(k).time
+            SimpleDateFormat(ISO, Locale.getDefault()).parse(k)!!.time
         }
         return formatDate(YEAR, starting)
     }
@@ -371,7 +304,7 @@ class Utils {
 
         val decountTime: String
         if(nbrYear <= 0 && nbrMonth <= 0 && nbrDay <= 0 && nbrHour <= 0 && nbrMin < 0){
-            decountTime = "LIVE"
+            decountTime = context.getString(R.string.live)
         }
         else if(nbrYear <= 0){
             if(nbrMonth <= 0){
@@ -580,12 +513,12 @@ class Utils {
                 else -> "+00:00"
             }
 
-        sharedPreferences.edit().putString("offset", offSetToSave).apply()
+        sharedPreferences.edit().putString(offset, offSetToSave).apply()
     }
 
     suspend fun refreshToken(sharedPreferences: SharedPreferences): String? {
         val authService = DayzeeRepository().getAuthService()
-        val newAccessToken = authService.refreshAccessToken(sharedPreferences.getString(com.dayzeeco.dayzee.model.refreshToken, null)!!)
+        val newAccessToken = authService.refreshAccessToken(sharedPreferences.getString(refreshToken, null)!!)
         sharedPreferences.edit().putString(accessToken, newAccessToken.body()?.accessToken).apply()
         return newAccessToken.body()?.accessToken
     }

@@ -38,10 +38,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.*
-import com.dayzeeco.dayzee.common.HashTagHelper
-import com.dayzeeco.dayzee.common.Utils
-import com.dayzeeco.dayzee.common.bytesEqualTo
-import com.dayzeeco.dayzee.common.pixelsEqualTo
+import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.listeners.GoToProfile
 import com.dayzeeco.dayzee.model.*
 import com.dayzeeco.dayzee.viewModel.CommentViewModel
@@ -110,7 +107,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
 
         imm = (requireActivity().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager)!!
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
-        userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
+        userInfoDTO = Gson().fromJson(prefs.getString(user_info_dto, ""), typeUserInfo)
 
 
             timenote_username_desc.maxLines = Int.MAX_VALUE
@@ -565,7 +562,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         o.timeZone = TimeZone.getDefault()
         val k = o.format(m)
         if (SimpleDateFormat(ISO, Locale.getDefault()).parse(k).time > System.currentTimeMillis()){
-            if(utils.inTime(timenote.startingAt, requireContext()) == "LIVE") timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_oval, 0,0, 0)
+            if(utils.inTime(timenote.startingAt, requireContext()) == getString(R.string.live)) timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_oval, 0,0, 0)
             else timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0,0, 0)
             timenote_in_label.text = utils.inTime(timenote.startingAt, requireContext())
         }
@@ -578,7 +575,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             val dateFormat = SimpleDateFormat("dd.MM.yyyy")
             val ISO =  "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
-            title(text = "Posted : " + dateFormat.format(SimpleDateFormat(ISO).parse(args.event?.createdAt).time))
+            title(text = dateFormat.format(SimpleDateFormat(ISO).parse(args.event?.createdAt).time))
             listItems (items = listItems){ dialog, index, text ->
                 when(text.toString()){
                     context.getString(R.string.share_to) -> share()
@@ -590,17 +587,18 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                         args.event?.hashtags, args.event?.url, args.event?.price!!, null, args.event?.urlTitle)))
                     context.getString(R.string.report) -> Toast.makeText(
                         requireContext(),
-                        "Reported. Thank You.",
+                        getString(R.string.reported),
                         Toast.LENGTH_SHORT
                     )
                         .show()
                     context.getString(R.string.delete) -> {
-                        val map: MutableMap<Long, String> = Gson().fromJson(prefs.getString("mapEventIdToTimenote", null), object : TypeToken<MutableMap<String, String>>() {}.type) ?: mutableMapOf()
+                        val map: MutableMap<Long, String> = Gson().fromJson(prefs.getString(
+                            map_event_id_to_timenote, null), object : TypeToken<MutableMap<String, String>>() {}.type) ?: mutableMapOf()
                         timenoteViewModel.deleteTimenote(tokenId!!, args.event?.id!!).observe(viewLifecycleOwner, Observer {
                             if(it.isSuccessful) {
                                 if(map.isNotEmpty() && map.filterValues { id -> id == args.event?.id!! }.keys.isNotEmpty()) {
                                     map.remove(map.filterValues { id -> id == args.event?.id!! }.keys.first())
-                                    prefs.edit().putString("mapEventIdToTimenote", Gson().toJson(map)).apply()
+                                    prefs.edit().putString(map_event_id_to_timenote, Gson().toJson(map)).apply()
                                 }
                                 Toast.makeText(
                                     requireContext(),
@@ -623,7 +621,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                                         }
                                         if(map.isNotEmpty() && map.filterValues { id -> id == args.event?.id!! }.keys.isNotEmpty()) {
                                             map.remove(map.filterValues { id -> id == args.event?.id!! }.keys.first())
-                                            prefs.edit().putString("mapEventIdToTimenote", Gson().toJson(map)).apply()
+                                            prefs.edit().putString(map_event_id_to_timenote, Gson().toJson(map)).apply()
                                         }
                                     })
                                 })
@@ -644,12 +642,12 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             .setContentDescription(args.event?.description)
             .setContentImageUrl(args.event?.pictures?.get(0)!!)
             .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
-            .setContentMetadata(ContentMetadata().addCustomMetadata("timenoteInfoDTO", Gson().toJson(args.event)))
+            .setContentMetadata(ContentMetadata().addCustomMetadata(timenote_info_dto, Gson().toJson(args.event)))
         else BranchUniversalObject()
             .setTitle(args.event?.title!!)
             .setContentDescription(args.event?.description)
             .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
-            .setContentMetadata(ContentMetadata().addCustomMetadata("timenoteInfoDTO", Gson().toJson(args.event)))
+            .setContentMetadata(ContentMetadata().addCustomMetadata(timenote_info_dto, Gson().toJson(args.event)))
 
         branchUniversalObject.generateShortUrl(requireContext(), linkProperties) { url, error ->
             BranchEvent("branch_url_created").logEvent(requireContext())
@@ -687,7 +685,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
 
                     getString(R.string.report) -> Toast.makeText(
                         requireContext(),
-                        "Reported",
+                        getString(R.string.reported),
                         Toast.LENGTH_SHORT
                     ).show()
                 }

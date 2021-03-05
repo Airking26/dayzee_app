@@ -34,6 +34,9 @@ import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.BuildConfig
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.common.Utils
+import com.dayzeeco.dayzee.common.accessToken
+import com.dayzeeco.dayzee.common.gmail
+import com.dayzeeco.dayzee.common.user_info_dto
 import com.dayzeeco.dayzee.listeners.SynchronizeWithGoogleCalendarListener
 import com.dayzeeco.dayzee.model.*
 import com.dayzeeco.dayzee.viewModel.LoginViewModel
@@ -61,7 +64,6 @@ class Menu : Fragment(), View.OnClickListener {
     private val transport = AndroidHttp.newCompatibleTransport()
     private val jsonFactory: JsonFactory = JacksonFactory.getDefaultInstance()
 
-    private val GMAIL = "gmail"
     private lateinit var userInfoDTO: UserInfoDTO
     private lateinit var prefs : SharedPreferences
     private val PERMISSION_CALENDAR_CODE = 12
@@ -79,15 +81,15 @@ class Menu : Fragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
-        userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
+        userInfoDTO = Gson().fromJson(prefs.getString(user_info_dto, ""), typeUserInfo)
 
         credential = GoogleAccountCredential.usingOAuth2(requireContext(), listOf(CalendarScopes.CALENDAR_READONLY))
             .setBackOff(ExponentialBackOff())
-            .setSelectedAccountName(prefs.getString(GMAIL, null))
+            .setSelectedAccountName(prefs.getString(gmail, null))
 
         service = Calendar.Builder(
             transport, jsonFactory, credential)
-            .setApplicationName("TestGoogleCalendar")
+            .setApplicationName("Dayzee")
             .build()
 
         menu_settings_cv.setOnClickListener(this)

@@ -21,9 +21,10 @@ import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.UsersAwaitingPagingAdapter
 import com.dayzeeco.dayzee.adapter.UsersPagingAdapter
 import com.dayzeeco.dayzee.adapter.UsersShareWithPagingAdapter
+import com.dayzeeco.dayzee.common.accessToken
+import com.dayzeeco.dayzee.common.user_info_dto
 import com.dayzeeco.dayzee.listeners.GoToProfile
 import com.dayzeeco.dayzee.model.UserInfoDTO
-import com.dayzeeco.dayzee.model.accessToken
 import com.dayzeeco.dayzee.viewModel.FollowViewModel
 import com.dayzeeco.dayzee.viewModel.LoginViewModel
 import kotlinx.android.synthetic.main.fragment_follow_page.*
@@ -60,7 +61,7 @@ class FollowPage : Fragment(), UsersPagingAdapter.SearchPeopleListener,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
-        userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
+        userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString(user_info_dto, ""), typeUserInfo)
 
         when(args.followers){
             0 -> followPage_toolbar.text = getString(R.string.following)

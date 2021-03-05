@@ -42,10 +42,7 @@ import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.*
 import com.dayzeeco.dayzee.androidView.carousel.CarouselAdapter
 import com.dayzeeco.dayzee.androidView.carousel.GridAdapter
-import com.dayzeeco.dayzee.common.HashTagHelper
-import com.dayzeeco.dayzee.common.Utils
-import com.dayzeeco.dayzee.common.bytesEqualTo
-import com.dayzeeco.dayzee.common.pixelsEqualTo
+import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.listeners.GoToProfile
 import com.dayzeeco.dayzee.model.*
 import com.dayzeeco.dayzee.viewModel.CommentViewModel

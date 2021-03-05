@@ -11,6 +11,7 @@ import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
+import kotlin.reflect.typeOf
 
 class FirebaseBroadcastReceiver : WakefulBroadcastReceiver() {
 
@@ -29,19 +30,36 @@ class FirebaseBroadcastReceiver : WakefulBroadcastReceiver() {
             }
         val remoteMessage = RemoteMessage(dataBundle)
 
-        val id: String? = if(remoteMessage.data["type"]?.toInt() == 2 || remoteMessage.data["type"]?.toInt() == 3 || remoteMessage.data["type"]?.toInt() == 4){
-            remoteMessage.data["userID"]
+        val id: String? = if(remoteMessage.data[type]?.toInt() == 2 || remoteMessage.data[type]?.toInt() == 3 || remoteMessage.data[type]?.toInt() == 4){
+            remoteMessage.data[user_id]
         } else {
-            remoteMessage.data["timenoteID"]
+            remoteMessage.data[timenote_id]
         }
-        val body = remoteMessage.data["body"] ?: ""
-        val type = remoteMessage.data["type"] ?: ""
-        val pictureUrl = remoteMessage.data["userPictureURL"] ?: ""
-        val title = remoteMessage.data["title"] ?: ""
+        val body = remoteMessage.data[body] ?: ""
+        val type = remoteMessage.data[type] ?: ""
+        val pictureUrl = remoteMessage.data[user_picture_url] ?: ""
+        val title = remoteMessage.data[title] ?: ""
 
         val typeNotification: Type = object : TypeToken<MutableList<Notification?>>() {}.type
-        notifications = Gson().fromJson<MutableList<Notification>>(prefs.getString("notifications", null), typeNotification) ?: mutableListOf()
-        notifications.add(Notification(false, remoteMessage.messageId!!, remoteMessage.sentTime, type, id!!, title, body, pictureUrl))
-        prefs.edit().putString("notifications", Gson().toJson(notifications) ?: Gson().toJson(mutableListOf<Notification>())).apply()
+        notifications = Gson().fromJson<MutableList<Notification>>(prefs.getString(
+            notifications_saved, null), typeNotification) ?: mutableListOf()
+        if(notifications.none { notification -> notification.id == id }) {
+            notifications.add(
+                Notification(
+                    false,
+                    remoteMessage.messageId!!,
+                    remoteMessage.sentTime,
+                    type,
+                    id!!,
+                    title,
+                    body,
+                    pictureUrl
+                )
+            )
+            prefs.edit().putString(
+                notifications_saved,
+                Gson().toJson(notifications) ?: Gson().toJson(mutableListOf<Notification>())
+            ).apply()
+        }
     }
 }

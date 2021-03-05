@@ -30,9 +30,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.androidView.dialog.input
-import com.dayzeeco.dayzee.common.Utils
-import com.dayzeeco.dayzee.common.booleanLiveData
-import com.dayzeeco.dayzee.common.stringLiveData
+import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.listeners.RefreshPicBottomNavListener
 import com.dayzeeco.dayzee.model.*
 import com.dayzeeco.dayzee.viewModel.LoginViewModel
@@ -73,8 +71,6 @@ class Settings : Fragment(), View.OnClickListener {
     private lateinit var service: Calendar
     private lateinit var credential: GoogleAccountCredential
     private val transport = AndroidHttp.newCompatibleTransport()
-    private val GMAIL = "gmail"
-
     private val utils = Utils()
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
     private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
@@ -94,10 +90,10 @@ class Settings : Fragment(), View.OnClickListener {
         prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         tokenId = prefs.getString(accessToken, null)
 
-        if(prefs.getString("pmtc", "") == "") prefs.edit().putString("pmtc", "").apply()
-        if(prefs.getInt("default_settings_at_creation_time", -1) == -1) prefs.edit().putInt("default_settings_at_creation_time", 0).apply()
+        if(prefs.getString(pmtc, "") == "") prefs.edit().putString(pmtc, "").apply()
+        if(prefs.getInt(default_settings_at_creation_time, -1) == -1) prefs.edit().putInt(default_settings_at_creation_time, 0).apply()
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
-        userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString("UserInfoDTO", ""), typeUserInfo)
+        userInfoDTO = Gson().fromJson(prefs.getString(user_info_dto, ""), typeUserInfo)
     }
 
     override fun onAttach(context: Context) {
@@ -110,27 +106,28 @@ class Settings : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        map = Gson().fromJson(prefs.getString("mapEventIdToTimenote", null), object : TypeToken<MutableMap<String, String>>() {}.type) ?: mutableMapOf()
+        map = Gson().fromJson(prefs.getString(map_event_id_to_timenote, null), object : TypeToken<MutableMap<String, String>>() {}.type) ?: mutableMapOf()
         credential = GoogleAccountCredential.usingOAuth2(requireContext(), listOf(CalendarScopes.CALENDAR_READONLY))
             .setBackOff(ExponentialBackOff())
-            .setSelectedAccountName(prefs.getString(GMAIL, null))
+            .setSelectedAccountName(prefs.getString(gmail, null))
 
         service = Calendar.Builder(
             transport, jsonFactory, credential)
-            .setApplicationName("TestGoogleCalendar")
+            .setApplicationName(getString(R.string.app_name))
             .build()
 
         dsactv = profile_settings_default_settings_at_creation_time
 
-        when(prefs.getInt("default_settings_at_creation_time", 1)){
+        when(prefs.getInt(default_settings_at_creation_time, 1)){
             0 -> profile_settings_default_settings_at_creation_time.text = getString(R.string.only_me)
             1 -> profile_settings_default_settings_at_creation_time.text = getString(R.string.public_label)
         }
 
         profileModifyData = ProfileModifyData(requireContext())
-        settings_switch_account_synchro_google.isChecked = prefs.getBoolean("googleCalendarSynchronized", false)
+        settings_switch_account_synchro_google.isChecked = prefs.getBoolean(
+            google_calendar_synchronized, false)
 
-        prefs.stringLiveData("UserInfoDTO", Gson().toJson(profileModifyData.loadProfileModifyModel())).observe(viewLifecycleOwner, Observer {
+        prefs.stringLiveData(user_info_dto, Gson().toJson(profileModifyData.loadProfileModifyModel())).observe(viewLifecycleOwner, Observer {
             val type: Type = object : TypeToken<UpdateUserInfoDTO?>() {}.type
             val profilModifyModel : UpdateUserInfoDTO? = Gson().fromJson<UpdateUserInfoDTO>(it, type)
             when (profilModifyModel?.status) {
@@ -146,7 +143,7 @@ class Settings : Fragment(), View.OnClickListener {
                     getString(R.string.timenote_date_format)
             }
 
-            if(prefs.getString("pmtc", "") != Gson().toJson(profileModifyData.loadProfileModifyModel())){
+            if(prefs.getString(pmtc, "") != Gson().toJson(profileModifyData.loadProfileModifyModel())){
                 meViewModel.modifyProfile(tokenId!!, UpdateUserInfoDTO(
                     profilModifyModel?.givenName, profilModifyModel?.familyName, profilModifyModel?.picture,
                     profilModifyModel?.location, profilModifyModel?.birthday, profilModifyModel?.description,
@@ -165,7 +162,7 @@ class Settings : Fragment(), View.OnClickListener {
                 })
             }
 
-            prefs.edit().putString("pmtc", Gson().toJson(profileModifyData.loadProfileModifyModel())).apply()
+            prefs.edit().putString(pmtc, Gson().toJson(profileModifyData.loadProfileModifyModel())).apply()
         })
 
         profile_settings_change_password.setOnClickListener(this)
@@ -181,10 +178,11 @@ class Settings : Fragment(), View.OnClickListener {
             else profileModifyData.setStatusAccount(0)
         }
         settings_switch_account_synchro_google.setOnCheckedChangeListener { _, isChecked ->
-            prefs.edit().putBoolean("googleCalendarSynchronized", isChecked).apply()
+            prefs.edit().putBoolean(google_calendar_synchronized, isChecked).apply()
             settings_switch_account_synchro_google.isChecked = isChecked
             if(isChecked) chooseAccount()
-            else WorkManager.getInstance(requireContext()).cancelUniqueWork("synchronizeGoogleCalendarWorker")
+            else WorkManager.getInstance(requireContext()).cancelUniqueWork(
+                synchronize_google_calendar_worker)
         }
     }
 
@@ -217,11 +215,11 @@ class Settings : Fragment(), View.OnClickListener {
                     when (index) {
                         0 -> {
                             dsactv.text = text
-                            prefs.edit().putInt("default_settings_at_creation_time", index).apply()
+                            prefs.edit().putInt(default_settings_at_creation_time, index).apply()
                         }
                         1 -> {
                             dsactv.text = text
-                            prefs.edit().putInt("default_settings_at_creation_time", index).apply()
+                            prefs.edit().putInt(default_settings_at_creation_time, index).apply()
                         }
                     }
 
@@ -243,15 +241,15 @@ class Settings : Fragment(), View.OnClickListener {
                                                 tokenId = newToken
                                                 meViewModel.changePassword(tokenId!!, newPasswordAgain.toString()).observe(viewLifecycleOwner, Observer { resp ->
                                                     if (resp.isSuccessful) {
-                                                        Toast.makeText(requireContext(), "Password changed successfully", Toast.LENGTH_SHORT).show()
-                                                    } else Toast.makeText(requireContext(), "Error. Please try again", Toast.LENGTH_SHORT).show()
+                                                        Toast.makeText(requireContext(), getString(R.string.password_changed_successfully), Toast.LENGTH_SHORT).show()
+                                                    } else Toast.makeText(requireContext(), getString(R.string.error_try_again), Toast.LENGTH_SHORT).show()
                                                 })
                                             })
                                     }
 
                                     if (rsp.isSuccessful) {
-                                        Toast.makeText(requireContext(), "Password changed successfully", Toast.LENGTH_SHORT).show()
-                                    } else Toast.makeText(requireContext(), "Error. Please try again", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(requireContext(), getString(R.string.password_changed_successfully), Toast.LENGTH_SHORT).show()
+                                    } else Toast.makeText(requireContext(), getString(R.string.error_try_again), Toast.LENGTH_SHORT).show()
                                 })
                             }
                         }
@@ -263,11 +261,10 @@ class Settings : Fragment(), View.OnClickListener {
             profile_settings_disconnect -> {
                 lifecycleScope.launch {
                     withContext(Dispatchers.IO){
-                        prefs.edit().putString("notifications", null).apply()
+                        prefs.edit().clear().apply()
+                        prefs.edit().putBoolean(already_signed_in, true).apply()
                         onRefreshPicBottomNavListener.onrefreshPicBottomNav(null)
                         FirebaseInstanceId.getInstance().deleteInstanceId()
-                        prefs.edit().putString(accessToken, null).apply()
-                        prefs.edit().putString("UserInfoDTO", null).apply()
                         loginViewModel.markAsDisconnected()
                     }
                 }
@@ -346,11 +343,12 @@ class Settings : Fragment(), View.OnClickListener {
                 loopThroughCalendar(mEventsList.iterator())
             }
         } else {
-            prefs.edit().putString("mapEventIdToTimenote", Gson().toJson(map)).apply()
+            prefs.edit().putString(map_event_id_to_timenote, Gson().toJson(map)).apply()
             val data = workDataOf(user_id to userInfoDTO.id, token_id to tokenId)
             val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).setRequiresCharging(true).build()
             val worker = PeriodicWorkRequestBuilder<SynchronizeGoogleCalendarWorker>(6, TimeUnit.HOURS).setConstraints(constraints).setInputData(data).build()
-            WorkManager.getInstance(requireContext()).enqueueUniquePeriodicWork("synchronizeGoogleCalendarWorker", ExistingPeriodicWorkPolicy.REPLACE ,worker)
+            WorkManager.getInstance(requireContext()).enqueueUniquePeriodicWork(
+                synchronize_google_calendar_worker, ExistingPeriodicWorkPolicy.REPLACE ,worker)
         }
     }
 
@@ -393,7 +391,7 @@ class Settings : Fragment(), View.OnClickListener {
                 val accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
                 if (accountName != null) {
                     credential.selectedAccountName = accountName
-                    prefs.edit().putString(GMAIL, accountName).apply()
+                    prefs.edit().putString(gmail, accountName).apply()
                     refreshResults()
                 }
             } else if (resultCode == Activity.RESULT_CANCELED) {
