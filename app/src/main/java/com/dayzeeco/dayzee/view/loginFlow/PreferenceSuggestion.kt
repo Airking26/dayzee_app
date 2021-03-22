@@ -94,12 +94,12 @@ class PreferenceSuggestion : Fragment(), View.OnClickListener,
 
     override fun onItemSelected(follow: Boolean, userInfoDTO: UserInfoDTO) {
         followViewModel.followPublicUser(tokenId!!, userInfoDTO.id!!).observe(viewLifecycleOwner, {
-            if(it.isSuccessful) topAdapter.notifyDataSetChanged()
+            //if(it.isSuccessful) topAdapter.notifyDataSetChanged()
             if(it.code() == 401) {
                 loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner){ newAccessToken ->
                     tokenId = newAccessToken
                     followViewModel.followPublicUser(tokenId!!, userInfoDTO?.id!!).observe(viewLifecycleOwner){ rsp ->
-                        if(rsp.isSuccessful) topAdapter.notifyDataSetChanged()
+                        //if(rsp.isSuccessful) topAdapter.notifyDataSetChanged()
                     }
                 }
             }

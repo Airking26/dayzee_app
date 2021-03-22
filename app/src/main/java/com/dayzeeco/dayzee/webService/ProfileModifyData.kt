@@ -45,7 +45,7 @@ class ProfileModifyData(context: Context) {
     }
 
     private fun notifyProfileDataChanged() {
-        prefs.edit().putString("UserInfoDTO", Gson().toJson(profilModifyModel)).apply()
+        prefs.edit().putString(user_info_dto, Gson().toJson(profilModifyModel)).apply()
     }
 
     fun setName(name: String){

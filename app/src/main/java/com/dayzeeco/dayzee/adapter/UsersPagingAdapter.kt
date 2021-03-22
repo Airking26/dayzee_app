@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.dayzeeco.dayzee.R
+import com.dayzeeco.dayzee.common.getSafeSubstring
 import com.dayzeeco.dayzee.model.TimenoteInfoDTO
 import com.dayzeeco.dayzee.model.UserInfoDTO
 import kotlinx.android.synthetic.main.item_user.view.*
@@ -59,10 +60,12 @@ class UsersPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>,
             if(mine != null && mine == true){
                 if(followers != null && followers == 0){
                     itemView.user_unfollow.visibility = View.VISIBLE
+                    itemView.user_unfollow.setText(itemView.context.getString(R.string.unfollow))
                     itemView.user_unfollow.setOnClickListener { searchPeopleListener.onUnfollow(userInfoDTO.id!!) }
                 } else {
-                    itemView.user_remove.visibility = View.VISIBLE
-                    itemView.user_remove.setOnClickListener { searchPeopleListener.onRemove(userInfoDTO.id!!) }
+                    itemView.user_unfollow.visibility = View.VISIBLE
+                    itemView.user_unfollow.setText(itemView.context.getString(R.string.remove))
+                    itemView.user_unfollow.setOnClickListener { searchPeopleListener.onRemove(userInfoDTO.id!!) }
                 }
             }
 

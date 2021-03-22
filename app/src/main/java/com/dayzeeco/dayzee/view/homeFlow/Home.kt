@@ -89,11 +89,17 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         tokenId = prefs.getString(accessToken, null)
         refreshTokenId = prefs.getString(refreshToken, null)
-        if(!tokenId.isNullOrBlank()) loginViewModel.markAsAuthenticated() else loginViewModel.markAsGuest()
-        loginViewModel.getAuthenticationState().observe(requireActivity(), Observer {
+        if(!tokenId.isNullOrBlank()){
+            loginViewModel.markAsAuthenticated()
+        } else {
+            if(prefs.getBoolean(already_signed_in, false)) loginViewModel.markAsUnauthenticated()
+            else loginViewModel.markAsGuest()
+        }
+        loginViewModel.getAuthenticationState().observe(requireActivity(), {
             when (it) {
                 LoginViewModel.AuthenticationState.UNAUTHENTICATED -> {
-                    findNavController().navigate(HomeDirections.actionGlobalNavigation()) }
+                    findNavController().navigate(HomeDirections.actionGlobalNavigation())
+                }
 
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> {
                     tokenId = prefs.getString(accessToken, null)
@@ -118,7 +124,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     @ExperimentalPagingApi
     override fun onResume() {
         super.onResume()
-        if(tokenId != null) {
+        if(prefs.getString(accessToken, null) != null) {
             if(timenoteRecentPagingAdapter == null || timenotePagingAdapter == null || home_nothing_to_display?.visibility == View.VISIBLE || home_posted_recently.visibility == View.GONE) loadUpcomingData()
             tokenId = prefs.getString(accessToken, null)
             retrieveCurrentRegistrationToken(prefs.getString(accessToken, null)!!)
@@ -149,7 +155,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
     @ExperimentalPagingApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        if(tokenId != null) {
+        if(prefs.getString(accessToken, null) != null) {
 
             changePasswordTemporary()
 

@@ -12,9 +12,11 @@ class ScreenSlideCreationTimenotePagerAdapter(var fa: Fragment, var images: Muta
     override fun getItemCount(): Int =
         if(images.isNullOrEmpty()) pictures?.size!! else images?.size!!
 
-    override fun createFragment(position: Int): Fragment = ScreenSlideCreationTimenoteImageFragment.newInstance(position, if(images?.isNullOrEmpty()!!) "" else transformFileToUri(images!![position]), fa, hideIcons, fromDuplicateOrEdit, if(pictures.isNullOrEmpty()) "" else pictures?.get(position))
+    override fun createFragment(position: Int): Fragment =
+        ScreenSlideCreationTimenoteImageFragment.newInstance(position, if(images?.isNullOrEmpty()!!) "" else transformFileToUri(images!![position]), fa, hideIcons, fromDuplicateOrEdit, if(pictures.isNullOrEmpty()) "" else pictures?.get(position))
 
-    override fun getItemViewType(position: Int): Int = POSITION_NONE
+    override fun getItemViewType(position: Int): Int =
+        POSITION_NONE
 
     private fun transformFileToUri(file: File): String{
         return "file://${file.absolutePath}"

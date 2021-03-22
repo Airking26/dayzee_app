@@ -243,8 +243,14 @@ class ItemTimenoteAdapter(
             screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(itemView.timenote_indicator.adapterDataObserver)
             itemView.timenote_username.text = timenote.createdBy.userName
             if(timenote.location != null) {
-                if(timenote.location.address.city.isNotBlank() || timenote.location.address.city.isNotEmpty())
-                itemView.timenote_place.text = timenote.location.address.address.plus(", ").plus(timenote.location.address.city).plus(" ").plus(timenote.location.address.country)
+                if(timenote.location.address.address.isEmpty() && timenote.location.address.city.isNotEmpty() && timenote.location.address.country.isNotEmpty()){
+                    itemView.timenote_place.text = timenote.location.address.city.plus(" ").plus(timenote.location.address.country)
+                }
+                else if(timenote.location.address.address.isNotEmpty() && timenote.location.address.city.isNotEmpty() && timenote.location.address.country.isNotEmpty() ) {
+                    itemView.timenote_place.text = timenote.location.address.address.plus(", ")
+                        .plus(timenote.location.address.city).plus(" ")
+                        .plus(timenote.location.address.country)
+                }
                 else itemView.timenote_place.text = timenote.location.address.address
             }
             else itemView.timenote_place.text = ""
@@ -297,8 +303,8 @@ class ItemTimenoteAdapter(
             }
 
             itemView.timenote_year.text = utils.setYear(timenote.startingAt)
-            itemView.timenote_day_month.text = utils.setFormatedStartDate(timenote.startingAt, timenote.endingAt)
-            itemView.timenote_time.text = utils.setFormatedEndDate(timenote.startingAt, timenote.endingAt)
+            itemView.timenote_day_month.text = utils.setFormatedStartDate(timenote.startingAt, timenote.endingAt, itemView.context)
+            itemView.timenote_time.text = utils.setFormatedEndDate(timenote.startingAt, timenote.endingAt, itemView.context)
 
             itemView.timenote_day_month.setOnClickListener { showInTime(isFromFuture, utils, timenote) }
             itemView.timenote_year.setOnClickListener { showInTime(isFromFuture, utils, timenote) }

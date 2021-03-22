@@ -20,30 +20,37 @@
 
     <TextView
         android:id="@+id/timenote_username"
+        app:layout_constrainedWidth="true"
         android:layout_width="wrap_content"
+        app:layout_constraintHorizontal_bias="0"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
         android:textColor="@color/colorText"
         android:textSize="15sp"
+        android:maxLines="1"
+        app:layout_constraintEnd_toStartOf="@id/timenote_options"
+        android:ellipsize="end"
         app:layout_constraintStart_toEndOf="@id/timenote_pic_user_imageview"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Samuel" />
+        app:layout_constraintTop_toTopOf="@id/timenote_pic_user_imageview"
+        tools:text="Ligue 1" />
 
     <TextView
         android:id="@+id/timenote_place"
-        android:layout_width="0dp"
-        android:maxLines="1"
-        android:ellipsize="end"
-        app:layout_constraintEnd_toStartOf="@id/timenote_options"
+        android:layout_width="wrap_content"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintHorizontal_bias="0"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:ellipsize="end"
         android:fontFamily="sans-serif-light"
+        android:maxLines="1"
         android:textColor="@color/colorText"
         android:textSize="13sp"
+        app:layout_constraintEnd_toStartOf="@id/timenote_options"
+        app:layout_constraintBottom_toBottomOf="@id/timenote_pic_user_imageview"
         app:layout_constraintStart_toEndOf="@id/timenote_pic_user_imageview"
         app:layout_constraintTop_toBottomOf="@id/timenote_username"
-        tools:text="34 Ohio Street" />
+        tools:text="ligue 1" />
 
     <ImageView
         android:id="@+id/timenote_options"

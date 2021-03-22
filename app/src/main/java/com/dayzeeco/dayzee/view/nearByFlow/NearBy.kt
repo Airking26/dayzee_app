@@ -72,6 +72,8 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     UsersPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.SearchPeopleListener,
     UsersShareWithPagingAdapter.AddToSend {
 
+    val markerId : MutableList<String> = mutableListOf()
+
     private lateinit var goToProfileLisner : GoToProfile
     private lateinit var goBackHome: BackToHomeListener
     private var sendTo: MutableList<String> = mutableListOf()
@@ -107,7 +109,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         tokenId = prefs.getString(accessToken, null)
-        loginViewModel.getAuthenticationState().observe(requireActivity(), androidx.lifecycle.Observer {
+        loginViewModel.getAuthenticationState().observe(requireActivity(), {
             when (it) {
                 LoginViewModel.AuthenticationState.UNAUTHENTICATED ->{
                     findNavController().navigate(NearByDirections.actionGlobalNavigation())
@@ -144,6 +146,9 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         super.onResume()
         Utils().hideStatusBar(requireActivity())
         if(!tokenId.isNullOrBlank()) onRefreshPicBottomNavListener.onrefreshPicBottomNav(userInfoDTO?.picture)
+        when(loginViewModel.getAuthenticationState().value){
+            LoginViewModel.AuthenticationState.UNAUTHENTICATED -> goBackHome.onBackHome()
+        }
     }
 
     @OptIn(ExperimentalPagingApi::class)
@@ -256,10 +261,10 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
                         Utils().hideStatusBar(requireActivity())
                         this.googleMap?.addMarker(MarkerOptions().position(LatLng(place.latLng?.latitude!!, place.latLng?.longitude!!)))
                         this.googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(place.latLng?.latitude!!, place.latLng?.longitude!!), 15F))
-                        nearbyViewModel.fetchLocation(place.id!!, getString(R.string.api_web_key)).observe(viewLifecycleOwner, androidx.lifecycle.Observer { detailedPlace ->
-                            val location = Utils().setLocation(detailedPlace.body()!!, false, null)
-                            if(detailedPlace.isSuccessful) nearbyFilterData.setWhere(location)
-                        })
+                        nearbyViewModel.fetchLocation(place.id!!, getString(R.string.api_web_key)).observe(viewLifecycleOwner, { detailedPlace ->
+                                val location = Utils().setLocation(detailedPlace.body()!!, false, null)
+                                if(detailedPlace.isSuccessful) nearbyFilterData.setWhere(location)
+                            })
                     }
                 }
                 AutocompleteActivity.RESULT_ERROR -> {
@@ -304,10 +309,10 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
                 val place = it.result?.placeLikelihoods?.get(0)?.place
                 googleMap?.addMarker(MarkerOptions().position(LatLng(place?.latLng?.latitude!!, place.latLng?.longitude!!)))
                 googleMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(place?.latLng?.latitude!!, place.latLng?.longitude!!), 15F))
-                if(view != null) nearbyViewModel.fetchLocation(place?.id!!, getString(R.string.api_web_key)).observe(viewLifecycleOwner, androidx.lifecycle.Observer { detailedPlace ->
-                    if(detailedPlace.isSuccessful) nearbyFilterData.setWhere(Utils().setLocation(detailedPlace.body()!!, false, null))
-                    firstTime = false
-                })
+                if(view != null) nearbyViewModel.fetchLocation(place?.id!!, getString(R.string.api_web_key)).observe(viewLifecycleOwner, { detailedPlace ->
+                        if(detailedPlace.isSuccessful) nearbyFilterData.setWhere(Utils().setLocation(detailedPlace.body()!!, false, null))
+                        firstTime = false
+                    })
             }
         }
     }
@@ -577,8 +582,14 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     }
     }
 
-    override fun onAddMarker(timenoteInfoDTO: TimenoteInfoDTO) {
-        this.googleMap?.addMarker(MarkerOptions().position(LatLng(timenoteInfoDTO.location?.latitude!!, timenoteInfoDTO.location.longitude)))
+    override fun onAddMarker(timenoteInfoDTO: TimenoteInfoDTO) {/*
+        markerId.add(this.googleMap?.addMarker(MarkerOptions().position(LatLng(timenoteInfoDTO.location?.latitude!!, timenoteInfoDTO.location.longitude)).title(timenoteInfoDTO.title))?.id!!)
+        this.googleMap?.setOnMarkerClickListener {
+            if(markerId.contains(it.id)) {
+                nearby_rv.scrollToPosition(markerId.indexOf(it.id) - 4)
+            }
+            false
+        }*/
     }
 
     override fun onHashtagClicked(timenoteInfoDTO: TimenoteInfoDTO ,hashtag: String?) {
@@ -634,6 +645,11 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     override fun onAddressClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         if(userInfoDTO == null) loginViewModel.markAsUnauthenticated()
         else findNavController().navigate(NearByDirections.actionGlobalTimenoteAddress(timenoteInfoDTO, 3))
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if(loginViewModel.getAuthenticationState().value == LoginViewModel.AuthenticationState.GUEST) loginViewModel.markAsUnauthenticated()
     }
 
     override fun onSearchClicked(userInfoDTO: UserInfoDTO) {

@@ -59,9 +59,9 @@ class Signup: Fragment(), View.OnClickListener {
 
         handlerPasswordSignup = Handler{
             if(it.what == TRIGGER_AUTO_COMPLETE){
-                if(!TextUtils.isEmpty(signup_password.text)){
-                    if(signup_password.text.toString().startsWith(dayzee_prefix, true)){
-                        signup_password.error = getString(R.string.cant_start_with_password)
+                if(!TextUtils.isEmpty(signup_password?.text)){
+                    if(signup_password?.text.toString()?.startsWith(dayzee_prefix, true)){
+                        signup_password?.error = getString(R.string.cant_start_with_password)
                     } else passwordValidForm = true
                 }
             }
@@ -70,8 +70,8 @@ class Signup: Fragment(), View.OnClickListener {
 
         handlerPasswordLogin = Handler{
             if(it.what == TRIGGER_AUTO_COMPLETE){
-                if(!TextUtils.isEmpty(signin_password.text)){
-                 if(signin_password.text.toString().startsWith(dayzee_prefix, true)){
+                if(!TextUtils.isEmpty(signin_password?.text)){
+                 if(signin_password?.text.toString().startsWith(dayzee_prefix, true)){
                      prefs.edit().putBoolean(temporary_password, true).apply()
                  } else prefs.edit().putBoolean(temporary_password, false).apply()
                 }
@@ -81,10 +81,10 @@ class Signup: Fragment(), View.OnClickListener {
 
         handlerMailUsername = Handler {
             if (it.what == TRIGGER_AUTO_COMPLETE) {
-                if (!TextUtils.isEmpty(signin_mail_username.text)) {
-                    if (signin_mail_username.text.toString().contains('@')) {
+                if (!TextUtils.isEmpty(signin_mail_username?.text)) {
+                    if (signin_mail_username?.text.toString().contains('@')) {
                         if (!loginViewModel.isValidEmail(signin_mail_username.text.toString()))
-                            signin_mail_username.error = getString(R.string.not_valid_mail_form)
+                            signin_mail_username?.error = getString(R.string.not_valid_mail_form)
                     }
                 }
 
@@ -94,7 +94,7 @@ class Signup: Fragment(), View.OnClickListener {
 
         handlerMail = Handler { msg ->
             if (msg.what == TRIGGER_AUTO_COMPLETE) {
-                if (!TextUtils.isEmpty(signup_mail.text)) {
+                if (!TextUtils.isEmpty(signup_mail?.text)) {
                     if (loginViewModel.isValidEmail(signup_mail.text.toString())) {
                         loginViewModel.checkIfEmailAvailable(signup_mail.text.toString())
                             .observe(viewLifecycleOwner, Observer {
@@ -114,15 +114,15 @@ class Signup: Fragment(), View.OnClickListener {
 
         handlerIdentifiant = Handler(Handler.Callback { msg ->
             if (msg.what == TRIGGER_AUTO_COMPLETE) {
-                if (!TextUtils.isEmpty(signup_identifiant.text)) {
-                    if(!loginViewModel.isValidUsername(signup_identifiant.text.toString())){
-                        loginViewModel.checkIfUsernameAvailable(signup_identifiant.text.toString()).observe(viewLifecycleOwner, Observer {
+                if (!TextUtils.isEmpty(signup_identifiant?.text)) {
+                    if(!loginViewModel.isValidUsername(signup_identifiant?.text.toString())){
+                        loginViewModel.checkIfUsernameAvailable(signup_identifiant?.text.toString()).observe(viewLifecycleOwner, Observer {
                             if(it.code() == 200) availableIdentifiant = it.body()?.isAvailable!!
-                            if(!availableIdentifiant!! && !isOnLogin) signup_identifiant.error = getString(R.string.usermane_already_exists)
+                            if(!availableIdentifiant!! && !isOnLogin) signup_identifiant?.error = getString(R.string.usermane_already_exists)
                             else usernameValidForm = true
                         })
                     } else {
-                        signup_identifiant.error = getString(R.string.not_username_valid_form)
+                        signup_identifiant?.error = getString(R.string.not_username_valid_form)
                     }
                 }
             }

@@ -39,6 +39,8 @@
             android:fontFamily="sans-serif-light"
             android:id="@+id/profile_item_name_event"
             android:layout_marginStart="8dp"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constrainedWidth="true"
             android:textSize="15sp"
             android:textColor="@color/colorText"
             android:textAllCaps="true"
@@ -48,7 +50,7 @@
             app:layout_constraintEnd_toStartOf="@id/profile_item_options"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@+id/item_card"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
         <TextView
@@ -63,7 +65,9 @@
             android:textSize="14sp"
             app:layout_constraintTop_toBottomOf="@id/profile_item_name_event"
             app:layout_constraintStart_toEndOf="@id/item_card"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintHorizontal_bias="0"
             android:layout_height="wrap_content"/>
 
         <ImageView

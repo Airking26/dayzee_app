@@ -36,7 +36,7 @@ class WebSearchViewModel: ViewModel(){
     }
 
     fun getBitmap(): MutableLiveData<Bitmap?> {
-        transformImageLiveData.postValue(bitmap!!)
+        if(bitmap != null) transformImageLiveData.postValue(bitmap!!)
         return transformImageLiveData
     }
 

@@ -24,6 +24,7 @@ import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.ProfileEventPagerAdapter
 import com.dayzeeco.dayzee.common.*
+import com.dayzeeco.dayzee.listeners.BackToHomeListener
 import com.dayzeeco.dayzee.listeners.GoToProfile
 import com.dayzeeco.dayzee.listeners.OnRemoveFilterBarListener
 import com.dayzeeco.dayzee.listeners.RefreshPicBottomNavListener
@@ -61,6 +62,7 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
     private var showFilterBarPastEvents = false
     private lateinit var onRefreshPicBottomNavListener: RefreshPicBottomNavListener
     private var locaPref: Int = -1
+    private lateinit var onBackHome : BackToHomeListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,6 +74,7 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
 
         loginViewModel.getAuthenticationState().observe(requireActivity(), {
             when (it) {
+                LoginViewModel.AuthenticationState.GUEST ->  findNavController().popBackStack(R.id.myProfile, false)
                 LoginViewModel.AuthenticationState.DISCONNECTED -> findNavController().navigate(SettingsDirections.actionGlobalNavigation())
                 LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(MyProfileDirections.actionGlobalNavigation())
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> {
@@ -91,16 +94,19 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
     override fun onAttach(context: Context) {
         super.onAttach(context)
         onRefreshPicBottomNavListener = context as RefreshPicBottomNavListener
+        onBackHome = context as BackToHomeListener
     }
 
     override fun onResume() {
         super.onResume()
-        if(!tokenId.isNullOrBlank()) onRefreshPicBottomNavListener.onrefreshPicBottomNav(userInfoDTO?.picture)
         when(loginViewModel.getAuthenticationState().value){
-            LoginViewModel.AuthenticationState.GUEST -> loginViewModel.markAsUnauthenticated()
+            LoginViewModel.AuthenticationState.GUEST -> onBackHome.onBackHome()
+            LoginViewModel.AuthenticationState.UNAUTHENTICATED -> onBackHome.onBackHome()
         }
+        if (!prefs.getString(accessToken, null).isNullOrBlank()) {
+            onRefreshPicBottomNavListener.onrefreshPicBottomNav(userInfoDTO?.picture)
 
-        prefs.stringLiveData(notifications_saved, Gson().toJson(prefs.getString(notifications_saved, null))).observe(viewLifecycleOwner, {
+            prefs.stringLiveData(notifications_saved, Gson().toJson(prefs.getString(notifications_saved, null))).observe(viewLifecycleOwner, {
                 val typeNotification: Type = object : TypeToken<MutableList<Notification?>>() {}.type
                 notifications = Gson().fromJson<MutableList<Notification>>(it, typeNotification) ?: mutableListOf()
                 if(notifications.any { n -> !n.read }){
@@ -110,62 +116,63 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
                 }
             })
 
-        switchToDetailedTimenote.getswitchToPreviewDetailedTimenoteViewModel().observe(viewLifecycleOwner,
-            {
-                if(it) {
-                    findNavController().navigate(MyProfileDirections.actionGlobalDetailedTimenote(4, switchToDetailedTimenote.getTimenoteInfoDTO()))
-                    switchToDetailedTimenote.switchToPreviewDetailedTimenoteViewModel(false)
+            switchToDetailedTimenote.getswitchToPreviewDetailedTimenoteViewModel().observe(viewLifecycleOwner,
+                {
+                    if(it) {
+                        findNavController().navigate(MyProfileDirections.actionGlobalDetailedTimenote(4, switchToDetailedTimenote.getTimenoteInfoDTO()))
+                        switchToDetailedTimenote.switchToPreviewDetailedTimenoteViewModel(false)
+                    }
+                })
+            profile_tablayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                override fun onTabReselected(tab: TabLayout.Tab?) {
+                    when(tab?.position){
+                        0 -> {
+                            showFilterBarPastEvents = if(!showFilterBarPastEvents){
+                                profileEventPagerAdapter?.setShowFilterBar(true, 0, true)
+                                true
+                            } else {
+                                profileEventPagerAdapter?.setShowFilterBar(false, 0, false)
+                                false
+                            }
+                        }
+                        1 -> {
+                            showFilterBarFutureEvents = if(!showFilterBarFutureEvents){
+                                profileEventPagerAdapter?.setShowFilterBar(true, 1, true)
+                                true
+                            } else {
+                                profileEventPagerAdapter?.setShowFilterBar(false, 1, false)
+                                false
+                            }
+                        }
+                    }
+
                 }
+
+                override fun onTabUnselected(tab: TabLayout.Tab?) {
+                    //profileEventPagerAdapter?.setShowFilterBar(true, tab?.position!!, false,  !args.isNotMine)
+                }
+
+                override fun onTabSelected(tab: TabLayout.Tab?) {
+                    profileEventPagerAdapter?.setShowFilterBar(false, tab?.position!!, false)
+                    showFilterBarPastEvents = false
+                    showFilterBarFutureEvents = false
+                    when (tab?.position) {
+                        0 -> {
+                            profile_tablayout.getTabAt(1)?.icon = resources.getDrawable(R.drawable.ic_futur_ok)
+                            profile_tablayout.getTabAt(0)?.icon = resources.getDrawable(R.drawable.ic_passe_plein_grad_ok)
+                        }
+                        1 -> {
+                            profile_tablayout.getTabAt(1)?.icon = resources.getDrawable(R.drawable.ic_futur_plein_grad)
+                            profile_tablayout.getTabAt(0)?.icon = resources.getDrawable(R.drawable.ic_passe_ok)
+                        }
+                    }
+                }
+
             })
-        profile_tablayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabReselected(tab: TabLayout.Tab?) {
-                when(tab?.position){
-                    0 -> {
-                        showFilterBarPastEvents = if(!showFilterBarPastEvents){
-                            profileEventPagerAdapter?.setShowFilterBar(true, 0, true)
-                            true
-                        } else {
-                            profileEventPagerAdapter?.setShowFilterBar(false, 0, false)
-                            false
-                        }
-                    }
-                    1 -> {
-                        showFilterBarFutureEvents = if(!showFilterBarFutureEvents){
-                            profileEventPagerAdapter?.setShowFilterBar(true, 1, true)
-                            true
-                        } else {
-                            profileEventPagerAdapter?.setShowFilterBar(false, 1, false)
-                            false
-                        }
-                    }
-                }
-
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-                //profileEventPagerAdapter?.setShowFilterBar(true, tab?.position!!, false,  !args.isNotMine)
-            }
-
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                profileEventPagerAdapter?.setShowFilterBar(false, tab?.position!!, false)
-                showFilterBarPastEvents = false
-                showFilterBarFutureEvents = false
-                when (tab?.position) {
-                    0 -> {
-                        profile_tablayout.getTabAt(1)?.icon = resources.getDrawable(R.drawable.ic_futur_ok)
-                        profile_tablayout.getTabAt(0)?.icon = resources.getDrawable(R.drawable.ic_passe_plein_grad_ok)
-                    }
-                    1 -> {
-                        profile_tablayout.getTabAt(1)?.icon = resources.getDrawable(R.drawable.ic_futur_plein_grad)
-                        profile_tablayout.getTabAt(0)?.icon = resources.getDrawable(R.drawable.ic_passe_ok)
-                    }
-                }
-            }
-
-        })
-        profile_tablayout.setSelectedTabIndicatorColor(resources.getColor(android.R.color.darker_gray))
-        if(profile_vp.adapter != null)
-        TabLayoutMediator(profile_tablayout, profile_vp) { _, _ -> }.attach()
+            profile_tablayout.setSelectedTabIndicatorColor(resources.getColor(android.R.color.darker_gray))
+            if(profile_vp.adapter != null)
+                TabLayoutMediator(profile_tablayout, profile_vp) { _, _ -> }.attach()
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -174,11 +181,8 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        if(!tokenId.isNullOrBlank()) {
-
-            profile_name_toolbar.setOnClickListener {
-
-            }
+        if(!prefs.getString(accessToken, null).isNullOrBlank()) {
+            profile_name_toolbar.setOnClickListener {}
 
             val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
             userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString(user_info_dto, ""), typeUserInfo)

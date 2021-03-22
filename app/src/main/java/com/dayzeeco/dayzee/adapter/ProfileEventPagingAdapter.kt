@@ -24,6 +24,8 @@ import com.dayzeeco.dayzee.listeners.TimenoteOptionsListener
 import com.dayzeeco.dayzee.model.AlarmInfoDTO
 import com.dayzeeco.dayzee.model.TimenoteInfoDTO
 import kotlinx.android.synthetic.main.item_profile_timenote_list_style.view.*
+import kotlinx.android.synthetic.main.item_profile_timenote_list_style.view.profile_item_address_event
+import kotlinx.android.synthetic.main.item_timenote.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.time.ExperimentalTime
@@ -76,8 +78,18 @@ class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         itemView.setOnClickListener { onCardClicked.onCardClicked(event) }
 
         itemView.profile_item_name_event.text = event.title
-        if(event.location != null) itemView.profile_item_address_event.text = event.location.address.address.plus(", ").plus(event.location.address.city).plus(" ").plus(event.location.address.country)
-        else itemView.profile_item_address_event.text = ""
+        if(event.location != null) {
+            if(event.location.address.address.isEmpty() && event.location.address.city.isNotEmpty() && event.location.address.country.isNotEmpty()){
+                itemView.profile_item_address_event.text = event.location.address.city.plus(" ").plus(event.location.address.country)
+            }
+            else if(event.location.address.address.isNotEmpty() && event.location.address.city.isNotEmpty() && event.location.address.country.isNotEmpty() ) {
+                itemView.profile_item_address_event.text = event.location.address.address.plus(", ")
+                    .plus(event.location.address.city).plus(" ")
+                    .plus(event.location.address.country)
+            }
+            else itemView.profile_item_address_event.text = event.location.address.address
+        }
+        else itemView.timenote_place?.text = ""
         itemView.profile_item_name_owner.text = event.createdBy.userName
         itemView.profile_item_date_event.text = if(isUpcoming) Utils().inTime(event.startingAt, itemView.context) else Utils().sinceTime(event.endingAt, itemView.context)
         itemView.profile_item_date_event.setOnClickListener {

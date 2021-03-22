@@ -776,8 +776,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
                     data?.let {
                         val place = Autocomplete.getPlaceFromIntent(data)
                         profileModViewModel.fetchLocation(place.id!!).observe(
-                            viewLifecycleOwner,
-                            Observer {
+                            viewLifecycleOwner, {
                                 val location = utils.setLocation(it.body()!!, false, null)
                                 profileModifyData.setLocation(location)
                             })

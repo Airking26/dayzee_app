@@ -193,9 +193,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         tokenId = prefs.getString(accessToken, null)
-        loginViewModel.getAuthenticationState().observe(
-            requireActivity(),
-            {
+        loginViewModel.getAuthenticationState().observe(requireActivity(), {
                 when (it) {
                     LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(
                         CreateTimenoteDirections.actionGlobalNavigation()
@@ -220,9 +218,10 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     override fun onResume() {
         super.onResume()
         isCreatedOffset = false
-        if(!tokenId.isNullOrBlank()) onRefreshPicBottomNavListener.onrefreshPicBottomNav(userInfoDTO.picture)
+        if(!prefs.getString(accessToken, null).isNullOrBlank()) onRefreshPicBottomNavListener.onrefreshPicBottomNav(userInfoDTO.picture)
         when(loginViewModel.getAuthenticationState().value){
-            LoginViewModel.AuthenticationState.GUEST -> loginViewModel.markAsUnauthenticated()
+            LoginViewModel.AuthenticationState.GUEST -> backToHomeListener.onBackHome()
+            LoginViewModel.AuthenticationState.UNAUTHENTICATED -> backToHomeListener.onBackHome()
         }
     }
 
@@ -239,6 +238,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         savedInstanceState: Bundle?
     ): View? =
         inflater.inflate(R.layout.fragment_create_timenote, container, false)
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
@@ -258,7 +258,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         } catch (i : InvocationTargetException){
         }
 
-        if(!tokenId.isNullOrBlank()) {
+        if(!prefs.getString(accessToken, null).isNullOrBlank()) {
             setUp()
 
             val type: Type = object : TypeToken<UserInfoDTO?>() {}.type
@@ -636,7 +636,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if (requestCode == 2) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                 openDialogToChoosePic()
             }
         }
@@ -954,20 +954,8 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             title(R.string.take_add_a_picture)
             listItems(
-                items = listOf(
-                    resources.getString(R.string.add_a_picture),
-                    resources.getString(R.string.search_on_web)
-                )
-            ) { _, index, text ->
-                if (ContextCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.READ_EXTERNAL_STORAGE
-                    ) == PackageManager.PERMISSION_GRANTED
-                    && ContextCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    ) == PackageManager.PERMISSION_GRANTED
-                ) {
+                items = listOf(resources.getString(R.string.add_a_picture), resources.getString(R.string.search_on_web))) { _, index, text ->
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                     when (text) {
                         resources.getString(R.string.add_a_picture) -> {
                             InsGallery
@@ -990,10 +978,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                                                     } else {
                                                         media.path
                                                     }
-                                                ImageCompressor.compressBitmap(
-                                                    requireContext(),
-                                                    File(path)
-                                                ) {
+                                                ImageCompressor.compressBitmap(requireContext(), File(path)) {
                                                     images?.add(it)
                                                 }
                                             }
@@ -1004,6 +989,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                                             progressBar.visibility = View.GONE
                                             takeAddPicTv.visibility = View.GONE
                                             hideChooseBackground()
+                                            creationTimenoteViewModel.setTitle(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.title ?: getString(R.string.title))
                                         }
 
                                         override fun onCancel() {
@@ -1396,9 +1382,9 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     override fun onImageSelectedFromWeb(bitmap: String, dialog: MaterialDialog) {
         create_timenote_next_btn.visibility = View.GONE
         done_pb.visibility = View.VISIBLE
-        webSearchViewModel.getBitmap().removeObservers(viewLifecycleOwner)
+        if(webSearchViewModel.getBitmap().value != null) webSearchViewModel.getBitmap().removeObservers(viewLifecycleOwner)
         webSearchViewModel.decodeSampledBitmapFromResource(URL(bitmap), Rect(), 100, 100)
-        webSearchViewModel.getBitmap().observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+        webSearchViewModel.getBitmap().observe(viewLifecycleOwner, {
             if (it != null) {
                 saveTemporary(it, dialog)
                 webSearchViewModel.clearBitmap()

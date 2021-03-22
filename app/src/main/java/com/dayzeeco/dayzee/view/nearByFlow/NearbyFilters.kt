@@ -20,6 +20,7 @@ import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.datetime.datePicker
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
+import com.afollestad.materialdialogs.list.listItemsMultiChoice
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.PlacesClient
@@ -32,6 +33,7 @@ import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.common.Utils
 import com.dayzeeco.dayzee.common.nearby
 import com.dayzeeco.dayzee.common.stringLiveData
+import com.dayzeeco.dayzee.model.Categories
 import com.dayzeeco.dayzee.model.NearbyRequestBody
 import com.dayzeeco.dayzee.model.Price
 import com.dayzeeco.dayzee.viewModel.NearbyViewModel
@@ -137,7 +139,9 @@ class NearbyFilters : Fragment(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when (v) {
-            /*nearby_filter_category -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            nearby_filter_category ->
+                nearbyFilterData.setCategories(listOf(Categories("Sport", "Football")))
+                /*MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.category)
                 positiveButton(R.string.done)
                 listItemsMultiChoice(items = listOf(

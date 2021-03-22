@@ -251,9 +251,9 @@ class DetailedTimenoteCarousel : Fragment(), View.OnClickListener, CommentAdapte
 
             timenote_year.text = utils.setYear(args.event?.startingAt!!)
             timenote_day_month.text =
-                utils.setFormatedStartDate(args.event?.startingAt!!, args.event?.endingAt!!)
+                utils.setFormatedStartDate(args.event?.startingAt!!, args.event?.endingAt!!, requireContext())
             timenote_time.text =
-                utils.setFormatedEndDate(args.event?.startingAt!!, args.event?.endingAt!!)
+                utils.setFormatedEndDate(args.event?.startingAt!!, args.event?.endingAt!!, requireContext())
 
             var addedBy = ""
             var addedByFormated = SpannableStringBuilder(addedBy)

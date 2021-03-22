@@ -32,27 +32,61 @@
                         android:drawableStart="@drawable/ic_back_thin"
                         android:id="@+id/detailed_timenote_btn_back"
                         android:text="" />
-
-                    <TextView
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        android:layout_width="wrap_content"
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Samuel"
-                        android:id="@+id/detailed_timenote_username"
-                        android:textColor="@color/colorText"
-                        android:textSize="17sp"/>
-
-                    <ImageView
-                        android:id="@+id/detailed_timenote_pic_user"
-                        android:layout_marginEnd="8dp"
-                        app:layout_constraintEnd_toStartOf="@id/detailed_timenote_username"
-                        app:layout_constraintTop_toTopOf="parent"
+                        android:layout_marginHorizontal="16dp"
+                        android:gravity="center"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"/>
+                        app:layout_constraintEnd_toStartOf="@id/detailed_timenote_btn_more"
+                        app:layout_constraintStart_toEndOf="@id/detailed_timenote_btn_back"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <ImageView
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            android:src="@drawable/audiance"
+                            android:id="@+id/detailed_timenote_pic_user"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp" />
+
+                        <TextView
+                            app:layout_constraintTop_toTopOf="@id/detailed_timenote_pic_user"
+                            app:layout_constraintStart_toEndOf="@id/detailed_timenote_pic_user"
+                            tools:text="Samuel"
+                            android:id="@+id/detailed_timenote_username"
+                            android:layout_width="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            app:layout_constraintBottom_toTopOf="@id/detailed_timenote_address"
+                            android:maxLines="1"
+                            app:layout_constrainedWidth="true"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0"
+                            android:textColor="@color/colorText"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/detailed_timenote_address"
+                            android:maxLines="1"
+                            app:layout_constraintHorizontal_bias="0"
+                            android:fontFamily="sans-serif-light"
+                            android:textSize="12sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:ellipsize="end"
+                            app:layout_constrainedWidth="true"
+                            app:layout_constraintTop_toBottomOf="@id/detailed_timenote_username"
+                            tools:text="14 avenue de la marée chaussée 18009 Marseille France"
+                            android:textColor="@color/colorText"
+                            android:layout_marginStart="8dp"
+                            app:layout_constraintBottom_toBottomOf="@id/detailed_timenote_pic_user"
+                            app:layout_constraintStart_toEndOf="@id/detailed_timenote_pic_user"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <ImageView
                         android:id="@+id/detailed_timenote_btn_more"

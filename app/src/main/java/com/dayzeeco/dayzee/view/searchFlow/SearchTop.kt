@@ -50,7 +50,9 @@ class SearchTop: Fragment(), SuggestionAdapter.SuggestionItemListener,
             adapter = topAdapter
         }
 
-        searchViewModel.getTop(tokenId!!).observe(viewLifecycleOwner, { response ->
+        searchViewModel.getTop(tokenId!!).observe(
+            viewLifecycleOwner, {
+                response ->
             response.body()?.forEach {
                 if(it.rating > 0 && it.users.isNotEmpty()) tops[SubCategoryRated(it.category, it.rating)] = if(it.users.size > it.rating) it.users.subList(0, it.rating) else it.users }
             search_top_pb.visibility = View.GONE
@@ -61,12 +63,12 @@ class SearchTop: Fragment(), SuggestionAdapter.SuggestionItemListener,
 
     override fun onItemSelected(follow: Boolean, userInfoDTO: UserInfoDTO) {
         followViewModel.followPublicUser(tokenId!!, userInfoDTO.id!!).observe(viewLifecycleOwner, {
-            if(it.isSuccessful) topAdapter.notifyDataSetChanged()
+            //if(it.isSuccessful) topAdapter.notifyDataSetChanged()
             if(it.code() == 401) {
                 loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner){ newAccessToken ->
                     tokenId = newAccessToken
                     followViewModel.followPublicUser(tokenId!!, userInfoDTO?.id!!).observe(viewLifecycleOwner){ rsp ->
-                        if(rsp.isSuccessful) topAdapter.notifyDataSetChanged()
+                        //if(rsp.isSuccessful) topAdapter.notifyDataSetChanged()
                     }
                 }
             }

@@ -11,6 +11,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.filter
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dayzeeco.dayzee.R
@@ -61,7 +63,8 @@ class SearchExploreClicked: Fragment(), UsersShareWithPagingAdapter.AddToSend,
 
         lifecycleScope.launch {
             searchViewModel.searchBasedOnCategory(tokenId!!, args.category!!).collectLatest {
-                userByCategoryAdapter.submitData(it)
+                userByCategoryAdapter.submitData(it.filterSync { userInfoDTO -> !userInfoDTO.isInFollowers })
+
             }
         }
     }
@@ -83,10 +86,11 @@ class SearchExploreClicked: Fragment(), UsersShareWithPagingAdapter.AddToSend,
         findNavController().navigate(SearchExploreClickedDirections.actionSearchExploreClickedToProfileSearch(userInfoDTO))
     }*/
 
+    @ExperimentalPagingApi
     override fun onAdd(userInfoDTO: UserInfoDTO, createGroup: Int?) {
         followViewModel.followPublicUser(tokenId!!, userInfoDTO.id!!)
-            .observe(viewLifecycleOwner, Observer {
-                if(it.isSuccessful) ""
+            .observe(viewLifecycleOwner, {
+                if(it.isSuccessful) userByCategoryAdapter.refresh()
             })
     }
 

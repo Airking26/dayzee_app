@@ -101,29 +101,31 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
     @ExperimentalPagingApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
-        userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString(user_info_dto, ""), typeUserInfo)
+        if(!prefs.getString(accessToken, null).isNullOrBlank()){
+            val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
+            userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString(user_info_dto, ""), typeUserInfo)
 
-        listOfAlarms = AlarmData(requireContext())
+            listOfAlarms = AlarmData(requireContext())
 
-        val profileFilterChipAdapter = ProfileFilterChipAdapter(listOf(getString(R.string.my_posts), getString(
-                    R.string.the_joined), getString(R.string.with_alarm), getString(R.string.group_related)), this)
-        profile_filter_rv_chips_in_rv.apply {
-            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-            adapter = profileFilterChipAdapter
-            onItemClick { recyclerView, position, v ->
-                when(position){
-                    0 -> switchFilters(v, recyclerView[1], recyclerView[2], recyclerView[3], position)
-                    1 -> switchFilters(v, recyclerView[0], recyclerView[2], recyclerView[3] , position)
-                    2 -> switchFilters(v, recyclerView[1], recyclerView[0], recyclerView[3] ,position)
-                    3 -> switchFilters(v, recyclerView[1], recyclerView[2], recyclerView[0] , position)
-                    4 -> onRemoveFilterBarListener.onHideFilterBarClicked(null)
+            val profileFilterChipAdapter = ProfileFilterChipAdapter(listOf(getString(R.string.my_posts), getString(
+                R.string.the_joined), getString(R.string.with_alarm), getString(R.string.group_related)), this)
+            profile_filter_rv_chips_in_rv.apply {
+                layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+                adapter = profileFilterChipAdapter
+                onItemClick { recyclerView, position, v ->
+                    when(position){
+                        0 -> switchFilters(v, recyclerView[1], recyclerView[2], recyclerView[3], position)
+                        1 -> switchFilters(v, recyclerView[0], recyclerView[2], recyclerView[3] , position)
+                        2 -> switchFilters(v, recyclerView[1], recyclerView[0], recyclerView[3] ,position)
+                        3 -> switchFilters(v, recyclerView[1], recyclerView[2], recyclerView[0] , position)
+                        4 -> onRemoveFilterBarListener.onHideFilterBarClicked(null)
+                    }
                 }
             }
+
+
+            loadData(userInfoDTO!!)
         }
-
-
-        loadData(userInfoDTO!!)
 
     }
 
@@ -304,9 +306,9 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
     }
 
     override fun onHideToOthersClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        timenoteViewModel.hideToOthers(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {
+        timenoteViewModel.hideToOthers(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, {
             if(it.code() == 401) {
-                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer { newAccessToken ->
+                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { newAccessToken ->
                     tokenId = newAccessToken
                     timenoteViewModel.hideToOthers(tokenId!!, timenoteInfoDTO.id)
                     Toast.makeText(requireContext(), getString(R.string.hided), Toast.LENGTH_SHORT).show()

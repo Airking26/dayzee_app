@@ -21,6 +21,8 @@ import com.dayzeeco.dayzee.adapter.SearchViewPeopleTagPagerAdapter
 import com.dayzeeco.dayzee.androidView.materialsearchbar.MaterialSearchBar
 import com.dayzeeco.dayzee.common.BaseThroughFragment
 import com.dayzeeco.dayzee.common.accessToken
+import com.dayzeeco.dayzee.common.last_search_suggestions
+import com.dayzeeco.dayzee.listeners.BackToHomeListener
 import com.dayzeeco.dayzee.listeners.RefreshPicBottomNavListener
 import com.dayzeeco.dayzee.viewModel.LoginViewModel
 import com.dayzeeco.dayzee.viewModel.SearchViewModel
@@ -41,19 +43,20 @@ class Search : BaseThroughFragment() {
     private val searchViewModel : SearchViewModel by activityViewModels()
     private var tokenId : String? = null
     private lateinit var onRefreshPicBottomNavListener: RefreshPicBottomNavListener
+    private lateinit var onBackHome : BackToHomeListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         tokenId = prefs.getString(accessToken, null)
-        loginViewModel.getAuthenticationState().observe(requireActivity(), androidx.lifecycle.Observer {
+        loginViewModel.getAuthenticationState().observe(requireActivity(), {
             when (it) {
+                LoginViewModel.AuthenticationState.GUEST -> findNavController().popBackStack(R.id.search, false)
                 LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(SearchDirections.actionGlobalNavigation())
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> {
                     tokenId = prefs.getString(accessToken, null)
                     findNavController().popBackStack(R.id.search, false)
                 }
-                LoginViewModel.AuthenticationState.GUEST -> findNavController().popBackStack(R.id.search, false)
             }
         })
     }
@@ -61,12 +64,14 @@ class Search : BaseThroughFragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         onRefreshPicBottomNavListener = context as RefreshPicBottomNavListener
+        onBackHome = context as BackToHomeListener
     }
 
     override fun onResume() {
         super.onResume()
         when(loginViewModel.getAuthenticationState().value){
-            LoginViewModel.AuthenticationState.GUEST -> loginViewModel.markAsUnauthenticated()
+            LoginViewModel.AuthenticationState.GUEST -> onBackHome.onBackHome()
+            LoginViewModel.AuthenticationState.UNAUTHENTICATED -> onBackHome.onBackHome()
         }
     }
 
@@ -76,9 +81,9 @@ class Search : BaseThroughFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        if(!tokenId.isNullOrBlank()) {
+        if(!prefs.getString(accessToken, null).isNullOrBlank()) {
 
-            searchBar.lastSuggestions = prefs.getStringSet("lastSuggestions", setOf<String>())?.toMutableList()
+            searchBar.lastSuggestions = prefs.getStringSet(last_search_suggestions, setOf<String>())?.toMutableList()
 
             viewTopExplorePagerAdapter =
                 SearchViewTopExplorePagerAdapter(childFragmentManager, lifecycle)
@@ -159,7 +164,8 @@ class Search : BaseThroughFragment() {
 
     override fun onStop() {
         super.onStop()
-        prefs.edit().putStringSet("lastSuggestions", (searchBar.lastSuggestions as MutableList<String>).toSet()).apply()
+        prefs.edit().putStringSet(last_search_suggestions, (searchBar.lastSuggestions as MutableList<String>).toSet()).apply()
     }
+
 
 }

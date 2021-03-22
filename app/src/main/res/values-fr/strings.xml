@@ -28,9 +28,9 @@
     <string name="we_found_some_account_you_might_like">Voici quelques propositions qui pourraient vous interesser :</string>
     <string name="followers">Abonnés</string>
     <string name="following">Abonnements</string>
-    <string name="share_profile">PARTAGER PROFILE</string>
+    <string name="share_profile">PARTAGER PROFIL</string>
     <string name="modify">Modifier</string>
-    <string name="follow">Suivre</string>
+    <string name="follow">S\'abonner</string>
     <string name="name_you_want_to_appear">Nom d\'apparance</string>
     <string name="your_name">Nom</string>
     <string name="from">Depuis</string>
@@ -208,7 +208,7 @@
     <string name="delete">Supprimer</string>
     <string name="alarm">Alarme</string>
     <string name="report">Signaler</string>
-    <string name="hide_to_others">Cacher aux autres</string>
+    <string name="hide_to_others">Masquer aux autres</string>
     <string name="add_end_date">Ajouter une Date de Fin</string>
     <string name="paid_timenote">Coût</string>
     <string name="no_answer">Pas de Réponses</string>

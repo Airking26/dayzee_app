@@ -93,7 +93,7 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
-        meInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString(user_info_dto, ""), typeUserInfo)
+        meInfoDTO = Gson().fromJson(prefs.getString(user_info_dto, ""), typeUserInfo)
         userInfoDTO = args.userInfoDTO
 
             val simpleDateFormatDayName = SimpleDateFormat("EEE.", Locale.getDefault())
@@ -396,8 +396,7 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
 
     private fun followPublicUser() {
         followViewModel.followPublicUser(tokenId!!, userInfoDTO?.id!!).observe(
-            viewLifecycleOwner,
-            androidx.lifecycle.Observer {
+            viewLifecycleOwner, {
                 if(it.code() == 401) loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer { newAccessToken ->
                     tokenId = newAccessToken
                     followPublicUser()

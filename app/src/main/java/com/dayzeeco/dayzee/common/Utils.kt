@@ -1,30 +1,22 @@
 package com.dayzeeco.dayzee.common
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.Dialog
 import android.content.Context
 import android.content.SharedPreferences
-import android.content.pm.ActivityInfo
-import android.content.pm.PackageManager
-import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.location.Geocoder
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
-import android.view.LayoutInflater
+import android.text.TextUtils
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
@@ -37,7 +29,6 @@ import com.afollestad.materialdialogs.callbacks.onDismiss
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
-import com.afollestad.materialdialogs.list.listItems
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.WebSearchAdapter
 import com.dayzeeco.dayzee.androidView.dialog.input
@@ -55,16 +46,28 @@ import java.util.*
 import kotlin.math.abs
 import kotlin.time.ExperimentalTime
 
+
 class Utils {
 
-    fun createWebSearchDialog(context: Context, webSearchViewModel: WebSearchViewModel, fragment: Fragment, view: View?, view1: View?) {
+    fun createWebSearchDialog(
+        context: Context,
+        webSearchViewModel: WebSearchViewModel,
+        fragment: Fragment,
+        view: View?,
+        view1: View?
+    ) {
         var recyclerView : RecyclerView?
         var webSearchAdapter : WebSearchAdapter? = null
         //var progressDialog: Dialog = progressDialog(context)
         MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             input { _, charSequence ->
                 //progressDialog.show()
-                webSearchViewModel.search(charSequence.toString(), context, 0, context.getString(R.string.api_web_key))
+                webSearchViewModel.search(
+                    charSequence.toString(),
+                    context,
+                    0,
+                    context.getString(R.string.api_web_key)
+                )
                 webSearchViewModel.getListResults().removeObservers(fragment.viewLifecycleOwner)
                 webSearchViewModel.getListResults().observe(fragment.viewLifecycleOwner, Observer {
                     if (!it.isNullOrEmpty()) {
@@ -96,7 +99,8 @@ class Utils {
                             dialog.onDismiss {
                                 webSearchAdapter?.clear()
                                 webSearchAdapter = null
-                                webSearchViewModel.getListResults().removeObservers(fragment.viewLifecycleOwner)
+                                webSearchViewModel.getListResults()
+                                    .removeObservers(fragment.viewLifecycleOwner)
                             }
 
                         } else {
@@ -127,7 +131,9 @@ class Utils {
     @SuppressLint("InlinedApi")
     @RequiresApi(Build.VERSION_CODES.M)
     fun showStatusBar(activity: Activity){
-        if(activity.resources.getColor(R.color.colorBackground) == activity.resources.getColor(android.R.color.white)){
+        if(activity.resources.getColor(R.color.colorBackground) == activity.resources.getColor(
+                android.R.color.white
+            )){
             activity.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         } else {
             activity.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
@@ -143,6 +149,9 @@ class Utils {
         return circularProgressDrawable
     }
 
+    fun checkIf24HFormat(context: Context): Boolean {
+        return android.text.format.DateFormat.is24HourFormat(context)
+    }
 
     fun formatDate(format: String, timestamp: Long): String {
         val dateFormat = SimpleDateFormat(format, Locale.getDefault())
@@ -150,11 +159,11 @@ class Utils {
         else dateFormat.format(timestamp)
     }
 
-    fun setFormatedStartDate(startDate: String, endDate: String) : String{
+    fun setFormatedStartDate(startDate: String, endDate: String, context: Context) : String{
         val DATE_FORMAT_DAY = "d MMM yyyy"
-        val DATE_FORMAT_TIME = "hh:mm aaa"
+        val DATE_FORMAT_TIME = if(checkIf24HFormat(context)) "HH:mm" else "hh:mm aaa"
         val DATE_FORMAT_TIME_FORMATED = "d\nMMM"
-        val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = "d MMM\nhh:mm"
+        val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = if(checkIf24HFormat(context)) "d MMM\nHH:mm" else "d MMM\nhh:mm"
         val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
         val formatedStartDate: String
@@ -183,23 +192,24 @@ class Utils {
 
 
 
-        if(formatDate(DATE_FORMAT_DAY, starting) == formatDate(DATE_FORMAT_DAY, ending)){
-            if(formatDate(DATE_FORMAT_TIME, starting) == formatDate(DATE_FORMAT_TIME, ending)){
-                formatedStartDate = formatDate(DATE_FORMAT_TIME_FORMATED, starting)
+        formatedStartDate =
+            if(formatDate(DATE_FORMAT_DAY, starting) == formatDate(DATE_FORMAT_DAY, ending)){
+                if(formatDate(DATE_FORMAT_TIME, starting) == formatDate(DATE_FORMAT_TIME, ending)){
+                    formatDate(DATE_FORMAT_TIME_FORMATED, starting)
+                } else {
+                    formatDate(DATE_FORMAT_TIME_FORMATED, starting)
+                }
             } else {
-                formatedStartDate = formatDate(DATE_FORMAT_TIME_FORMATED, starting)
+                formatDate(DATE_FORMAT_SAME_DAY_DIFFERENT_TIME, starting)
             }
-        } else {
-            formatedStartDate = formatDate(DATE_FORMAT_SAME_DAY_DIFFERENT_TIME, starting)
-        }
 
         return formatedStartDate
     }
 
-    fun setFormatedEndDate(startDate: String, endDate: String): String{
+    fun setFormatedEndDate(startDate: String, endDate: String, context: Context): String{
         val DATE_FORMAT_DAY = "d MMM yyyy"
-        val DATE_FORMAT_TIME = "hh:mm aaa"
-        val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = "d MMM\nhh:mm"
+        val DATE_FORMAT_TIME = if(checkIf24HFormat(context)) "HH:mm" else "hh:mm aaa"
+        val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = if(checkIf24HFormat(context)) "d MMM\nHH:mm" else "d MMM\nhh:mm"
         val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
         var formatedEndDate: String
@@ -231,7 +241,10 @@ class Utils {
                 if(formatDate(DATE_FORMAT_TIME, starting) == formatDate(DATE_FORMAT_TIME, ending)){
                     formatDate(DATE_FORMAT_TIME, starting)
                 } else {
-                    formatDate(DATE_FORMAT_TIME, starting) + "\n" + formatDate(DATE_FORMAT_TIME, ending)
+                    formatDate(DATE_FORMAT_TIME, starting) + "\n" + formatDate(
+                        DATE_FORMAT_TIME,
+                        ending
+                    )
                 }
             } else {
                 formatDate(DATE_FORMAT_SAME_DAY_DIFFERENT_TIME, ending)
@@ -266,8 +279,10 @@ class Utils {
         val nbrMin : Int
         val nbrSec : Int
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val period = Period.between(LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC).toLocalDate()
-                , LocalDateTime.ofInstant(Instant.parse(startDate), ZoneOffset.UTC).toLocalDate())
+            val period = Period.between(
+                LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC).toLocalDate(),
+                LocalDateTime.ofInstant(Instant.parse(startDate), ZoneOffset.UTC).toLocalDate()
+            )
 
             nbrYear = period.years
             nbrMonth = period.minusYears(nbrYear.toLong()).months
@@ -311,60 +326,150 @@ class Utils {
                 if(nbrDay <= 0){
                     decountTime = if(nbrHour > 1){
                         if(nbrMin > 1){
-                            context.resources.getQuantityString(R.plurals.hours_plural_minutes_vary, nbrMin, nbrHour, nbrMin)
+                            context.resources.getQuantityString(
+                                R.plurals.hours_plural_minutes_vary,
+                                nbrMin,
+                                nbrHour,
+                                nbrMin
+                            )
                         } else {
-                            context.resources.getQuantityString(R.plurals.hours_plural_minutes_vary, nbrMin, nbrHour, nbrMin)
+                            context.resources.getQuantityString(
+                                R.plurals.hours_plural_minutes_vary,
+                                nbrMin,
+                                nbrHour,
+                                nbrMin
+                            )
                         }
                     } else if(nbrHour == 1){
                         if(nbrMin > 1){
-                            context.resources.getQuantityString(R.plurals.hours_singular_minutes_vary,nbrMin,  nbrHour, nbrMin)
+                            context.resources.getQuantityString(
+                                R.plurals.hours_singular_minutes_vary,
+                                nbrMin,
+                                nbrHour,
+                                nbrMin
+                            )
                         } else {
-                            context.resources.getQuantityString(R.plurals.hours_singular_minutes_vary,nbrMin,  nbrHour, nbrMin)
+                            context.resources.getQuantityString(
+                                R.plurals.hours_singular_minutes_vary,
+                                nbrMin,
+                                nbrHour,
+                                nbrMin
+                            )
                         }
                     } else {
                         if(nbrMin > 1){
-                            context.resources.getQuantityString(R.plurals.no_hour_minutes_vary, nbrMin, nbrHour, nbrMin)
+                            context.resources.getQuantityString(
+                                R.plurals.no_hour_minutes_vary,
+                                nbrMin,
+                                nbrMin,
+                                nbrMin
+                            )
                         } else {
-                            context.resources.getQuantityString(R.plurals.no_hour_minutes_vary, nbrMin, nbrHour, nbrMin)
+                            context.resources.getQuantityString(
+                                R.plurals.no_hour_minutes_vary,
+                                nbrMin,
+                                nbrMin,
+                                nbrMin
+                            )
                         }
                     }
                 } else {
                     decountTime = if(nbrDay > 1){
-                        if(nbrHour > 1) context.resources.getQuantityString(R.plurals.days_plural_hours_vary, nbrHour, nbrDay, nbrHour)
-                        else context.resources.getQuantityString(R.plurals.days_plural_hours_vary, nbrHour, nbrDay, nbrHour)
+                        if(nbrHour > 1) context.resources.getQuantityString(
+                            R.plurals.days_plural_hours_vary,
+                            nbrHour,
+                            nbrDay,
+                            nbrHour
+                        )
+                        else context.resources.getQuantityString(
+                            R.plurals.days_plural_hours_vary,
+                            nbrHour,
+                            nbrDay,
+                            nbrHour
+                        )
                     } else {
-                        if(nbrHour > 1) context.resources.getQuantityString(R.plurals.days_singular_hours_vary, nbrHour, nbrDay, nbrHour)
-                        else context.resources.getQuantityString(R.plurals.days_singular_hours_vary, nbrHour, nbrHour, nbrHour)
+                        if(nbrHour > 1) context.resources.getQuantityString(
+                            R.plurals.days_singular_hours_vary,
+                            nbrHour,
+                            nbrDay,
+                            nbrHour
+                        )
+                        else context.resources.getQuantityString(
+                            R.plurals.days_singular_hours_vary,
+                            nbrHour,
+                            nbrHour,
+                            nbrHour
+                        )
                     }
 
                 }
             } else {
                 decountTime = if(nbrMonth > 1){
                     if(nbrDay > 1){
-                        context.resources.getQuantityString(R.plurals.months_plural_days_vary, nbrDay, nbrMonth, nbrDay)
+                        context.resources.getQuantityString(
+                            R.plurals.months_plural_days_vary,
+                            nbrDay,
+                            nbrMonth,
+                            nbrDay
+                        )
                     } else {
-                        context.resources.getQuantityString(R.plurals.months_plural_days_vary, nbrDay, nbrMonth, nbrDay)
+                        context.resources.getQuantityString(
+                            R.plurals.months_plural_days_vary,
+                            nbrDay,
+                            nbrMonth,
+                            nbrDay
+                        )
                     }
                 } else {
                     if(nbrDay >1){
-                        context.resources.getQuantityString(R.plurals.months_singular_days_vary, nbrDay, nbrMonth, nbrDay)
+                        context.resources.getQuantityString(
+                            R.plurals.months_singular_days_vary,
+                            nbrDay,
+                            nbrMonth,
+                            nbrDay
+                        )
                     } else {
-                        context.resources.getQuantityString(R.plurals.months_singular_days_vary, nbrDay, nbrMonth, nbrDay)
+                        context.resources.getQuantityString(
+                            R.plurals.months_singular_days_vary,
+                            nbrDay,
+                            nbrMonth,
+                            nbrDay
+                        )
                     }
                 }
             }
         } else {
             decountTime = if(nbrYear > 1){
                 if(nbrMonth > 1) {
-                    context.resources.getQuantityString(R.plurals.years_plural_months_vary, nbrMonth, nbrYear, nbrMonth)
+                    context.resources.getQuantityString(
+                        R.plurals.years_plural_months_vary,
+                        nbrMonth,
+                        nbrYear,
+                        nbrMonth
+                    )
                 } else {
-                    context.resources.getQuantityString(R.plurals.years_plural_months_vary, nbrMonth, nbrYear, nbrMonth)
+                    context.resources.getQuantityString(
+                        R.plurals.years_plural_months_vary,
+                        nbrMonth,
+                        nbrYear,
+                        nbrMonth
+                    )
                 }
             } else {
                 if(nbrMonth > 1){
-                    context.resources.getQuantityString(R.plurals.years_singular_month_vary, nbrMonth, nbrYear, nbrMonth)
+                    context.resources.getQuantityString(
+                        R.plurals.years_singular_month_vary,
+                        nbrMonth,
+                        nbrYear,
+                        nbrMonth
+                    )
                 } else {
-                    context.resources.getQuantityString(R.plurals.years_singular_month_vary, nbrMonth, nbrYear, nbrMonth)
+                    context.resources.getQuantityString(
+                        R.plurals.years_singular_month_vary,
+                        nbrMonth,
+                        nbrYear,
+                        nbrMonth
+                    )
                 }
             }
         }
@@ -382,7 +487,13 @@ class Utils {
         val nbrMin : Int
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val period = Period.between(LocalDateTime.ofInstant(Instant.parse(startDate), ZoneOffset.UTC).toLocalDate(), LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC).toLocalDate())
+            val period = Period.between(
+                LocalDateTime.ofInstant(
+                    Instant.parse(startDate),
+                    ZoneOffset.UTC
+                ).toLocalDate(),
+                LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC).toLocalDate()
+            )
 
             nbrYear = period.years
             nbrMonth = period.minusYears(nbrYear.toLong()).months
@@ -392,7 +503,9 @@ class Utils {
             val duration = Duration.between(Instant.now(), Instant.parse(startDate))
             nbrDay = if(duration.toDays().toInt() < nD) duration.toDays().toInt() else nD
             nbrHours = duration.minusDays(duration.toDays()).toHours().toInt()
-            nbrMin = duration.minusDays(duration.toDays()).minusHours(duration.minusDays(duration.toDays()).toHours()).toMinutes().toInt()
+            nbrMin = duration.minusDays(duration.toDays()).minusHours(
+                duration.minusDays(duration.toDays()).toHours()
+            ).toMinutes().toInt()
 
         } else {
             val time = System.currentTimeMillis() - SimpleDateFormat(ISO).parse(startDate).time
@@ -405,7 +518,14 @@ class Utils {
             nbrMin = c.get(Calendar.MINUTE)
         }
 
-        return formatSinceTime(abs(nbrYear), abs(nbrMonth), abs(nbrDay), abs(nbrHours), abs(nbrMin), context)
+        return formatSinceTime(
+            abs(nbrYear),
+            abs(nbrMonth),
+            abs(nbrDay),
+            abs(nbrHours),
+            abs(nbrMin),
+            context
+        )
     }
 
     private fun formatSinceTime(
@@ -422,54 +542,134 @@ class Utils {
                 if(nbrDay == 0){
                     decountTime = if(nbrHours > 1){
                         if(nbrMin > 1){
-                            context.resources.getQuantityString(R.plurals.since_hours_plural_minutes_vary, nbrMin, nbrHours, nbrMin)
+                            context.resources.getQuantityString(
+                                R.plurals.since_hours_plural_minutes_vary,
+                                nbrMin,
+                                nbrHours,
+                                nbrMin
+                            )
                         } else {
-                            context.resources.getQuantityString(R.plurals.since_hours_plural_minutes_vary, nbrMin, nbrHours, nbrMin)
+                            context.resources.getQuantityString(
+                                R.plurals.since_hours_plural_minutes_vary,
+                                nbrMin,
+                                nbrHours,
+                                nbrMin
+                            )
                         }
                     } else {
                         if(nbrMin > 1){
-                            context.resources.getQuantityString(R.plurals.since_hours_singular_minutes_vary, nbrMin, nbrHours, nbrMin)
+                            context.resources.getQuantityString(
+                                R.plurals.since_hours_singular_minutes_vary,
+                                nbrMin,
+                                nbrHours,
+                                nbrMin
+                            )
                         } else {
-                            context.resources.getQuantityString(R.plurals.since_hours_singular_minutes_vary, nbrMin, nbrHours, nbrMin)
+                            context.resources.getQuantityString(
+                                R.plurals.since_hours_singular_minutes_vary,
+                                nbrMin,
+                                nbrHours,
+                                nbrMin
+                            )
                         }
                     }
                 } else {
                     decountTime = if(nbrDay > 1){
-                        if(nbrHours > 1) context.resources.getQuantityString(R.plurals.since_days_plural_hours_vary, nbrHours, nbrDay, nbrHours)
-                        else context.resources.getQuantityString(R.plurals.since_days_plural_hours_vary, nbrHours, nbrDay, nbrHours)
+                        if(nbrHours > 1) context.resources.getQuantityString(
+                            R.plurals.since_days_plural_hours_vary,
+                            nbrHours,
+                            nbrDay,
+                            nbrHours
+                        )
+                        else context.resources.getQuantityString(
+                            R.plurals.since_days_plural_hours_vary,
+                            nbrHours,
+                            nbrDay,
+                            nbrHours
+                        )
                     } else {
-                        if(nbrHours > 1) context.resources.getQuantityString(R.plurals.since_days_singular_hours_vary, nbrHours, nbrDay, nbrHours)
-                        else context.resources.getQuantityString(R.plurals.since_days_singular_hours_vary, nbrHours, nbrDay, nbrHours)
+                        if(nbrHours > 1) context.resources.getQuantityString(
+                            R.plurals.since_days_singular_hours_vary,
+                            nbrHours,
+                            nbrDay,
+                            nbrHours
+                        )
+                        else context.resources.getQuantityString(
+                            R.plurals.since_days_singular_hours_vary,
+                            nbrHours,
+                            nbrDay,
+                            nbrHours
+                        )
                     }
 
                 }
             } else {
                 decountTime = if(nbrMonth > 1){
                     if(nbrDay > 1){
-                        context.resources.getQuantityString(R.plurals.since_months_plural_days_vary, nbrDay, nbrMonth, nbrDay)
+                        context.resources.getQuantityString(
+                            R.plurals.since_months_plural_days_vary,
+                            nbrDay,
+                            nbrMonth,
+                            nbrDay
+                        )
                     } else {
-                        context.resources.getQuantityString(R.plurals.since_months_plural_days_vary, nbrDay, nbrMonth, nbrDay)
+                        context.resources.getQuantityString(
+                            R.plurals.since_months_plural_days_vary,
+                            nbrDay,
+                            nbrMonth,
+                            nbrDay
+                        )
                     }
                 } else {
                     if(nbrDay >1){
-                        context.resources.getQuantityString(R.plurals.since_months_singular_days_vary, nbrDay, nbrMonth, nbrDay)
+                        context.resources.getQuantityString(
+                            R.plurals.since_months_singular_days_vary,
+                            nbrDay,
+                            nbrMonth,
+                            nbrDay
+                        )
                     } else {
-                        context.resources.getQuantityString(R.plurals.since_months_singular_days_vary, nbrDay, nbrMonth, nbrDay)
+                        context.resources.getQuantityString(
+                            R.plurals.since_months_singular_days_vary,
+                            nbrDay,
+                            nbrMonth,
+                            nbrDay
+                        )
                     }
                 }
             }
         } else {
             decountTime = if(nbrYear > 1){
                 if(nbrMonth > 1) {
-                    context.resources.getQuantityString(R.plurals.since_years_plural_months_vary, nbrMonth, nbrYear, nbrMonth)
+                    context.resources.getQuantityString(
+                        R.plurals.since_years_plural_months_vary,
+                        nbrMonth,
+                        nbrYear,
+                        nbrMonth
+                    )
                 } else {
-                    context.resources.getQuantityString(R.plurals.since_years_plural_months_vary, nbrMonth, nbrYear, nbrMonth)
+                    context.resources.getQuantityString(
+                        R.plurals.since_years_plural_months_vary,
+                        nbrMonth,
+                        nbrYear,
+                        nbrMonth
+                    )
                 }
             } else {
                 if(nbrMonth > 1){
-                    context.resources.getQuantityString(R.plurals.since_years_singular_month_vary, nbrMonth, nbrYear, nbrMonth)
+                    context.resources.getQuantityString(
+                        R.plurals.since_years_singular_month_vary,
+                        nbrMonth,
+                        nbrYear,
+                        nbrMonth
+                    )
                 } else {
-                    context.resources.getQuantityString(R.plurals.since_years_singular_month_vary, nbrMonth, nbrYear, nbrMonth)
+                    context.resources.getQuantityString(
+                        R.plurals.since_years_singular_month_vary,
+                        nbrMonth,
+                        nbrYear,
+                        nbrMonth
+                    )
                 }
             }
         }
@@ -478,38 +678,48 @@ class Utils {
 
     }
 
-    fun setLocation(detailedPlace: DetailedPlace, isInCreation: Boolean, sharedPreferences: SharedPreferences?): Location {
+    fun setLocation(
+        detailedPlace: DetailedPlace,
+        isInCreation: Boolean,
+        sharedPreferences: SharedPreferences?
+    ): Location {
         var zipcode = ""
         var city = ""
         var country = ""
-        if(isInCreation) formatOffset(detailedPlace.result.utc_offset / 60, detailedPlace.result.utc_offset % 60, sharedPreferences!!)
+        if(isInCreation) formatOffset(
+            detailedPlace.result.utc_offset / 60,
+            detailedPlace.result.utc_offset % 60,
+            sharedPreferences!!
+        )
         for(n in detailedPlace.result.address_components){
             if(n.types.contains("locality")) city = n.long_name
             if(n.types.contains("postal_code")) zipcode = n.short_name
             if(n.types.contains("country")) country = n.long_name
         }
-        return Location( detailedPlace.result.geometry.location.lng, detailedPlace.result.geometry.location.lat,
-            Address(detailedPlace.result.name, zipcode, city, country))
+        return Location(
+            detailedPlace.result.geometry.location.lng, detailedPlace.result.geometry.location.lat,
+            Address(detailedPlace.result.name, zipcode, city, country)
+        )
     }
 
     private fun formatOffset(hours: Int, minutes: Int, sharedPreferences: SharedPreferences){
         val offSetToSave = when (hours) {
-                in 0 downTo -9 -> {
-                    if(minutes == 0) "-0${abs(hours)}:00"
-                    else "-0$hours:$minutes"
-                }
-                in 0..9 -> {
-                    if(minutes == 0) "+0$hours:00"
-                    else "+0$hours:$minutes"
-                }
-                in 10..13 -> {
-                    if(minutes == 0) "+$hours:00"
-                    else  "+$hours:$minutes"
-                }
-                in -10 downTo -13 -> {
-                    if(minutes == 0)  "-0${abs(hours)}:00"
-                    else  "-$hours:$minutes"
-                }
+            in 0 downTo -9 -> {
+                if (minutes == 0) "-0${abs(hours)}:00"
+                else "-0$hours:$minutes"
+            }
+            in 0..9 -> {
+                if (minutes == 0) "+0$hours:00"
+                else "+0$hours:$minutes"
+            }
+            in 10..13 -> {
+                if (minutes == 0) "+$hours:00"
+                else "+$hours:$minutes"
+            }
+            in -10 downTo -13 -> {
+                if (minutes == 0) "-0${abs(hours)}:00"
+                else "-$hours:$minutes"
+            }
                 else -> "+00:00"
             }
 
@@ -518,7 +728,12 @@ class Utils {
 
     suspend fun refreshToken(sharedPreferences: SharedPreferences): String? {
         val authService = DayzeeRepository().getAuthService()
-        val newAccessToken = authService.refreshAccessToken(sharedPreferences.getString(refreshToken, null)!!)
+        val newAccessToken = authService.refreshAccessToken(
+            sharedPreferences.getString(
+                refreshToken,
+                null
+            )!!
+        )
         sharedPreferences.edit().putString(accessToken, newAccessToken.body()?.accessToken).apply()
         return newAccessToken.body()?.accessToken
     }
@@ -535,7 +750,11 @@ class Utils {
             } catch (e: IOException) {
                 Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show()
             }
-        } else Toast.makeText(context, context.getString(R.string.error_network), Toast.LENGTH_SHORT).show()
+        } else Toast.makeText(
+            context,
+            context.getString(R.string.error_network),
+            Toast.LENGTH_SHORT
+        ).show()
         return loca
     }
 
@@ -591,7 +810,11 @@ fun <T : Drawable> T.toBitmap(): Bitmap {
     if (this is BitmapDrawable) return bitmap
 
     val drawable: Drawable = this
-    val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+    val bitmap = Bitmap.createBitmap(
+        drawable.intrinsicWidth,
+        drawable.intrinsicHeight,
+        Bitmap.Config.ARGB_8888
+    )
     val canvas = Canvas(bitmap)
     drawable.setBounds(0, 0, canvas.width, canvas.height)
     drawable.draw(canvas)
@@ -603,4 +826,21 @@ fun Bitmap.toBytes(): ByteArray = ByteArrayOutputStream().use { stream ->
     stream.toByteArray()
 }
 
-fun Bitmap.toPixels() = IntArray(width * height).apply { getPixels(this, 0, width, 0, 0, width, height) }
+fun Bitmap.toPixels() = IntArray(width * height).apply { getPixels(
+    this,
+    0,
+    width,
+    0,
+    0,
+    width,
+    height
+) }
+
+fun getSafeSubstring(s: String, maxLength: Int): String? {
+    if (!TextUtils.isEmpty(s)) {
+        if (s.length >= maxLength) {
+            return s.substring(0, maxLength).plus("...")
+        }
+    }
+    return s
+}

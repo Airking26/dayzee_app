@@ -18,7 +18,7 @@ class NearbyFilterData(context: Context) {
     val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
     private var nearbyFilterModel: NearbyRequestBody? =
-        Gson().fromJson<NearbyRequestBody>(prefs.getString(nearby, Gson().toJson(NearbyRequestBody(Location(0.0, 0.0, Address("","", "","")), 10, listOf(), SimpleDateFormat(ISO, Locale.getDefault()).format(System.currentTimeMillis()), Price(0, ""), 2))), type)
+        Gson().fromJson<NearbyRequestBody>(prefs.getString(nearby, Gson().toJson(NearbyRequestBody(Location(0.0, 0.0, Address("","", "","")), 250, listOf(), SimpleDateFormat(ISO, Locale.getDefault()).format(System.currentTimeMillis()), Price(0, ""), 2))), type)
 
     private fun notifyNearbyFilterChanged(){
         prefs.edit().putString(nearby, Gson().toJson(nearbyFilterModel)).apply()
