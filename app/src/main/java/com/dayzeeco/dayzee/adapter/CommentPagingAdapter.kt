@@ -11,8 +11,8 @@ import com.dayzeeco.dayzee.model.TimenoteInfoDTO
 
 class CommentPagingAdapter(
     diffCallback: DiffUtil.ItemCallback<CommentInfoDTO>,
-    val commentPicUserListener: CommentAdapter.CommentPicUserListener,
-    val commentMoreListener: CommentAdapter.CommentMoreListener) :
+    private val commentPicUserListener: CommentAdapter.CommentPicUserListener,
+    private val commentMoreListener: CommentAdapter.CommentMoreListener) :
     PagingDataAdapter<CommentInfoDTO, CommentAdapter.CommentViewHolder>(diffCallback) {
 
     override fun onBindViewHolder(holder: CommentAdapter.CommentViewHolder, position: Int) {

@@ -18,7 +18,6 @@ class MyWorkerFactory(private val timenoteService: TimenoteService, private val 
             SynchronizeGoogleCalendarWorker::class.java.name ->
                 SynchronizeGoogleCalendarWorker(appContext, workerParameters, timenoteService, loginService)
             else ->
-                // Return null, so that the base class can delegate to the default WorkerFactory.
                 null
         }
 

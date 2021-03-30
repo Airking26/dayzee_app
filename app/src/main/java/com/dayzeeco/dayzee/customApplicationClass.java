@@ -29,10 +29,8 @@ public class customApplicationClass extends Application implements IApp, CameraX
     @Override
     public void onCreate() {
         super.onCreate();
-        // Branch logging for debugging
         Branch.enableDebugMode();
 
-        // Branch object initialization
         Branch.getAutoInstance(this);
         PictureAppMaster.getInstance().setApp(this);
         PictureSelectorCrashUtils.init((t, e) -> {});

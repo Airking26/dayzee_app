@@ -48,7 +48,8 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            android:src="@drawable/audiance"
+                            android:background="@drawable/border_pic_profile"
+                            android:padding="0.6dp"
                             android:id="@+id/detailed_timenote_pic_user"
                             android:layout_width="36dp"
                             android:layout_height="36dp" />

@@ -166,6 +166,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
             home_swipe_refresh.setColorSchemeResources(R.color.colorStartGradient, R.color.colorEndGradient)
             home_swipe_refresh.setOnRefreshListener {
+                timenotePagingAdapter?.resetAllSelected()
                 if(home_future_timeline.drawable.bytesEqualTo(resources.getDrawable(R.drawable.ic_futur_ok)) && home_future_timeline.drawable.pixelsEqualTo(resources.getDrawable(R.drawable.ic_futur_ok))) loadPastData()
                 else if(home_past_timeline.drawable.bytesEqualTo(resources.getDrawable(R.drawable.ic_passe_ok)) && home_past_timeline.drawable.pixelsEqualTo(resources.getDrawable(R.drawable.ic_passe_ok))) loadUpcomingData()
             }
@@ -248,8 +249,9 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     private fun loadUpcomingData() {
 
         home_swipe_refresh?.isRefreshing = true
+        timenotePagingAdapter?.resetAllSelected()
 
-        timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparatorTest, this, this, true, utils, userInfoDTO.id)
+        timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils, userInfoDTO.id)
         lifecycleScope.launch {
             timenoteViewModel.getUpcomingTimenotePagingFlow(tokenId!!, true, prefs).collectLatest {
                 timenotePagingAdapter?.submitData(it)
@@ -297,6 +299,8 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     @ExperimentalPagingApi
     private fun loadPastData(){
         home_swipe_refresh?.isRefreshing = true
+
+        timenotePagingAdapter?.resetAllSelected()
 
         timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, false, utils, userInfoDTO.id)
         lifecycleScope.launch {

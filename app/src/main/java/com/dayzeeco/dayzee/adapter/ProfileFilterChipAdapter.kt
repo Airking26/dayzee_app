@@ -12,11 +12,6 @@ import kotlinx.android.synthetic.main.item_remove_filter_bar.view.*
 class ProfileFilterChipAdapter(private val chips: List<String>, val onRemoveFilterBarListener: OnRemoveFilterBarListener): RecyclerView.Adapter<ProfileFilterChipAdapter.ChipViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChipViewHolder {
-        /*val view = if(viewType == R.layout.item_pref_filter_chip) {
-            LayoutInflater.from(parent.context).inflate(R.layout.item_pref_filter_chip, parent, false)
-        } else {
-            LayoutInflater.from(parent.context).inflate(R.layout.item_remove_filter_bar, parent, false)
-        }*/
         return ChipViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_pref_filter_chip, parent, false))
     }
 
@@ -25,13 +20,10 @@ class ProfileFilterChipAdapter(private val chips: List<String>, val onRemoveFilt
     }
 
     override fun onBindViewHolder(holder: ChipViewHolder, position: Int) {
-        //if(position == chips.size) holder.bindClose(onRemoveFilterBarListener)
-        //else
             holder.bindChip(chips[position])
     }
 
     override fun getItemViewType(position: Int): Int {
-        //return if(position == chips.size) R.layout.item_remove_filter_bar else
             return R.layout.item_pref_filter_chip
     }
 
