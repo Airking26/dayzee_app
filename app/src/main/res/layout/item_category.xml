@@ -24,21 +24,23 @@
             android:layout_height="match_parent"/>
 
         <TextView
+            tools:text="Intersting calendars"
+            android:gravity="center"
             android:id="@+id/category_tv"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             android:textColor="@android:color/white"
-            android:textStyle="bold"
             android:textAllCaps="true"
             android:paddingHorizontal="4dp"
             android:shadowColor="@android:color/black"
             android:shadowRadius="1.5"
             android:shadowDx="1"
             android:shadowDy="1"
-            android:textSize="16sp"
+            android:background="@drawable/gradient_timenote_bottom"
+            android:textSize="14sp"
             android:paddingVertical="8dp"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
         <ImageView

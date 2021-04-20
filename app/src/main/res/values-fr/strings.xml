@@ -371,6 +371,8 @@
     <string name="alarm_created">Alarme Créée</string>
     <string name="alarm_updated">Alarme Modifiée</string>
     <string name="hided">Masquée</string>
+    <string name="crypto">Crypto</string>
+    <string name="for_kids">For kids</string>
     <plurals name="time_minutes_comment">
         <item quantity="one">%1$d minute</item>
         <item quantity="other">%1$d minutes</item>
