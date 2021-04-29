@@ -7,8 +7,6 @@ import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
@@ -16,19 +14,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.SuggestionAdapter
 import com.dayzeeco.dayzee.common.accessToken
-import com.dayzeeco.dayzee.common.stringLiveData
 import com.dayzeeco.dayzee.model.SubCategoryRated
 import com.dayzeeco.dayzee.model.UserInfoDTO
 import com.dayzeeco.dayzee.view.searchFlow.SearchDirections
 import com.dayzeeco.dayzee.viewModel.FollowViewModel
 import com.dayzeeco.dayzee.viewModel.LoginViewModel
 import com.dayzeeco.dayzee.viewModel.SearchViewModel
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.fragment_preference_suggestion.*
 import kotlinx.android.synthetic.main.fragment_search_top.*
-import java.lang.reflect.Type
-import kotlin.math.log
 
 
 class PreferenceSuggestion : Fragment(), View.OnClickListener,
@@ -69,7 +62,7 @@ class PreferenceSuggestion : Fragment(), View.OnClickListener,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         suggestion_ok_btn.setOnClickListener(this)
 
-        topAdapter = SuggestionAdapter(tops, this, this)
+        //topAdapter = SuggestionAdapter(tops, this, this, lifecycleScope, searchViewModel, tokenId)
         suggestion_card_rv.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = topAdapter
@@ -78,7 +71,7 @@ class PreferenceSuggestion : Fragment(), View.OnClickListener,
         searchViewModel.getTop(tokenId!!).observe(viewLifecycleOwner, { response ->
             if(response.isSuccessful) {
                 response.body()?.forEach { if(it.rating > 0 && it.users.isNotEmpty()) tops[SubCategoryRated(it.category, it.rating)] = if(it.users.size > it.rating) it.users.subList(0, it.rating) else it.users }
-                topAdapter.notifyDataSetChanged()
+                //topAdapter.notifyDataSetChanged()
             }
         })
     }
@@ -98,7 +91,7 @@ class PreferenceSuggestion : Fragment(), View.OnClickListener,
             if(it.code() == 401) {
                 loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner){ newAccessToken ->
                     tokenId = newAccessToken
-                    followViewModel.followPublicUser(tokenId!!, userInfoDTO?.id!!).observe(viewLifecycleOwner){ rsp ->
+                    followViewModel.followPublicUser(tokenId!!, userInfoDTO.id!!).observe(viewLifecycleOwner){ rsp ->
                         //if(rsp.isSuccessful) topAdapter.notifyDataSetChanged()
                     }
                 }

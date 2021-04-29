@@ -372,7 +372,10 @@
     <string name="alarm_updated">Alarme Modifiée</string>
     <string name="hided">Masquée</string>
     <string name="crypto">Crypto</string>
+    <string name="invitation_externe">![CDATA[%1$s vous a invité à : %2$s le %3$s à %4$s \n %5$s]]</string>
+    <string name="profile_externe">![CDATA[%1$s a partagé un profil : %2$s \n %3$s]]</string>
     <string name="for_kids">For kids</string>
+
     <plurals name="time_minutes_comment">
         <item quantity="one">%1$d minute</item>
         <item quantity="other">%1$d minutes</item>

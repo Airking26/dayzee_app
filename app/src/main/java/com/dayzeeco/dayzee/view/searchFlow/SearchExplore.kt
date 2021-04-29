@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,7 +23,7 @@ import kotlinx.android.synthetic.main.fragment_search_explore.*
 class SearchExplore : Fragment(), SearchExploreCategoryAdapter.SearchSubCategoryListener{
 
     private lateinit var searchExploreAdapter : SearchExploreCategoryAdapter
-    private var explores: MutableMap<String, MutableList<String>> = mutableMapOf()
+    private var explores: MutableMap<String, List<Category>?>? = mutableMapOf()
     private lateinit var prefs: SharedPreferences
     private var tokenId: String? = null
     private val prefrenceViewModel : PreferencesViewModel by activityViewModels()
@@ -53,7 +52,6 @@ class SearchExplore : Fragment(), SearchExploreCategoryAdapter.SearchSubCategory
                     tokenId = newAccessToken
                     prefrenceViewModel.getCategories().observe(viewLifecycleOwner, { lc ->
                         if(lc.isSuccessful){
-                            response.body()?.groupBy { it.category }?.entries?.map { (name, group) -> explores.put(name, group.map { it.subcategory }.toMutableList()) }
                             searchExploreAdapter.notifyDataSetChanged()
                             search_explore_pb.visibility = View.GONE
                         }
@@ -61,7 +59,7 @@ class SearchExplore : Fragment(), SearchExploreCategoryAdapter.SearchSubCategory
                 })
             }
             if(response.isSuccessful){
-            response.body()?.groupBy { it.category }?.entries?.map { (name, group) -> explores.put(name, group.map { it.subcategory }.toMutableList()) }
+                explores?.putAll(response.body()?.groupBy { it.category }!!)
                 searchExploreAdapter.notifyDataSetChanged()
                 search_explore_pb.visibility = View.GONE
             }

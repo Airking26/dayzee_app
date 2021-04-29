@@ -493,7 +493,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
             BranchEvent("branch_url_created").logEvent(requireContext())
             val i = Intent(Intent.ACTION_SEND)
             i.type = "text/plain"
-            i.putExtra(Intent.EXTRA_TEXT, String.format("Dayzee : %s at %s", timenoteInfoDTO.title, url))
+            i.putExtra(Intent.EXTRA_TEXT, String.format(resources.getString(R.string.invitation_externe), userInfoDTO?.userName, timenoteInfoDTO.title, utils.formatDateToShare(timenoteInfoDTO.startingAt), utils.formatHourToShare(timenoteInfoDTO.startingAt), url))
             startActivityForResult(i, 111)
         }
 

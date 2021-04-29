@@ -19,7 +19,7 @@
     <string name="shopping">Shopping</string>
     <string name="holidays">Holidays</string>
     <string name="holiday">Holiday</string>
-    <string name="calendrier_n_interessant">Interesting \n Calendars</string>
+    <string name="calendrier_n_interessant">Interesting\n Calendars</string>
     <string name="done">Done</string>
     <string name="how_much_do_you_like_it">How Much Do You Like It?</string>
     <string name="back">Back</string>
@@ -377,9 +377,11 @@
     <string name="for_kids">For kids</string>
     <string name="youtube_channels">Youtube Channels</string>
     <string name="religion">Religion</string>
-    <string name="events_and_fair_trade"><![CDATA[Events & Fair Trade Show]]></string>
+    <string name="events_and_fair_trade"><![CDATA[Events & Trade Fair Show]]></string>
     <string name="behind_the_screen">Behind The Screen</string>
     <string name="culture">Culture</string>
+    <string name="invitation_externe">%1$s has invited you to : %2$s on the %3$s at %4$s \n %5$s</string>
+    <string name="profile_externe">%1$s has shared a profile : %2$s \n %3$s</string>
     <plurals name="time_minutes_comment">
         <item quantity="one">%1$d minute</item>
         <item quantity="other">%1$d minutes</item>
@@ -480,4 +482,5 @@
         <item quantity="one">Since %1$d year and %2$d month</item>
         <item quantity="other">Since %1$d year and %2$d months</item>
     </plurals>
+
 </resources>

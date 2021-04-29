@@ -1,5 +1,6 @@
 package com.dayzeeco.dayzee.view.loginFlow
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
@@ -19,8 +20,10 @@ import com.dayzeeco.dayzee.adapter.SubCategoryChipAdapter
 import com.dayzeeco.dayzee.common.accessToken
 import com.dayzeeco.dayzee.common.list_subcategory_rated
 import com.dayzeeco.dayzee.common.stringLiveData
+import com.dayzeeco.dayzee.listeners.GoToTop
 import com.dayzeeco.dayzee.model.Preferences
 import com.dayzeeco.dayzee.model.SubCategoryRated
+import com.dayzeeco.dayzee.viewModel.LoginViewModel
 import com.dayzeeco.dayzee.viewModel.PreferencesViewModel
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.fragment_preference_sub_category.*
@@ -36,15 +39,22 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
     private var chips: MutableList<String> = mutableListOf()
     private val preferenceSubCategoryArgs: PreferenceCategoryArgs by navArgs()
     private val preferencesViewModel: PreferencesViewModel by activityViewModels()
+    private val loginViewModel: LoginViewModel by activityViewModels()
     private lateinit var prefs: SharedPreferences
     private lateinit var tokenId: String
     private lateinit var preferencesCategoryRated: MutableList<SubCategoryRated>
+    private lateinit var goToTopListener: GoToTop
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         tokenId = prefs.getString(accessToken, null)!!
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        goToTopListener = context as GoToTop
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -117,9 +127,16 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
         preferencesViewModel.modifyPreferences(tokenId, Preferences(preferencesCategoryRated)).observe(viewLifecycleOwner, {
             prefs.edit().putString(list_subcategory_rated, Gson().toJson(preferencesCategoryRated)).apply()
             if(it.isSuccessful){
-                findNavController().navigate(PreferenceSubCategoryDirections.actionPreferenceSubCategoryToPreferenceSuggestion(preferenceSubCategoryArgs.isInLogin))
+                if(preferenceSubCategoryArgs.isInLogin){
+                    goToTopListener.goToTop()
+                    loginViewModel.markAsAuthenticated()
+                } else {
+                    goToTopListener.goToTop()
+                    findNavController().popBackStack(R.id.myProfile, false)
+                }
+        //        findNavController().navigate(PreferenceSubCategoryDirections.actionPreferenceSubCategoryToPreferenceSuggestion(preferenceSubCategoryArgs.isInLogin))
             }
-            })
+        })
     }
 
     @RequiresApi(Build.VERSION_CODES.N)

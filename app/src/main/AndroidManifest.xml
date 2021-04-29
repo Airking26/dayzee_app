@@ -89,7 +89,7 @@
             android:enabled="true" />
 
         <!-- Branch init -->
-        <meta-data android:name="io.branch.sdk.BranchKey" android:value="key_live_ddP6u3tNWB2zC5rRnctFKnhfAsof8nj3" />
+        <meta-data android:name="io.branch.sdk.BranchKey" android:value="key_live_ll7hO0u3FdGUgDWJwsrS7mclzzbFJqIJ" />
         <!-- Branch testing (TestMode "true" to simulate fresh installs on dev environment) -->
         <meta-data android:name="io.branch.sdk.TestMode" android:value="false" />
 

@@ -159,6 +159,22 @@ class Utils {
         else dateFormat.format(timestamp)
     }
 
+    fun formatDateToShare(date: String): String{
+        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+        val dateFormatted = "d MMMM yyyy"
+        val dateFormat = SimpleDateFormat(ISO, Locale.getDefault()).parse(date)!!.time
+        val o = SimpleDateFormat(dateFormatted, Locale.getDefault()).format(dateFormat)
+        return SimpleDateFormat(dateFormatted, Locale.getDefault()).format(dateFormat)
+    }
+
+    fun formatHourToShare(date: String): String{
+        val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+        val dateFormatted = "HH:mm"
+        val dateFormat = SimpleDateFormat(ISO, Locale.getDefault()).parse(date)!!.time
+        val o = SimpleDateFormat(dateFormatted, Locale.getDefault()).format(dateFormat)
+        return SimpleDateFormat(dateFormatted, Locale.getDefault()).format(dateFormat)
+    }
+
     fun setFormatedStartDate(startDate: String, endDate: String, context: Context) : String{
         val DATE_FORMAT_DAY = "d MMM yyyy"
         val DATE_FORMAT_TIME = if(checkIf24HFormat(context)) "HH:mm" else "hh:mm aaa"

@@ -39,6 +39,7 @@ import com.dayzeeco.dayzee.adapter.*
 import com.dayzeeco.dayzee.androidView.dialog.input
 import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.listeners.GoToProfile
+import com.dayzeeco.dayzee.listeners.GoToTop
 import com.dayzeeco.dayzee.listeners.RefreshPicBottomNavListener
 import com.dayzeeco.dayzee.listeners.TimenoteOptionsListener
 import com.dayzeeco.dayzee.model.*
@@ -470,10 +471,10 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
             .setContentMetadata(ContentMetadata().addCustomMetadata(timenote_info_dto, Gson().toJson(timenoteInfoDTO)))
 
         branchUniversalObject.generateShortUrl(requireContext(), linkProperties) { url, error ->
-            BranchEvent("branch_url_created").logEvent(requireContext())
+            branchUniversalObject.canonicalUrl = url
             val i = Intent(Intent.ACTION_SEND)
             i.type = "text/plain"
-            i.putExtra(Intent.EXTRA_TEXT, String.format("Dayzee : %s at %s", timenoteInfoDTO.title, url))
+            i.putExtra(Intent.EXTRA_TEXT, String.format(resources.getString(R.string.invitation_externe), userInfoDTO.userName, timenoteInfoDTO.title, utils.formatDateToShare(timenoteInfoDTO.startingAt), utils.formatHourToShare(timenoteInfoDTO.startingAt), url))
             startActivityForResult(i, 111)
         }
 
@@ -617,6 +618,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     override fun onRemove(id: String) {}
     override fun onHideToOthersClicked(timenoteInfoDTO: TimenoteInfoDTO) {}
     override fun onMaskThisUser() {}
+
 
 
 }

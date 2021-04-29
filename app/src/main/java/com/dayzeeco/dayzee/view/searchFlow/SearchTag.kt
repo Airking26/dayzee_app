@@ -56,10 +56,8 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
     private val searchViewModel : SearchViewModel by activityViewModels()
     private val followViewModel : FollowViewModel by activityViewModels()
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
-    private val alarmViewModel: AlarmViewModel by activityViewModels()
     private val loginViewModel: LoginViewModel by activityViewModels()
     private val utils = Utils()
-    private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     private lateinit var prefs : SharedPreferences
     private lateinit var handler: Handler
     private val TRIGGER_AUTO_COMPLETE = 200
@@ -241,7 +239,7 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
             BranchEvent("branch_url_created").logEvent(requireContext())
             val i = Intent(Intent.ACTION_SEND)
             i.type = "text/plain"
-            i.putExtra(Intent.EXTRA_TEXT, String.format("Dayzee : %s at %s", timenoteInfoDTO.title, url))
+            i.putExtra(Intent.EXTRA_TEXT, String.format(resources.getString(R.string.invitation_externe), userInfoDTO.userName, timenoteInfoDTO.title, utils.formatDateToShare(timenoteInfoDTO.startingAt), utils.formatHourToShare(timenoteInfoDTO.startingAt), url))
             startActivityForResult(i, 111)
         }
 

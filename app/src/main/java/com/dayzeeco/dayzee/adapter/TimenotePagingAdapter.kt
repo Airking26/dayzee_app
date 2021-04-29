@@ -227,6 +227,18 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
                         allSelected.remove(absoluteAdapterPosition)
                         itemView.timenote_buy_cl.visibility = View.GONE
                     }
+                } else if (timenote.price.price > 0 && timenote.url.isNullOrBlank()){
+                    if(itemView.timenote_buy_cl.visibility == View.GONE) {
+
+                        allSelected.add(absoluteAdapterPosition)
+                        itemView.timenote_buy_cl.visibility = View.VISIBLE
+                        itemView.timenote_buy.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+                        itemView.timenote_buy.setPadding(0, 0, 48, 0)
+                        itemView.timenote_buy.text = timenote.price.price.toString().plus(timenote.price.currency)
+                    } else {
+                        allSelected.remove(absoluteAdapterPosition)
+                        itemView.timenote_buy_cl.visibility = View.GONE
+                    }
                 }
             } else {
                 if(isFromFuture && createdBy != timenote.createdBy.id) {
@@ -242,9 +254,12 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         }
 
         itemView.timenote_buy_cl.setOnClickListener {
-            val i = Intent(Intent.ACTION_VIEW)
-            i.data = Uri.parse(if(timenote.url?.contains("https://")!!) timenote.url else "https://" + timenote.url)
-            itemView.context.startActivity(i)
+            if(!timenote.url.isNullOrBlank()) {
+                val i = Intent(Intent.ACTION_VIEW)
+                i.data =
+                    Uri.parse(if (timenote.url?.contains("https://")!!) timenote.url else "https://" + timenote.url)
+                itemView.context.startActivity(i)
+            }
         }
 
         itemView.timenote_vp.adapter = screenSlideCreationTimenotePagerAdapter

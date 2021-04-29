@@ -323,7 +323,7 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
             BranchEvent("branch_url_created").logEvent(requireContext())
             val i = Intent(Intent.ACTION_SEND)
             i.type = "text/plain"
-            i.putExtra(Intent.EXTRA_TEXT, String.format("Dayzee : %s at %s", userInfoDTO?.userName, url))
+            i.putExtra(Intent.EXTRA_TEXT, String.format(resources.getString(R.string.profile_externe), userInfoDTO?.userName, userInfoDTO?.userName , url))
             startActivityForResult(i, 111)
         }
 

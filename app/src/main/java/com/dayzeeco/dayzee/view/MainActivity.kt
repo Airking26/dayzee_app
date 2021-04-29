@@ -37,7 +37,7 @@ import io.branch.referral.Branch
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.reflect.Type
 
-class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby, ShowBarListener, ExitCreationTimenote, RefreshPicBottomNavListener, GoToProfile {
+class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby, ShowBarListener, ExitCreationTimenote, RefreshPicBottomNavListener, GoToProfile, GoToTop {
 
     private lateinit var control: NavController
     private var currentNavController: LiveData<NavController>? = null
@@ -326,6 +326,10 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
 
     override fun goToProfile() {
         bottomNavView.selectedItemId = R.id.navigation_graph_tab_4
+    }
+
+    override fun goToTop() {
+        bottomNavView.selectedItemId = R.id.navigation_graph_tab_3
     }
 
 }

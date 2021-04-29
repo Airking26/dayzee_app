@@ -164,10 +164,17 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                     timenote_buy_cl.visibility = View.VISIBLE
                     if (args.event?.price?.price!! > 0) timenote_buy.text =
                         args.event?.price?.price!!.toString()
-                            .plus(args.event?.price?.currency ?: "$")
+                            .plus(args.event?.price?.currency)
                     if (!args.event?.urlTitle.isNullOrEmpty() || !args.event?.urlTitle.isNullOrBlank()) {
                         more_label.text = args.event?.urlTitle?.capitalize()
                     } else more_label.text = resources.getString(R.string.find_out_more)
+                } else if(args.event?.price?.price!! > 0 && args.event?.url.isNullOrBlank()){
+                    timenote_buy_cl.visibility = View.VISIBLE
+                    timenote_buy.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+                    timenote_buy.setPadding(0, 0, 48, 0)
+                    timenote_buy.text =
+                        args.event?.price?.price!!.toString()
+                            .plus(args.event?.price?.currency)
                 }
             } else {
                 if (userInfoDTO.id != args.event?.createdBy?.id) {
@@ -454,6 +461,8 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         separator_2.setOnClickListener(this)
         timenote_in_label.setOnClickListener(this)
         detailed_timenote_username.setOnClickListener(this)
+        detailed_timenote_pic_user.setOnClickListener(this)
+        detailed_timenote_address.setOnClickListener(this)
 
         detailed_timenote_btn_back.setOnClickListener { findNavController().popBackStack() }
     }
@@ -462,7 +471,8 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onClick(v: View?) {
         when (v) {
-            detailed_timenote_username -> {
+            detailed_timenote_address -> findNavController().navigate(DetailedTimenoteDirections.actionGlobalTimenoteAddress(args.event))
+            detailed_timenote_username, detailed_timenote_pic_user -> {
                 if (userInfoDTO.id != args.event?.createdBy?.id) findNavController().navigate(
                     DetailedTimenoteDirections.actionGlobalProfileElse(args.from)
                         .setUserInfoDTO(args.event?.createdBy)
@@ -662,10 +672,12 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                 }
             }
             timenote_buy_cl -> {
-                val i = Intent(Intent.ACTION_VIEW)
-                i.data =
-                    Uri.parse(if (args.event?.url?.contains("https://")!!) args.event?.url else "https://" + args.event?.url)
-                startActivity(i)
+                if(!args.event?.url.isNullOrBlank()) {
+                    val i = Intent(Intent.ACTION_VIEW)
+                    i.data =
+                        Uri.parse(if (args.event?.url?.contains("https://")!!) args.event?.url else "https://" + args.event?.url)
+                    startActivity(i)
+                }
             }
             timenote_day_month -> showInTime(utils, args.event!!)
             timenote_year -> showInTime(utils, args.event!!)
@@ -875,7 +887,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             i.type = "text/plain"
             i.putExtra(
                 Intent.EXTRA_TEXT,
-                String.format("Dayzee : %s at %s", args.event?.title, url)
+                String.format(resources.getString(R.string.invitation_externe), userInfoDTO.userName, args.event?.title, utils.formatDateToShare(args.event?.startingAt!!), utils.formatHourToShare(args.event?.startingAt!!), url)
             )
             startActivityForResult(i, 111)
         }
