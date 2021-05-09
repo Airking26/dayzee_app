@@ -31,10 +31,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.*
-import com.dayzeeco.dayzee.common.Utils
-import com.dayzeeco.dayzee.common.accessToken
-import com.dayzeeco.dayzee.common.timenote_info_dto
-import com.dayzeeco.dayzee.common.user_info_dto
+import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.listeners.TimenoteOptionsListener
 import com.dayzeeco.dayzee.model.*
 import com.dayzeeco.dayzee.viewModel.*
@@ -79,7 +76,8 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            val userAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils, userInfoDTO.id)
+            val userAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils, userInfoDTO.id, prefs.getInt(
+                format_date_default, 0))
             search_tag_rv.apply {
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter =  userAdapter!!.withLoadStateFooter(

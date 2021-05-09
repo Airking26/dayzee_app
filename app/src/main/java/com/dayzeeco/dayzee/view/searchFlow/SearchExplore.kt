@@ -12,6 +12,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.SearchExploreCategoryAdapter
 import com.dayzeeco.dayzee.common.accessToken
@@ -28,11 +29,13 @@ class SearchExplore : Fragment(), SearchExploreCategoryAdapter.SearchSubCategory
     private var tokenId: String? = null
     private val prefrenceViewModel : PreferencesViewModel by activityViewModels()
     private val authViewModel : LoginViewModel by activityViewModels()
+    private var alreadyCreated = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         tokenId = prefs.getString(accessToken, null)
+        searchExploreAdapter = SearchExploreCategoryAdapter(explores, this)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
@@ -40,30 +43,35 @@ class SearchExplore : Fragment(), SearchExploreCategoryAdapter.SearchSubCategory
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        searchExploreAdapter = SearchExploreCategoryAdapter(explores, this)
-        search_explore_root_rv.apply {
-            layoutManager = LinearLayoutManager(view.context)
-            adapter = searchExploreAdapter
-        }
+            search_explore_root_rv.apply {
+                layoutManager = LinearLayoutManager(view.context)
+                adapter = searchExploreAdapter
+            }
 
-        prefrenceViewModel.getCategories().observe(viewLifecycleOwner, { response ->
-            if(response.code() == 401){
-                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { newAccessToken ->
-                    tokenId = newAccessToken
-                    prefrenceViewModel.getCategories().observe(viewLifecycleOwner, { lc ->
-                        if(lc.isSuccessful){
-                            searchExploreAdapter.notifyDataSetChanged()
-                            search_explore_pb.visibility = View.GONE
-                        }
-                    })
-                })
-            }
-            if(response.isSuccessful){
-                explores?.putAll(response.body()?.groupBy { it.category }!!)
-                searchExploreAdapter.notifyDataSetChanged()
-                search_explore_pb.visibility = View.GONE
-            }
-        })
+        if(!alreadyCreated) {
+            prefrenceViewModel.getCategories().observe(viewLifecycleOwner, { response ->
+                if (response.code() == 401) {
+                    authViewModel.refreshToken(prefs)
+                        .observe(viewLifecycleOwner, { newAccessToken ->
+                            tokenId = newAccessToken
+                            prefrenceViewModel.getCategories().observe(viewLifecycleOwner, { lc ->
+                                if (lc.isSuccessful) {
+                                    searchExploreAdapter.notifyDataSetChanged()
+                                    search_explore_pb.visibility = View.GONE
+                                    alreadyCreated = true
+                                }
+                            })
+                        })
+                }
+                if (response.isSuccessful) {
+                    explores?.putAll(response.body()?.groupBy { it.category }!!)
+                    searchExploreAdapter.notifyDataSetChanged()
+                    search_explore_pb.visibility = View.GONE
+                    alreadyCreated = true
+                }
+            })
+        }
+        else search_explore_pb.visibility = View.GONE
 
     }
 

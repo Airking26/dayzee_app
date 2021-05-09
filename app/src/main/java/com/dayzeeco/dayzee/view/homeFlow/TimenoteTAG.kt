@@ -31,10 +31,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.*
-import com.dayzeeco.dayzee.common.Utils
-import com.dayzeeco.dayzee.common.accessToken
-import com.dayzeeco.dayzee.common.map_event_id_to_timenote
-import com.dayzeeco.dayzee.common.user_info_dto
+import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.listeners.GoToProfile
 import com.dayzeeco.dayzee.listeners.TimenoteOptionsListener
 import com.dayzeeco.dayzee.model.*
@@ -89,7 +86,8 @@ class TimenoteTAG: Fragment(), TimenoteOptionsListener, View.OnClickListener,
 
         timenote_tag_toolbar.text = "#${args.hashtag}"
 
-        timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils, userInfoDTO.id)
+        timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils, userInfoDTO.id, prefs.getInt(
+            format_date_default, 0))
         timenote_tag_rv.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter =  timenotePagingAdapter!!.withLoadStateFooter(

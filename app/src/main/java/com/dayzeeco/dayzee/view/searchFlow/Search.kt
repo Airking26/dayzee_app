@@ -44,6 +44,7 @@ class Search : BaseThroughFragment() {
     private var tokenId : String? = null
     private lateinit var onRefreshPicBottomNavListener: RefreshPicBottomNavListener
     private lateinit var onBackHome : BackToHomeListener
+    private var textEntered : String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +60,11 @@ class Search : BaseThroughFragment() {
                 }
             }
         })
+
+        viewTopExplorePagerAdapter =
+            SearchViewTopExplorePagerAdapter(childFragmentManager, lifecycle)
+        viewPeopleTagPagerAdapter =
+            SearchViewPeopleTagPagerAdapter(childFragmentManager, lifecycle)
     }
 
     override fun onAttach(context: Context) {
@@ -85,10 +91,6 @@ class Search : BaseThroughFragment() {
 
             searchBar.lastSuggestions = prefs.getStringSet(last_search_suggestions, setOf<String>())?.toMutableList()
 
-            viewTopExplorePagerAdapter =
-                SearchViewTopExplorePagerAdapter(childFragmentManager, lifecycle)
-            viewPeopleTagPagerAdapter =
-                SearchViewPeopleTagPagerAdapter(childFragmentManager, lifecycle)
             search_viewpager.apply {
                 adapter = viewTopExplorePagerAdapter
                 isUserInputEnabled = false
@@ -120,8 +122,11 @@ class Search : BaseThroughFragment() {
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    handler.removeMessages(TRIGGER_AUTO_COMPLETE)
-                    handler.sendEmptyMessageDelayed(TRIGGER_AUTO_COMPLETE, AUTO_COMPLETE_DELAY)
+                    if(textEntered != s?.toString()) {
+                        textEntered = s?.toString() ?: ""
+                        handler.removeMessages(TRIGGER_AUTO_COMPLETE)
+                        handler.sendEmptyMessageDelayed(TRIGGER_AUTO_COMPLETE, AUTO_COMPLETE_DELAY)
+                    }
                 }
 
             })

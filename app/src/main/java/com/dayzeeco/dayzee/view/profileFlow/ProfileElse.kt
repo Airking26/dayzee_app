@@ -299,14 +299,16 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
                 }
             }
             profile_follow_btn -> {
-                if (!isFollowed) {
-                    if (userInfoDTO?.status == STATUS.PUBLIC.ordinal) {
-                        followPublicUser()
-                    } else if (!isFollowed && (userInfoDTO?.status == STATUS.PRIVATE.ordinal)) {
-                        followPrivateUser()
+                if (meInfoDTO.id != userInfoDTO?.id) {
+                    if (!isFollowed) {
+                        if (userInfoDTO?.status == STATUS.PUBLIC.ordinal) {
+                            followPublicUser()
+                        } else if (!isFollowed && (userInfoDTO?.status == STATUS.PRIVATE.ordinal)) {
+                            followPrivateUser()
+                        }
+                    } else if (isFollowed) {
+                        unfollowUser()
                     }
-                } else if(isFollowed){
-                    unfollowUser()
                 }
             }
         }

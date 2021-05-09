@@ -517,7 +517,7 @@ class Utils {
 
 
             val duration = Duration.between(Instant.now(), Instant.parse(startDate))
-            nbrDay = if(duration.toDays().toInt() < nD) duration.toDays().toInt() else nD
+            nbrDay = if(abs(duration.toDays().toInt()) < nD) duration.toDays().toInt() else nD
             nbrHours = duration.minusDays(duration.toDays()).toHours().toInt()
             nbrMin = duration.minusDays(duration.toDays()).minusHours(
                 duration.minusDays(duration.toDays()).toHours()

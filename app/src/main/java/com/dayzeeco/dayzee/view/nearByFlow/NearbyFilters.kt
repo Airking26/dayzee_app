@@ -141,33 +141,6 @@ class NearbyFilters : Fragment(), View.OnClickListener {
         when (v) {
             nearby_filter_category ->
                 nearbyFilterData.setCategories(listOf(Categories("Sport", "Football")))
-                /*MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                title(R.string.category)
-                positiveButton(R.string.done)
-                listItemsMultiChoice(items = listOf(
-                        "Judaisme",
-                        "Bouddhisme",
-                        "Techno",
-                        "Pop",
-                        "Football",
-                        "Tennis",
-                        "Judaisme",
-                        "Bouddhisme",
-                        "Techno",
-                        "Pop",
-                        "Football",
-                        "Tennis",
-                        "Judaisme",
-                        "Bouddhisme",
-                        "Techno",
-                        "Pop",
-                        "Football",
-                        "Tennis"
-                    )) { _, index, text ->
-                    nearbyFilterData.setCategories(listOf(Categories("", text.toString())))
-                }
-                lifecycleOwner(this@NearbyFilters)
-            }*/
             nearby_filter_from -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.from)
                 listItems(null, listOf(getString(R.string.discover), getString(R.string.friends), getString(R.string.all))) { _, index, _ ->
@@ -179,7 +152,11 @@ class NearbyFilters : Fragment(), View.OnClickListener {
                 }
                 lifecycleOwner(this@NearbyFilters)
             }
-            nearby_filter_done_btn -> findNavController().navigate(NearbyFiltersDirections.actionNearbyFiltersToNearBy())
+            nearby_filter_done_btn -> {
+                nearby_filter_done_btn.visibility = View.INVISIBLE
+                nearby_filter_pb.visibility = View.VISIBLE
+                findNavController().navigate(NearbyFiltersDirections.actionNearbyFiltersToNearBy())
+            }
             nearby_filter_paid_timenote -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.from)
                 listItems(null, listOf(getString(R.string.free), getString(R.string.paid))) { _, index, _ ->

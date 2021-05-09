@@ -92,6 +92,7 @@ class Settings : Fragment(), View.OnClickListener {
 
         if(prefs.getString(pmtc, "") == "") prefs.edit().putString(pmtc, "").apply()
         if(prefs.getInt(default_settings_at_creation_time, -1) == -1) prefs.edit().putInt(default_settings_at_creation_time, 0).apply()
+        if(prefs.getInt(format_date_default, -1) == -1) prefs.edit().putInt(format_date_default, 0).apply()
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
         userInfoDTO = Gson().fromJson(prefs.getString(user_info_dto, ""), typeUserInfo)
     }
@@ -200,6 +201,7 @@ class Settings : Fragment(), View.OnClickListener {
                     listOf(getString(R.string.date), getString(R.string.countdown))
                 ) { dialog, index, text ->
                     profileModifyData.setFormatTimenote(index)
+                    prefs.edit().putInt(format_date_default, index).apply()
                 }
                 lifecycleOwner(this@Settings)
             }

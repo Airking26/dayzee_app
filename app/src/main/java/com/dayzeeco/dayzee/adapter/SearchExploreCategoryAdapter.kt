@@ -14,6 +14,8 @@ import com.dayzeeco.dayzee.model.Category
 import kotlinx.android.synthetic.main.adapter_search_explore.view.*
 import kotlinx.android.synthetic.main.item_search_explore.view.*
 
+private val allCategoriesSelected : MutableList<Int> = mutableListOf()
+
 class SearchExploreCategoryAdapter(
     val explores: Map<String, List<Category>?>?,
     val subCategoryListener: SearchSubCategoryListener
@@ -44,19 +46,12 @@ class SearchExploreCategoryAdapter(
 
     class SearchExploreHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
-        var expanded : Boolean = false
-
         fun bindCategory(
             list: Map<String, List<Category>?>?,
             position: Int,
             subCategoryListener: SearchSubCategoryListener
         ) {
             itemView.search_explore_category.text = list?.keys?.elementAt(position)
-
-            val options = RequestOptions()
-            options.centerCrop()
-
-
             when(list?.keys?.elementAt(position)?.toLowerCase()){
                 itemView.context.getString(R.string.sports)
                     .toLowerCase(), itemView.context.getString(
@@ -65,35 +60,35 @@ class SearchExploreCategoryAdapter(
                     Glide
                         .with(itemView)
                         .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_sport.jpg")
-                        .apply(options)
+                        .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(itemView.search_explore_category_iv)
                 itemView.context.getString(R.string.crypto).toLowerCase() ->
                     Glide
                         .with(itemView)
                         .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_crypto.jpg")
-                        .apply(options)
+                        .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(itemView.search_explore_category_iv)
                 itemView.context.getString(R.string.influencers).toLowerCase() ->
                     Glide
                         .with(itemView)
                         .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_influencers.jpg")
-                        .apply(options)
+                        .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(itemView.search_explore_category_iv)
                 itemView.context.getString(R.string.social_and_meeting).toLowerCase() ->
                     Glide
                         .with(itemView)
                         .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_social_and_meeting.jpg")
-                        .apply(options)
+                        .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(itemView.search_explore_category_iv)
                 itemView.context.getString(R.string.for_kids).toLowerCase() ->
                     Glide
                         .with(itemView)
                         .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_for_kids.jpg")
-                        .apply(options)
+                        .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(itemView.search_explore_category_iv)
                 itemView.context.getString(R.string.esports)
@@ -103,7 +98,7 @@ class SearchExploreCategoryAdapter(
                     Glide
                         .with(itemView)
                         .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_esport.jpg")
-                        .apply(options)
+                        .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(itemView.search_explore_category_iv)
                 itemView.context.getString(R.string.music).toLowerCase() ->
@@ -182,16 +177,31 @@ class SearchExploreCategoryAdapter(
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(itemView.search_explore_category_iv)
-                else -> itemView.search_explore_category_iv.setImageDrawable(
-                    ContextCompat.getDrawable(
-                        itemView.context,
-                        R.drawable.audiance
+                else ->                     Glide
+                    .with(itemView)
+                    .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_else.jpg")
+                    .centerCrop()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(itemView.search_explore_category_iv)
+            }
+
+            if(allCategoriesSelected.contains(absoluteAdapterPosition)){
+                itemView.search_explore_rv.apply {
+                    visibility = View.VISIBLE
+                    layoutManager = LinearLayoutManager(itemView.context)
+                    isNestedScrollingEnabled = false
+                    adapter = SearchExploreSubCategoryAdapter(
+                        list?.values?.elementAt(position),
+                        subCategoryListener
                     )
-                )
+                }
+            } else {
+                itemView.search_explore_rv.visibility = View.GONE
             }
 
             itemView.setOnClickListener {
-                if(!expanded) {
+                if(!allCategoriesSelected.contains(absoluteAdapterPosition)) {
+                    allCategoriesSelected.add(absoluteAdapterPosition)
                     itemView.search_explore_rv.apply {
                         visibility = View.VISIBLE
                         layoutManager = LinearLayoutManager(itemView.context)
@@ -201,10 +211,9 @@ class SearchExploreCategoryAdapter(
                             subCategoryListener
                         )
                     }
-                    expanded = !expanded
                 } else {
+                    allCategoriesSelected.remove(absoluteAdapterPosition)
                     itemView.search_explore_rv.visibility = View.GONE
-                    expanded = !expanded
                 }
             }
             if(list?.values?.elementAt(position).isNullOrEmpty()) {

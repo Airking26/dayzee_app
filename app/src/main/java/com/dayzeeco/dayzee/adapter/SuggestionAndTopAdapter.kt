@@ -17,19 +17,25 @@ import com.dayzeeco.dayzee.model.SubCategoryRated
 import com.dayzeeco.dayzee.model.UserInfoDTO
 import com.dayzeeco.dayzee.viewModel.SearchViewModel
 import kotlinx.android.synthetic.main.adapter_suggestion_card.view.*
+import kotlinx.android.synthetic.main.footer_loading.view.*
 import kotlinx.android.synthetic.main.item_category.view.*
 import kotlinx.android.synthetic.main.item_suggestion.view.*
 import kotlinx.coroutines.launch
 
 class SuggestionAdapter(
     private var suggestions: Map<SubCategoryRated, List<UserInfoDTO>?>,
-    private val listener: SuggestionAdapter.SuggestionItemListener,
-    private val picClicked: SuggestionItemPicListener,
-    private val lifecycleScope: LifecycleCoroutineScope,
-    private val searchViewModel: SearchViewModel,
-    private val tokenId: String?
-):
-    RecyclerView.Adapter<SuggestionAdapter.CardViewHolder>() {
+    private val listener: SuggestionItemListener,
+    private val picClicked: SuggestionItemPicListener):
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    val TYPE_FOOTER = 1
+    val TYPE_CARD = 0
+
+    var isStillLoading = false
+
+    fun setLoadingFooter(isStillLoading: Boolean){
+        this.isStillLoading = isStillLoading
+    }
 
     interface SuggestionItemListener{
         fun onItemSelected(follow: Boolean, userInfoDTO: UserInfoDTO)
@@ -39,15 +45,35 @@ class SuggestionAdapter(
         fun onPicClicked(userInfoDTO: UserInfoDTO)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder =
-        CardViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.adapter_suggestion_card, parent, false))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return when(viewType){
+            TYPE_CARD -> CardViewHolder(
+                LayoutInflater.from(parent.context)
+                    .inflate(R.layout.adapter_suggestion_card, parent, false)
+            )
+            else ->
+                FooterViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.footer_loading, parent, false))
+        }
 
+    }
 
-    override fun getItemCount(): Int =
-        suggestions.size
+    override fun getItemViewType(position: Int): Int {
+        return if (suggestions.isNotEmpty() && position == suggestions.size){
+            TYPE_FOOTER
+        } else
+            TYPE_CARD
+    }
 
-    override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
-        holder.bindSuggestions(suggestions, position, listener, picClicked, lifecycleScope, searchViewModel, tokenId)
+    override fun getItemCount(): Int {
+        return if(suggestions.isEmpty())
+            suggestions.size
+        else
+            suggestions.size + 1
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        if(holder is CardViewHolder) holder.bindSuggestions(suggestions, position, listener, picClicked)
+        else if(holder is FooterViewHolder) holder.bindFooter(this.isStillLoading)
     }
 
     class CardViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
@@ -55,12 +81,8 @@ class SuggestionAdapter(
         fun bindSuggestions(
             suggestions: Map<SubCategoryRated, List<UserInfoDTO>?>,
             position: Int,
-            listener: SuggestionAdapter.SuggestionItemListener,
-            picClicked: SuggestionItemPicListener,
-            lifecycleScope: LifecycleCoroutineScope,
-            searchViewModel: SearchViewModel,
-            tokenId: String?
-        ) {
+            listener: SuggestionItemListener,
+            picClicked: SuggestionItemPicListener) {
 
             itemView.pref_sub_category_title_category.text = suggestions.keys.elementAt(position).category.subcategory
 
@@ -208,6 +230,11 @@ class SuggestionAdapter(
 
         }
 
+    }
+    class FooterViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
+        fun bindFooter(stillLoading: Boolean) {
+            if(!stillLoading) itemView.footer_rv.visibility = View.GONE
+        }
     }
 
 }

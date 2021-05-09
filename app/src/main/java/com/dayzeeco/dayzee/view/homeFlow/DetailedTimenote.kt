@@ -62,6 +62,7 @@ import java.util.*
 import kotlin.time.ExperimentalTime
 
 
+@ExperimentalTime
 class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.CommentPicUserListener,
     CommentAdapter.CommentMoreListener, UsersPagingAdapter.SearchPeopleListener,
     UsersShareWithPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.AddToSend {
@@ -152,10 +153,20 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         if (args.event?.pictures?.size == 1 || args.event?.pictures.isNullOrEmpty()) timenote_indicator.visibility =
             View.GONE
 
+        if(prefs.getInt(format_date_default, 0) == 1){
+            showInTime(utils, args.event!!)
+        } else {
+            separator_1.visibility = View.VISIBLE
+            separator_2.visibility = View.VISIBLE
+            timenote_day_month.visibility = View.VISIBLE
+            timenote_time.visibility = View.VISIBLE
+            timenote_year.visibility = View.VISIBLE
+            timenote_in_label.visibility = View.INVISIBLE
+        }
 
         screenSlideCreationTimenotePagerAdapter = ScreenSlideTimenotePagerAdapter(
             this,
-            if (args.event?.pictures.isNullOrEmpty()) listOf(args.event?.colorHex!!) else args.event?.pictures,
+            if (args.event?.pictures.isNullOrEmpty()) listOf(if(args.event?.colorHex.isNullOrEmpty()) "#09539d" else args.event?.colorHex!!) else args.event?.pictures,
             true,
             args.event?.pictures.isNullOrEmpty()
         ) { i: Int, i1: Int ->
@@ -715,11 +726,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         o.timeZone = TimeZone.getDefault()
         val k = o.format(m)
         if (SimpleDateFormat(ISO, Locale.getDefault()).parse(k).time > System.currentTimeMillis()) {
-            if (utils.inTime(
-                    timenote.startingAt,
-                    requireContext()
-                ) == getString(R.string.live)
-            ) timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            if (utils.inTime(timenote.startingAt, requireContext()) == getString(R.string.live)) timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 R.drawable.ic_oval,
                 0,
                 0,
@@ -727,7 +734,10 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             )
             else timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0)
             timenote_in_label.text = utils.inTime(timenote.startingAt, requireContext())
-        } else timenote_in_label.text = utils.sinceTime(timenote.endingAt, requireContext())
+        } else {
+            timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0)
+            timenote_in_label.text = utils.sinceTime(timenote.endingAt, requireContext())
+        }
     }
 
     private fun createOptionsOnTimenote(context: Context, isMine: Boolean) {

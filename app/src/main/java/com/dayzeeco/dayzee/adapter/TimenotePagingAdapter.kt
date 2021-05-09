@@ -41,7 +41,7 @@ val allSelected : MutableList<Int> = mutableListOf()
 class TimenotePagingAdapter(diffCallbacks: DiffUtil.ItemCallback<TimenoteInfoDTO>,
                             private val timenoteListenerListener: TimenoteOptionsListener,
                             val fragment: Fragment, private val isFromFuture: Boolean,
-                            private val utils: Utils, private val createdBy: String?)
+                            private val utils: Utils, private val createdBy: String?, private val formatOfDate: Int)
     : PagingDataAdapter<TimenoteInfoDTO, TimenoteViewHolder>(diffCallbacks){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimenoteViewHolder =
@@ -50,7 +50,7 @@ class TimenotePagingAdapter(diffCallbacks: DiffUtil.ItemCallback<TimenoteInfoDTO
     @ExperimentalTime
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: TimenoteViewHolder, position: Int) =
-        holder.bindTimenote(getItem(position)!!, timenoteListenerListener, fragment, isFromFuture, utils, createdBy)
+        holder.bindTimenote(getItem(position)!!, timenoteListenerListener, fragment, isFromFuture, utils, createdBy, formatOfDate)
 
     fun resetAllSelected(){
         allSelected.clear()
@@ -67,7 +67,9 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         fragment: Fragment,
         isFromFuture: Boolean,
         utils: Utils,
-        createdBy: String?) {
+        createdBy: String?,
+        formatOfDate: Int
+    ) {
 
 
         if(allSelected.contains(absoluteAdapterPosition)){
@@ -211,7 +213,7 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
             }
         }
 
-        val screenSlideCreationTimenotePagerAdapter =  ScreenSlideTimenotePagerAdapter(fragment, if(timenote.pictures.isNullOrEmpty()) listOf(timenote.colorHex!!) else timenote.pictures, true, timenote.pictures.isNullOrEmpty()){ _ : Int, i1: Int ->
+        val screenSlideCreationTimenotePagerAdapter =  ScreenSlideTimenotePagerAdapter(fragment, if(timenote.pictures.isNullOrEmpty()) listOf(if(timenote.colorHex.isNullOrEmpty()) "#09539d" else timenote.colorHex) else timenote.pictures, true, timenote.pictures.isNullOrEmpty()){ _ : Int, i1: Int ->
             if(i1 == 0) {
                 if (timenote.price.price >= 0 && !timenote.url.isNullOrBlank()) {
                     if(itemView.timenote_buy_cl.visibility == View.GONE) {
@@ -330,6 +332,17 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         itemView.timenote_year.text = utils.setYear(timenote.startingAt)
         itemView.timenote_day_month.text = utils.setFormatedStartDate(timenote.startingAt, timenote.endingAt, itemView.context)
         itemView.timenote_time.text = utils.setFormatedEndDate(timenote.startingAt, timenote.endingAt, itemView.context)
+
+        if(formatOfDate == 1){
+            showInTime(isFromFuture, utils, timenote)
+        } else {
+            itemView.separator_1.visibility = View.VISIBLE
+            itemView.separator_2.visibility = View.VISIBLE
+            itemView.timenote_day_month.visibility = View.VISIBLE
+            itemView.timenote_time.visibility = View.VISIBLE
+            itemView.timenote_year.visibility = View.VISIBLE
+            itemView.timenote_in_label.visibility = View.INVISIBLE
+        }
 
         itemView.timenote_day_month.setOnClickListener { showInTime(isFromFuture, utils, timenote) }
         itemView.timenote_year.setOnClickListener { showInTime(isFromFuture, utils, timenote) }

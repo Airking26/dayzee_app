@@ -37,10 +37,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.*
-import com.dayzeeco.dayzee.common.Utils
-import com.dayzeeco.dayzee.common.accessToken
-import com.dayzeeco.dayzee.common.map_event_id_to_timenote
-import com.dayzeeco.dayzee.common.user_info_dto
+import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.listeners.GoToProfile
 import com.dayzeeco.dayzee.listeners.TimenoteOptionsListener
 import com.dayzeeco.dayzee.model.*
@@ -106,7 +103,8 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
         mapFragment?.getMapAsync(callback)
         timenote_address_toolbar.text = args.timenoteInfoDTO?.location?.address?.address?.plus(", ")?.plus(args.timenoteInfoDTO?.location?.address?.city)?.plus(" ")?.plus(args.timenoteInfoDTO?.location?.address?.country)
 
-        timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils, userInfoDTO.id)
+        timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils, userInfoDTO.id, prefs.getInt(
+            format_date_default, 0))
         timenote_around_rv.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter =  timenotePagingAdapter!!.withLoadStateFooter(

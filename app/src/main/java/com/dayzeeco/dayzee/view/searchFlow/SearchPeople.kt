@@ -31,10 +31,18 @@ class SearchPeople: Fragment(), UsersPagingAdapter.SearchPeopleListener {
 
     private val searchViewModel : SearchViewModel by activityViewModels()
     private lateinit var prefs: SharedPreferences
+    private lateinit var userAdapter: UsersPagingAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        userAdapter = UsersPagingAdapter(
+            UsersPagingAdapter.UserComparator,
+            null,
+            this,
+            null,
+            null
+        )
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
@@ -44,21 +52,14 @@ class SearchPeople: Fragment(), UsersPagingAdapter.SearchPeopleListener {
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
         val userInfoDTOPref = Gson().fromJson<UserInfoDTO>(prefs.getString(user_info_dto, ""), typeUserInfo)
 
-        var userAdapter = UsersPagingAdapter(
-            UsersPagingAdapter.UserComparator,
-            null,
-            this,
-            null,
-            null
-        )
         search_people_rv.apply {
             layoutManager = LinearLayoutManager(requireContext())
-            adapter =  userAdapter!!.withLoadStateFooter(
-                footer = TimenoteLoadStateAdapter{ userAdapter!!.retry() }
+            adapter =  userAdapter.withLoadStateFooter(
+                footer = TimenoteLoadStateAdapter{ userAdapter.retry() }
             )
         }
 
-        searchViewModel.getUserSearchLiveData().observe(viewLifecycleOwner, Observer {
+        searchViewModel.getUserSearchLiveData().observe(viewLifecycleOwner, {
                 lifecycleScope.launch {
                     it.collectLatest {
                         userAdapter.submitData(it.filter { userInfoDTO -> userInfoDTO.id != userInfoDTOPref.id })
@@ -67,7 +68,7 @@ class SearchPeople: Fragment(), UsersPagingAdapter.SearchPeopleListener {
                 }
             })
 
-        searchViewModel.getSearchIsEmptyLiveData().observe(viewLifecycleOwner, Observer {
+        searchViewModel.getSearchIsEmptyLiveData().observe(viewLifecycleOwner, {
             if(it) {
                 lifecycleScope.launch {
                     userAdapter.submitData(PagingData.empty())

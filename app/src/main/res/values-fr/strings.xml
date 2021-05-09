@@ -6,20 +6,6 @@
     <string name="preferrence">Préférences</string>
     <string name="next">Suivant</string>
     <string name="select_what_you_like">Choisissez ce que vous aimez</string>
-    <string name="my_city">Ma Ville</string>
-    <string name="sports">Sports</string>
-    <string name="sport">Sport</string>
-    <string name="music">Musique</string>
-    <string name="esports">Esports</string>
-    <string name="esport">Esport</string>
-    <string name="youtube">Youtube</string>
-    <string name="religions">Religions</string>
-    <string name="culture_n_amp_loisirs"><![CDATA[Culture \n & Loisirs]]></string>
-    <string name="films_n_amp_series"><![CDATA[Films \n & Séries]]></string>
-    <string name="shopping">Shopping</string>
-    <string name="holidays">Vacances</string>
-    <string name="holiday">Vacance</string>
-    <string name="calendrier_n_interessant">Calendrier \n Interessant</string>
     <string name="done">OK</string>
     <string name="how_much_do_you_like_it">Combien aimez vous ce sujet ?</string>
     <string name="back">Retour</string>
@@ -372,8 +358,8 @@
     <string name="alarm_updated">Alarme Modifiée</string>
     <string name="hided">Masquée</string>
     <string name="crypto">Crypto</string>
-    <string name="invitation_externe">![CDATA[%1$s vous a invité à : %2$s le %3$s à %4$s \n %5$s]]</string>
-    <string name="profile_externe">![CDATA[%1$s a partagé un profil : %2$s \n %3$s]]</string>
+    <string name="invitation_externe">%1$s vous a invité à : %2$s le %3$s à %4$s \n %5$s</string>
+    <string name="profile_externe">%1$s a partagé un profil : %2$s \n %3$s</string>
     <string name="for_kids">For kids</string>
 
     <plurals name="time_minutes_comment">

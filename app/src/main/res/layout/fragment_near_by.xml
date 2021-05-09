@@ -20,12 +20,14 @@
         <com.google.android.material.appbar.AppBarLayout
             android:background="@android:color/white"
             android:layout_width="match_parent"
+            android:id="@+id/nearby_appbar"
             android:layout_height="wrap_content">
 
             <com.dayzeeco.dayzee.androidView.CollapsibleToolbar
                 android:layout_width="match_parent"
                 android:minHeight="150dp"
                 android:fitsSystemWindows="false"
+                android:id="@+id/nearby_ct"
                 app:layout_scrollFlags="scroll|enterAlways|snap|exitUntilCollapsed"
                 app:layoutDescription="@xml/motion_scene_map"
                 android:layout_height="wrap_content">

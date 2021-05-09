@@ -2,6 +2,7 @@ package com.dayzeeco.dayzee.common
 
 const val already_signed_in = "already_signed_in"
 const val default_settings_at_creation_time = "default_settings_at_creation_time"
+const val format_date_default = "format_date_default"
 const val pmtc = "pmtc"
 const val user_info_dto = "user_info_dto"
 const val timenote_info_dto = "timenote_info_dto"

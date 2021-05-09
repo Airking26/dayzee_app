@@ -126,22 +126,27 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     override fun onResume() {
         super.onResume()
         if(prefs.getString(accessToken, null) != null) {
-            if(timenoteRecentPagingAdapter == null || timenotePagingAdapter == null || home_nothing_to_display?.visibility == View.VISIBLE || home_posted_recently.visibility == View.GONE) loadUpcomingData()
+            if((timenoteRecentPagingAdapter == null
+                || timenotePagingAdapter == null
+                || home_nothing_to_display?.visibility == View.VISIBLE
+                || home_posted_recently.visibility == View.GONE) &&
+                home_past_timeline.drawable.bytesEqualTo(resources.getDrawable(R.drawable.ic_passe_ok))
+                && home_past_timeline.drawable.pixelsEqualTo(resources.getDrawable(R.drawable.ic_passe_ok))) loadUpcomingData()
             tokenId = prefs.getString(accessToken, null)
             retrieveCurrentRegistrationToken(prefs.getString(accessToken, null)!!)
             onRefreshPicBottomNavListener.onrefreshPicBottomNav(userInfoDTO.picture)
         }
+
         when(loginViewModel.getAuthenticationState().value){
             LoginViewModel.AuthenticationState.UNAUTHENTICATED -> loginViewModel.markAsUnauthenticated()
         }
-
     }
 
     @SuppressLint("StringFormatInvalid")
     fun retrieveCurrentRegistrationToken(tokenId: String){
         FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener(OnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    meViewModel.putFCMToken(tokenId, FCMDTO(task.result?.token!!)).observe(this, Observer {
+                    meViewModel.putFCMToken(tokenId, FCMDTO(task.result?.token!!)).observe(this, {
                         if(it.isSuccessful) ""
                     })
                     return@OnCompleteListener
@@ -252,7 +257,8 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         home_swipe_refresh?.isRefreshing = true
         timenotePagingAdapter?.resetAllSelected()
 
-        timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils, userInfoDTO.id)
+        timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils, userInfoDTO.id, prefs.getInt(
+            format_date_default, 0))
         lifecycleScope.launch {
             timenoteViewModel.getUpcomingTimenotePagingFlow(tokenId!!, true, prefs).collectLatest {
                 timenotePagingAdapter?.submitData(it)
@@ -303,7 +309,8 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
         timenotePagingAdapter?.resetAllSelected()
 
-        timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, false, utils, userInfoDTO.id)
+        timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, false, utils, userInfoDTO.id, prefs.getInt(
+            format_date_default, 0))
         lifecycleScope.launch {
             timenoteViewModel.getUpcomingTimenotePagingFlow(tokenId!!, false, prefs).collectLatest {
                 timenotePagingAdapter?.submitData(it)
