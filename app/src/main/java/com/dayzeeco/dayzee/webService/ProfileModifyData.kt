@@ -90,7 +90,7 @@ class ProfileModifyData(context: Context) {
 
     fun setInstaLink(link: String){
         profilModifyModel?.socialMedias?.instagram?.url = link
-        profilModifyModel
+        notifyProfileDataChanged()
     }
 
     fun setWhatsappLink(link: String){
@@ -144,6 +144,13 @@ class ProfileModifyData(context: Context) {
                 profilModifyModel?.socialMedias?.instagram?.enabled = false
                 profilModifyModel?.socialMedias?.whatsApp?.enabled = false
                 profilModifyModel?.socialMedias?.linkedIn?.enabled = true
+            }
+            5 -> {
+                profilModifyModel?.socialMedias?.youtube?.enabled = false
+                profilModifyModel?.socialMedias?.facebook?.enabled = false
+                profilModifyModel?.socialMedias?.instagram?.enabled = false
+                profilModifyModel?.socialMedias?.whatsApp?.enabled = false
+                profilModifyModel?.socialMedias?.linkedIn?.enabled = false
             }
         }
         notifyProfileDataChanged()

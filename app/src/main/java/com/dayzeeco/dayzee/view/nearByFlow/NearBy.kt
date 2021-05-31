@@ -9,6 +9,8 @@ import android.content.Context.LOCATION_SERVICE
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.location.*
 import android.os.Bundle
 import android.os.Handler
@@ -20,15 +22,14 @@ import android.view.*
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.SnapHelper
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.WhichButton
@@ -47,6 +48,8 @@ import com.dayzeeco.dayzee.model.*
 import com.dayzeeco.dayzee.viewModel.*
 import com.dayzeeco.dayzee.webService.NearbyFilterData
 import com.google.android.gms.maps.*
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.libraries.places.api.Places
@@ -73,6 +76,7 @@ import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListener,
     UsersPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.SearchPeopleListener,
@@ -284,12 +288,9 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
                         )
                         if (nearbyToCompareFormatted.location != nearbyModifyModel?.location) {
                             this.googleMap?.addMarker(
-                                MarkerOptions().position(
-                                    LatLng(
-                                        nearbyModifyModel?.location?.latitude!!,
-                                        nearbyModifyModel.location.longitude
-                                    )
-                                )
+                                MarkerOptions()
+                                    .position(LatLng(nearbyModifyModel?.location?.latitude!!, nearbyModifyModel.location.longitude))
+                                    //.icon(bitmapFromDrawable(requireContext(), R.drawable.gradient_futur))
                             )
                             this.googleMap?.animateCamera(
                                 CameraUpdateFactory.newLatLngZoom(
@@ -817,9 +818,10 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     override fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         if(userInfoDTO == null) loginViewModel.markAsUnauthenticated()
         else {
-            val map: MutableMap<Long, String> = Gson().fromJson(prefs.getString(
-                map_event_id_to_timenote, null
-            ), object : TypeToken<MutableMap<String, String>>() {}.type
+            val map: MutableMap<Long, String> = Gson().fromJson(
+                prefs.getString(
+                    map_event_id_to_timenote, null
+                ), object : TypeToken<MutableMap<String, String>>() {}.type
             ) ?: mutableMapOf()
             timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(
                 viewLifecycleOwner,
@@ -914,5 +916,22 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         expanded = verticalOffset == 0
     }
 
+    private fun bitmapFromDrawable(context: Context, vectorResId: Int): BitmapDescriptor? {
+        val vectorDrawable = ContextCompat.getDrawable(context, vectorResId)
+        vectorDrawable!!.setBounds(
+            0,
+            0,
+            vectorDrawable.intrinsicWidth,
+            vectorDrawable.intrinsicHeight
+        )
+        val bitmap = Bitmap.createBitmap(
+            vectorDrawable.intrinsicWidth,
+            vectorDrawable.intrinsicHeight,
+            Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(bitmap)
+        vectorDrawable.draw(canvas)
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
+    }
 
 }

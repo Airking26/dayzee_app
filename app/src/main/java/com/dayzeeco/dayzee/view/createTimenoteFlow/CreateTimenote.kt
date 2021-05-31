@@ -675,7 +675,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                     endDateDisplayed = dateFormatDateAndTime.format(datetime.time.time)
                 }
             }
-            from_label -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            from_label, fromTv -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 dateTimePicker { _, datetime ->
                     startDate = datetime.time.time
                     startDateDisplayed = dateFormatDateAndTime.format(startDate)
@@ -683,7 +683,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                 }
                 lifecycleOwner(this@CreateTimenote)
             }
-            to_label -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            to_label, toTv -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 dateTimePicker { dialog, datetime ->
                     endDate = datetime.time.time
                     endDateDisplayed = dateFormatDateAndTime.format(endDate)

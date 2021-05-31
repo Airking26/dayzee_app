@@ -82,7 +82,7 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
                     if(arguments == null || arguments?.isEmpty!!) findNavController().popBackStack(R.id.myProfile, false)
                     else arguments.let { bundle ->
                         if(!bundle?.getString(type).isNullOrBlank())
-                            findNavController().navigate(MyProfileDirections.actionMyProfileToNotifications())
+                            view?.post { findNavController().navigate(MyProfileDirections.actionMyProfileToNotifications()) }
                         else
                             findNavController().popBackStack(R.id.myProfile, false)
                     }

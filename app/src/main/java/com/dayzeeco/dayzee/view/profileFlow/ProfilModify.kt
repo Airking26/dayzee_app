@@ -207,23 +207,28 @@ class ProfilModify: Fragment(), View.OnClickListener,
             }
 
             profile_modify_youtube_switch.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) profileModifyData.setStateSwitch(0)
+                if(isChecked && profileModifyData.loadProfileModifyModel()?.socialMedias?.youtube?.url?.isNotEmpty()!!) profileModifyData.setStateSwitch(0)
+                 else profile_modify_youtube_switch.isChecked = false
             }
 
             profile_modify_facebook_switch.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) profileModifyData.setStateSwitch(1)
+                if (isChecked  && profileModifyData.loadProfileModifyModel()?.socialMedias?.facebook?.url?.isNotEmpty()!!) profileModifyData.setStateSwitch(1)
+                else profile_modify_facebook_switch.isChecked = false
             }
 
             profile_modify_insta_switch.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) profileModifyData.setStateSwitch(2)
+                if (isChecked  && profileModifyData.loadProfileModifyModel()?.socialMedias?.instagram?.url?.isNotEmpty()!!) profileModifyData.setStateSwitch(2)
+                else profile_modify_insta_switch.isChecked = false
             }
 
             profile_modify_whatsapp_switch.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) profileModifyData.setStateSwitch(3)
+                if (isChecked  && profileModifyData.loadProfileModifyModel()?.socialMedias?.whatsApp?.url?.isNotEmpty()!!) profileModifyData.setStateSwitch(3)
+                else profile_modify_whatsapp_switch.isChecked = false
             }
 
             profile_modify_linkedin_switch.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) profileModifyData.setStateSwitch(4)
+                if (isChecked  && profileModifyData.loadProfileModifyModel()?.socialMedias?.linkedIn?.url?.isNotEmpty()!!) profileModifyData.setStateSwitch(4)
+                else profile_modify_linkedin_switch.isChecked = false
             }
         }
 
@@ -238,57 +243,54 @@ class ProfilModify: Fragment(), View.OnClickListener,
             Gson().toJson(profileModifyData.loadProfileModifyModel())
         ).observe(
             viewLifecycleOwner,
-            Observer {
+            {
                 val type: Type = object : TypeToken<UserInfoDTO?>() {}.type
-                profilModifyModel = Gson().fromJson<UserInfoDTO>(it, type)
+                profilModifyModel = Gson().fromJson(it, type)
                 setUserInfoDTO(profilModifyModel)
 
-                if (profilModifyModel.socialMedias.youtube.enabled)
-                    setStateSwitch(
+                when {
+                    profilModifyModel.socialMedias.youtube.enabled -> setStateSwitch(
                         profile_modify_youtube_switch,
                         profile_modify_facebook_switch,
                         profile_modify_insta_switch,
                         profile_modify_whatsapp_switch,
                         profile_modify_linkedin_switch
                     )
-                else if (profilModifyModel.socialMedias.facebook.enabled)
-                    setStateSwitch(
+                    profilModifyModel.socialMedias.facebook.enabled -> setStateSwitch(
                         profile_modify_facebook_switch,
                         profile_modify_youtube_switch,
                         profile_modify_insta_switch,
                         profile_modify_whatsapp_switch,
                         profile_modify_linkedin_switch
                     )
-                else if (profilModifyModel.socialMedias.instagram.enabled)
-                    setStateSwitch(
+                    profilModifyModel.socialMedias.instagram.enabled -> setStateSwitch(
                         profile_modify_insta_switch,
                         profile_modify_facebook_switch,
                         profile_modify_youtube_switch,
                         profile_modify_whatsapp_switch,
                         profile_modify_linkedin_switch
                     )
-                else if (profilModifyModel.socialMedias.whatsApp.enabled)
-                    setStateSwitch(
+                    profilModifyModel.socialMedias.whatsApp.enabled -> setStateSwitch(
                         profile_modify_whatsapp_switch,
                         profile_modify_insta_switch,
                         profile_modify_facebook_switch,
                         profile_modify_youtube_switch,
                         profile_modify_linkedin_switch
                     )
-                else if (profilModifyModel.socialMedias.linkedIn.enabled)
-                    setStateSwitch(
+                    profilModifyModel.socialMedias.linkedIn.enabled -> setStateSwitch(
                         profile_modify_linkedin_switch,
                         profile_modify_whatsapp_switch,
                         profile_modify_insta_switch,
                         profile_modify_facebook_switch,
                         profile_modify_youtube_switch
                     )
-                else {
-                    profile_modify_youtube_switch.isChecked = false
-                    profile_modify_facebook_switch.isChecked = false
-                    profile_modify_insta_switch.isChecked = false
-                    profile_modify_whatsapp_switch.isChecked = false
-                    profile_modify_linkedin_switch.isChecked = false
+                    else -> {
+                        profile_modify_youtube_switch.isChecked = false
+                        profile_modify_facebook_switch.isChecked = false
+                        profile_modify_insta_switch.isChecked = false
+                        profile_modify_whatsapp_switch.isChecked = false
+                        profile_modify_linkedin_switch.isChecked = false
+                    }
                 }
 
                 if (prefs.getString(pmtc, "") != Gson().toJson(profileModifyData.loadProfileModifyModel())) {
@@ -379,32 +381,47 @@ class ProfilModify: Fragment(), View.OnClickListener,
             null -> profile_modify_format_timenote.hint =
                 getString(R.string.timenote_date_format)
         }
-        if (profilModifyModel?.socialMedias?.youtube?.url.isNullOrBlank()) profile_modify_youtube_channel.hint =
-            getString(R.string.youtube_channel) else profile_modify_youtube_channel.text =
+        if (profilModifyModel?.socialMedias?.youtube?.url.isNullOrBlank()) {
+            profile_modify_youtube_channel.hint = getString(R.string.youtube_channel)
+            profile_modify_youtube_channel.text = ""
+            profile_modify_youtube_switch.isChecked = false
+        } else profile_modify_youtube_channel.text =
             profilModifyModel?.socialMedias?.youtube?.url
 
-        if (profilModifyModel?.socialMedias?.facebook?.url.isNullOrBlank()) profile_modify_facebook.hint =
-            getString(
-                R.string.facebook
-            )
+        if (profilModifyModel?.socialMedias?.facebook?.url.isNullOrBlank()) {
+            profile_modify_facebook.hint = getString(
+                    R.string.facebook
+                )
+            profile_modify_facebook.text = ""
+            profile_modify_facebook_switch.isChecked = false
+        }
         else profile_modify_facebook.text = profilModifyModel?.socialMedias?.facebook?.url
 
-        if (profilModifyModel?.socialMedias?.whatsApp?.url.isNullOrBlank()) profile_modify_whatsapp.hint =
-            getString(
-                R.string.whatsapp
-            )
+        if (profilModifyModel?.socialMedias?.whatsApp?.url.isNullOrBlank()) {
+            profile_modify_whatsapp.hint = getString(
+                    R.string.whatsapp
+                )
+            profile_modify_whatsapp.text = ""
+            profile_modify_whatsapp_switch.isChecked = false
+        }
         else profile_modify_whatsapp.text = profilModifyModel?.socialMedias?.whatsApp?.url
 
-        if (profilModifyModel?.socialMedias?.instagram?.url.isNullOrBlank()) profile_modify_instagram.hint =
-            getString(
-                R.string.instagram
-            )
+        if (profilModifyModel?.socialMedias?.instagram?.url.isNullOrBlank()) {
+            profile_modify_instagram.hint = getString(
+                    R.string.instagram
+                )
+            profile_modify_instagram.text = ""
+            profile_modify_insta_switch.isChecked = false
+        }
         else profile_modify_instagram.text = profilModifyModel?.socialMedias?.instagram?.url
 
-        if (profilModifyModel?.socialMedias?.linkedIn?.url.isNullOrBlank()) profile_modify_linkedin.hint =
-            getString(
-                R.string.linkedin
-            )
+        if (profilModifyModel?.socialMedias?.linkedIn?.url.isNullOrBlank()) {
+            profile_modify_linkedin.hint = getString(
+                    R.string.linkedin
+                )
+            profile_modify_linkedin.text = ""
+            profile_modify_linkedin_switch.isChecked = false
+        }
         else profile_modify_linkedin.text = profilModifyModel?.socialMedias?.linkedIn?.url
 
         if (profilModifyModel?.description.isNullOrBlank()) profile_modify_description.hint =
@@ -520,10 +537,12 @@ class ProfilModify: Fragment(), View.OnClickListener,
                     MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                         title(R.string.youtube_channel)
                         input(
+                            allowEmpty = true,
                             inputType = InputType.TYPE_CLASS_TEXT,
                             prefill = profileModifyData.loadProfileModifyModel()?.socialMedias?.youtube?.url
                         ) { _, text ->
-                            profileModifyData.setYoutubeLink(text.toString())
+                            if(text.isEmpty()) profileModifyData.setYoutubeLink("")
+                            else profileModifyData.setYoutubeLink(text.toString())
                         }
                         positiveButton(R.string.done)
                         lifecycleOwner(this@ProfilModify)
@@ -538,10 +557,12 @@ class ProfilModify: Fragment(), View.OnClickListener,
             ).show {
                 title(R.string.facebook)
                 input(
+                    allowEmpty = true,
                     inputType = InputType.TYPE_CLASS_TEXT,
                     prefill = profileModifyData.loadProfileModifyModel()?.socialMedias?.facebook?.url
                 ) { _, text ->
-                    profileModifyData.setFacebookLink(text.toString())
+                    if(text.isEmpty()) profileModifyData.setFacebookLink("")
+                    else profileModifyData.setFacebookLink(text.toString())
                 }
                 positiveButton(R.string.done)
                 lifecycleOwner(this@ProfilModify)
@@ -552,10 +573,12 @@ class ProfilModify: Fragment(), View.OnClickListener,
             ).show {
                 title(R.string.instagram)
                 input(
+                    allowEmpty = true,
                     inputType = InputType.TYPE_CLASS_TEXT,
                     prefill = profileModifyData.loadProfileModifyModel()?.socialMedias?.instagram?.url
                 ) { _, text ->
-                    profileModifyData.setInstaLink(text.toString())
+                    if(text.isEmpty()) profileModifyData.setInstaLink("")
+                    else profileModifyData.setInstaLink(text.toString())
                 }
                 positiveButton(R.string.done)
                 lifecycleOwner(this@ProfilModify)
@@ -566,10 +589,12 @@ class ProfilModify: Fragment(), View.OnClickListener,
             ).show {
                 title(R.string.whatsapp)
                 input(
+                    allowEmpty = true,
                     inputType = InputType.TYPE_CLASS_TEXT,
                     prefill = profileModifyData.loadProfileModifyModel()?.socialMedias?.whatsApp?.url
                 ) { _, text ->
-                    profileModifyData.setWhatsappLink(text.toString())
+                    if(text.isEmpty()) profileModifyData.setWhatsappLink("")
+                    else profileModifyData.setWhatsappLink(text.toString())
                 }
                 positiveButton(R.string.done)
                 lifecycleOwner(this@ProfilModify)
@@ -580,10 +605,12 @@ class ProfilModify: Fragment(), View.OnClickListener,
             ).show {
                 title(R.string.linkedin)
                 input(
+                    allowEmpty = true,
                     inputType = InputType.TYPE_CLASS_TEXT,
                     prefill = profileModifyData.loadProfileModifyModel()?.socialMedias?.linkedIn?.url
                 ) { _, text ->
-                    profileModifyData.setLinkedinLink(text.toString())
+                    if(text.isEmpty()) profileModifyData.setLinkedinLink("")
+                    else profileModifyData.setLinkedinLink(text.toString())
                 }
                 positiveButton(R.string.done)
                 lifecycleOwner(this@ProfilModify)

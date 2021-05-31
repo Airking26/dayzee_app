@@ -130,6 +130,7 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
                 if(preferenceSubCategoryArgs.isInLogin){
                     goToTopListener.goToTop()
                     loginViewModel.markAsAuthenticated()
+                    findNavController().popBackStack(R.id.home, false)
                 } else {
                     goToTopListener.goToTop()
                     findNavController().popBackStack(R.id.myProfile, false)
