@@ -190,6 +190,21 @@ class ProfilModify: Fragment(), View.OnClickListener,
             profile_modify_insta_switch.visibility = View.GONE
             profile_modify_whatsapp_switch.visibility = View.GONE
             profile_modify_linkedin_switch.visibility = View.GONE
+            if(profile_modify_youtube_channel.text == requireContext().resources.getString(R.string.youtube_channel) || profile_modify_youtube_channel.hint == requireContext().resources.getString(R.string.youtube_channel) || profile_modify_youtube_channel.text.isNullOrBlank() || profile_modify_youtube_channel.text.isNullOrEmpty()){
+                youtube_cl.visibility = View.GONE
+            }
+            if(profile_modify_facebook.text == requireContext().resources.getString(R.string.facebook) || profile_modify_facebook.hint == requireContext().resources.getString(R.string.facebook) || profile_modify_facebook.text.isNullOrBlank() || profile_modify_facebook.text.isNullOrEmpty()){
+                facebook_cl.visibility = View.GONE
+            }
+            if(profile_modify_instagram.text == requireContext().resources.getString(R.string.instagram) || profile_modify_instagram.hint == requireContext().resources.getString(R.string.instagram) || profile_modify_instagram.text.isNullOrBlank() || profile_modify_instagram.text.isNullOrEmpty()){
+                instagram_cl.visibility = View.GONE
+            }
+            if(profile_modify_whatsapp.text == requireContext().resources.getString(R.string.whatsapp) || profile_modify_whatsapp.hint == requireContext().resources.getString(R.string.whatsapp) || profile_modify_whatsapp.text.isNullOrBlank() || profile_modify_whatsapp.text.isNullOrEmpty()){
+                whatsapp_cl.visibility = View.GONE
+            }
+            if(profile_modify_linkedin.text == requireContext().resources.getString(R.string.linkedin) || profile_modify_linkedin.hint == requireContext().resources.getString(R.string.linkedin) || profile_modify_linkedin.text.isNullOrBlank() || profile_modify_linkedin.text.isNullOrEmpty()){
+                linkedin_cl.visibility = View.GONE
+            }
         } else {
             profile_from_switch.visibility = View.VISIBLE
             profile_modify_youtube_switch.visibility = View.VISIBLE

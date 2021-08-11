@@ -308,6 +308,7 @@ class Utils {
             nbrDay = if(duration.toDays().toInt() < nD) duration.toDays().toInt() else nD
             nbrHours = duration.minusDays(duration.toDays()).toHours().toInt()
             nbrMin = duration.minusDays(duration.toDays()).minusHours(duration.minusDays(duration.toDays()).toHours()).toMinutes().toInt()
+            nbrSec = 10
 
         } else {
             val time = SimpleDateFormat(ISO).parse(startDate).time - System.currentTimeMillis()
@@ -321,8 +322,7 @@ class Utils {
             nbrSec = c.get(Calendar.SECOND) * 1000
         }
 
-        //return formatInTime(nbrYear, nbrMonth, nbrDay, nbrHours, nbrMin, nbrSec, context)
-        return ""
+        return formatInTime(nbrYear.toLong(), nbrMonth.toLong(), nbrDay.toLong(), nbrHours.toLong(), nbrMin.toLong(), nbrSec.toLong(), context)
     }
 
     fun formatInTime(

@@ -34,8 +34,7 @@ import com.dayzeeco.dayzee.model.TimenoteInfoDTO
 import kotlinx.android.synthetic.main.item_timenote.view.*
 import kotlinx.android.synthetic.main.item_timenote_root.view.*
 import java.text.SimpleDateFormat
-import java.time.Duration
-import java.time.Instant
+import java.time.*
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.time.ExperimentalTime
@@ -393,9 +392,11 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         itemView.timenote_year.visibility = View.INVISIBLE
         itemView.timenote_in_label.visibility = View.VISIBLE
         if (isFromFuture) {
+            val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
             if(utils.inTime(timenote.startingAt, itemView.context) != itemView.context.getString(R.string.live)) itemView.timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0,0, 0)
             else itemView.timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_oval, 0,0, 0)
-            val duration = Duration.between(Instant.now(), Instant.parse(timenote.startingAt)).toMillis()
+            var duration: Long = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) Duration.between(Instant.now(), Instant.parse(timenote.startingAt)).toMillis()
+            else SimpleDateFormat(ISO).parse(timenote.startingAt).time - System.currentTimeMillis()
             val calendar = Calendar.getInstance()
             calendar.timeInMillis = duration
             if(timer != null){
@@ -403,15 +404,37 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
             }
             timer = object: CountDownTimer(duration, 1000){
                 override fun onTick(millisUntilFinished: Long) {
-                    val years = calendar[Calendar.YEAR] - 1970
-                    val months = calendar[Calendar.MONTH]
-                    var valueToSub: Int
-                    if(months == 0) valueToSub =  1 else valueToSub = months
-                    val daysToSubstract = calendar[Calendar.DAY_OF_MONTH] - valueToSub
-                    val hours = TimeUnit.MILLISECONDS.toHours(millisUntilFinished) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(millisUntilFinished))
-                    val minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millisUntilFinished))
-                    val seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))
-                    itemView.timenote_in_label.text = utils.formatInTime(years.toLong(), months.toLong(), daysToSubstract.toLong(),hours, minutes, seconds, itemView.context)
+                    val years : Long
+                    val months: Long
+                    val days : Long
+                    val hours: Long
+                    val minutes: Long
+                    val seconds: Long
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        val period = Period.between(
+                            LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC).toLocalDate(),
+                            LocalDateTime.ofInstant(Instant.parse(timenote.startingAt), ZoneOffset.UTC).toLocalDate()
+                        )
+
+                        years = period.years.toLong()
+                        months = period.minusYears(years).months.toLong()
+                        days = if(TimeUnit.MILLISECONDS.toDays(millisUntilFinished) < period.minusYears(years).minusMonths(months).days.toLong()) TimeUnit.MILLISECONDS.toDays(millisUntilFinished) else period.minusYears(years).minusMonths(months).days.toLong()
+                        hours = TimeUnit.MILLISECONDS.toHours(millisUntilFinished) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(millisUntilFinished))
+                        minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millisUntilFinished))
+                        seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))
+                    } else {
+                        val calendarLocal = Calendar.getInstance()
+                        calendarLocal.timeInMillis = millisUntilFinished
+                        years = (calendarLocal.get(Calendar.YEAR) - 1970).toLong()
+                        months = (calendarLocal.get(Calendar.MONTH)).toLong()
+                        days = (calendarLocal.get(Calendar.DAY_OF_MONTH) - 1).toLong()
+                        hours = (calendarLocal.get(Calendar.HOUR) + 12).toLong()
+                        minutes = (calendarLocal.get(Calendar.MINUTE)).toLong()
+                        seconds = (calendarLocal.get(Calendar.SECOND)).toLong()
+                    }
+
+
+                    itemView.timenote_in_label.text = utils.formatInTime(years, months, days,hours, minutes, seconds, itemView.context)
                 }
 
                 override fun onFinish() {

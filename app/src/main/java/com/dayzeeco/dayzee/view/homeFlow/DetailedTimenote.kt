@@ -760,11 +760,11 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                         TimeUnit.MILLISECONDS.toHours(millisUntilFinished))
                     val seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(
                         TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))
-                    timenote_in_label.text =  utils.formatInTime(years.toLong(), months.toLong(), daysToSubstract.toLong(),hours, minutes, seconds, requireContext())
+                    timenote_in_label?.text =  utils.formatInTime(years.toLong(), months.toLong(), daysToSubstract.toLong(),hours, minutes, seconds, requireContext())
                 }
 
                 override fun onFinish() {
-                    timenote_in_label.text =  requireContext().getString(R.string.live)
+                    timenote_in_label?.text =  requireContext().getString(R.string.live)
                 }
 
             }.start()        } else {
