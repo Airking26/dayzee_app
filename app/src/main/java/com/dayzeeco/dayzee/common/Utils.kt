@@ -321,117 +321,118 @@ class Utils {
             nbrSec = c.get(Calendar.SECOND) * 1000
         }
 
-        return formatInTime(nbrYear, nbrMonth, nbrDay, nbrHours, nbrMin, context)
+        //return formatInTime(nbrYear, nbrMonth, nbrDay, nbrHours, nbrMin, nbrSec, context)
+        return ""
     }
 
-    private fun formatInTime(
-        nbrYear: Int,
-        nbrMonth: Int,
-        nbrDay: Int,
-        nbrHour: Int,
-        nbrMin: Int,
+    fun formatInTime(
+        nbrYear: Long,
+        nbrMonth: Long,
+        nbrDay: Long,
+        nbrHour: Long,
+        nbrMin: Long,
+        nbrSec: Long,
         context: Context
     ): String {
 
         val decountTime: String
-        if(nbrYear <= 0 && nbrMonth <= 0 && nbrDay <= 0 && nbrHour <= 0 && nbrMin < 0){
+        if(nbrYear <= 0 && nbrMonth <= 0 && nbrDay <= 0 && nbrHour <= 0 && nbrMin < 0 && nbrSec <= 0){
             decountTime = context.getString(R.string.live)
         }
-        else if(nbrYear <= 0){
+        else
+        if(nbrYear <= 0){
             if(nbrMonth <= 0){
-                if(nbrDay <= 0){
-                    decountTime = if(nbrHour > 1){
-                        if(nbrMin > 1){
-                            context.resources.getQuantityString(
-                                R.plurals.hours_plural_minutes_vary,
-                                nbrMin,
-                                nbrHour,
-                                nbrMin
-                            )
-                        } else {
-                            context.resources.getQuantityString(
-                                R.plurals.hours_plural_minutes_vary,
-                                nbrMin,
-                                nbrHour,
-                                nbrMin
-                            )
-                        }
-                    } else if(nbrHour == 1){
-                        if(nbrMin > 1){
-                            context.resources.getQuantityString(
-                                R.plurals.hours_singular_minutes_vary,
-                                nbrMin,
-                                nbrHour,
-                                nbrMin
-                            )
-                        } else {
-                            context.resources.getQuantityString(
-                                R.plurals.hours_singular_minutes_vary,
-                                nbrMin,
-                                nbrHour,
-                                nbrMin
-                            )
-                        }
-                    } else {
-                        if(nbrMin > 1){
-                            context.resources.getQuantityString(
-                                R.plurals.no_hour_minutes_vary,
-                                nbrMin,
-                                nbrMin,
-                                nbrMin
-                            )
-                        } else {
-                            context.resources.getQuantityString(
-                                R.plurals.no_hour_minutes_vary,
-                                nbrMin,
-                                nbrMin,
-                                nbrMin
-                            )
-                        }
+                if(nbrDay <= 0) {
+                    if (nbrHour <= 0) {
+                        decountTime =
+                            if(nbrMin > 1){
+                                context.resources.getQuantityString(R.plurals.minutes_plural_seconds_vary, nbrMin.toInt(), nbrMin, nbrSec)
+                            } else {
+                                context.resources.getQuantityString(R.plurals.minutes_plural_seconds_vary, nbrMin.toInt(), nbrMin, nbrSec)
+                            }
                     }
-                } else {
+                    else {
+                        decountTime =
+                            if (nbrHour > 1) {
+                                if (nbrMin > 1) {
+                                    context.resources.getQuantityString(
+                                        R.plurals.hours_plural_minutes_vary,
+                                        nbrMin.toInt(),
+                                        nbrHour,
+                                        nbrMin
+                                    )
+                                } else {
+                                    context.resources.getQuantityString(
+                                        R.plurals.hours_plural_minutes_vary,
+                                        nbrMin.toInt(),
+                                        nbrHour,
+                                        nbrMin
+                                    )
+                                }
+                            }
+                            else {
+                                if (nbrMin > 1) {
+                                    context.resources.getQuantityString(
+                                        R.plurals.hours_singular_minutes_vary,
+                                        nbrMin.toInt(),
+                                        nbrHour,
+                                        nbrMin
+                                    )
+                                } else {
+                                    context.resources.getQuantityString(
+                                        R.plurals.hours_singular_minutes_vary,
+                                        nbrMin.toInt(),
+                                        nbrHour,
+                                        nbrMin
+                                    )
+                                }
+                            }
+                    }
+                }
+                else {
                     decountTime = if(nbrDay > 1){
                         if(nbrHour > 1) context.resources.getQuantityString(
                             R.plurals.days_plural_hours_vary,
-                            nbrHour,
+                            nbrHour.toInt(),
                             nbrDay,
                             nbrHour
                         )
                         else context.resources.getQuantityString(
                             R.plurals.days_plural_hours_vary,
-                            nbrHour,
+                            nbrHour.toInt(),
                             nbrDay,
                             nbrHour
                         )
                     } else {
                         if(nbrHour > 1) context.resources.getQuantityString(
                             R.plurals.days_singular_hours_vary,
-                            nbrHour,
+                            nbrHour.toInt(),
                             nbrDay,
                             nbrHour
                         )
                         else context.resources.getQuantityString(
                             R.plurals.days_singular_hours_vary,
-                            nbrHour,
+                            nbrHour.toInt(),
                             nbrHour,
                             nbrHour
                         )
                     }
 
                 }
-            } else {
+            }
+            else {
                 decountTime = if(nbrMonth > 1){
                     if(nbrDay > 1){
                         context.resources.getQuantityString(
                             R.plurals.months_plural_days_vary,
-                            nbrDay,
+                            nbrDay.toInt(),
                             nbrMonth,
                             nbrDay
                         )
                     } else {
                         context.resources.getQuantityString(
                             R.plurals.months_plural_days_vary,
-                            nbrDay,
+                            nbrDay.toInt(),
                             nbrMonth,
                             nbrDay
                         )
@@ -440,14 +441,14 @@ class Utils {
                     if(nbrDay >1){
                         context.resources.getQuantityString(
                             R.plurals.months_singular_days_vary,
-                            nbrDay,
+                            nbrDay.toInt(),
                             nbrMonth,
                             nbrDay
                         )
                     } else {
                         context.resources.getQuantityString(
                             R.plurals.months_singular_days_vary,
-                            nbrDay,
+                            nbrDay.toInt(),
                             nbrMonth,
                             nbrDay
                         )
@@ -459,14 +460,14 @@ class Utils {
                 if(nbrMonth > 1) {
                     context.resources.getQuantityString(
                         R.plurals.years_plural_months_vary,
-                        nbrMonth,
+                        nbrMonth.toInt(),
                         nbrYear,
                         nbrMonth
                     )
                 } else {
                     context.resources.getQuantityString(
                         R.plurals.years_plural_months_vary,
-                        nbrMonth,
+                        nbrMonth.toInt(),
                         nbrYear,
                         nbrMonth
                     )
@@ -475,14 +476,14 @@ class Utils {
                 if(nbrMonth > 1){
                     context.resources.getQuantityString(
                         R.plurals.years_singular_month_vary,
-                        nbrMonth,
+                        nbrMonth.toInt(),
                         nbrYear,
                         nbrMonth
                     )
                 } else {
                     context.resources.getQuantityString(
                         R.plurals.years_singular_month_vary,
-                        nbrMonth,
+                        nbrMonth.toInt(),
                         nbrYear,
                         nbrMonth
                     )

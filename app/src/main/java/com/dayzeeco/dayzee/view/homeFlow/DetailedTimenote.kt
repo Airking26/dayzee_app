@@ -8,6 +8,7 @@ import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.os.Handler
 import android.text.*
 import android.view.*
@@ -51,6 +52,7 @@ import io.branch.referral.util.ContentMetadata
 import io.branch.referral.util.LinkProperties
 import kotlinx.android.synthetic.main.fragment_detailed_fragment.*
 import kotlinx.android.synthetic.main.friends_search_cl.view.*
+import kotlinx.android.synthetic.main.item_profile_timenote_list_style.view.*
 import kotlinx.android.synthetic.main.item_timenote.view.*
 import kotlinx.android.synthetic.main.item_timenote_root.*
 import kotlinx.android.synthetic.main.users_participating.view.*
@@ -58,7 +60,10 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
+import java.time.Duration
+import java.time.Instant
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.time.ExperimentalTime
 
 
@@ -86,6 +91,8 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     private lateinit var screenSlideCreationTimenotePagerAdapter: ScreenSlideTimenotePagerAdapter
     private val args: DetailedTimenoteArgs by navArgs()
     private val utils = Utils()
+    private var timer : CountDownTimer? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -733,8 +740,34 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                 0
             )
             else timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0)
-            timenote_in_label.text = utils.inTime(timenote.startingAt, requireContext())
-        } else {
+
+            val duration = Duration.between(Instant.now(), Instant.parse(timenote.startingAt)).toMillis()
+            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = duration
+            if(timer != null){
+                timer!!.cancel()
+            }
+            timer = object: CountDownTimer(duration, 1000){
+                override fun onTick(millisUntilFinished: Long) {
+                    val years = calendar[Calendar.YEAR] - 1970
+                    val months = calendar[Calendar.MONTH]
+                    var valueToSub: Int
+                    if(months == 0) valueToSub =  1 else valueToSub = months
+                    val daysToSubstract = calendar[Calendar.DAY_OF_MONTH] - valueToSub
+                    val hours = TimeUnit.MILLISECONDS.toHours(millisUntilFinished) - TimeUnit.DAYS.toHours(
+                        TimeUnit.MILLISECONDS.toDays(millisUntilFinished))
+                    val minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(
+                        TimeUnit.MILLISECONDS.toHours(millisUntilFinished))
+                    val seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(
+                        TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))
+                    timenote_in_label.text =  utils.formatInTime(years.toLong(), months.toLong(), daysToSubstract.toLong(),hours, minutes, seconds, requireContext())
+                }
+
+                override fun onFinish() {
+                    timenote_in_label.text =  requireContext().getString(R.string.live)
+                }
+
+            }.start()        } else {
             timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0)
             timenote_in_label.text = utils.sinceTime(timenote.endingAt, requireContext())
         }

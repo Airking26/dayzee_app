@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
+import android.os.CountDownTimer
 import android.text.*
 import android.text.style.ClickableSpan
 import android.view.LayoutInflater
@@ -33,7 +34,10 @@ import com.dayzeeco.dayzee.model.TimenoteInfoDTO
 import kotlinx.android.synthetic.main.item_timenote.view.*
 import kotlinx.android.synthetic.main.item_timenote_root.view.*
 import java.text.SimpleDateFormat
+import java.time.Duration
+import java.time.Instant
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.time.ExperimentalTime
 
 val allSelected : MutableList<Int> = mutableListOf()
@@ -59,19 +63,11 @@ class TimenotePagingAdapter(diffCallbacks: DiffUtil.ItemCallback<TimenoteInfoDTO
 }
 
 class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
+    var timer : CountDownTimer? = null
+
     @ExperimentalTime
     @RequiresApi(Build.VERSION_CODES.O)
-    fun bindTimenote(
-        timenote: TimenoteInfoDTO,
-        timenoteListenerListener: TimenoteOptionsListener,
-        fragment: Fragment,
-        isFromFuture: Boolean,
-        utils: Utils,
-        createdBy: String?,
-        formatOfDate: Int
-    ) {
-
-
+    fun bindTimenote(timenote: TimenoteInfoDTO, timenoteListenerListener: TimenoteOptionsListener, fragment: Fragment, isFromFuture: Boolean, utils: Utils, createdBy: String?, formatOfDate: Int) {
         if(allSelected.contains(absoluteAdapterPosition)){
             itemView.timenote_buy_cl.visibility = View.VISIBLE
             if (timenote.price.price > 0) itemView.timenote_buy.text =
@@ -399,7 +395,30 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         if (isFromFuture) {
             if(utils.inTime(timenote.startingAt, itemView.context) != itemView.context.getString(R.string.live)) itemView.timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0,0, 0)
             else itemView.timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_oval, 0,0, 0)
-            itemView.timenote_in_label.text = utils.inTime(timenote.startingAt, itemView.context)
+            val duration = Duration.between(Instant.now(), Instant.parse(timenote.startingAt)).toMillis()
+            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = duration
+            if(timer != null){
+                timer!!.cancel()
+            }
+            timer = object: CountDownTimer(duration, 1000){
+                override fun onTick(millisUntilFinished: Long) {
+                    val years = calendar[Calendar.YEAR] - 1970
+                    val months = calendar[Calendar.MONTH]
+                    var valueToSub: Int
+                    if(months == 0) valueToSub =  1 else valueToSub = months
+                    val daysToSubstract = calendar[Calendar.DAY_OF_MONTH] - valueToSub
+                    val hours = TimeUnit.MILLISECONDS.toHours(millisUntilFinished) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(millisUntilFinished))
+                    val minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millisUntilFinished))
+                    val seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))
+                    itemView.timenote_in_label.text = utils.formatInTime(years.toLong(), months.toLong(), daysToSubstract.toLong(),hours, minutes, seconds, itemView.context)
+                }
+
+                override fun onFinish() {
+                    itemView.timenote_in_label.text =  itemView.context.getString(R.string.live)
+                }
+
+            }.start()
         }
         else {
             itemView.timenote_in_label.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0,0, 0)

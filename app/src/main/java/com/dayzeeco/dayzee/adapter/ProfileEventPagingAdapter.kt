@@ -3,6 +3,7 @@ package com.dayzeeco.dayzee.adapter
 import android.content.Context
 import android.graphics.Color
 import android.os.Build
+import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,15 +27,19 @@ import com.dayzeeco.dayzee.model.TimenoteInfoDTO
 import kotlinx.android.synthetic.main.item_profile_timenote_list_style.view.*
 import kotlinx.android.synthetic.main.item_profile_timenote_list_style.view.profile_item_address_event
 import kotlinx.android.synthetic.main.item_timenote.view.*
+import kotlinx.android.synthetic.main.item_timenote_root.view.*
 import java.text.SimpleDateFormat
+import java.time.Duration
+import java.time.Instant
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.time.ExperimentalTime
 
 class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<TimenoteInfoDTO>,
                                 private val timenoteOptionsListener: TimenoteOptionsListener,
                                 private val onCardClicked: ItemProfileCardListener,
                                 private val isMine: String?, private val isUpcoming: Boolean,
-                                private val listOfAlarms: MutableList<AlarmInfoDTO>, private val isOnMyProfile: Boolean)
+                                private val listOfAlarms: MutableList<AlarmInfoDTO>, private val isOnMyProfile: Boolean, private val utils: Utils)
     : PagingDataAdapter<TimenoteInfoDTO, RecyclerView.ViewHolder>(diffUtilCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -50,7 +55,7 @@ class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<Timenote
                 timenoteOptionsListener,
                 onCardClicked,
                 isMine, isUpcoming,
-                listOfAlarms, isOnMyProfile)
+                listOfAlarms, isOnMyProfile, utils)
     }
 
 
@@ -61,6 +66,8 @@ class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<Timenote
 }
 
 class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    var timer : CountDownTimer? = null
+
     @ExperimentalTime
     @RequiresApi(Build.VERSION_CODES.O)
     fun bindListStyleItem(
@@ -70,7 +77,8 @@ class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         isMine: String?,
         isUpcoming: Boolean,
         listOfAlarms: MutableList<AlarmInfoDTO>,
-        isOnMyProfile: Boolean
+        isOnMyProfile: Boolean,
+        utils: Utils
     ) {
         val DATE_FORMAT_DAY_AND_TIME = "EEE, d MMM yyyy hh:mm aaa"
         val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
@@ -91,7 +99,36 @@ class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         }
         else itemView.timenote_place?.text = ""
         itemView.profile_item_name_owner.text = event.createdBy.userName
-        itemView.profile_item_date_event.text = if(isUpcoming) Utils().inTime(event.startingAt, itemView.context) else Utils().sinceTime(event.endingAt, itemView.context)
+        if(isUpcoming) {
+            val duration = Duration.between(Instant.now(), Instant.parse(event.startingAt)).toMillis()
+            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = duration
+            if(timer != null){
+                timer!!.cancel()
+            }
+            timer = object: CountDownTimer(duration, 1000){
+                override fun onTick(millisUntilFinished: Long) {
+                    val years = calendar[Calendar.YEAR] - 1970
+                    val months = calendar[Calendar.MONTH]
+                    var valueToSub: Int
+                    if(months == 0) valueToSub =  1 else valueToSub = months
+                    val daysToSubstract = calendar[Calendar.DAY_OF_MONTH] - valueToSub
+                    val hours = TimeUnit.MILLISECONDS.toHours(millisUntilFinished) - TimeUnit.DAYS.toHours(
+                        TimeUnit.MILLISECONDS.toDays(millisUntilFinished))
+                    val minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(
+                        TimeUnit.MILLISECONDS.toHours(millisUntilFinished))
+                    val seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(
+                        TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))
+                   itemView.profile_item_date_event.text =  utils.formatInTime(years.toLong(), months.toLong(), daysToSubstract.toLong(),hours, minutes, seconds, itemView.context)
+                }
+
+                override fun onFinish() {
+                    itemView.profile_item_date_event.text =  itemView.context.getString(R.string.live)
+                }
+
+            }.start()
+        }
+        else itemView.profile_item_date_event.text = Utils().sinceTime(event.endingAt, itemView.context)
         itemView.profile_item_date_event.setOnClickListener {
             if(itemView.profile_item_date_event.text.contains(itemView.context.getString(R.string.in_time), true) || itemView.profile_item_date_event.text.contains(itemView.context.getString(R.string.since_time), true)){
                 val o = SimpleDateFormat(ISO)
@@ -100,7 +137,36 @@ class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
                 o.timeZone = TimeZone.getDefault()
                 itemView.profile_item_date_event.text = SimpleDateFormat(DATE_FORMAT_DAY_AND_TIME, Locale.getDefault()).format(m.time)
             } else {
-                itemView.profile_item_date_event.text = if(isUpcoming) Utils().inTime(event.startingAt, itemView.context) else Utils().sinceTime(event.endingAt, itemView.context)
+                if(isUpcoming){
+
+                    val duration = Duration.between(Instant.now(), Instant.parse(event.startingAt)).toMillis()
+                    val calendar = Calendar.getInstance()
+                    calendar.timeInMillis = duration
+                    if(timer != null){
+                        timer!!.cancel()
+                    }
+                    timer = object: CountDownTimer(duration, 1000){
+                        override fun onTick(millisUntilFinished: Long) {
+                            val years = calendar[Calendar.YEAR] - 1970
+                            val months = calendar[Calendar.MONTH]
+                            var valueToSub: Int
+                            if(months == 0) valueToSub =  1 else valueToSub = months
+                            val daysToSubstract = calendar[Calendar.DAY_OF_MONTH] - valueToSub
+                            val hours = TimeUnit.MILLISECONDS.toHours(millisUntilFinished) - TimeUnit.DAYS.toHours(
+                                TimeUnit.MILLISECONDS.toDays(millisUntilFinished))
+                            val minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(
+                                TimeUnit.MILLISECONDS.toHours(millisUntilFinished))
+                            val seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(
+                                TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))
+                            itemView.profile_item_date_event.text =  utils.formatInTime(years.toLong(), months.toLong(), daysToSubstract.toLong(),hours, minutes, seconds, itemView.context)
+                        }
+
+                        override fun onFinish() {
+                            itemView.profile_item_date_event.text =  itemView.context.getString(R.string.live)
+                        }
+
+                    }.start()
+                } else itemView.profile_item_date_event.text = Utils().sinceTime(event.endingAt, itemView.context)
             }
         }
         itemView.profile_item_options.setOnClickListener { createOptionsOnTimenote(itemView.context, isMine, timenoteOptionsListener, event, listOfAlarms, isOnMyProfile) }

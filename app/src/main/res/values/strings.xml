@@ -418,6 +418,10 @@
         <item quantity="one">In %1$d hour and %2$d minute</item>
         <item quantity="other">In %1$d hour and %2$d minutes</item>
     </plurals>
+    <plurals name="minutes_plural_seconds_vary">
+        <item quantity="one">In %1$d minute and %2$d seconds</item>
+        <item quantity="other">In %1$d minutes and %2$d seconds</item>
+    </plurals>
     <plurals name="no_hour_minutes_vary">
         <item quantity="one">In %1$d minute</item>
         <item quantity="other">In %1$d minutes</item>

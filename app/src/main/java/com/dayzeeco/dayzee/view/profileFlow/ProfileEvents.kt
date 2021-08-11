@@ -77,6 +77,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
     private val authViewModel: LoginViewModel by activityViewModels()
     private var profileEventPagingAdapter : ProfileEventPagingAdapter? = null
     private lateinit var listOfAlarms: AlarmData
+    private val utils = Utils()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -136,7 +137,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
             this,
             this,
             userInfoDTO.id,
-            isFuture, listOfAlarms.getAlarms(), isOnMyProfile)
+            isFuture, listOfAlarms.getAlarms(), isOnMyProfile, utils)
         profile_rv.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             adapter =  profileEventPagingAdapter!!.withLoadStateFooter(

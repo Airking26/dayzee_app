@@ -265,7 +265,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
             }
         }
 
-        timenoteRecentPagingAdapter = TimenoteRecentPagingAdapter(TimenoteComparator, this)
+        timenoteRecentPagingAdapter = TimenoteRecentPagingAdapter(TimenoteComparator, this, utils)
         lifecycleScope.launch {
             timenoteViewModel.getRecentTimenotePagingFlow(tokenId!!, prefs).collectLatest {
                 timenoteRecentPagingAdapter?.submitData(it)

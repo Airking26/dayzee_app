@@ -394,6 +394,10 @@
         <item quantity="one">Dans %1$d heure et %2$d minute</item>
         <item quantity="other">Dans %1$d heure et %2$d minutes</item>
     </plurals>
+    <plurals name="minutes_plural_seconds_vary">
+        <item quantity="one">Dans %1$d minute et %2$d secondes</item>
+        <item quantity="other">Dans %1$d minutes et %2$d secondes</item>
+    </plurals>
     <plurals name="no_hour_minutes_vary">
         <item quantity="one">Dans %1$d minute</item>
         <item quantity="other">Dans %1$d minutes</item>
