@@ -53,7 +53,6 @@ class TimenoteTAG: Fragment(), TimenoteOptionsListener, View.OnClickListener,
     private lateinit var goToProfileLisner : GoToProfile
     private val timenoteViewModel : TimenoteViewModel by activityViewModels()
     private val authViewModel: LoginViewModel by activityViewModels()
-    private val followViewModel: FollowViewModel by activityViewModels()
     private val searchViewModel: SearchViewModel by activityViewModels()
     private val utils = Utils()
     private lateinit var prefs: SharedPreferences
@@ -283,7 +282,7 @@ class TimenoteTAG: Fragment(), TimenoteOptionsListener, View.OnClickListener,
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
-            followViewModel.getUsers(tokenId!!, userInfoDTO.id!!, 0, prefs).collectLatest {
+            searchViewModel.getUsers(tokenId!!, userInfoDTO.id!!,  prefs).collectLatest {
                 userAdapter.submitData(it)
             }
         }
@@ -293,7 +292,7 @@ class TimenoteTAG: Fragment(), TimenoteOptionsListener, View.OnClickListener,
                 if (msg.what == TRIGGER_AUTO_COMPLETE) {
                     if (!TextUtils.isEmpty(searchbar.text)) {
                         lifecycleScope.launch {
-                            followViewModel.searchInFollowing(tokenId!!, searchbar.text, prefs)
+                            searchViewModel.getUsers(tokenId!!, searchbar.text, prefs)
                                 .collectLatest {
                                     userAdapter.submitData(it)
                                 }
@@ -301,7 +300,7 @@ class TimenoteTAG: Fragment(), TimenoteOptionsListener, View.OnClickListener,
 
                     } else {
                         lifecycleScope.launch{
-                            followViewModel.getUsers(tokenId!!, userInfoDTO.id!!, 0, prefs).collectLatest {
+                            searchViewModel.getUsers(tokenId!!, userInfoDTO.id!!,  prefs).collectLatest {
                                 userAdapter.submitData(it)
                             }
                         }

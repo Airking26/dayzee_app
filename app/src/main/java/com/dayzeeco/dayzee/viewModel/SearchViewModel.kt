@@ -27,6 +27,9 @@ class SearchViewModel : ViewModel() {
         searchUserLiveData.postValue(Pager(PagingConfig(pageSize = 1)){SearchUserPagingSource(token, search, searchService, sharedPreferences)}.flow.cachedIn(viewModelScope))
     }
 
+    fun getUsers(token: String, search: String, sharedPreferences: SharedPreferences): Flow<PagingData<UserInfoDTO>> = Pager(PagingConfig(pageSize = 1)){SearchUserPagingSource(token, search, searchService, sharedPreferences)}.flow.cachedIn(viewModelScope)
+
+
     private fun searchTag(token: String, search: String, sharedPreferences: SharedPreferences){
         searchTagLiveData.postValue(Pager(PagingConfig(pageSize = 1)){SearchTagPagingSource(token, search, searchService, sharedPreferences)}.flow.cachedIn(viewModelScope))
     }

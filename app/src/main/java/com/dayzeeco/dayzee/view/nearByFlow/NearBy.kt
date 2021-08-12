@@ -96,7 +96,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     private lateinit var locationManager: LocationManager
     private lateinit var nearbyDateTv: TextView
     private val loginViewModel : LoginViewModel by activityViewModels()
-    private val followViewModel: FollowViewModel by activityViewModels()
+    private val searchViewModel: SearchViewModel by activityViewModels()
     private val DATE_FORMAT = "EEE, d MMM yyyy"
     val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     private lateinit var dateFormat : SimpleDateFormat
@@ -746,7 +746,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch {
-            followViewModel.getUsers(tokenId!!, userInfoDTO?.id!!, 0, prefs).collectLatest {
+            searchViewModel.getUsers(tokenId!!, userInfoDTO?.id!!,  prefs).collectLatest {
                 userAdapter.submitData(it)
             }
         }
@@ -756,7 +756,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
                 if (msg.what == TRIGGER_AUTO_COMPLETE) {
                     if (!TextUtils.isEmpty(searchbar.text)) {
                         lifecycleScope.launch {
-                            followViewModel.searchInFollowing(tokenId!!, searchbar.text, prefs)
+                            searchViewModel.getUsers(tokenId!!, searchbar.text, prefs)
                                 .collectLatest {
                                     userAdapter.submitData(it)
                                 }
@@ -764,7 +764,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
 
                     } else {
                         lifecycleScope.launch {
-                            followViewModel.getUsers(tokenId!!, userInfoDTO?.id!!, 0, prefs)
+                            searchViewModel.getUsers(tokenId!!, userInfoDTO?.id!!,  prefs)
                                 .collectLatest {
                                     userAdapter.submitData(it)
                                 }

@@ -69,7 +69,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     private val loginViewModel: LoginViewModel by activityViewModels()
     private val alarmViewModel: AlarmViewModel by activityViewModels()
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
-    private val followViewModel: FollowViewModel by activityViewModels()
+    private val searchViewModel : SearchViewModel by activityViewModels()
     private val meViewModel : MeViewModel by activityViewModels()
     private var timenotePagingAdapter: TimenotePagingAdapter? = null
     private var timenoteRecentPagingAdapter: TimenoteRecentPagingAdapter? = null
@@ -163,9 +163,10 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if(prefs.getString(accessToken, null) != null) {
 
+            if(tokenId == null) tokenId = prefs.getString(accessToken, null)
             changePasswordTemporary()
 
-            if(prefs.getString(alarms, null)== null) getAlarms()
+            if(prefs.getString(alarms, null) == null) getAlarms()
 
             val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
             userInfoDTO = Gson().fromJson(prefs.getString(user_info_dto, ""), typeUserInfo)
@@ -236,13 +237,13 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     }
 
     private fun getAlarms() {
-        alarmViewModel.getAlarms(tokenId!!).observe(viewLifecycleOwner, Observer {
+        alarmViewModel.getAlarms(tokenId!!).observe(viewLifecycleOwner, {
             if (it.code() == 401) {
                 loginViewModel.refreshToken(prefs)
-                    .observe(viewLifecycleOwner, Observer { newAccessToken ->
+                    .observe(viewLifecycleOwner, { newAccessToken ->
                         tokenId = newAccessToken
                         alarmViewModel.getAlarms(tokenId!!)
-                            .observe(viewLifecycleOwner, Observer { lst ->
+                            .observe(viewLifecycleOwner, { lst ->
                                 prefs.edit().putString(alarms, Gson().toJson(lst.body())).apply()
                             })
                     })
@@ -540,7 +541,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
-            followViewModel.getUsers(tokenId!!, userInfoDTO.id!!, 0, prefs).collectLatest {
+            searchViewModel.getUsers(tokenId!!, userInfoDTO.id!!,  prefs).collectLatest {
                 userAdapter.submitData(it)
             }
         }
@@ -550,7 +551,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                 if (msg.what == TRIGGER_AUTO_COMPLETE) {
                     if (!TextUtils.isEmpty(searchbar.text)) {
                         lifecycleScope.launch {
-                            followViewModel.searchInFollowing(tokenId!!, searchbar.text, prefs)
+                            searchViewModel.getUsers(tokenId!!, searchbar.text, prefs)
                                 .collectLatest {
                                     userAdapter.submitData(it)
                                 }
@@ -558,7 +559,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
                     } else {
                         lifecycleScope.launch{
-                            followViewModel.getUsers(tokenId!!, userInfoDTO.id!!, 0, prefs).collectLatest {
+                            searchViewModel.getUsers(tokenId!!, userInfoDTO.id!!, prefs).collectLatest {
                                 userAdapter.submitData(it)
                             }
                         }

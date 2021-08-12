@@ -71,6 +71,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
     private var isFuture = true
     private lateinit var onRemoveFilterBarListener: OnRemoveFilterBarListener
     private val followViewModel: FollowViewModel by activityViewModels()
+    private val searchViewModel: SearchViewModel by activityViewModels()
     private val profileViewModel : ProfileViewModel by activityViewModels()
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
     private val alarmViewModel: AlarmViewModel by activityViewModels()
@@ -384,7 +385,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
-            followViewModel.getUsers(tokenId!!, userInfoDTO?.id!!, 0, prefs).collectLatest {
+            searchViewModel.getUsers(tokenId!!, userInfoDTO?.id!!,  prefs).collectLatest {
                 userAdapter.submitData(it)
             }
         }
@@ -394,7 +395,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
                 if (msg.what == TRIGGER_AUTO_COMPLETE) {
                     if (!TextUtils.isEmpty(searchbar.text)) {
                         lifecycleScope.launch {
-                            followViewModel.searchInFollowing(tokenId!!, searchbar.text, prefs)
+                            searchViewModel.getUsers(tokenId!!, searchbar.text, prefs)
                                 .collectLatest {
                                     userAdapter.submitData(it)
                                 }
@@ -402,7 +403,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
 
                     } else {
                         lifecycleScope.launch{
-                            followViewModel.getUsers(tokenId!!, userInfoDTO?.id!!, 0, prefs).collectLatest {
+                            searchViewModel.getUsers(tokenId!!, userInfoDTO?.id!!,  prefs).collectLatest {
                                 userAdapter.submitData(it)
                             }
                         }

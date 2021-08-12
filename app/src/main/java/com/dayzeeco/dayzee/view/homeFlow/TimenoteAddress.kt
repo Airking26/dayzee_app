@@ -41,10 +41,7 @@ import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.listeners.GoToProfile
 import com.dayzeeco.dayzee.listeners.TimenoteOptionsListener
 import com.dayzeeco.dayzee.model.*
-import com.dayzeeco.dayzee.viewModel.AlarmViewModel
-import com.dayzeeco.dayzee.viewModel.FollowViewModel
-import com.dayzeeco.dayzee.viewModel.LoginViewModel
-import com.dayzeeco.dayzee.viewModel.TimenoteViewModel
+import com.dayzeeco.dayzee.viewModel.*
 import kotlinx.android.synthetic.main.fragment_timenote_address.*
 import kotlinx.android.synthetic.main.friends_search_cl.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
@@ -63,6 +60,7 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
     private lateinit var prefs: SharedPreferences
     private var tokenId : String? = null
     private val followViewModel: FollowViewModel by activityViewModels()
+    private val searchViewModel: SearchViewModel by activityViewModels()
     private val authViewModel: LoginViewModel by activityViewModels()
     private val utils = Utils()
     private var sendTo: MutableList<String> = mutableListOf()
@@ -234,7 +232,7 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
-            followViewModel.getUsers(tokenId!!, userInfoDTO.id!!, 0, prefs).collectLatest {
+            searchViewModel.getUsers(tokenId!!, userInfoDTO.id!!, prefs).collectLatest {
                 userAdapter.submitData(it)
             }
         }
@@ -244,7 +242,7 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
                 if (msg.what == TRIGGER_AUTO_COMPLETE) {
                     if (!TextUtils.isEmpty(searchbar.text)) {
                         lifecycleScope.launch {
-                            followViewModel.searchInFollowing(tokenId!!, searchbar.text, prefs)
+                            searchViewModel.getUsers(tokenId!!, searchbar.text, prefs)
                                 .collectLatest {
                                     userAdapter.submitData(it)
                                 }
@@ -252,7 +250,7 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
 
                     } else {
                         lifecycleScope.launch{
-                            followViewModel.getUsers(tokenId!!, userInfoDTO.id!!, 0, prefs).collectLatest {
+                            searchViewModel.getUsers(tokenId!!, userInfoDTO.id!!,  prefs).collectLatest {
                                 userAdapter.submitData(it)
                             }
                         }

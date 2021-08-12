@@ -42,10 +42,7 @@ import com.dayzeeco.dayzee.adapter.*
 import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.listeners.GoToProfile
 import com.dayzeeco.dayzee.model.*
-import com.dayzeeco.dayzee.viewModel.CommentViewModel
-import com.dayzeeco.dayzee.viewModel.FollowViewModel
-import com.dayzeeco.dayzee.viewModel.LoginViewModel
-import com.dayzeeco.dayzee.viewModel.TimenoteViewModel
+import com.dayzeeco.dayzee.viewModel.*
 import io.branch.indexing.BranchUniversalObject
 import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
@@ -84,7 +81,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     private lateinit var prefs: SharedPreferences
     private lateinit var commentAdapter: CommentPagingAdapter
     private val commentViewModel: CommentViewModel by activityViewModels()
-    private val followViewModel: FollowViewModel by activityViewModels()
+    private val searchViewModel: SearchViewModel by activityViewModels()
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
     private val authViewModel: LoginViewModel by activityViewModels()
     private var tokenId: String? = null
@@ -594,7 +591,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                 recyclerview.layoutManager = LinearLayoutManager(requireContext())
                 recyclerview.adapter = userAdapter
                 lifecycleScope.launch {
-                    followViewModel.getUsers(tokenId!!, userInfoDTO.id!!, 0, prefs).collectLatest {
+                    searchViewModel.getUsers(tokenId!!, userInfoDTO.id!!,  prefs).collectLatest {
                         userAdapter.submitData(it)
                     }
                 }
@@ -603,7 +600,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                         if (msg.what == TRIGGER_AUTO_COMPLETE) {
                             if (!TextUtils.isEmpty(searchbar.text)) {
                                 lifecycleScope.launch {
-                                    followViewModel.searchInFollowing(
+                                    searchViewModel.getUsers(
                                         tokenId!!,
                                         searchbar.text,
                                         prefs
@@ -615,7 +612,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
 
                             } else {
                                 lifecycleScope.launch {
-                                    followViewModel.getUsers(tokenId!!, userInfoDTO.id!!, 0, prefs)
+                                    searchViewModel.getUsers(tokenId!!, userInfoDTO.id!!,  prefs)
                                         .collectLatest {
                                             userAdapter.submitData(it)
                                         }
