@@ -30,7 +30,7 @@ class FirebaseBroadcastReceiver : WakefulBroadcastReceiver() {
             }
         val remoteMessage = RemoteMessage(dataBundle)
 
-        val id: String? = if(remoteMessage.data[type]?.toInt() == 2 || remoteMessage.data[type]?.toInt() == 3 || remoteMessage.data[type]?.toInt() == 4){
+        /*val id: String? = if(remoteMessage.data[type]?.toInt() == 2 || remoteMessage.data[type]?.toInt() == 3 || remoteMessage.data[type]?.toInt() == 4){
             remoteMessage.data[user_id]
         } else {
             remoteMessage.data[timenote_id]
@@ -60,6 +60,6 @@ class FirebaseBroadcastReceiver : WakefulBroadcastReceiver() {
                 notifications_saved,
                 Gson().toJson(notifications) ?: Gson().toJson(mutableListOf<Notification>())
             ).apply()
-        }
+        }*/
     }
 }

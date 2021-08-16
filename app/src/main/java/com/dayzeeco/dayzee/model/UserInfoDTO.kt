@@ -43,5 +43,6 @@ data class UserInfoDTO (
     @SerializedName("socialMedias") var socialMedias : SocialMedias,
     @SerializedName("createdAt") var createdAt : String? = null,
     @SerializedName("certified") var certified: Boolean? = false,
-    @SerializedName("isAdmin") var isAdmin: Boolean? = false
+    @SerializedName("isAdmin") var isAdmin: Boolean? = false,
+    @SerializedName("language") var language: String? = null
 ) : Parcelable

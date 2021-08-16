@@ -505,7 +505,8 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                 requireContext(),
                 userInfoDTO.id == args.event?.createdBy?.id
             )
-            timenote_detailed_send_comment -> commentViewModel.postComment(
+            timenote_detailed_send_comment ->
+                commentViewModel.postComment(
                 tokenId!!,
                 CommentCreationDTO(
                     userInfoDTO.id!!,

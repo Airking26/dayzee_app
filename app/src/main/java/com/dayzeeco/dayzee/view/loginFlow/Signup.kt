@@ -23,9 +23,12 @@ import com.google.gson.Gson
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.androidView.dialog.input
 import com.dayzeeco.dayzee.common.*
+import com.dayzeeco.dayzee.model.UpdateUserInfoDTO
 import com.dayzeeco.dayzee.model.UserSignUpBody
 import com.dayzeeco.dayzee.viewModel.LoginViewModel
+import com.dayzeeco.dayzee.viewModel.MeViewModel
 import kotlinx.android.synthetic.main.fragment_signup.*
+import java.util.*
 
 
 class Signup: Fragment(), View.OnClickListener {
@@ -36,6 +39,7 @@ class Signup: Fragment(), View.OnClickListener {
     private var passwordValidForm : Boolean = false
     private var availableMail : Boolean? = null
     private val loginViewModel: LoginViewModel by activityViewModels()
+    private val meViewModel: MeViewModel by activityViewModels()
     private var isOnLogin: Boolean = true
     private val TRIGGER_AUTO_COMPLETE = 200
     private val AUTO_COMPLETE_DELAY: Long = 200
@@ -190,11 +194,11 @@ class Signup: Fragment(), View.OnClickListener {
                 title(R.string.mail)
                 message(R.string.enter_mail)
                 input{ _, mail ->
-                    loginViewModel.forgotPassword(mail.toString().trim()).observe(viewLifecycleOwner, Observer {
-                        if(it.isSuccessful && it.body()?.changed!!){
-                            Toast.makeText(requireContext(), getString(R.string.email_has_been_sent), Toast.LENGTH_SHORT).show()
-                        } else Toast.makeText(requireContext(), getString(R.string.error_try_again), Toast.LENGTH_SHORT).show()
-                    })
+                    loginViewModel.forgotPassword(mail.toString().trim()).observe(viewLifecycleOwner, {
+                            if(it.isSuccessful && it.body()?.changed!!){
+                                Toast.makeText(requireContext(), getString(R.string.email_has_been_sent), Toast.LENGTH_SHORT).show()
+                            } else Toast.makeText(requireContext(), getString(R.string.error_try_again), Toast.LENGTH_SHORT).show()
+                        })
                 }
                 lifecycleOwner(this@Signup)
             }
@@ -229,6 +233,7 @@ class Signup: Fragment(), View.OnClickListener {
                     loginViewModel.login(signin_mail_username.text.toString(), signin_password.text.toString(), loginViewModel.isValidEmail(signin_mail_username.text.toString())).observe(viewLifecycleOwner, Observer {
                         when(it.code()){
                             201 -> {
+                                meViewModel.modifyProfile(it.body()?.token!!, UpdateUserInfoDTO(language = Locale.getDefault().language))
                                 loginViewModel.markAsAuthenticated()
                                 prefs.edit().putString(accessToken, it.body()?.token).apply()
                                 prefs.edit().putString(refreshToken, it.body()?.refreshToken).apply()
@@ -284,6 +289,7 @@ class Signup: Fragment(), View.OnClickListener {
                             when(it.code()){
                                 201 -> {
                                     //loginViewModel.markAsAuthenticated()
+                                    meViewModel.modifyProfile(it.body()?.token!!, UpdateUserInfoDTO(language = Locale.getDefault().language))
                                     findNavController().navigate(SignupDirections.actionSignupToPreferenceCategory(true))
                                     prefs.edit().putString(accessToken, it.body()?.token).apply()
                                     prefs.edit().putString(refreshToken, it.body()?.refreshToken).apply()

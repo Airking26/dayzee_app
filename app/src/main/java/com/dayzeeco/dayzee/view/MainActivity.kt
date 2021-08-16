@@ -119,10 +119,9 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
     override fun onResume() {
         super.onResume()
         if(!intent.getStringExtra(type).isNullOrBlank()){
-            val typeNotification: Type = object : TypeToken<MutableList<Notification?>>() {}.type
+           /* val typeNotification: Type = object : TypeToken<MutableList<Notification?>>() {}.type
             notifications = Gson().fromJson<MutableList<Notification>>(prefs.getString(
                 notifications_saved, null), typeNotification) ?: mutableListOf()
-            val keys = intent.extras?.keySet()
             notifications.add(Notification(
                 false,
                 intent.getStringExtra("google.message_id")!!,
@@ -135,7 +134,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                 intent.getStringExtra(body)!!,
                 intent.getStringExtra(user_picture_url) ?: ""))
 
-            prefs.edit().putString(notifications_saved, Gson().toJson(notifications) ?: Gson().toJson(mutableListOf<Notification>())).apply()
+            prefs.edit().putString(notifications_saved, Gson().toJson(notifications) ?: Gson().toJson(mutableListOf<Notification>())).apply()*/
             goToProfile()
             ViewModelProviders.of(this, object : ViewModelProvider.Factory {
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {

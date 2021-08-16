@@ -23,7 +23,8 @@ data class UpdateUserInfoDTO (
 	@SerializedName("birthday") var birthday : String? = null,
 	@SerializedName("description") var description : String? = null,
 	@SerializedName("gender") var gender : String? = null,
-	@SerializedName("status") var status : Int,
-	@SerializedName("dateFormat") var dateFormat : Int,
-	@SerializedName("socialMedias") var socialMedias : SocialMedias
+	@SerializedName("status") var status : Int? = null,
+	@SerializedName("dateFormat") var dateFormat : Int? = null,
+	@SerializedName("socialMedias") var socialMedias : SocialMedias? = null,
+	@SerializedName("language") var language: String? = null
 )

@@ -112,25 +112,26 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onAcceptedRequestClicked(notification: Notification) {
-        followViewModel.acceptFollowingRequest(tokenId!!, notification.id).observe(viewLifecycleOwner, Observer {
-            if(it.code() == 401){
-                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
-                    tokenId = newAccessToken
-                    followViewModel.acceptFollowingRequest(tokenId!!, notification.id).observe(viewLifecycleOwner, Observer { userInfoDTO ->
-                        if(userInfoDTO.isSuccessful) {
-                            notifications.remove(notification)
-                            prefs.edit().putString(notifications_saved, Gson().toJson(notifications))
-                                .apply()
-                        }
+        followViewModel.acceptFollowingRequest(tokenId!!, notification.id).observe(viewLifecycleOwner,
+            {
+                if(it.code() == 401){
+                    authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { newAccessToken ->
+                        tokenId = newAccessToken
+                        followViewModel.acceptFollowingRequest(tokenId!!, notification.id).observe(viewLifecycleOwner, Observer { userInfoDTO ->
+                            if(userInfoDTO.isSuccessful) {
+                                notifications.remove(notification)
+                                prefs.edit().putString(notifications_saved, Gson().toJson(notifications))
+                                    .apply()
+                            }
+                        })
                     })
-                })
-            }
-            if(it.isSuccessful) {
-                notifications.remove(notification)
-                prefs.edit().putString(notifications_saved, Gson().toJson(notifications)).apply()
-            }
+                }
+                if(it.isSuccessful) {
+                    notifications.remove(notification)
+                    prefs.edit().putString(notifications_saved, Gson().toJson(notifications)).apply()
+                }
 
-        })
+            })
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
