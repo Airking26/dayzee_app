@@ -31,10 +31,7 @@ import com.dayzeeco.dayzee.listeners.RefreshPicBottomNavListener
 import com.dayzeeco.dayzee.model.*
 import com.dayzeeco.dayzee.view.homeFlow.Home
 import com.dayzeeco.dayzee.view.profileFlow.settingsDirectory.SettingsDirections
-import com.dayzeeco.dayzee.viewModel.LoginViewModel
-import com.dayzeeco.dayzee.viewModel.MeViewModel
-import com.dayzeeco.dayzee.viewModel.SwitchToNotifViewModel
-import com.dayzeeco.dayzee.viewModel.SwitchToPreviewDetailedTimenoteViewModel
+import com.dayzeeco.dayzee.viewModel.*
 import com.dayzeeco.dayzee.webService.ProfileModifyData
 import io.branch.indexing.BranchUniversalObject
 import io.branch.referral.util.BranchEvent
@@ -54,9 +51,9 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
     private val switchToNotifViewModel : SwitchToNotifViewModel by activityViewModels()
     private val switchToDetailedTimenote : SwitchToPreviewDetailedTimenoteViewModel by activityViewModels()
     private val meViewModel : MeViewModel by activityViewModels()
+    private val notificationViewModel : NotificationViewModel by activityViewModels()
     private var showFilterBar: Boolean = false
     private lateinit var prefs: SharedPreferences
-    private lateinit var notifications: MutableList<Notification>
     private var tokenId : String? = null
     private var showFilterBarFutureEvents = false
     private var showFilterBarPastEvents = false
@@ -99,6 +96,7 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
 
     override fun onResume() {
         super.onResume()
+
         when(loginViewModel.getAuthenticationState().value){
             LoginViewModel.AuthenticationState.GUEST -> onBackHome.onBackHome()
             LoginViewModel.AuthenticationState.UNAUTHENTICATED -> onBackHome.onBackHome()
@@ -106,7 +104,28 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
         if (!prefs.getString(accessToken, null).isNullOrBlank()) {
             onRefreshPicBottomNavListener.onrefreshPicBottomNav(userInfoDTO?.picture)
 
-            prefs.stringLiveData(notifications_saved, Gson().toJson(prefs.getString(notifications_saved, null))).observe(viewLifecycleOwner, {
+            notificationViewModel.checkUnreadNotifications(tokenId!!, userInfoDTO?.id!!).observe(viewLifecycleOwner, { resp ->
+                if(resp.code() == 401){
+                    loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner,{ refreshedToken ->
+                        tokenId = refreshedToken
+                        notificationViewModel.checkUnreadNotifications(tokenId!!, userInfoDTO?.id!!).observe(viewLifecycleOwner, { secondResp ->
+                            if(secondResp.isSuccessful){
+                                if(secondResp.body() != null && secondResp.body()?.isNotEmpty()!! && secondResp.body()?.filter { it -> !it.hasBeenRead }?.size!! > 0){
+                                    profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_notification_rouge))
+                                } else profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_notifications_ok))
+
+                            }
+                        })
+                    })
+                } else if (resp.isSuccessful) {
+                    if(resp.body() != null && resp.body()?.isNotEmpty()!! && resp.body()?.filter { it -> !it.hasBeenRead }?.size!! > 0){
+                        profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_notification_rouge))
+                    } else profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_notifications_ok))
+                }
+
+            })
+
+            /*prefs.stringLiveData(notifications_saved, Gson().toJson(prefs.getString(notifications_saved, null))).observe(viewLifecycleOwner, {
                 val typeNotification: Type = object : TypeToken<MutableList<Notification?>>() {}.type
                 notifications = Gson().fromJson<MutableList<Notification>>(it, typeNotification) ?: mutableListOf()
                 if(notifications.any { n -> !n.read }){
@@ -114,7 +133,7 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
                 } else {
                     profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_notifications_ok))
                 }
-            })
+            })*/
 
             switchToDetailedTimenote.getswitchToPreviewDetailedTimenoteViewModel().observe(viewLifecycleOwner,
                 {

@@ -20,14 +20,9 @@ import java.lang.reflect.Type
 class MyFirebaseNotificationService : FirebaseMessagingService() {
 
     private lateinit var prefs : SharedPreferences
-    private var notifications: MutableList<Notification> = mutableListOf()
 
     override fun onCreate() {
         super.onCreate()
-        prefs = PreferenceManager.getDefaultSharedPreferences(this)
-        val typeNotification: Type = object : TypeToken<MutableList<Notification?>>() {}.type
-        notifications = Gson().fromJson<MutableList<Notification>>(prefs.getString(
-            notifications_saved, null), typeNotification) ?: mutableListOf()
     }
 
     override fun onNewToken(token: String)  = sendRegistrationToserver(token)
@@ -69,24 +64,6 @@ class MyFirebaseNotificationService : FirebaseMessagingService() {
             .setArguments(bundle)
             .createPendingIntent()
 
-        if(notifications.none { notification -> notification.id == id }) {
-            notifications.add(
-                Notification(
-                    false,
-                    message.messageId!!,
-                    message.sentTime,
-                    type,
-                    id!!,
-                    title,
-                    body,
-                    pictureUrl
-                )
-            )
-            prefs.edit().putString(
-                notifications_saved,
-                Gson().toJson(notifications) ?: Gson().toJson(mutableListOf<Notification>())
-            ).apply()
-        }
 
         val builder = NotificationCompat.Builder(this, channel_id)
             .setSmallIcon(R.drawable.ic_stat_notif)

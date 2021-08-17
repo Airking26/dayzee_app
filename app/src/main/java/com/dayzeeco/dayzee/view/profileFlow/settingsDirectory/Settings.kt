@@ -149,16 +149,17 @@ class Settings : Fragment(), View.OnClickListener {
                     profilModifyModel?.givenName, profilModifyModel?.familyName, profilModifyModel?.picture,
                     profilModifyModel?.location, profilModifyModel?.birthday, profilModifyModel?.description,
                     profilModifyModel?.gender, profilModifyModel?.status!!, profilModifyModel.dateFormat, profilModifyModel.socialMedias
-                )).observe(viewLifecycleOwner, Observer { usrInfoDTO ->
+                )).observe(viewLifecycleOwner, { usrInfoDTO ->
                     if(usrInfoDTO.code() == 401){
-                        loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer { newAccessToken ->
-                            tokenId = newAccessToken
-                            meViewModel.modifyProfile(tokenId!!, UpdateUserInfoDTO(
-                                profilModifyModel.givenName, profilModifyModel.familyName, profilModifyModel.picture,
-                                profilModifyModel.location, profilModifyModel.birthday, profilModifyModel.description,
-                                profilModifyModel.gender, profilModifyModel.status, profilModifyModel.dateFormat, profilModifyModel.socialMedias
-                            ))
-                        })
+                        loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner,
+                            { newAccessToken ->
+                                tokenId = newAccessToken
+                                meViewModel.modifyProfile(tokenId!!, UpdateUserInfoDTO(
+                                    profilModifyModel.givenName, profilModifyModel.familyName, profilModifyModel.picture,
+                                    profilModifyModel.location, profilModifyModel.birthday, profilModifyModel.description,
+                                    profilModifyModel.gender, profilModifyModel.status, profilModifyModel.dateFormat, profilModifyModel.socialMedias
+                                ))
+                            })
                     }
                 })
             }

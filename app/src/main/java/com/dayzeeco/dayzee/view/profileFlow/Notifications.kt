@@ -10,7 +10,9 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,26 +20,29 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.NotificationAdapter
+import com.dayzeeco.dayzee.adapter.NotificationComparator
+import com.dayzeeco.dayzee.adapter.NotificationPagingAdapter
+import com.dayzeeco.dayzee.adapter.TimenoteLoadStateAdapter
 import com.dayzeeco.dayzee.common.accessToken
-import com.dayzeeco.dayzee.common.notifications_saved
-import com.dayzeeco.dayzee.common.stringLiveData
-import com.dayzeeco.dayzee.model.Notification
-import com.dayzeeco.dayzee.viewModel.FollowViewModel
-import com.dayzeeco.dayzee.viewModel.LoginViewModel
-import com.dayzeeco.dayzee.viewModel.MeViewModel
-import com.dayzeeco.dayzee.viewModel.TimenoteViewModel
+import com.dayzeeco.dayzee.common.user_info_dto
+import com.dayzeeco.dayzee.model.NotificationInfoDTO
+import com.dayzeeco.dayzee.model.UserInfoDTO
+import com.dayzeeco.dayzee.viewModel.*
 import kotlinx.android.synthetic.main.fragment_notifications.*
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 
 class Notifications : Fragment(), NotificationAdapter.NotificationClickListener {
 
+    private var userInfoDTO: UserInfoDTO? = null
     private lateinit var prefs : SharedPreferences
-    private lateinit var notificationAdapter: NotificationAdapter
-    private lateinit var notifications: MutableList<Notification>
+    private lateinit var notificationAdapter: NotificationPagingAdapter
     private val timenoteViewModel : TimenoteViewModel by activityViewModels()
     private val authViewModel : LoginViewModel by activityViewModels()
     private val meViewModel : MeViewModel by activityViewModels()
     private val followViewModel: FollowViewModel by activityViewModels()
+    private val notificationViewModel: NotificationViewModel by activityViewModels()
     private var tokenId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,41 +55,33 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
         inflater.inflate(R.layout.fragment_notifications, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        prefs.stringLiveData(notifications_saved, Gson().toJson(prefs.getString(notifications_saved, null))).observe(viewLifecycleOwner, Observer {
-            val typeNotification: Type = object : TypeToken<MutableList<Notification?>>() {}.type
-            notifications = Gson().fromJson<MutableList<Notification>>(it, typeNotification) ?: mutableListOf()
+        val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
+        userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString(user_info_dto, ""), typeUserInfo)
 
-            notificationAdapter = NotificationAdapter(sortNotifications(), this)
+            notificationAdapter = NotificationPagingAdapter(NotificationComparator, this)
+
             notifications_rv.apply {
                 layoutManager = LinearLayoutManager(requireContext())
-                adapter = notificationAdapter
+                adapter = notificationAdapter.withLoadStateFooter(
+                    footer = TimenoteLoadStateAdapter { notificationAdapter.retry() }
+                )
                 addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
             }
-        })
 
-
+        lifecycleScope.launch {
+            notificationViewModel.getNotifications(tokenId!!, userInfoDTO?.id!!, prefs).collectLatest {
+                notificationAdapter.submitData(it)
+            }
+        }
     }
 
-    private fun sortNotifications(): MutableList<Notification> {
-        val notificationsUnread = notifications.filter { !it.read }.sortedBy { notification -> notification.time }.asReversed()
-        val notificationReadedLastTen = notifications.filter { it.read }.sortedBy { notification -> notification.time }.takeLast(10).asReversed()
-        val notifs = notificationsUnread.plus(notificationReadedLastTen)
-        prefs.edit().putString(notifications_saved, Gson().toJson(notifs.toMutableList())).apply()
-        return notifs.toMutableList()
-    }
-
-    private fun refreshNotifications(){
-        notifications.map { it.read = true }
-        prefs.edit().putString(notifications_saved, Gson().toJson(notifications)).apply()
-    }
-
-    override fun onNotificationClicked(notification: Notification) {
-        if(notification.type.toInt() == 0 || notification.type.toInt() == 1|| notification.type.toInt() == 5){
-            timenoteViewModel.getSpecificTimenote(tokenId!!, notification.id).observe(viewLifecycleOwner, Observer {
+    override fun onNotificationClicked(notification: NotificationInfoDTO) {
+        if(notification.type == 0 || notification.type == 1|| notification.type == 5){
+            timenoteViewModel.getSpecificTimenote(tokenId!!, notification.idData).observe(viewLifecycleOwner, Observer {
                 if(it.code() == 401){
-                    authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer { newAccessToken ->
+                    authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { newAccessToken ->
                         tokenId = newAccessToken
-                        timenoteViewModel.getSpecificTimenote(tokenId!!, notification.id).observe(viewLifecycleOwner, Observer {timenoteInfoDTO ->
+                        timenoteViewModel.getSpecificTimenote(tokenId!!, notification.idData).observe(viewLifecycleOwner, Observer {timenoteInfoDTO ->
                             if(timenoteInfoDTO.isSuccessful) findNavController().navigate(NotificationsDirections.actionGlobalDetailedTimenote(1, it.body()))
 
                         })
@@ -94,11 +91,11 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
                 findNavController().navigate(NotificationsDirections.actionGlobalDetailedTimenote(1, it.body()))
             })
         } else {
-            meViewModel.getSpecificUser(tokenId!!, notification.id).observe(viewLifecycleOwner, Observer {
+            meViewModel.getSpecificUser(tokenId!!, notification.idData).observe(viewLifecycleOwner, {
                 if(it.code() == 401){
-                    authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
+                    authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { newAccessToken ->
                         tokenId = newAccessToken
-                        meViewModel.getSpecificUser(tokenId!!, notification.id).observe(viewLifecycleOwner, Observer {userInfoDTO ->
+                        meViewModel.getSpecificUser(tokenId!!, notification.idData).observe(viewLifecycleOwner, Observer {userInfoDTO ->
                             if(userInfoDTO.isSuccessful) findNavController().navigate(NotificationsDirections.actionGlobalProfileElse(4).setUserInfoDTO(it.body()))
 
                         })
@@ -111,56 +108,54 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
-    override fun onAcceptedRequestClicked(notification: Notification) {
-        followViewModel.acceptFollowingRequest(tokenId!!, notification.id).observe(viewLifecycleOwner,
+    override fun onAcceptedRequestClicked(notification: NotificationInfoDTO) {
+        followViewModel.acceptFollowingRequest(tokenId!!, notification.idData).observe(viewLifecycleOwner,
             {
                 if(it.code() == 401){
                     authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { newAccessToken ->
                         tokenId = newAccessToken
-                        followViewModel.acceptFollowingRequest(tokenId!!, notification.id).observe(viewLifecycleOwner, Observer { userInfoDTO ->
-                            if(userInfoDTO.isSuccessful) {
-                                notifications.remove(notification)
-                                prefs.edit().putString(notifications_saved, Gson().toJson(notifications))
-                                    .apply()
-                            }
-                        })
+                        followViewModel.acceptFollowingRequest(tokenId!!, notification.idData).observe(viewLifecycleOwner,
+                            { userInfoDTO ->
+                                if(userInfoDTO.isSuccessful) {
+                                    notificationViewModel.deleteNotification(tokenId!!, notification.id).observe(viewLifecycleOwner,
+                                        { rd ->
+                                            if(rd.isSuccessful) notificationAdapter.notifyDataSetChanged()
+                                        })
+                                }
+                            })
                     })
                 }
                 if(it.isSuccessful) {
-                    notifications.remove(notification)
-                    prefs.edit().putString(notifications_saved, Gson().toJson(notifications)).apply()
+                    notificationViewModel.deleteNotification(tokenId!!, notification.id)/*.observe(viewLifecycleOwner, {
+                            rd -> if(rd.isSuccessful) notificationAdapter.notifyDataSetChanged()
+                    })*/
+                    Thread.sleep(5000)
+                    notificationAdapter.notifyDataSetChanged()
+                    notificationAdapter.refresh()
                 }
 
             })
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
-    override fun onDeclinedRequestClicked(notification: Notification) {
-        followViewModel.declineFollowingRequest(tokenId!!, notification.id).observe(viewLifecycleOwner, Observer {
-            if(it.code() == 401){
-                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer { newAccessToken ->
-                    tokenId = newAccessToken
-                    followViewModel.declineFollowingRequest(tokenId!!, notification.id).observe(viewLifecycleOwner, Observer { userInfoDTO ->
-                        if(userInfoDTO.isSuccessful){
-                            notifications.remove(notification)
-                            prefs.edit().putString(notifications_saved, Gson().toJson(notifications)).apply()
-                        }
+    override fun onDeclinedRequestClicked(notification: NotificationInfoDTO) {
+        followViewModel.declineFollowingRequest(tokenId!!, notification.idData).observe(viewLifecycleOwner,
+            {
+                if(it.code() == 401){
+                    authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { newAccessToken ->
+                        tokenId = newAccessToken
+                        followViewModel.declineFollowingRequest(tokenId!!, notification.idData).observe(viewLifecycleOwner,
+                            { userInfoDTO ->
+                                if(userInfoDTO.isSuccessful){
+                                }
+                            })
                     })
-                })
-            }
+                }
 
-            if(it.isSuccessful) {
-                notifications.remove(notification)
-                prefs.edit().putString(notifications_saved, Gson().toJson(notifications)).apply()
-            }
+                if(it.isSuccessful) {
+                }
 
-        })
-    }
-
-
-    override fun onDestroy() {
-        super.onDestroy()
-        refreshNotifications()
+            })
     }
 
 

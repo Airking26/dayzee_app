@@ -55,4 +55,8 @@ class DayzeeRepository {
     fun getNearbyService(): NearbyService{
         return service.create(NearbyService::class.java)
     }
+
+    fun getNotificationService(): NotificationService{
+        return service.create(NotificationService::class.java)
+    }
 }

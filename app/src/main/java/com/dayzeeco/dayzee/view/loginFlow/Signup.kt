@@ -23,8 +23,7 @@ import com.google.gson.Gson
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.androidView.dialog.input
 import com.dayzeeco.dayzee.common.*
-import com.dayzeeco.dayzee.model.UpdateUserInfoDTO
-import com.dayzeeco.dayzee.model.UserSignUpBody
+import com.dayzeeco.dayzee.model.*
 import com.dayzeeco.dayzee.viewModel.LoginViewModel
 import com.dayzeeco.dayzee.viewModel.MeViewModel
 import kotlinx.android.synthetic.main.fragment_signup.*
@@ -233,7 +232,6 @@ class Signup: Fragment(), View.OnClickListener {
                     loginViewModel.login(signin_mail_username.text.toString(), signin_password.text.toString(), loginViewModel.isValidEmail(signin_mail_username.text.toString())).observe(viewLifecycleOwner, Observer {
                         when(it.code()){
                             201 -> {
-                                meViewModel.modifyProfile(it.body()?.token!!, UpdateUserInfoDTO(language = Locale.getDefault().language))
                                 loginViewModel.markAsAuthenticated()
                                 prefs.edit().putString(accessToken, it.body()?.token).apply()
                                 prefs.edit().putString(refreshToken, it.body()?.refreshToken).apply()
@@ -288,14 +286,19 @@ class Signup: Fragment(), View.OnClickListener {
                         loginViewModel.checkAddUser(UserSignUpBody(signup_mail.text.toString(), signup_identifiant.text.toString(), signup_password.text.toString())).observe(viewLifecycleOwner, Observer {
                             when(it.code()){
                                 201 -> {
-                                    //loginViewModel.markAsAuthenticated()
-                                    meViewModel.modifyProfile(it.body()?.token!!, UpdateUserInfoDTO(language = Locale.getDefault().language))
-                                    findNavController().navigate(SignupDirections.actionSignupToPreferenceCategory(true))
-                                    prefs.edit().putString(accessToken, it.body()?.token).apply()
-                                    prefs.edit().putString(refreshToken, it.body()?.refreshToken).apply()
-                                    prefs.edit().putString(user_info_dto, Gson().toJson(it.body()?.user)).apply()
-                                    prefs.edit().putInt(followers, it.body()?.user?.followers!!).apply()
-                                    prefs.edit().putInt(following, it.body()?.user?.following!!).apply()
+                                    meViewModel.modifyProfile(it.body()?.token!!, UpdateUserInfoDTO(language = Locale.getDefault().language, status = 0, dateFormat = 0, socialMedias = SocialMedias(
+                                        Youtube("", false), Facebook("", false), Instagram("", false), WhatsApp("", false), LinkedIn("", false)
+                                    ))).observe(viewLifecycleOwner, { rp ->
+                                       if(rp.isSuccessful){
+                                           findNavController().navigate(SignupDirections.actionSignupToPreferenceCategory(true))
+                                           prefs.edit().putString(accessToken, it.body()?.token).apply()
+                                           prefs.edit().putString(refreshToken, it.body()?.refreshToken).apply()
+                                           prefs.edit().putString(user_info_dto, Gson().toJson(it.body()?.user)).apply()
+                                           prefs.edit().putInt(followers, it.body()?.user?.followers!!).apply()
+                                           prefs.edit().putInt(following, it.body()?.user?.following!!).apply()
+                                       }
+                                    })
+
                                 }
                                 409 -> {
                                     Toast.makeText(requireContext(), getString(R.string.invalid_authentication), Toast.LENGTH_SHORT).show()
