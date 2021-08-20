@@ -32,7 +32,9 @@ import com.dayzeeco.dayzee.model.TimenoteInfoDTO
 import com.dayzeeco.dayzee.model.UserInfoDTO
 import com.dayzeeco.dayzee.view.homeFlow.Home
 import com.dayzeeco.dayzee.view.homeFlow.HomeDirections
+import com.dayzeeco.dayzee.viewModel.MeViewModel
 import com.dayzeeco.dayzee.viewModel.SwitchToNotifViewModel
+import com.google.api.client.googleapis.testing.auth.oauth2.MockGoogleCredential.ACCESS_TOKEN
 import io.branch.referral.Branch
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.reflect.Type
@@ -42,8 +44,8 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
     private lateinit var control: NavController
     private var currentNavController: LiveData<NavController>? = null
     private val utils = Utils()
-    private var notifications: MutableList<Notification> = mutableListOf()
     private lateinit var prefs : SharedPreferences
+    private var isOngoing = true
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,6 +53,11 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
         setContentView(R.layout.activity_main)
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
         setupController()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        isOngoing = false
     }
 
     override fun onStart() {
@@ -118,23 +125,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
 
     override fun onResume() {
         super.onResume()
-        if(!intent.getStringExtra(type).isNullOrBlank()){
-           /* val typeNotification: Type = object : TypeToken<MutableList<Notification?>>() {}.type
-            notifications = Gson().fromJson<MutableList<Notification>>(prefs.getString(
-                notifications_saved, null), typeNotification) ?: mutableListOf()
-            notifications.add(Notification(
-                false,
-                intent.getStringExtra("google.message_id")!!,
-                intent.getLongExtra("google.sent_time", 0),
-                intent.getStringExtra(type)!!,
-                if(intent.getStringExtra(type)?.toInt() == 2 || intent.getStringExtra(type)?.toInt() == 3 || intent.getStringExtra(
-                        type)?.toInt() == 4) intent.getStringExtra(user_id) else intent.getStringExtra(
-                    timenote_id)!!,
-                intent.getStringExtra(com.dayzeeco.dayzee.common.title)!!,
-                intent.getStringExtra(body)!!,
-                intent.getStringExtra(user_picture_url) ?: ""))
-
-            prefs.edit().putString(notifications_saved, Gson().toJson(notifications) ?: Gson().toJson(mutableListOf<Notification>())).apply()*/
+        if(!intent.getStringExtra(type).isNullOrBlank() && !isOngoing){
             goToProfile()
             ViewModelProviders.of(this, object : ViewModelProvider.Factory {
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {

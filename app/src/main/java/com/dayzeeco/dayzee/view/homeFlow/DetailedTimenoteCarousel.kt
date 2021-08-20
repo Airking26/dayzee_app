@@ -437,7 +437,7 @@ class DetailedTimenoteCarousel : Fragment(), View.OnClickListener, CommentAdapte
                 imm.showSoftInput(comments_edittext, InputMethodManager.SHOW_IMPLICIT)
             }
             detailed_timenote_btn_more -> createOptionsOnTimenote(requireContext(), userInfoDTO.id == args.event?.createdBy?.id)
-            timenote_detailed_send_comment -> commentViewModel.postComment(tokenId!!, CommentCreationDTO(userInfoDTO.id!!, args.event?.id!!, comments_edittext.text.toString(), "#ok")).observe(viewLifecycleOwner, Observer {
+            timenote_detailed_send_comment -> commentViewModel.postComment(tokenId!!, CommentCreationDTO(userInfoDTO.id!!, args.event?.id!!, comments_edittext.text.toString(), listOf(), listOf())).observe(viewLifecycleOwner, Observer {
                     if (it.isSuccessful){
                         comments_edittext.clearFocus()
                         imm.hideSoftInputFromWindow(comments_edittext.windowToken, 0)

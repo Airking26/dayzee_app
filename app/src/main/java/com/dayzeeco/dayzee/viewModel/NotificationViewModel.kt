@@ -16,8 +16,9 @@ class NotificationViewModel: ViewModel() {
     private val notificationService = DayzeeRepository().getNotificationService()
 
     fun getNotifications(token: String, id : String, sharedPreferences: SharedPreferences) = Pager(PagingConfig(pageSize = 1)){ NotificationPagingSource(token, id, notificationService, sharedPreferences) }.flow.cachedIn(viewModelScope)
-    fun checkUnreadNotifications(token: String, id: String) = flow { emit(notificationService.getNotifications("Bearer $token", id, 0)) }.asLiveData(viewModelScope.coroutineContext)
+    fun checkUnreadNotifications(token: String, id: String) = flow { emit(notificationService.hasUnreadNotification("Bearer $token", id)) }.asLiveData(viewModelScope.coroutineContext)
     fun deleteNotification(token: String, id: String) = flow {emit(notificationService.deleteNotification("Bearer $token", id))}.asLiveData(viewModelScope.coroutineContext)
+
 
 
 }

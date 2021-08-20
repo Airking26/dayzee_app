@@ -110,7 +110,7 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
                         tokenId = refreshedToken
                         notificationViewModel.checkUnreadNotifications(tokenId!!, userInfoDTO?.id!!).observe(viewLifecycleOwner, { secondResp ->
                             if(secondResp.isSuccessful){
-                                if(secondResp.body() != null && secondResp.body()?.isNotEmpty()!! && secondResp.body()?.filter { it -> !it.hasBeenRead }?.size!! > 0){
+                                if(secondResp.body()!!){
                                     profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_notification_rouge))
                                 } else profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_notifications_ok))
 
@@ -118,7 +118,7 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
                         })
                     })
                 } else if (resp.isSuccessful) {
-                    if(resp.body() != null && resp.body()?.isNotEmpty()!! && resp.body()?.filter { it -> !it.hasBeenRead }?.size!! > 0){
+                    if(resp.body()!!){
                         profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_notification_rouge))
                     } else profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_notifications_ok))
                 }

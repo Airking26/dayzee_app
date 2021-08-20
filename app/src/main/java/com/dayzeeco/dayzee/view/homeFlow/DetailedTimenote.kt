@@ -114,7 +114,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
+        var l = arguments
         imm = (requireActivity().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager)!!
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
         userInfoDTO = Gson().fromJson(prefs.getString(user_info_dto, ""), typeUserInfo)
@@ -512,9 +512,9 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                     userInfoDTO.id!!,
                     args.event?.id!!,
                     comments_edittext.text.toString(),
-                    "#ok"
+                    listOf(), listOf()
                 )
-            ).observe(viewLifecycleOwner, Observer {
+            ).observe(viewLifecycleOwner, {
                 if (it.isSuccessful) {
                     comments_edittext.clearFocus()
                     imm.hideSoftInputFromWindow(comments_edittext.windowToken, 0)

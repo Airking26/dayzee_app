@@ -2,8 +2,10 @@ package com.dayzeeco.dayzee.adapter
 
 import android.graphics.Typeface
 import android.os.Build
+import android.text.Editable
 import android.text.Spannable
 import android.text.SpannableStringBuilder
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -63,24 +65,52 @@ class CommentAdapter(
                 .placeholder(R.drawable.circle_pic)
                 .into(itemView.comment_user_pic_imageview)
 
-            val m = Typeface.create("sans-serif", Typeface.NORMAL)
-            val p = Typeface.create("sans-serif-light", Typeface.NORMAL)
-            val o = ItemTimenoteRecentAdapter.CustomTypefaceSpan(p)
-            val k = ItemTimenoteRecentAdapter.CustomTypefaceSpan(m)
-
-            val sizeName = commentModel.createdBy.userName?.length
-            val nameAndComment = commentModel.createdBy.userName + " " + commentModel.description
+            val nameAndComment =
+                commentModel.createdBy.userName + " " + commentModel.description
 
             val i = SpannableStringBuilder(nameAndComment)
-            i.setSpan(k, 0, sizeName!!, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
-            i.setSpan(o, sizeName, nameAndComment.length, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+
+            var _ignore = false
+            itemView.comment_username_comment.addTextChangedListener(object: TextWatcher{
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                override fun afterTextChanged(s: Editable?) {
+                    var l = s
+                    if(!_ignore) {
+                        _ignore = true
+                        val m = Typeface.create("sans-serif", Typeface.NORMAL)
+                        val p = Typeface.create("sans-serif-light", Typeface.NORMAL)
+                        val o = ItemTimenoteRecentAdapter.CustomTypefaceSpan(p)
+                        val k = ItemTimenoteRecentAdapter.CustomTypefaceSpan(m)
+
+                        val sizeName = commentModel.createdBy.userName?.length
+
+                        i.setSpan(k, 0, sizeName!!, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+                        i.setSpan(
+                            o,
+                            sizeName,
+                            nameAndComment.length,
+                            Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+                        )
+                        itemView.comment_username_comment.text = i
+                        _ignore = false
+                    }
+                }
+
+            })
 
             itemView.comment_username_comment.text = i
 
+
             itemView.comment_time.text = calculateTimeSinceComment(commentModel.createdAt)
 
-            itemView.comment_more.setOnClickListener{commentMoreListener.onCommentMoreClicked(commentModel.createdBy.id, commentModel.id)}
-            itemView.comment_user_pic_imageview.setOnClickListener { commentPicUserListener.onPicUserCommentClicked(commentModel.createdBy) }
+            itemView.comment_more.setOnClickListener{commentMoreListener.onCommentMoreClicked(
+                commentModel.createdBy.id,
+                commentModel.id
+            )}
+            itemView.comment_user_pic_imageview.setOnClickListener { commentPicUserListener.onPicUserCommentClicked(
+                commentModel.createdBy
+            ) }
         }
 
         private fun calculateTimeSinceComment(createdAt: String): String{
@@ -109,24 +139,64 @@ class CommentAdapter(
                             if(mMin <= 0){
                                 itemView.context.getString(R.string.few_sec_ago)
                             } else {
-                                if(mMin > 1) itemView.context.resources.getQuantityString(R.plurals.time_minutes_comment, mMin, mMin)
-                                else itemView.context.resources.getQuantityString(R.plurals.time_minutes_comment, mMin, mMin)
+                                if(mMin > 1) itemView.context.resources.getQuantityString(
+                                    R.plurals.time_minutes_comment,
+                                    mMin,
+                                    mMin
+                                )
+                                else itemView.context.resources.getQuantityString(
+                                    R.plurals.time_minutes_comment,
+                                    mMin,
+                                    mMin
+                                )
                             }
                         } else {
-                            if(mHours > 1) itemView.context.resources.getQuantityString(R.plurals.time_hours_comment, mHours, mHours)
-                            else itemView.context.resources.getQuantityString(R.plurals.time_hours_comment, mHours, mHours)
+                            if(mHours > 1) itemView.context.resources.getQuantityString(
+                                R.plurals.time_hours_comment,
+                                mHours,
+                                mHours
+                            )
+                            else itemView.context.resources.getQuantityString(
+                                R.plurals.time_hours_comment,
+                                mHours,
+                                mHours
+                            )
                         }
                     } else {
-                        timeSince = if(mDay > 1) itemView.context.resources.getQuantityString(R.plurals.time_days_comment, mDay, mDay)
-                        else itemView.context.resources.getQuantityString(R.plurals.time_days_comment, mDay, mDay)
+                        timeSince = if(mDay > 1) itemView.context.resources.getQuantityString(
+                            R.plurals.time_days_comment,
+                            mDay,
+                            mDay
+                        )
+                        else itemView.context.resources.getQuantityString(
+                            R.plurals.time_days_comment,
+                            mDay,
+                            mDay
+                        )
                     }
                 } else {
-                    timeSince = if(mMonth > 1) itemView.context.resources.getQuantityString(R.plurals.time_months_comment, mMonth, mMonth)
-                    else itemView.context.resources.getQuantityString(R.plurals.time_months_comment, mMonth, mMonth)
+                    timeSince = if(mMonth > 1) itemView.context.resources.getQuantityString(
+                        R.plurals.time_months_comment,
+                        mMonth,
+                        mMonth
+                    )
+                    else itemView.context.resources.getQuantityString(
+                        R.plurals.time_months_comment,
+                        mMonth,
+                        mMonth
+                    )
                 }
             } else {
-                timeSince = if(mYear > 1) itemView.context.resources.getQuantityString(R.plurals.time_years_comment, mYear, mYear)
-                else  itemView.context.resources.getQuantityString(R.plurals.time_years_comment, mYear, mYear)
+                timeSince = if(mYear > 1) itemView.context.resources.getQuantityString(
+                    R.plurals.time_years_comment,
+                    mYear,
+                    mYear
+                )
+                else  itemView.context.resources.getQuantityString(
+                    R.plurals.time_years_comment,
+                    mYear,
+                    mYear
+                )
             }
 
             return timeSince

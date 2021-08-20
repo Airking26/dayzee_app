@@ -44,6 +44,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
+    <ProgressBar
+        android:visibility="gone"
+        android:id="@+id/notification_pb"
+        android:layout_marginEnd="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/notification_user_pic_imageview"
+        app:layout_constraintTop_toTopOf="@id/notification_user_pic_imageview"
+        android:layout_width="24dp"
+        android:layout_height="24dp"/>
+
 
     <ImageView
         android:visibility="gone"

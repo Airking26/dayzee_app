@@ -5,6 +5,9 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.asLiveData
 import androidx.navigation.NavDeepLinkBuilder
 import androidx.preference.PreferenceManager
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -14,15 +17,26 @@ import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.model.Notification
+import com.dayzeeco.dayzee.model.UserInfoDTO
 import com.dayzeeco.dayzee.view.MainActivity
+import com.dayzeeco.dayzee.view.homeFlow.DetailedTimenoteArgs
+import com.dayzeeco.dayzee.viewModel.FollowViewModel
+import com.dayzeeco.dayzee.webService.repo.DayzeeRepository
+import com.google.gson.JsonObject
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
+import org.json.JSONObject
 import java.lang.reflect.Type
+import kotlin.coroutines.coroutineContext
 
 class MyFirebaseNotificationService : FirebaseMessagingService() {
 
     private lateinit var prefs : SharedPreferences
+    private var meService: MeService = DayzeeRepository().getMeService()
 
     override fun onCreate() {
         super.onCreate()
+        prefs = PreferenceManager.getDefaultSharedPreferences(this)
     }
 
     override fun onNewToken(token: String)  = sendRegistrationToserver(token)
@@ -42,7 +56,20 @@ class MyFirebaseNotificationService : FirebaseMessagingService() {
         } else {
             message.data[timenote_id]
         }
-        val body = message.data[body] ?: ""
+
+        val x = message.data["user"] ?: ""
+        val o = prefs.getString(user_info_dto, "")
+        val hx = message.notification?.body?: ""
+        if(!x.isEmpty() && !x.isBlank()){
+            val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
+            val ki = JSONObject(x)
+            val m = ki.toString()
+            var map: Map<String, Any> = HashMap()
+            val o = Gson().fromJson<UserInfoDTO?>(x, typeUserInfo)
+            val k = ""
+        }
+
+        /*val body = message.data[body] ?: ""
         val type = message.data[type] ?: ""
         val pictureUrl = message.data[user_picture_url] ?: ""
         val title = message.data[title] ?: ""
@@ -54,19 +81,19 @@ class MyFirebaseNotificationService : FirebaseMessagingService() {
         bundle.putString("google.message_id", message.messageId)
         bundle.putString(com.dayzeeco.dayzee.common.type, title)
         bundle.putString(com.dayzeeco.dayzee.common.body, body)
-        bundle.putString(user_picture_url, pictureUrl)
+        bundle.putString(user_picture_url, pictureUrl)*/
 
 
         val pi = NavDeepLinkBuilder(this)
             .setComponentName(MainActivity::class.java)
-            .setGraph(R.navigation.navigation_graph_tab_profile)
-            .setDestination(R.id.myProfile)
-            .setArguments(bundle)
+            .setGraph(R.navigation.navigation_graph_tab_home)
+            .setDestination(R.id.detailedTimenote)
+            .setArguments(DetailedTimenoteArgs.Builder(0, null).build().toBundle())
             .createPendingIntent()
 
 
         val builder = NotificationCompat.Builder(this, channel_id)
-            .setSmallIcon(R.drawable.ic_stat_notif)
+            .setSmallIcon(R.drawable.ic_icon_launcher_dayzee)
             .setContentTitle(message.notification?.title)
             .setContentText(message.notification?.body)
             .setStyle(NotificationCompat.BigTextStyle().bigText(message.notification?.body))

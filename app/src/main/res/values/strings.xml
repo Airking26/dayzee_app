@@ -334,9 +334,9 @@
     <string name="see_comment">See comment</string>
     <string name="see_comments">See the %1$d comments</string>
     <string name="saved_by_one">Saved by %1$s</string>
-    <string name="timenote_joined_body">%1$s joined your event %2$s</string>
+    <string name="timenote_joined_body">%1$s has joined your event : %2$s</string>
     <string name="timenote_joined_title">New event participant</string>
-    <string name="timenote_shared_body">%1$s shared an event : %2$s</string>
+    <string name="timenote_shared_body">%1$s has shared you an event : %2$s</string>
     <string name="timenote_shared_title">New event shared with you</string>
     <string name="new_follower_body">%1$s follows you</string>
     <string name="new_follower_title">New follower</string>

@@ -115,10 +115,17 @@ class NotificationAdapter(
             }
             itemView.notification_time.text = calculateTimeSinceNotif(notification.createdAt)
             itemView.setOnClickListener{notificationClickListener.onNotificationClicked(notification)}
-            itemView.notification_item_user_accept.setOnClickListener { notificationClickListener.onAcceptedRequestClicked(
-                notification
-            ) }
-            itemView.notification_item_user_decline.setOnClickListener { notificationClickListener.onDeclinedRequestClicked(
+            itemView.notification_item_user_accept.setOnClickListener {
+                itemView.notification_item_user_accept.visibility = View.GONE
+                itemView.notification_item_user_decline.visibility = View.GONE
+                itemView.notification_pb.visibility = View.VISIBLE
+                notificationClickListener.onAcceptedRequestClicked(notification)
+            }
+            itemView.notification_item_user_decline.setOnClickListener {
+                itemView.notification_item_user_accept.visibility = View.GONE
+                itemView.notification_item_user_decline.visibility = View.GONE
+                itemView.notification_pb.visibility = View.VISIBLE
+                notificationClickListener.onDeclinedRequestClicked(
                 notification
             ) }
         }

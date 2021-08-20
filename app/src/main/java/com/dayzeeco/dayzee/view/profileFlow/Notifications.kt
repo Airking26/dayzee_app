@@ -76,15 +76,16 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
     }
 
     override fun onNotificationClicked(notification: NotificationInfoDTO) {
-        if(notification.type == 0 || notification.type == 1|| notification.type == 5){
+        if(notification.type == 0 || notification.type == 1|| notification.type == 5 || notification.type == 6){
             timenoteViewModel.getSpecificTimenote(tokenId!!, notification.idData).observe(viewLifecycleOwner, Observer {
                 if(it.code() == 401){
                     authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { newAccessToken ->
                         tokenId = newAccessToken
-                        timenoteViewModel.getSpecificTimenote(tokenId!!, notification.idData).observe(viewLifecycleOwner, Observer {timenoteInfoDTO ->
-                            if(timenoteInfoDTO.isSuccessful) findNavController().navigate(NotificationsDirections.actionGlobalDetailedTimenote(1, it.body()))
+                        timenoteViewModel.getSpecificTimenote(tokenId!!, notification.idData).observe(viewLifecycleOwner,
+                            { timenoteInfoDTO ->
+                                if(timenoteInfoDTO.isSuccessful) findNavController().navigate(NotificationsDirections.actionGlobalDetailedTimenote(1, it.body()))
 
-                        })
+                            })
                     })
                 }
                 if(it.isSuccessful)
@@ -95,10 +96,11 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
                 if(it.code() == 401){
                     authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { newAccessToken ->
                         tokenId = newAccessToken
-                        meViewModel.getSpecificUser(tokenId!!, notification.idData).observe(viewLifecycleOwner, Observer {userInfoDTO ->
-                            if(userInfoDTO.isSuccessful) findNavController().navigate(NotificationsDirections.actionGlobalProfileElse(4).setUserInfoDTO(it.body()))
+                        meViewModel.getSpecificUser(tokenId!!, notification.idData).observe(viewLifecycleOwner,
+                            { userInfoDTO ->
+                                if(userInfoDTO.isSuccessful) findNavController().navigate(NotificationsDirections.actionGlobalProfileElse(4).setUserInfoDTO(it.body()))
 
-                        })
+                            })
                     })
                 }
                 if(it.isSuccessful)
@@ -119,16 +121,19 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
                                 if(userInfoDTO.isSuccessful) {
                                     notificationViewModel.deleteNotification(tokenId!!, notification.id).observe(viewLifecycleOwner,
                                         { rd ->
-                                            if(rd.isSuccessful) notificationAdapter.notifyDataSetChanged()
+                                            if(rd.isSuccessful) {
+                                                notificationAdapter.notifyDataSetChanged()
+                                                notificationAdapter.refresh()
+                                            }
                                         })
                                 }
                             })
                     })
                 }
                 if(it.isSuccessful) {
-                    notificationViewModel.deleteNotification(tokenId!!, notification.id)/*.observe(viewLifecycleOwner, {
+                    notificationViewModel.deleteNotification(tokenId!!, notification.id).observe(viewLifecycleOwner, {
                             rd -> if(rd.isSuccessful) notificationAdapter.notifyDataSetChanged()
-                    })*/
+                    })
                     Thread.sleep(5000)
                     notificationAdapter.notifyDataSetChanged()
                     notificationAdapter.refresh()
@@ -147,12 +152,25 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
                         followViewModel.declineFollowingRequest(tokenId!!, notification.idData).observe(viewLifecycleOwner,
                             { userInfoDTO ->
                                 if(userInfoDTO.isSuccessful){
+                                    notificationViewModel.deleteNotification(tokenId!!, notification.id).observe(viewLifecycleOwner,
+                                        { rd ->
+                                            if(rd.isSuccessful) {
+                                                notificationAdapter.notifyDataSetChanged()
+                                                notificationAdapter.refresh()
+                                            }
+                                        })
                                 }
                             })
                     })
                 }
 
                 if(it.isSuccessful) {
+                    notificationViewModel.deleteNotification(tokenId!!, notification.id).observe(viewLifecycleOwner, {
+                            rd -> if(rd.isSuccessful) notificationAdapter.notifyDataSetChanged()
+                    })
+                    Thread.sleep(5000)
+                    notificationAdapter.notifyDataSetChanged()
+                    notificationAdapter.refresh()
                 }
 
             })
