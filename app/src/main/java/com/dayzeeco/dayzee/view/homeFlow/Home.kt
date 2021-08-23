@@ -104,7 +104,8 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> {
                     tokenId = prefs.getString(accessToken, null)
-                    findNavController().popBackStack(R.id.home, false) }
+                    findNavController().popBackStack(R.id.home, false)
+                }
 
                 LoginViewModel.AuthenticationState.GUEST -> {
                     findNavController().popBackStack(R.id.home, false)

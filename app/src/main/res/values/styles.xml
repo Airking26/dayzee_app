@@ -27,7 +27,6 @@
         <item name="colorHashtag">@color/colorHashtag</item>
     </style>
 
-
     <style name="AppTheme.Toolbar" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="layout_constraintRight_toRightOf">parent</item>
         <item name="layout_constraintLeft_toLeftOf">parent</item>

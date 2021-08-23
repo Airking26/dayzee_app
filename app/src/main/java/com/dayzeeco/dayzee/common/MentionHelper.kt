@@ -16,29 +16,29 @@ import com.dayzeeco.dayzee.adapter.ItemTimenoteRecentAdapter
 import java.util.*
 
 
-class HashTagHelper private constructor(
-    private val mHashTagWordColor: Int,
-    private val listener: OnHashTagClickListener,
-    private val additionalHashTagCharacters: List<Char>?,
+class MentionHelper private constructor(
+    private val mMentionWordColor: Int,
+    private val listener: OnMentionClickListener,
+    private val additionalMentionCharacters: List<Char>?,
     private val resources: Resources
-) : ClickableForegroundColorSpan.OnHashTagClickListener {
+) : ClickableForegroundColorSpanMention.OnMentionClickListener{
 
-    private val mAdditionalHashTagChars: MutableList<Char>
+    private val mAdditionalMentionChars: MutableList<Char>
     private var mTextView: TextView? = null
-    private val mOnHashTagClickListener: OnHashTagClickListener?
+    private val mOnMentionClickListener: OnMentionClickListener?
 
     object Creator {
-        fun create(color: Int, listener: OnHashTagClickListener, resources: Resources): HashTagHelper {
-            return HashTagHelper(color, listener, null, resources)
+        fun create(color: Int, listener: OnMentionClickListener, resources: Resources): MentionHelper {
+            return MentionHelper(color, listener, null, resources)
         }
 
-        fun create(color: Int, listener: OnHashTagClickListener, additionalHashTagChars: List<Char>?,  resources: Resources): HashTagHelper {
-            return HashTagHelper(color, listener, additionalHashTagChars, resources)
+        fun create(color: Int, listener: OnMentionClickListener, additionalMentionChars: List<Char>?,  resources: Resources): MentionHelper {
+            return MentionHelper(color, listener, additionalMentionChars, resources)
         }
     }
 
-    interface OnHashTagClickListener {
-        fun onHashTagClicked(hashTag: String?)
+    interface OnMentionClickListener {
+        fun onMentionClicked(mention: String?)
     }
 
     private val mTextWatcher: TextWatcher = object : TextWatcher {
@@ -69,7 +69,7 @@ class HashTagHelper private constructor(
 
             // in order to use spannable we have to set buffer type
             mTextView!!.setText(mTextView!!.text, TextView.BufferType.SPANNABLE)
-            if (mOnHashTagClickListener != null) {
+            if (mOnMentionClickListener != null) {
                 // we need to set this in order to get onClick event
                 mTextView!!.movementMethod = LinkMovementMethod.getInstance()
 
@@ -78,9 +78,9 @@ class HashTagHelper private constructor(
             } else {
                 // hash tags are not clickable, no need to change these parameters
             }
-            setColorsToAllHashTags(mTextView!!.text)
+            setColorsToAllMentions(mTextView!!.text)
         } else {
-            throw RuntimeException("TextView is not null. You need to create a unique HashTagHelper for every TextView")
+            throw RuntimeException("TextView is not null. You need to create a unique Mention Helper for every TextView")
         }
     }
 
@@ -93,32 +93,32 @@ class HashTagHelper private constructor(
         for (span in spans) {
             //spannable.removeSpan(span)
         }
-        setColorsToAllHashTags(text)
+        setColorsToAllMentions(text)
     }
 
-    private fun setColorsToAllHashTags(text: CharSequence) {
+    private fun setColorsToAllMentions(text: CharSequence) {
         var startIndexOfNextHashSign: Int
         var index = 0
         while (index < text.length - 1) {
             val sign = text[index]
             var nextNotLetterDigitCharIndex =
-                index + 1 // we assume it is next. if if was not changed by findNextValidHashTagChar then index will be incremented by 1
-            if (sign == '#') {
+                index + 1 // we assume it is next. if if was not changed by findNextValidMention // Char then index will be incremented by 1
+            if (sign == '@') {
                 startIndexOfNextHashSign = index
                 nextNotLetterDigitCharIndex =
-                    findNextValidHashTagChar(text, startIndexOfNextHashSign)
-                setColorForHashTagToTheEnd(startIndexOfNextHashSign, nextNotLetterDigitCharIndex)
+                    findNextValidMentionChar(text, startIndexOfNextHashSign)
+                setColorForMentionToTheEnd(startIndexOfNextHashSign, nextNotLetterDigitCharIndex)
             }
             index = nextNotLetterDigitCharIndex
         }
     }
 
-    private fun findNextValidHashTagChar(text: CharSequence, start: Int): Int {
+    private fun findNextValidMentionChar(text: CharSequence, start: Int): Int {
         var nonLetterDigitCharIndex = -1 // skip first sign '#"
         for (index in start + 1 until text.length) {
             val sign = text[index]
             val isValidSign =
-                Character.isLetterOrDigit(sign) || mAdditionalHashTagChars.contains(sign)
+                Character.isLetterOrDigit(sign) || mAdditionalMentionChars.contains(sign)
             if (!isValidSign) {
                 nonLetterDigitCharIndex = index
                 break
@@ -131,14 +131,14 @@ class HashTagHelper private constructor(
         return nonLetterDigitCharIndex
     }
 
-    private fun setColorForHashTagToTheEnd(
+    private fun setColorForMentionToTheEnd(
         startIndex: Int,
         nextNotLetterDigitCharIndex: Int
     ) {
         val s = mTextView!!.text as Spannable
         val span: CharacterStyle
-        if (mOnHashTagClickListener != null) {
-            span = ClickableForegroundColorSpan(resources.getColor(R.color.colorText), this)
+        if (mOnMentionClickListener != null) {
+            span = ClickableForegroundColorSpanMention(resources.getColor(R.color.colorText), this)
         } else {
             // no need for clickable span because it is messing with selection when click
             span = ForegroundColorSpan(resources.getColor(R.color.colorText))
@@ -147,7 +147,7 @@ class HashTagHelper private constructor(
     }
 
 
-    private fun setFontForHashTagToTheEnd(
+    private fun setFontForMentionToTheEnd(
         startIndex: Int,
         nextNotLetterDigitCharIndex: Int
     ) {
@@ -157,18 +157,18 @@ class HashTagHelper private constructor(
         span.setSpan(bold, startIndex, nextNotLetterDigitCharIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
     }
 
-    fun getAllHashTags(withHashes: Boolean): List<String> {
+    fun getAllMentions(withHashes: Boolean): List<String> {
         val text = mTextView!!.text.toString()
         val spannable = mTextView!!.text as Spannable
 
         // use set to exclude duplicates
-        val hashTags: MutableSet<String> =
+        val Mentions: MutableSet<String> =
             LinkedHashSet()
         for (span in spannable.getSpans(
             0, text.length,
             CharacterStyle::class.java
         )) {
-            hashTags.add(
+            Mentions.add(
                 text.substring(
                     if (!withHashes) spannable.getSpanStart(span) + 1 /*skip "#" sign*/ else spannable.getSpanStart(
                         span
@@ -177,23 +177,24 @@ class HashTagHelper private constructor(
                 )
             )
         }
-        return ArrayList(hashTags)
+        return ArrayList(Mentions)
     }
 
-    val allHashTags: List<String>
-        get() = getAllHashTags(false)
+    val allMentions: List<String>
+        get() = getAllMentions(false)
 
-    override fun onHashTagClicked(hashTag: String?) {
-        mOnHashTagClickListener!!.onHashTagClicked(hashTag)
+    override fun onMentionClicked(mention: String?) {
+        mOnMentionClickListener!!.onMentionClicked(mention)
     }
 
     init {
-        mOnHashTagClickListener = listener
-        mAdditionalHashTagChars = ArrayList()
-        if (additionalHashTagCharacters != null) {
-            for (additionalChar in additionalHashTagCharacters) {
-                mAdditionalHashTagChars.add(additionalChar)
+        mOnMentionClickListener = listener
+        mAdditionalMentionChars = ArrayList()
+        if (additionalMentionCharacters != null) {
+            for (additionalChar in additionalMentionCharacters) {
+                mAdditionalMentionChars.add(additionalChar)
             }
         }
     }
+
 }

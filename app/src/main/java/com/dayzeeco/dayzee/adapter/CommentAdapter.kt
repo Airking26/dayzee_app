@@ -9,13 +9,18 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.dayzeeco.dayzee.R
+import com.dayzeeco.dayzee.common.HashTagHelper
+import com.dayzeeco.dayzee.common.MentionHelper
 import com.dayzeeco.dayzee.model.CommentInfoDTO
 import com.dayzeeco.dayzee.model.UserInfoDTO
+import com.dayzeeco.dayzee.view.homeFlow.DetailedTimenoteDirections
 import kotlinx.android.synthetic.main.item_comment.view.*
+import kotlinx.android.synthetic.main.item_timenote_root.*
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.format.DateTimeFormatter
@@ -70,14 +75,7 @@ class CommentAdapter(
 
             val i = SpannableStringBuilder(nameAndComment)
 
-            var _ignore = false
-            itemView.comment_username_comment.addTextChangedListener(object: TextWatcher{
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-                override fun afterTextChanged(s: Editable?) {
-                    var l = s
-                    if(!_ignore) {
-                        _ignore = true
+
                         val m = Typeface.create("sans-serif", Typeface.NORMAL)
                         val p = Typeface.create("sans-serif-light", Typeface.NORMAL)
                         val o = ItemTimenoteRecentAdapter.CustomTypefaceSpan(p)
@@ -93,11 +91,16 @@ class CommentAdapter(
                             Spannable.SPAN_EXCLUSIVE_INCLUSIVE
                         )
                         itemView.comment_username_comment.text = i
-                        _ignore = false
-                    }
-                }
 
-            })
+            val mentionHelper = MentionHelper.Creator.create(
+                R.color.colorAccent,
+                object : MentionHelper.OnMentionClickListener {
+                    override fun onMentionClicked(mention: String?) {
+                    } },
+                null,
+                itemView.resources
+            )
+            mentionHelper.handle(itemView.comment_username_comment)
 
             itemView.comment_username_comment.text = i
 

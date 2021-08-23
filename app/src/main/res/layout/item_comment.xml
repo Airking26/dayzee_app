@@ -14,13 +14,11 @@
         android:id="@+id/comment_user_pic_imageview"
         android:layout_height="36dp"/>
 
-    <com.hendraanggrian.appcompat.widget.SocialTextView
+    <TextView
         android:fontFamily="sans-serif-light"
         android:id="@+id/comment_username_comment"
         android:layout_marginStart="8dp"
         android:textSize="13sp"
-        app:socialFlags="mention"
-        app:mentionColor="@color/colorEndGradient"
         android:textColor="@color/colorText"
         tools:text="Ronny Dahan"
         app:layout_constraintEnd_toStartOf="@id/comment_more"

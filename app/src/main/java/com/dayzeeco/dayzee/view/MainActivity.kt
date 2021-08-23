@@ -3,6 +3,7 @@ package com.dayzeeco.dayzee.view
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.*
+import android.content.ContentValues.TAG
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
@@ -14,6 +15,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.*
 import androidx.navigation.NavController
 import androidx.preference.PreferenceManager
@@ -22,28 +24,27 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.listeners.*
-import com.dayzeeco.dayzee.model.Notification
 import com.dayzeeco.dayzee.model.TimenoteInfoDTO
 import com.dayzeeco.dayzee.model.UserInfoDTO
 import com.dayzeeco.dayzee.view.homeFlow.Home
 import com.dayzeeco.dayzee.view.homeFlow.HomeDirections
-import com.dayzeeco.dayzee.viewModel.MeViewModel
 import com.dayzeeco.dayzee.viewModel.SwitchToNotifViewModel
-import com.google.api.client.googleapis.testing.auth.oauth2.MockGoogleCredential.ACCESS_TOKEN
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import io.branch.referral.Branch
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.reflect.Type
+
 
 class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby, ShowBarListener, ExitCreationTimenote, RefreshPicBottomNavListener, GoToProfile, GoToTop {
 
     private lateinit var control: NavController
     private var currentNavController: LiveData<NavController>? = null
     private val utils = Utils()
+    private lateinit var receiver: BroadcastReceiver
     private lateinit var prefs : SharedPreferences
     private var isOngoing = true
 
@@ -52,12 +53,28 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        registerNotificationReceiver()
         setupController()
     }
 
     override fun onPause() {
         super.onPause()
         isOngoing = false
+    }
+
+    private fun registerNotificationReceiver() {
+        val filter = IntentFilter()
+        filter.addAction("NotificationOnClickListener")
+        this.receiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                val type = intent?.getIntExtra("type", 0)
+                if(type != 1){
+                    if(type == 0 || type == 5 || type == 6) control.navigate(HomeDirections.actionGlobalDetailedTimenote(1, intent?.getParcelableExtra("event")))
+                    else control.navigate(HomeDirections.actionGlobalProfileElse(1).setUserInfoDTO(intent?.getParcelableExtra("user")))
+                }
+            }
+        }
+        super.registerReceiver(this.receiver, filter)
     }
 
     override fun onStart() {
@@ -79,10 +96,17 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                         )
                     } else {
                         val typeUserInfoDTO: Type = object : TypeToken<UserInfoDTO?>() {}.type
-                        val userInfoDTO = Gson().fromJson<UserInfoDTO>(referringParams.getString(
-                            user_info_dto), typeUserInfoDTO)
+                        val userInfoDTO = Gson().fromJson<UserInfoDTO>(
+                            referringParams.getString(
+                                user_info_dto
+                            ), typeUserInfoDTO
+                        )
                         goToProfile()
-                        control.navigate(HomeDirections.actionGlobalProfileElse(1).setUserInfoDTO(userInfoDTO))
+                        control.navigate(
+                            HomeDirections.actionGlobalProfileElse(1).setUserInfoDTO(
+                                userInfoDTO
+                            )
+                        )
                     }
                 }
             }
@@ -98,16 +122,28 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                 if (referringParams?.getBoolean("+clicked_branch_link")!!) {
                     if(referringParams.has(timenote_info_dto)) {
                         val typeTimenoteInfo: Type = object : TypeToken<TimenoteInfoDTO?>() {}.type
-                        val timenoteInfoDTO = Gson().fromJson<TimenoteInfoDTO>(referringParams.getString(
-                            timenote_info_dto), typeTimenoteInfo)
-                        control.navigate(HomeDirections.actionGlobalDetailedTimenote(1, timenoteInfoDTO))
+                        val timenoteInfoDTO = Gson().fromJson<TimenoteInfoDTO>(
+                            referringParams.getString(
+                                timenote_info_dto
+                            ), typeTimenoteInfo
+                        )
+                        control.navigate(
+                            HomeDirections.actionGlobalDetailedTimenote(
+                                1,
+                                timenoteInfoDTO
+                            )
+                        )
                     } else {
                         val typeUserInfoDTO: Type = object : TypeToken<UserInfoDTO?>() {}.type
                         val userInfoDTO = Gson().fromJson<UserInfoDTO>(
                             referringParams.getString(user_info_dto),
                             typeUserInfoDTO
                         )
-                        control.navigate(HomeDirections.actionGlobalProfileElse(1).setUserInfoDTO(userInfoDTO))
+                        control.navigate(
+                            HomeDirections.actionGlobalProfileElse(1).setUserInfoDTO(
+                                userInfoDTO
+                            )
+                        )
                         goToProfile()
                     }
                 }
@@ -125,6 +161,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
 
     override fun onResume() {
         super.onResume()
+        val k = intent.hasExtra("USER")
         if(!intent.getStringExtra(type).isNullOrBlank() && !isOngoing){
             goToProfile()
             ViewModelProviders.of(this, object : ViewModelProvider.Factory {
@@ -133,6 +170,14 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                     return SwitchToNotifViewModel() as T
                 }
             })[SwitchToNotifViewModel::class.java].switchNotif(true)
+        } else if(intent.hasExtra("USER")){
+            control.navigate(
+                HomeDirections.actionGlobalProfileElse(1).setUserInfoDTO(
+                    intent.getParcelableExtra(
+                        "USER"
+                    )
+                )
+            )
         }
     }
 
@@ -141,7 +186,10 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
 
         createNotificationChannel()
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
-        val userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString(user_info_dto, ""), typeUserInfo)
+        val userInfoDTO = Gson().fromJson<UserInfoDTO>(
+            prefs.getString(user_info_dto, ""),
+            typeUserInfo
+        )
 
         val view = this.currentFocus
         view?.let { v ->
