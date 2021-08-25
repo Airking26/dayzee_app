@@ -394,6 +394,8 @@
     <string name="culture">Culture</string>
     <string name="invitation_externe">%1$s has invited you to : %2$s on the %3$s at %4$s \n %5$s</string>
     <string name="profile_externe">%1$s has shared a profile : %2$s \n %3$s</string>
+    <string name="no_user_corresponding_to_mention">No user corresponding to this mention</string>
+    <string name="pending">Pending</string>
     <plurals name="time_minutes_comment">
         <item quantity="one">%1$d minute</item>
         <item quantity="other">%1$d minutes</item>

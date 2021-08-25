@@ -1158,7 +1158,8 @@ class CreateTimenote : Fragment(), View.OnClickListener,
             this@CreateTimenote,
             organizers,
             sendTo,
-            createGroup
+            createGroup,
+            false
         )
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = userAdapter
@@ -1400,7 +1401,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     override fun onHashTagClicked(hashTag: String?) {
     }
 
-    override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
+    override fun onSearchClicked(userInfoDTO: UserInfoDTO, isTagged: Boolean) {
     }
 
     override fun onUnfollow(id: String) {

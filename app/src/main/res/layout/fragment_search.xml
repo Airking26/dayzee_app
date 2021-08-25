@@ -9,6 +9,7 @@
     tools:context=".view.searchFlow.Search">
 
     <com.dayzeeco.dayzee.androidView.materialsearchbar.MaterialSearchBar
+        android:visibility="visible"
         android:paddingHorizontal="8dp"
         android:paddingVertical="16dp"
         app:mt_roundedSearchBarEnabled="true"

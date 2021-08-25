@@ -54,7 +54,8 @@ class SearchExploreClicked: Fragment(), UsersShareWithPagingAdapter.AddToSend,
             this,
             null,
             null,
-            null
+            null,
+            false
         )
         search_explore_clicked_rv.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -100,7 +101,7 @@ class SearchExploreClicked: Fragment(), UsersShareWithPagingAdapter.AddToSend,
         })
     }
 
-    override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
+    override fun onSearchClicked(userInfoDTO: UserInfoDTO, isTagged: Boolean) {
         findNavController().navigate(SearchExploreClickedDirections.actionGlobalProfileElse(2).setUserInfoDTO(userInfoDTO))
     }
 }

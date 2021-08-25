@@ -38,4 +38,7 @@ interface FollowService {
 
     @GET("follow/search/following/{name}/{offset}")
     suspend fun searchInFollowing(@Header("Authorization") token: String, @Path("name") name: String, @Path("offset") offset: Int) : Response<List<UserInfoDTO>>
+
+    @GET("follow/{id}/check-waiting-approval")
+    suspend fun checkUserWaitingApproval(@Header("Authorization") token: String, @Path("id") id: String) : Response<Boolean>
 }

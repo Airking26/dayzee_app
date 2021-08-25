@@ -21,6 +21,7 @@ class FollowViewModel: ViewModel() {
     private val followService = DayzeeRepository().getFollowService()
 
     fun followPublicUser(token: String, id: String) = flow { emit(followService.followPublicUser("Bearer $token", id)) }.asLiveData(viewModelScope.coroutineContext)
+    fun checkUserWaitingApproval(token: String, id: String) = flow { emit(followService.checkUserWaitingApproval("Bearer $token", id)) }.asLiveData(viewModelScope.coroutineContext)
     fun followPrivateUser(token: String, id: String) = flow { emit(followService.followPrivateUser("Bearer $token", id))}.asLiveData(viewModelScope.coroutineContext)
     fun acceptFollowingRequest(token: String, id: String) = flow { emit(followService.acceptFollowingRequest("Bearer $token", id))}.asLiveData(viewModelScope.coroutineContext)
     fun declineFollowingRequest(token: String, id: String) = flow { emit(followService.declineFollowingRequest("Bearer $token", id))}.asLiveData(viewModelScope.coroutineContext)

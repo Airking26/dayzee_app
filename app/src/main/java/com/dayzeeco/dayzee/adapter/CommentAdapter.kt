@@ -2,34 +2,30 @@ package com.dayzeeco.dayzee.adapter
 
 import android.graphics.Typeface
 import android.os.Build
-import android.text.Editable
 import android.text.Spannable
 import android.text.SpannableStringBuilder
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.dayzeeco.dayzee.R
-import com.dayzeeco.dayzee.common.HashTagHelper
 import com.dayzeeco.dayzee.common.MentionHelper
 import com.dayzeeco.dayzee.model.CommentInfoDTO
 import com.dayzeeco.dayzee.model.UserInfoDTO
-import com.dayzeeco.dayzee.view.homeFlow.DetailedTimenoteDirections
 import kotlinx.android.synthetic.main.item_comment.view.*
-import kotlinx.android.synthetic.main.item_timenote_root.*
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.NoSuchElementException
 
 class CommentAdapter(
     private val comments: List<CommentInfoDTO>,
     private val commentPicUserListener: CommentPicUserListener,
-    private val commentMoreListener: CommentMoreListener
+    private val commentMoreListener: CommentMoreListener,
+    private val userTaggedListener: UserTaggedListener
 ) :
     RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() {
 
@@ -39,6 +35,10 @@ class CommentAdapter(
 
     interface CommentMoreListener{
         fun onCommentMoreClicked(createdBy: String?, commentId: String?)
+    }
+
+    interface UserTaggedListener{
+        fun onUserTaggedClicked(userInfoDTO: UserInfoDTO?)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentViewHolder =
@@ -53,7 +53,7 @@ class CommentAdapter(
     override fun getItemCount(): Int = comments.size
 
     override fun onBindViewHolder(holder: CommentViewHolder, position: Int) {
-        holder.bindComment(comments[position], commentPicUserListener, commentMoreListener)
+        holder.bindComment(comments[position], commentPicUserListener, commentMoreListener, userTaggedListener)
     }
 
     class CommentViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
@@ -61,7 +61,8 @@ class CommentAdapter(
         fun bindComment(
             commentModel: CommentInfoDTO,
             commentPicUserListener: CommentPicUserListener,
-            commentMoreListener: CommentMoreListener
+            commentMoreListener: CommentMoreListener,
+            userTaggedListener: UserTaggedListener
         ) {
             Glide
                 .with(itemView)
@@ -96,9 +97,16 @@ class CommentAdapter(
                 R.color.colorAccent,
                 object : MentionHelper.OnMentionClickListener {
                     override fun onMentionClicked(mention: String?) {
+                        val user: UserInfoDTO? = try {
+                            commentModel.tagged?.single { userInfoDTO -> userInfoDTO.userName?.replace("\\s".toRegex(), "")?.replace("[^A-Za-z0-9 ]".toRegex(), "") == mention }
+                        } catch (ex: NoSuchElementException){
+                            null
+                        }
+                        userTaggedListener.onUserTaggedClicked(user)
                     } },
                 null,
-                itemView.resources
+                itemView.resources,
+                commentModel.tagged
             )
             mentionHelper.handle(itemView.comment_username_comment)
 

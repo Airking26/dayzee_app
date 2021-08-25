@@ -71,7 +71,7 @@ class FollowPage : Fragment(), UsersPagingAdapter.SearchPeopleListener,
         }
 
         if(args.followers == 0 || args.followers == 1 || args.followers == 3){
-        usersPagingAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, null,this, args.isNotMine, args.followers)
+        usersPagingAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, null,this, args.isNotMine, args.followers, false)
         users_rv.layoutManager = LinearLayoutManager(requireContext())
         users_rv.adapter = usersPagingAdapter
             if(args.followers == 3) {
@@ -88,7 +88,7 @@ class FollowPage : Fragment(), UsersPagingAdapter.SearchPeopleListener,
                 }
             }
         } else if(args.followers == 2) {
-            usersAwaitingPagingAdapter = UsersAwaitingPagingAdapter(UsersShareWithPagingAdapter.UserComparator, null, this, this)
+            usersAwaitingPagingAdapter = UsersAwaitingPagingAdapter(UsersShareWithPagingAdapter.UserComparator, null, this, this, false)
             users_rv.layoutManager = LinearLayoutManager(requireContext())
             users_rv.adapter = usersAwaitingPagingAdapter
             if(args.followers == 2){
@@ -101,7 +101,7 @@ class FollowPage : Fragment(), UsersPagingAdapter.SearchPeopleListener,
         }
     }
 
-    override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
+    override fun onSearchClicked(userInfoDTO: UserInfoDTO, isTagged: Boolean) {
         if(userInfoDTO.id == this.userInfoDTO.id) goToProfileLisner.goToProfile()
         else findNavController().navigate(FollowPageDirections.actionGlobalProfileElse(args.from).setUserInfoDTO(userInfoDTO))
     }

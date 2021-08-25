@@ -7,6 +7,7 @@ import android.text.style.ClickableSpan
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.ColorInt
+import com.dayzeeco.dayzee.model.UserInfoDTO
 
 
 class ClickableForegroundColorSpanMention(@param:ColorInt private val mColor: Int, private val mOnMentionClickListener: OnMentionClickListener?
@@ -14,7 +15,7 @@ class ClickableForegroundColorSpanMention(@param:ColorInt private val mColor: In
     ClickableSpan() {
 
     interface OnMentionClickListener {
-        fun onMentionClicked(hashTag: String?)
+        fun onMentionClicked(mention: String?)
     }
 
     override fun updateDrawState(ds: TextPaint) {
@@ -27,9 +28,7 @@ class ClickableForegroundColorSpanMention(@param:ColorInt private val mColor: In
         val s = text as Spanned
         val start = s.getSpanStart(this)
         val end = s.getSpanEnd(this)
-        mOnMentionClickListener!!.onMentionClicked(
-            text.subSequence(start + 1 /*skip "#" sign*/, end).toString()
-        )
+        mOnMentionClickListener!!.onMentionClicked(text.subSequence(start + 1 /*skip "#" sign*/, end).toString())
     }
 
     init {

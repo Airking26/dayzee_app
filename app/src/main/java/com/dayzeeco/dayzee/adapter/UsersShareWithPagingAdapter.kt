@@ -24,12 +24,13 @@ class UsersShareWithPagingAdapter(
     private val addToSend: AddToSend,
     private val organizers: MutableList<String>?,
     private val sendTo: MutableList<String>?,
-    private val createGroup: Int?
+    private val createGroup: Int?,
+    private val isTagged: Boolean
 )
     : PagingDataAdapter<UserInfoDTO, UsersShareWithPagingAdapter.UserViewHolder>(diffCallback){
 
     interface SearchPeopleListener{
-        fun onSearchClicked(userInfoDTO: UserInfoDTO)
+        fun onSearchClicked(userInfoDTO: UserInfoDTO, isTagged: Boolean)
     }
 
     interface AddToSend{
@@ -44,7 +45,9 @@ class UsersShareWithPagingAdapter(
             addToSend: AddToSend,
             organizers: MutableList<String>?,
             sendTo: MutableList<String>?,
-            createGroup: Int?) {
+            createGroup: Int?,
+            isTagged: Boolean
+        ) {
 
                 Glide
                     .with(itemView)
@@ -61,9 +64,9 @@ class UsersShareWithPagingAdapter(
             }
             if(createGroup != null && createGroup == 2 && organizers != null && organizers.contains(userInfoDTO?.id)) itemView.item_user_send.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.ic_baseline_remove_send))
             else if(sendTo != null && sendTo.contains(userInfoDTO?.id)) itemView.item_user_send.setImageDrawable(itemView.context.getDrawable(R.drawable.ic_baseline_remove_send))
-            itemView.user_imageview.setOnClickListener { searchPeopleListener.onSearchClicked(userInfoDTO!!) }
-            itemView.name_user.setOnClickListener { searchPeopleListener.onSearchClicked(userInfoDTO!!) }
-            itemView.givenName.setOnClickListener { searchPeopleListener.onSearchClicked(userInfoDTO!!) }
+            itemView.user_imageview.setOnClickListener { searchPeopleListener.onSearchClicked(userInfoDTO!!, isTagged) }
+            itemView.name_user.setOnClickListener { searchPeopleListener.onSearchClicked(userInfoDTO!!, isTagged) }
+            itemView.givenName.setOnClickListener { searchPeopleListener.onSearchClicked(userInfoDTO!!, isTagged) }
             itemView.item_user_send.setOnClickListener {
                 if(itemView.item_user_send.drawable.bytesEqualTo(itemView.context.resources.getDrawable(R.drawable.ic_add_circle_yellow_send)) && itemView.item_user_send.drawable.pixelsEqualTo(itemView.context.resources.getDrawable(R.drawable.ic_add_circle_yellow_send))){
                     itemView.user_rl.background = itemView.context.getDrawable(R.drawable.border_selected)
@@ -80,7 +83,7 @@ class UsersShareWithPagingAdapter(
     }
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-        holder.bindUser(getItem(position), searchPeopleListener, addToSend, organizers, sendTo, createGroup)
+        holder.bindUser(getItem(position), searchPeopleListener, addToSend, organizers, sendTo, createGroup, isTagged)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder =

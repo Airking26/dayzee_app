@@ -128,6 +128,19 @@
 
 </androidx.core.widget.NestedScrollView>
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:visibility="gone"
+        android:background="@color/colorBackground"
+        tools:listitem="@layout/item_user"
+        android:id="@+id/detailed_timenote_rv"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_constraintBottom_toTopOf="@+id/fragment_detailed_comment_ll"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/detailed_timenote_ll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
     <LinearLayout
         android:id="@+id/fragment_detailed_comment_ll"
         android:layout_marginHorizontal="12dp"

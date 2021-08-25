@@ -10,7 +10,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.dayzeeco.dayzee.R
-import com.dayzeeco.dayzee.common.getSafeSubstring
 import com.dayzeeco.dayzee.model.TimenoteInfoDTO
 import com.dayzeeco.dayzee.model.UserInfoDTO
 import kotlinx.android.synthetic.main.item_user.view.*
@@ -19,18 +18,19 @@ class UsersPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>,
                          val timenoteInfoDTO: TimenoteInfoDTO?,
                          private val searchPeopleListener: SearchPeopleListener,
                          private val mine: Boolean?,
-                         val followers: Int?
+                         val followers: Int?,
+                         private val isTagged: Boolean
 )
     : PagingDataAdapter<UserInfoDTO, UsersPagingAdapter.UserViewHolder>(diffCallback){
 
     interface SearchPeopleListener{
-        fun onSearchClicked(userInfoDTO: UserInfoDTO)
+        fun onSearchClicked(userInfoDTO: UserInfoDTO, isTagged: Boolean)
         fun onUnfollow(id: String)
         fun onRemove(id: String)
     }
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-        holder.bindUser(getItem(position), searchPeopleListener, mine, followers)
+        holder.bindUser(getItem(position), searchPeopleListener, mine, followers, isTagged)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -51,7 +51,8 @@ class UsersPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>,
             userInfoDTO: UserInfoDTO?,
             searchPeopleListener: SearchPeopleListener,
             mine: Boolean?,
-            followers: Int?
+            followers: Int?,
+            isTagged: Boolean
         ) {
 
             if(userInfoDTO?.certified!!) itemView.name_user.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_certification, 0)
@@ -82,7 +83,7 @@ class UsersPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>,
                 itemView.givenName.visibility = View.VISIBLE
                 itemView.givenName.text = userInfoDTO.givenName
             }
-            itemView.setOnClickListener { searchPeopleListener.onSearchClicked(userInfoDTO) }
+            itemView.setOnClickListener { searchPeopleListener.onSearchClicked(userInfoDTO, isTagged) }
         }
 
     }

@@ -170,7 +170,8 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
             this,
             null,
             sendTo,
-            null
+            null,
+            false
         )
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
@@ -313,7 +314,8 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
             timenoteInfoDTO,
             this,
             null,
-            null
+            null,
+            false
         )
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
@@ -324,7 +326,7 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
         }
     }
 
-    override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
+    override fun onSearchClicked(userInfoDTO: UserInfoDTO, isTagged: Boolean) {
     }
 
     override fun onUnfollow(id: String) {

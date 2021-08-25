@@ -41,7 +41,8 @@ class SearchPeople: Fragment(), UsersPagingAdapter.SearchPeopleListener {
             null,
             this,
             null,
-            null
+            null,
+            false
         )
     }
 
@@ -77,7 +78,7 @@ class SearchPeople: Fragment(), UsersPagingAdapter.SearchPeopleListener {
         })
     }
 
-    override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
+    override fun onSearchClicked(userInfoDTO: UserInfoDTO, isTagged: Boolean) {
         findNavController().navigate(SearchDirections.actionGlobalProfileElse(2).setUserInfoDTO(userInfoDTO))
     }
 

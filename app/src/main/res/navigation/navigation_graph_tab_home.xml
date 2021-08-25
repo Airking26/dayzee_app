@@ -182,18 +182,6 @@
     <action android:id="@+id/action_global_profileCalendar" app:destination="@id/profileCalendar" />
     <action android:id="@+id/action_global_navigation" app:destination="@id/navigation" />
     <fragment
-        android:id="@+id/detailedTimenoteCarousel"
-        android:name="com.dayzeeco.dayzee.view.homeFlow.DetailedTimenoteCarousel"
-        android:label="DetailedTimenoteCarousel">
-        <argument android:name="from"
-            app:argType="integer" />
-        <argument
-            android:name="event"
-            app:argType="com.dayzeeco.dayzee.model.TimenoteInfoDTO"
-            app:nullable="true" />
-    </fragment>
-    <action android:id="@+id/action_global_detailedTimenoteCarousel" app:destination="@id/detailedTimenoteCarousel" />
-    <fragment
         android:id="@+id/carouselActivity"
         android:name="com.dayzeeco.dayzee.androidView.carousel.CarouselActivity"
         android:label="CarouselActivity" /><action android:id="@+id/action_global_carouselActivity" app:destination="@id/carouselActivity"/>

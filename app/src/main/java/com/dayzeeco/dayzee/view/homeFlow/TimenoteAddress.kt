@@ -179,7 +179,8 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
             timenoteInfoDTO,
             this,
             null,
-            null
+            null,
+            false
         )
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
@@ -227,7 +228,8 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
             this,
             null,
             sendTo,
-            null
+            null,
+            false
         )
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
@@ -329,7 +331,7 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
             }
         })
     }
-    override fun onSearchClicked(userInfoDTO: UserInfoDTO) {}
+    override fun onSearchClicked(userInfoDTO: UserInfoDTO, isTagged: Boolean) {}
     override fun onUnfollow(id: String) {
 
     }

@@ -417,7 +417,8 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
             timenoteInfoDTO,
             this,
             null,
-            null
+            null,
+            false
         )
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
@@ -537,7 +538,8 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
             this,
             null,
             sendTo,
-            null
+            null,
+            false
         )
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
@@ -587,7 +589,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         sendTo.remove(userInfoDTO.id!!)
     }
 
-    override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
+    override fun onSearchClicked(userInfoDTO: UserInfoDTO, isTagged: Boolean) {
         if(userInfoDTO.id == this.userInfoDTO.id) goToProfileLisner.goToProfile()
         else findNavController().navigate(HomeDirections.actionGlobalProfileElse(1).setUserInfoDTO(userInfoDTO))
     }

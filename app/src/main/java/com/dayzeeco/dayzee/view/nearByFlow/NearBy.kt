@@ -557,7 +557,8 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
                 infoDTO,
                 this,
                 null,
-                null
+                null,
+                false
             )
             recyclerview.layoutManager = LinearLayoutManager(requireContext())
             recyclerview.adapter = userAdapter
@@ -741,7 +742,8 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
             this,
             null,
             sendTo,
-            null
+            null,
+            false
         )
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
@@ -901,7 +903,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         if(loginViewModel.getAuthenticationState().value == LoginViewModel.AuthenticationState.GUEST) loginViewModel.markAsUnauthenticated()
     }
 
-    override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
+    override fun onSearchClicked(userInfoDTO: UserInfoDTO, isTagged: Boolean) {
 
     }
 

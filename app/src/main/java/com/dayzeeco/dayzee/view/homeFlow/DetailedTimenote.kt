@@ -13,14 +13,17 @@ import android.os.Handler
 import android.text.*
 import android.view.*
 import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.paging.filter
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.LayoutMode
@@ -30,25 +33,27 @@ import com.afollestad.materialdialogs.actions.getActionButton
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
-import com.afollestad.materialdialogs.datetime.dateTimePicker
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.*
 import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.listeners.GoToProfile
 import com.dayzeeco.dayzee.model.*
 import com.dayzeeco.dayzee.viewModel.*
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import io.branch.indexing.BranchUniversalObject
 import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
 import io.branch.referral.util.LinkProperties
 import kotlinx.android.synthetic.main.fragment_detailed_fragment.*
+import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.friends_search_cl.view.*
+import kotlinx.android.synthetic.main.item_comment.view.*
+import kotlinx.android.synthetic.main.item_last_request.view.*
 import kotlinx.android.synthetic.main.item_profile_timenote_list_style.view.*
 import kotlinx.android.synthetic.main.item_timenote.view.*
 import kotlinx.android.synthetic.main.item_timenote_root.*
@@ -67,13 +72,18 @@ import kotlin.time.ExperimentalTime
 @ExperimentalTime
 class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.CommentPicUserListener,
     CommentAdapter.CommentMoreListener, UsersPagingAdapter.SearchPeopleListener,
-    UsersShareWithPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.AddToSend {
+    UsersShareWithPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.AddToSend,
+    CommentAdapter.UserTaggedListener {
 
-
+    private lateinit var mentionHelper: TagHelper
+    private var listOfUsersTagged : MutableList<UserInfoDTO> = mutableListOf()
+    private var allTextEntered: String = ""
+    private lateinit var userAdapter: UsersPagingAdapter
     private lateinit var imm: InputMethodManager
     private lateinit var goToProfileLisner: GoToProfile
     private var sendTo: MutableList<String> = mutableListOf()
     private lateinit var handler: Handler
+    private lateinit var handlerMention: Handler
     private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     private val TRIGGER_AUTO_COMPLETE = 200
     private val AUTO_COMPLETE_DELAY: Long = 200
@@ -89,6 +99,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     private val args: DetailedTimenoteArgs by navArgs()
     private val utils = Utils()
     private var timer : CountDownTimer? = null
+    private var textEntered : String = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -114,7 +125,6 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        var l = arguments
         imm = (requireActivity().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager)!!
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
         userInfoDTO = Gson().fromJson(prefs.getString(user_info_dto, ""), typeUserInfo)
@@ -122,7 +132,9 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         if(args.event?.location != null) {
             detailed_timenote_address.visibility = View.VISIBLE
                 if(args.event?.location?.address?.address?.isEmpty()!! && args.event?.location?.address?.city?.isNotEmpty()!! && args.event?.location?.address?.country?.isNotEmpty()!!){
-                    detailed_timenote_address.text = args.event?.location?.address?.city.plus(" ").plus(args.event?.location?.address?.country)
+                    detailed_timenote_address.text = args.event?.location?.address?.city.plus(" ").plus(
+                        args.event?.location?.address?.country
+                    )
                 }
                 else if(args.event?.location?.address?.address?.isNotEmpty()!! && args.event?.location?.address?.city?.isNotEmpty()!! && args.event?.location?.address?.country?.isNotEmpty()!!) {
                     detailed_timenote_address.text = args.event?.location?.address?.address.plus(", ")
@@ -137,7 +149,79 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         timenote_comment_account.visibility = View.GONE
         comments_edittext.requestFocus()
 
-        commentAdapter = CommentPagingAdapter(CommentComparator, this, this)
+        userAdapter = UsersPagingAdapter(
+            UsersPagingAdapter.UserComparator,
+            null,
+            this,
+            null,
+            null,
+            true
+        )
+
+        detailed_timenote_rv.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = userAdapter.withLoadStateFooter(
+                footer = TimenoteLoadStateAdapter{ userAdapter.retry() }
+            )
+        }
+
+        handlerMention = Handler { msg ->
+            if (msg.what == TRIGGER_AUTO_COMPLETE) {
+                if (!TextUtils.isEmpty(textEntered)) {
+                    searchViewModel.setSearchIsEmpty(false)
+                    lifecycleScope.launch {
+                        searchViewModel.getUsers(tokenId!!, textEntered, prefs)
+                            .collectLatest {
+                                userAdapter.submitData(it.filter { userInfoDTO -> userInfoDTO.id != args.event?.createdBy?.id })
+                                userAdapter.notifyDataSetChanged()
+                            }
+                    }
+                } else {
+                    searchViewModel.setSearchIsEmpty(true)
+                }
+            }
+            false
+        }
+
+        comments_edittext.addTextChangedListener(object: TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if(s.toString().isNotEmpty()){
+                    allTextEntered = s.toString()
+                    val textValid = (s.toString().substringAfterLast(" @").isNotEmpty() && s.toString().substringAfterLast(" @") != s.toString() && s.toString().takeLast(1) != " " && !s.toString().substringAfterLast(" @").contains(" "))
+                    val textValidFirst = (s.toString()[0] == '@' && s.toString().substringAfterLast("@").isNotEmpty() && s.toString().substringAfterLast("@") != s.toString() && s.toString().takeLast(1) != " ")
+                    when {
+                        textValid -> {
+                            textEntered = s.toString().substringAfterLast(" @")
+                            detailed_timenote_rv.visibility = View.VISIBLE
+                        }
+                        textValidFirst -> {
+                            textEntered = s.toString().substringAfterLast("@")
+                            detailed_timenote_rv.visibility = View.VISIBLE
+                        }
+                        else -> detailed_timenote_rv.visibility = View.GONE
+                    }
+                    handlerMention.removeMessages(TRIGGER_AUTO_COMPLETE)
+                    handlerMention.sendEmptyMessageDelayed(TRIGGER_AUTO_COMPLETE, AUTO_COMPLETE_DELAY)
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
+        mentionHelper = TagHelper.Creator.create(
+            R.color.colorAccent,
+            object : TagHelper.OnMentionClickListener {
+                override fun onMentionClicked(mention: String?) {
+                    //userTaggedListener.onUserTaggedClicked(commentModel.tagged?.single { userInfoDTO -> userInfoDTO.userName == mention })
+                } },
+            null,
+            resources
+        )
+        mentionHelper.handle(comments_edittext)
+
+        commentAdapter = CommentPagingAdapter(CommentComparator, this, this, this)
 
         detailed_timenote_comments_rv.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -170,7 +254,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
 
         screenSlideCreationTimenotePagerAdapter = ScreenSlideTimenotePagerAdapter(
             this,
-            if (args.event?.pictures.isNullOrEmpty()) listOf(if(args.event?.colorHex.isNullOrEmpty()) "#09539d" else args.event?.colorHex!!) else args.event?.pictures,
+            if (args.event?.pictures.isNullOrEmpty()) listOf(if (args.event?.colorHex.isNullOrEmpty()) "#09539d" else args.event?.colorHex!!) else args.event?.pictures,
             true,
             args.event?.pictures.isNullOrEmpty()
         ) { i: Int, i1: Int ->
@@ -247,9 +331,17 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
 
         timenote_year.text = utils.setYear(args.event?.startingAt!!)
         timenote_day_month.text =
-            utils.setFormatedStartDate(args.event?.startingAt!!, args.event?.endingAt!!, requireContext())
+            utils.setFormatedStartDate(
+                args.event?.startingAt!!,
+                args.event?.endingAt!!,
+                requireContext()
+            )
         timenote_time.text =
-            utils.setFormatedEndDate(args.event?.startingAt!!, args.event?.endingAt!!,requireContext())
+            utils.setFormatedEndDate(
+                args.event?.startingAt!!,
+                args.event?.endingAt!!,
+                requireContext()
+            )
 
         var addedBy = ""
         var addedByFormated = SpannableStringBuilder(addedBy)
@@ -486,7 +578,11 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onClick(v: View?) {
         when (v) {
-            detailed_timenote_address -> findNavController().navigate(DetailedTimenoteDirections.actionGlobalTimenoteAddress(args.event))
+            detailed_timenote_address -> findNavController().navigate(
+                DetailedTimenoteDirections.actionGlobalTimenoteAddress(
+                    args.event
+                )
+            )
             detailed_timenote_username, detailed_timenote_pic_user -> {
                 if (userInfoDTO.id != args.event?.createdBy?.id) findNavController().navigate(
                     DetailedTimenoteDirections.actionGlobalProfileElse(args.from)
@@ -505,29 +601,29 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                 requireContext(),
                 userInfoDTO.id == args.event?.createdBy?.id
             )
-            timenote_detailed_send_comment ->
+            timenote_detailed_send_comment -> {
                 commentViewModel.postComment(
-                tokenId!!,
-                CommentCreationDTO(
-                    userInfoDTO.id!!,
-                    args.event?.id!!,
-                    comments_edittext.text.toString(),
-                    listOf(), listOf()
-                )
-            ).observe(viewLifecycleOwner, {
-                if (it.isSuccessful) {
-                    comments_edittext.clearFocus()
-                    imm.hideSoftInputFromWindow(comments_edittext.windowToken, 0)
-                    comments_edittext.text.clear()
+                    tokenId!!,
+                    CommentCreationDTO(
+                        userInfoDTO.id!!,
+                        args.event?.id!!,
+                        comments_edittext.text.toString(),
+                        listOf(), listOfUsersTagged.filter { userInfoDTO -> mentionHelper.allMentions.contains(userInfoDTO.userName?.replace("\\s".toRegex(), "")?.replace("[^A-Za-z0-9 ]".toRegex(), "") ) }.map { userInfoDTO -> userInfoDTO.id!! }
+                    )
+                ).observe(viewLifecycleOwner, {
+                    if (it.isSuccessful) {
+                        comments_edittext.clearFocus()
+                        imm.hideSoftInputFromWindow(comments_edittext.windowToken, 0)
+                        comments_edittext.text.clear()
 
-                    lifecycleScope.launch {
-                        commentViewModel.getComments(tokenId!!, args.event?.id!!, prefs)
-                            .collectLatest { data ->
-                                commentAdapter.submitData(data)
-                            }
+                        lifecycleScope.launch {
+                            commentViewModel.getComments(tokenId!!, args.event?.id!!, prefs)
+                                .collectLatest { data ->
+                                    commentAdapter.submitData(data)
+                                }
+                        }
                     }
-                }
-            })
+                })}
             timenote_share -> {
                 sendTo.clear()
                 val dial =
@@ -587,12 +683,13 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                     this,
                     null,
                     sendTo,
-                    null
+                    null,
+                    false
                 )
                 recyclerview.layoutManager = LinearLayoutManager(requireContext())
                 recyclerview.adapter = userAdapter
                 lifecycleScope.launch {
-                    searchViewModel.getUsers(tokenId!!, userInfoDTO.id!!,  prefs).collectLatest {
+                    searchViewModel.getUsers(tokenId!!, userInfoDTO.id!!, prefs).collectLatest {
                         userAdapter.submitData(it)
                     }
                 }
@@ -613,7 +710,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
 
                             } else {
                                 lifecycleScope.launch {
-                                    searchViewModel.getUsers(tokenId!!, userInfoDTO.id!!,  prefs)
+                                    searchViewModel.getUsers(tokenId!!, userInfoDTO.id!!, prefs)
                                         .collectLatest {
                                             userAdapter.submitData(it)
                                         }
@@ -676,7 +773,8 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                     args.event,
                     this,
                     null,
-                    null
+                    null,
+                    false
                 )
                 recyclerview.layoutManager = LinearLayoutManager(requireContext())
                 recyclerview.adapter = userAdapter
@@ -688,7 +786,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                 }
             }
             timenote_buy_cl -> {
-                if(!args.event?.url.isNullOrBlank()) {
+                if (!args.event?.url.isNullOrBlank()) {
                     val i = Intent(Intent.ACTION_VIEW)
                     i.data =
                         Uri.parse(if (args.event?.url?.contains("https://")!!) args.event?.url else "https://" + args.event?.url)
@@ -753,12 +851,23 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                     if(months == 0) valueToSub =  1 else valueToSub = months
                     val daysToSubstract = calendar[Calendar.DAY_OF_MONTH] - valueToSub
                     val hours = TimeUnit.MILLISECONDS.toHours(millisUntilFinished) - TimeUnit.DAYS.toHours(
-                        TimeUnit.MILLISECONDS.toDays(millisUntilFinished))
+                        TimeUnit.MILLISECONDS.toDays(millisUntilFinished)
+                    )
                     val minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(
-                        TimeUnit.MILLISECONDS.toHours(millisUntilFinished))
+                        TimeUnit.MILLISECONDS.toHours(millisUntilFinished)
+                    )
                     val seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(
-                        TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))
-                    timenote_in_label?.text =  utils.formatInTime(years.toLong(), months.toLong(), daysToSubstract.toLong(),hours, minutes, seconds, requireContext())
+                        TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished)
+                    )
+                    timenote_in_label?.text =  utils.formatInTime(
+                        years.toLong(),
+                        months.toLong(),
+                        daysToSubstract.toLong(),
+                        hours,
+                        minutes,
+                        seconds,
+                        requireContext()
+                    )
                 }
 
                 override fun onFinish() {
@@ -928,7 +1037,16 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             i.type = "text/plain"
             i.putExtra(
                 Intent.EXTRA_TEXT,
-                String.format(resources.getString(R.string.invitation_externe), userInfoDTO.userName, args.event?.title, utils.formatDateToShare(args.event?.startingAt!!), utils.formatHourToShare(args.event?.startingAt!!), url)
+                String.format(
+                    resources.getString(R.string.invitation_externe),
+                    userInfoDTO.userName,
+                    args.event?.title,
+                    utils.formatDateToShare(
+                        args.event?.startingAt!!
+                    ),
+                    utils.formatHourToShare(args.event?.startingAt!!),
+                    url
+                )
             )
             startActivityForResult(i, 111)
         }
@@ -981,11 +1099,18 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         }
     }
 
-    override fun onSearchClicked(userInfoDTO: UserInfoDTO) {
-        if (userInfoDTO.id == this.userInfoDTO.id) goToProfileLisner.goToProfile()
-        else findNavController().navigate(
-            HomeDirections.actionGlobalProfileElse(1).setUserInfoDTO(userInfoDTO)
-        )
+    override fun onSearchClicked(userInfoDTO: UserInfoDTO, isTagged: Boolean) {
+        if(isTagged){
+            val textUpdated = allTextEntered.replace("\\Q@$textEntered\\E\\b".toRegex(), "") + "@" +userInfoDTO.userName!!.replace("\\s".toRegex(), "").replace("[^A-Za-z0-9 ]".toRegex(), "") + " "
+            comments_edittext.setText(textUpdated)
+            comments_edittext.setSelection(comments_edittext.text.toString().length)
+            if(!listOfUsersTagged.contains(userInfoDTO)) listOfUsersTagged.add(userInfoDTO)
+        } else {
+            if (userInfoDTO.id == this.userInfoDTO.id) goToProfileLisner.goToProfile()
+            else findNavController().navigate(
+                HomeDirections.actionGlobalProfileElse(1).setUserInfoDTO(userInfoDTO)
+            )
+        }
     }
 
     override fun onUnfollow(id: String) {
@@ -1001,6 +1126,15 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
 
     override fun onRemove(userInfoDTO: UserInfoDTO, createGroup: Int?) {
         sendTo.remove(userInfoDTO.id!!)
+    }
+
+    override fun onUserTaggedClicked(userInfoDTO: UserInfoDTO?) {
+        if(userInfoDTO != null) findNavController().navigate(HomeDirections.actionGlobalProfileElse(1).setUserInfoDTO(userInfoDTO))
+        else Toast.makeText(
+            requireContext(),
+            getString(R.string.no_user_corresponding_to_mention),
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
 }

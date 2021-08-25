@@ -14,10 +14,9 @@ import android.view.WindowManager
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
-import com.google.android.material.tabs.TabLayoutMediator
 import com.dayzeeco.dayzee.R
-import com.dayzeeco.dayzee.adapter.SearchViewTopExplorePagerAdapter
 import com.dayzeeco.dayzee.adapter.SearchViewPeopleTagPagerAdapter
+import com.dayzeeco.dayzee.adapter.SearchViewTopExplorePagerAdapter
 import com.dayzeeco.dayzee.androidView.materialsearchbar.MaterialSearchBar
 import com.dayzeeco.dayzee.common.BaseThroughFragment
 import com.dayzeeco.dayzee.common.accessToken
@@ -26,7 +25,9 @@ import com.dayzeeco.dayzee.listeners.BackToHomeListener
 import com.dayzeeco.dayzee.listeners.RefreshPicBottomNavListener
 import com.dayzeeco.dayzee.viewModel.LoginViewModel
 import com.dayzeeco.dayzee.viewModel.SearchViewModel
+import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.android.synthetic.main.fragment_search.*
+
 
 class Search : BaseThroughFragment() {
 
@@ -52,8 +53,13 @@ class Search : BaseThroughFragment() {
         tokenId = prefs.getString(accessToken, null)
         loginViewModel.getAuthenticationState().observe(requireActivity(), {
             when (it) {
-                LoginViewModel.AuthenticationState.GUEST -> findNavController().popBackStack(R.id.search, false)
-                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(SearchDirections.actionGlobalNavigation())
+                LoginViewModel.AuthenticationState.GUEST -> findNavController().popBackStack(
+                    R.id.search,
+                    false
+                )
+                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(
+                    SearchDirections.actionGlobalNavigation()
+                )
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> {
                     tokenId = prefs.getString(accessToken, null)
                     findNavController().popBackStack(R.id.search, false)
@@ -81,13 +87,18 @@ class Search : BaseThroughFragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
         return getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_search)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if(!prefs.getString(accessToken, null).isNullOrBlank()) {
+
 
             searchBar.lastSuggestions = prefs.getStringSet(last_search_suggestions, setOf<String>())?.toMutableList()
 
@@ -119,10 +130,16 @@ class Search : BaseThroughFragment() {
 
             searchBar.addTextChangeListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {}
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    if(textEntered != s?.toString()) {
+                    if (textEntered != s?.toString()) {
                         textEntered = s?.toString() ?: ""
                         handler.removeMessages(TRIGGER_AUTO_COMPLETE)
                         handler.sendEmptyMessageDelayed(TRIGGER_AUTO_COMPLETE, AUTO_COMPLETE_DELAY)
@@ -169,8 +186,12 @@ class Search : BaseThroughFragment() {
 
     override fun onStop() {
         super.onStop()
-        prefs.edit().putStringSet(last_search_suggestions, (searchBar.lastSuggestions as MutableList<String>).toSet()).apply()
+        prefs.edit().putStringSet(
+            last_search_suggestions,
+            (searchBar.lastSuggestions as MutableList<String>).toSet()
+        ).apply()
     }
+
 
 
 }

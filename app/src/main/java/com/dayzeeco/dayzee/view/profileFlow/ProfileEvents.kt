@@ -332,7 +332,8 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
             timenoteInfoDTO,
             this,
             null,
-            null
+            null,
+            false
         )
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
@@ -380,7 +381,8 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
             this,
             null,
             sendTo,
-            null
+            null,
+            false
         )
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
@@ -557,7 +559,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
     }
 
 
-    override fun onSearchClicked(userInfoDTO: UserInfoDTO) {}
+    override fun onSearchClicked(userInfoDTO: UserInfoDTO, isTagged: Boolean) {}
     override fun onUnfollow(id: String) {
 
     }

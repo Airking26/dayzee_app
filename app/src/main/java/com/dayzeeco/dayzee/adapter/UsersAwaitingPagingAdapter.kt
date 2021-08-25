@@ -20,12 +20,13 @@ import kotlinx.android.synthetic.main.item_user_awaiting.view.*
 class UsersAwaitingPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>,
                                  val timenoteInfoDTO: TimenoteInfoDTO?,
                                  val searchPeopleListener: SearchPeopleListener,
-                                 val acceptDecline: AcceptDecline
+                                 val acceptDecline: AcceptDecline,
+                                 private val isTagged: Boolean
 )
     : PagingDataAdapter<UserInfoDTO, UsersAwaitingPagingAdapter.UserViewHolder>(diffCallback){
 
     interface SearchPeopleListener{
-        fun onSearchClicked(userInfoDTO: UserInfoDTO)
+        fun onSearchClicked(userInfoDTO: UserInfoDTO, isTagged: Boolean)
     }
 
     interface AcceptDecline{
@@ -38,7 +39,8 @@ class UsersAwaitingPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO
             userInfoDTO: UserInfoDTO?,
             searchPeopleListener: SearchPeopleListener,
             acceptDecline: AcceptDecline,
-            position: Int
+            position: Int,
+            isTagged: Boolean
         ) {
 
                 Glide
@@ -54,9 +56,9 @@ class UsersAwaitingPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO
                 itemView.givenName.visibility = View.VISIBLE
                 itemView.givenName.text = userInfoDTO?.givenName
             }
-            itemView.user_imageview.setOnClickListener { searchPeopleListener.onSearchClicked(userInfoDTO!!) }
-            itemView.name_user.setOnClickListener { searchPeopleListener.onSearchClicked(userInfoDTO!!) }
-            itemView.givenName.setOnClickListener { searchPeopleListener.onSearchClicked(userInfoDTO!!) }
+            itemView.user_imageview.setOnClickListener { searchPeopleListener.onSearchClicked(userInfoDTO!!, isTagged) }
+            itemView.name_user.setOnClickListener { searchPeopleListener.onSearchClicked(userInfoDTO!!, isTagged) }
+            itemView.givenName.setOnClickListener { searchPeopleListener.onSearchClicked(userInfoDTO!!, isTagged) }
             itemView.item_user_accept.setOnClickListener { acceptDecline.onAccept(userInfoDTO!!, position) }
             itemView.item_user_decline.setOnClickListener { acceptDecline.onDecline(userInfoDTO!!, position) }
         }
@@ -64,7 +66,7 @@ class UsersAwaitingPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO
     }
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-        holder.bindUser(getItem(position), searchPeopleListener, acceptDecline, position)
+        holder.bindUser(getItem(position), searchPeopleListener, acceptDecline, position, isTagged)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder =
