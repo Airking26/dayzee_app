@@ -10,5 +10,6 @@ data class CommentInfoDTO (
 	@SerializedName("description") val description : String,
 	@SerializedName("hashtags") val hashtags : List<String>?,
 	@SerializedName("likedBy") val likedBy : Int,
-	@SerializedName("tagged") val tagged: List<UserInfoDTO>?
+	@SerializedName("tagged") val tagged: List<UserInfoDTO>?,
+	@SerializedName("picture") val picture: String?
 )

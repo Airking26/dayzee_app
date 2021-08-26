@@ -20,5 +20,6 @@ data class CommentCreationDTO (
 	@SerializedName("timenote") val timenote : String,
 	@SerializedName("description") val description : String,
 	@SerializedName("hashtags") val hashtags : List<String>?,
-	@SerializedName("tagged") val tagged: List<String>?
+	@SerializedName("tagged") val tagged: List<String>?,
+	@SerializedName("picture") val picture: String?
 )

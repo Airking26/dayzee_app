@@ -27,7 +27,7 @@ class CommentPagingAdapter(
         parent: ViewGroup,
         viewType: Int
     ): CommentAdapter.CommentViewHolder =
-        CommentAdapter.CommentViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_comment, parent, false))
+        CommentAdapter.CommentViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_comment_pic, parent, false))
 }
 
 object CommentComparator : DiffUtil.ItemCallback<CommentInfoDTO>(){

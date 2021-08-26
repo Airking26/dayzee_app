@@ -65,6 +65,7 @@ import java.util.concurrent.TimeUnit
 
 class Settings : Fragment(), View.OnClickListener {
 
+    private var totalEventsCount: Int? = 0
     private val REQUEST_ACCOUNT_PICKER = 1000
     private val REQUEST_AUTHORIZATION = 1001
     private val REQUEST_GOOGLE_PLAY_SERVICES = 1002
@@ -84,6 +85,7 @@ class Settings : Fragment(), View.OnClickListener {
     private lateinit var userInfoDTO: UserInfoDTO
     private lateinit var onRefreshPicBottomNavListener: RefreshPicBottomNavListener
     private lateinit var map : MutableMap<String, String>
+    private var totalImported: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -293,6 +295,7 @@ class Settings : Fragment(), View.OnClickListener {
                         }
                     }
                 }.invokeOnCompletion {
+                    totalEventsCount = li?.items?.size
                     if(li != null && li?.items!= null && li?.items?.size!! > 0) loopThroughCalendar(li?.items?.iterator()!!)
                 }
             } catch (e : UserRecoverableAuthIOException) {
@@ -309,8 +312,8 @@ class Settings : Fragment(), View.OnClickListener {
                 val creationTimenoteDTO = CreationTimenoteDTO(
                     userInfoDTO.id!!,
                     listOf(),
-                    item.summary,
-                    item.description,
+                    item.summary ?: "",
+                    item.description ?: "",
                     listOf("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/toDL.jpg"),
                     null,
                     if(item.location != null) utils.getLocaFromAddress(requireActivity().applicationContext, item.location) else null,
@@ -324,28 +327,32 @@ class Settings : Fragment(), View.OnClickListener {
                     null
                 )
 
-                timenoteViewModel.createTimenote(tokenId!!, creationTimenoteDTO).observe(viewLifecycleOwner, androidx.lifecycle.Observer { rsp ->
-                    if (rsp.isSuccessful) {
-                        println(creationTimenoteDTO.title)
-                        map[item.id] = rsp.body()?.id!!
-                        loopThroughCalendar(mEventsList.iterator())
-                    } else if (rsp.code() == 401) {
-                        loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer { newToken ->
-                            tokenId = newToken
-                            timenoteViewModel.createTimenote(tokenId!!, creationTimenoteDTO).observe(viewLifecycleOwner, androidx.lifecycle.Observer { sdRsp ->
-                                if (sdRsp.isSuccessful) {
-                                    println(creationTimenoteDTO.title)
-                                    map[item.id] = rsp.body()?.id!!
-                                    loopThroughCalendar(mEventsList.iterator())
-                                }
+                timenoteViewModel.createTimenote(tokenId!!, creationTimenoteDTO).observe(viewLifecycleOwner,
+                    { rsp ->
+                        if (rsp.isSuccessful) {
+                            map[item.id] = rsp.body()?.id!!
+                            totalImported++
+                            loopThroughCalendar(mEventsList.iterator())
+                        }
+                        else if(rsp.code() == 400) loopThroughCalendar(mEventsList.iterator())
+                        else if (rsp.code() == 401) {
+                            loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer { newToken ->
+                                tokenId = newToken
+                                timenoteViewModel.createTimenote(tokenId!!, creationTimenoteDTO).observe(viewLifecycleOwner, androidx.lifecycle.Observer { sdRsp ->
+                                    if (sdRsp.isSuccessful) {
+                                        totalImported++
+                                        map[item.id] = rsp.body()?.id!!
+                                        loopThroughCalendar(mEventsList.iterator())
+                                    } else if(sdRsp.code() == 400) loopThroughCalendar(mEventsList.iterator())
+                                })
                             })
-                        })
-                    }
-                })
+                        }
+                    })
             } else {
                 loopThroughCalendar(mEventsList.iterator())
             }
         } else {
+            Toast.makeText(requireContext(), "$totalImported events from google calendar imported on $totalEventsCount total", Toast.LENGTH_SHORT).show()
             prefs.edit().putString(map_event_id_to_timenote, Gson().toJson(map)).apply()
             val data = workDataOf(user_id to userInfoDTO.id, token_id to tokenId)
             val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).setRequiresCharging(true).build()

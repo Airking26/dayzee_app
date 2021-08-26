@@ -144,8 +144,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/detailed_timenote_comments_rv"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    tools:listitem="@layout/item_comment" />
+                    android:layout_height="wrap_content" />
 
 
             </androidx.core.widget.NestedScrollView>
@@ -166,6 +165,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -174,9 +174,30 @@
         app:layout_anchor="@id/detailed_timenote_scc"
         app:layout_anchorGravity="bottom">
 
+        <ImageView
+            android:paddingStart="12dp"
+            android:src="@drawable/ic_outline_add_a_photo_24"
+            android:id="@+id/detailed_timenote_add_picture"
+            app:layout_constraintEnd_toStartOf="@+id/fragment_detailed_comment_ll"
+            app:layout_constraintBottom_toBottomOf="@id/fragment_detailed_comment_ll"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/fragment_detailed_comment_ll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <ProgressBar
+            android:visibility="gone"
+            android:id="@+id/detailed_timenote_add_picture_pb"
+            app:layout_constraintEnd_toStartOf="@+id/fragment_detailed_comment_ll"
+            app:layout_constraintBottom_toBottomOf="@id/fragment_detailed_comment_ll"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/fragment_detailed_comment_ll"
+            android:layout_width="24dp"
+            android:layout_height="24dp"/>
+
         <LinearLayout
             android:id="@+id/fragment_detailed_comment_ll"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="12dp"
             android:layout_marginTop="8dp"
@@ -186,7 +207,7 @@
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/detailed_timenote_add_picture"
             app:layout_constraintTop_toTopOf="parent">
 
             <EditText
@@ -212,5 +233,6 @@
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

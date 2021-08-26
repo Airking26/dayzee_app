@@ -17,11 +17,12 @@ import com.dayzeeco.dayzee.model.UserInfoDTO
 import java.util.*
 
 
-class TagHelper private constructor(
+class MentionHelperComment private constructor(
     private val mMentionWordColor: Int,
     private val listener: OnMentionClickListener,
     private val additionalMentionCharacters: List<Char>?,
-    private val resources: Resources
+    private val resources: Resources,
+    private val tagged: List<UserInfoDTO>?
 ) : ClickableForegroundColorSpanMention.OnMentionClickListener{
 
     private val mAdditionalMentionChars: MutableList<Char>
@@ -29,12 +30,12 @@ class TagHelper private constructor(
     private val mOnMentionClickListener: OnMentionClickListener?
 
     object Creator {
-        fun create(color: Int, listener: OnMentionClickListener, resources: Resources): TagHelper {
-            return TagHelper(color, listener, null, resources)
+        fun create(color: Int, listener: OnMentionClickListener, resources: Resources, tagged: List<UserInfoDTO>?): MentionHelperComment {
+            return MentionHelperComment(color, listener, null, resources, tagged)
         }
 
-        fun create(color: Int, listener: OnMentionClickListener, additionalMentionChars: List<Char>?,  resources: Resources): TagHelper {
-            return TagHelper(color, listener, additionalMentionChars, resources)
+        fun create(color: Int, listener: OnMentionClickListener, additionalMentionChars: List<Char>?,  resources: Resources, tagged: List<UserInfoDTO>?): MentionHelperComment {
+            return MentionHelperComment(color, listener, additionalMentionChars, resources, tagged)
         }
     }
 
@@ -79,7 +80,7 @@ class TagHelper private constructor(
             } else {
                 // hash tags are not clickable, no need to change these parameters
             }
-            setColorsToAllMentions(mTextView!!.text)
+            setColorsToAllMentions(mTextView!!.text, tagged)
         } else {
             throw RuntimeException("TextView is not null. You need to create a unique Mention Helper for every TextView")
         }
@@ -92,25 +93,24 @@ class TagHelper private constructor(
             CharacterStyle::class.java
         )
         for (span in spans) {
-            spannable.removeSpan(span)
+         //   spannable.removeSpan(span)
         }
-        setColorsToAllMentions(text)
+        setColorsToAllMentions(text, tagged)
     }
 
-    private fun setColorsToAllMentions(text: CharSequence) {
+    private fun setColorsToAllMentions(text: CharSequence, tagged: List<UserInfoDTO>?) {
         var startIndexOfNextHashSign: Int
         var index = 0
         while (index < text.length - 1) {
             val sign = text[index]
             val beforeSignNonValid = if(index > 0) text[index-1].isLetterOrDigit() && sign == '@' else false
-            var nextNotLetterDigitCharIndex = index + 1 // we assume it is next. if if was not changed by findNextValidMention // Char then index will be incremented by 1
-            if (sign == '@' && !beforeSignNonValid) {
-                    startIndexOfNextHashSign = index
-                    nextNotLetterDigitCharIndex = findNextValidMentionChar(text, startIndexOfNextHashSign)
-                    setColorForMentionToTheEnd(
-                        startIndexOfNextHashSign,
-                        nextNotLetterDigitCharIndex
-                    )
+            var nextNotLetterDigitCharIndex =
+                index + 1 // we assume it is next. if if was not changed by findNextValidMention // Char then index will be incremented by 1
+            if ((sign == '@' && !beforeSignNonValid) || (sign == '@' && index == 0)) {
+                startIndexOfNextHashSign = index
+                nextNotLetterDigitCharIndex =
+                    findNextValidMentionChar(text, startIndexOfNextHashSign)
+                setColorForMentionToTheEnd(startIndexOfNextHashSign, nextNotLetterDigitCharIndex, tagged, text)
             }
             index = nextNotLetterDigitCharIndex
         }
@@ -134,7 +134,12 @@ class TagHelper private constructor(
         return nonLetterDigitCharIndex
     }
 
-    private fun setColorForMentionToTheEnd(startIndex: Int, nextNotLetterDigitCharIndex: Int) {
+    private fun setColorForMentionToTheEnd(
+        startIndex: Int,
+        nextNotLetterDigitCharIndex: Int,
+        tagged: List<UserInfoDTO>?,
+        text: CharSequence
+    ) {
         val s = mTextView!!.text as Spannable
         val span: CharacterStyle
         if (mOnMentionClickListener != null) {
@@ -143,10 +148,20 @@ class TagHelper private constructor(
             // no need for clickable span because it is messing with selection when click
             span = ForegroundColorSpan(resources.getColor(R.color.colorText))
         }
-        s.setSpan(span, startIndex, nextNotLetterDigitCharIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        if(tagged?.filter { userInfoDTO ->
+                "@" + userInfoDTO.userName?.replace("\\s".toRegex(), "")?.replace("[^A-Za-z0-9 ]".toRegex(), "") == text.substring(
+                    startIndex,
+                    nextNotLetterDigitCharIndex
+                )
+            }?.isNotEmpty()!!)
+                s.setSpan(span, startIndex, nextNotLetterDigitCharIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
     }
 
-    private fun setFontForMentionToTheEnd(startIndex: Int, nextNotLetterDigitCharIndex: Int) {
+
+    private fun setFontForMentionToTheEnd(
+        startIndex: Int,
+        nextNotLetterDigitCharIndex: Int
+    ) {
         val m = Typeface.create("sans-serif", Typeface.BOLD_ITALIC)
         val bold = ItemTimenoteRecentAdapter.CustomTypefaceSpan(m)
         val span = SpannableStringBuilder(mTextView?.text)
@@ -176,7 +191,8 @@ class TagHelper private constructor(
         return ArrayList(Mentions)
     }
 
-    val allMentions: List<String> get() = getAllMentions(false)
+    val allMentions: List<String>
+        get() = getAllMentions(false)
 
     override fun onMentionClicked(mention: String?) {
         mOnMentionClickListener!!.onMentionClicked(mention)

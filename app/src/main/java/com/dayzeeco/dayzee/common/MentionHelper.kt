@@ -93,7 +93,7 @@ class MentionHelper private constructor(
             CharacterStyle::class.java
         )
         for (span in spans) {
-            //spannable.removeSpan(span)
+            spannable.removeSpan(span)
         }
         setColorsToAllMentions(text, tagged)
     }
@@ -153,7 +153,8 @@ class MentionHelper private constructor(
                     startIndex,
                     nextNotLetterDigitCharIndex
                 )
-            }?.isNotEmpty()!!) s.setSpan(span, startIndex, nextNotLetterDigitCharIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            }?.isNotEmpty()!!)
+                s.setSpan(span, startIndex, nextNotLetterDigitCharIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
     }
 
 

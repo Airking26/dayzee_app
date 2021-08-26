@@ -121,7 +121,6 @@
         android:layout_height="0dp">
 
         <androidx.recyclerview.widget.RecyclerView
-            tools:listitem="@layout/item_comment"
             android:id="@+id/detailed_timenote_comments_rv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
@@ -140,6 +139,30 @@
         app:layout_constraintTop_toBottomOf="@id/detailed_timenote_ll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
+    <ImageView
+        android:layout_marginBottom="8dp"
+        android:paddingStart="12dp"
+        android:src="@drawable/ic_outline_add_a_photo_24"
+        android:id="@+id/detailed_timenote_add_picture"
+        app:layout_constraintEnd_toStartOf="@+id/fragment_detailed_comment_ll"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+
+    <ProgressBar
+        android:visibility="gone"
+        android:id="@+id/detailed_timenote_add_picture_pb"
+        app:layout_constraintEnd_toStartOf="@+id/fragment_detailed_comment_ll"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="24dp"
+        android:layout_height="24dp"/>
+
 
     <LinearLayout
         android:id="@+id/fragment_detailed_comment_ll"
@@ -175,4 +198,5 @@
             android:layout_height="wrap_content"/>
 
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

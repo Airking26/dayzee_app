@@ -12,9 +12,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.common.MentionHelper
+import com.dayzeeco.dayzee.common.MentionHelperComment
 import com.dayzeeco.dayzee.model.CommentInfoDTO
 import com.dayzeeco.dayzee.model.UserInfoDTO
-import kotlinx.android.synthetic.main.item_comment.view.*
+import kotlinx.android.synthetic.main.item_comment_pic.view.*
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.format.DateTimeFormatter
@@ -44,7 +45,7 @@ class CommentAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentViewHolder =
         CommentViewHolder(
             LayoutInflater.from(parent.context).inflate(
-                R.layout.item_comment,
+                R.layout.item_comment_pic,
                 parent,
                 false
             )
@@ -71,6 +72,12 @@ class CommentAdapter(
                 .placeholder(R.drawable.circle_pic)
                 .into(itemView.comment_user_pic_imageview)
 
+            if(commentModel.picture.isNullOrBlank()) itemView.comment_pic?.visibility = View.GONE
+            else Glide
+                .with(itemView)
+                .load(commentModel.picture)
+                .into(itemView.comment_pic)
+
             val nameAndComment =
                 commentModel.createdBy.userName + " " + commentModel.description
 
@@ -93,9 +100,9 @@ class CommentAdapter(
                         )
                         itemView.comment_username_comment.text = i
 
-            val mentionHelper = MentionHelper.Creator.create(
+            val mentionHelper = MentionHelperComment.Creator.create(
                 R.color.colorAccent,
-                object : MentionHelper.OnMentionClickListener {
+                object : MentionHelperComment.OnMentionClickListener {
                     override fun onMentionClicked(mention: String?) {
                         val user: UserInfoDTO? = try {
                             commentModel.tagged?.single { userInfoDTO -> userInfoDTO.userName?.replace("\\s".toRegex(), "")?.replace("[^A-Za-z0-9 ]".toRegex(), "") == mention }

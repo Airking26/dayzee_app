@@ -375,6 +375,8 @@
     <string name="for_kids">For kids</string>
     <string name="no_user_corresponding_to_mention">Aucun utilisateur correspondant a cette mention</string>
     <string name="pending">En Attente</string>
+    <string name="picture_attached_to_comment">Photo attaché au commentaire</string>
+    <string name="replace">Remplacer</string>
 
     <plurals name="time_minutes_comment">
         <item quantity="one">%1$d minute</item>

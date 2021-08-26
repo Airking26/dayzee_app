@@ -141,7 +141,6 @@
                 android:layout_height="wrap_content">
 
                 <androidx.recyclerview.widget.RecyclerView
-                    tools:listitem="@layout/item_comment"
                     android:id="@+id/detailed_timenote_comments_rv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
@@ -166,47 +165,68 @@
         android:layout_height="match_parent"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:background="@color/colorBackground"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
-        app:layout_anchorGravity="bottom"
-        app:layout_anchor="@id/detailed_timenote_scc">
+        android:background="@color/colorBackground"
+        app:layout_anchor="@id/detailed_timenote_scc"
+        app:layout_anchorGravity="bottom">
+
+        <ImageView
+            android:paddingStart="12dp"
+            android:src="@drawable/ic_outline_add_a_photo_24"
+            android:id="@+id/detailed_timenote_add_picture"
+            app:layout_constraintEnd_toStartOf="@+id/fragment_detailed_comment_ll"
+            app:layout_constraintBottom_toBottomOf="@id/fragment_detailed_comment_ll"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/fragment_detailed_comment_ll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <ProgressBar
+            android:visibility="gone"
+            android:id="@+id/detailed_timenote_add_picture_pb"
+            app:layout_constraintEnd_toStartOf="@+id/fragment_detailed_comment_ll"
+            app:layout_constraintBottom_toBottomOf="@id/fragment_detailed_comment_ll"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/fragment_detailed_comment_ll"
+            android:layout_width="24dp"
+            android:layout_height="24dp"/>
 
         <LinearLayout
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="8dp"
             android:id="@+id/fragment_detailed_comment_ll"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="8dp"
             android:layout_marginBottom="12dp"
+            android:background="@drawable/circle_black_stroke_background_comment"
             android:gravity="center"
             android:orientation="horizontal"
-            android:background="@drawable/circle_black_stroke_background_comment"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/detailed_timenote_add_picture"
+            app:layout_constraintTop_toTopOf="parent">
 
             <EditText
-                android:background="@color/colorBackground"
-                android:layout_marginStart="12dp"
+                android:id="@+id/comments_edittext"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginVertical="12dp"
+                android:layout_marginStart="12dp"
+                android:layout_weight="10"
+                android:background="@color/colorBackground"
                 android:fontFamily="sans-serif-light"
-                android:textSize="13sp"
                 android:hint="@string/add_a_comment"
                 android:maxLines="2"
-                android:id="@+id/comments_edittext"
-                android:layout_weight="10"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"/>
+                android:textSize="13sp" />
 
             <ImageView
                 android:id="@+id/timenote_detailed_send_comment"
-                android:src="@drawable/ic_round_send_24"
-                android:layout_weight="1"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/ic_round_send_24" />
 
         </LinearLayout>
 

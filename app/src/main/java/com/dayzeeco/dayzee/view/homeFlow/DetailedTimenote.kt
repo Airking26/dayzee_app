@@ -1,9 +1,15 @@
 package com.dayzeeco.dayzee.view.homeFlow
 
+import android.Manifest
+import android.app.Activity
+import android.content.ContentValues
 import android.content.Context
 import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.content.res.ColorStateList
+import android.graphics.PorterDuff
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
@@ -11,11 +17,14 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
 import android.text.*
+import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -35,14 +44,26 @@ import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
+import com.amazonaws.auth.CognitoCachingCredentialsProvider
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
+import com.amazonaws.regions.Regions
+import com.amazonaws.services.s3.AmazonS3Client
+import com.amazonaws.services.s3.model.CannedAccessControlList
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.*
+import com.dayzeeco.dayzee.androidView.instaLike.GlideEngine
 import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.listeners.GoToProfile
 import com.dayzeeco.dayzee.model.*
 import com.dayzeeco.dayzee.viewModel.*
+import com.dayzeeco.picture_library.config.PictureMimeType
+import com.dayzeeco.picture_library.entity.LocalMedia
+import com.dayzeeco.picture_library.instagram.InsGallery
+import com.dayzeeco.picture_library.listener.OnResultCallbackListener
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.branch.indexing.BranchUniversalObject
@@ -52,7 +73,6 @@ import io.branch.referral.util.LinkProperties
 import kotlinx.android.synthetic.main.fragment_detailed_fragment.*
 import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.friends_search_cl.view.*
-import kotlinx.android.synthetic.main.item_comment.view.*
 import kotlinx.android.synthetic.main.item_last_request.view.*
 import kotlinx.android.synthetic.main.item_profile_timenote_list_style.view.*
 import kotlinx.android.synthetic.main.item_timenote.view.*
@@ -60,6 +80,7 @@ import kotlinx.android.synthetic.main.item_timenote_root.*
 import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.io.File
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.time.Duration
@@ -75,7 +96,9 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     UsersShareWithPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.AddToSend,
     CommentAdapter.UserTaggedListener {
 
-    private lateinit var mentionHelper: TagHelper
+    private var isLoading = false
+    private lateinit var mentionHelper: MentionHelper
+    private var imagesUrl: String? = null
     private var listOfUsersTagged : MutableList<UserInfoDTO> = mutableListOf()
     private var allTextEntered: String = ""
     private lateinit var userAdapter: UsersPagingAdapter
@@ -89,6 +112,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     private val AUTO_COMPLETE_DELAY: Long = 200
     private lateinit var userInfoDTO: UserInfoDTO
     private lateinit var prefs: SharedPreferences
+    private lateinit var am : AmazonS3Client
     private lateinit var commentAdapter: CommentPagingAdapter
     private val commentViewModel: CommentViewModel by activityViewModels()
     private val searchViewModel: SearchViewModel by activityViewModels()
@@ -99,7 +123,12 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     private val args: DetailedTimenoteArgs by navArgs()
     private val utils = Utils()
     private var timer : CountDownTimer? = null
+    private lateinit var addPicIv: ImageView
     private var textEntered : String = ""
+    val PERMISSIONS_STORAGE = arrayOf(
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE
+    )
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -125,9 +154,17 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        addPicIv = detailed_timenote_add_picture
         imm = (requireActivity().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager)!!
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
         userInfoDTO = Gson().fromJson(prefs.getString(user_info_dto, ""), typeUserInfo)
+
+        am = AmazonS3Client(
+            CognitoCachingCredentialsProvider(
+                requireContext(),
+                identity_pool_id, // ID du groupe d'identités
+                Regions.US_EAST_1 // Région
+            ))
 
         if(args.event?.location != null) {
             detailed_timenote_address.visibility = View.VISIBLE
@@ -190,7 +227,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                 if(s.toString().isNotEmpty()){
                     allTextEntered = s.toString()
                     val textValid = (s.toString().substringAfterLast(" @").isNotEmpty() && s.toString().substringAfterLast(" @") != s.toString() && s.toString().takeLast(1) != " " && !s.toString().substringAfterLast(" @").contains(" "))
-                    val textValidFirst = (s.toString()[0] == '@' && s.toString().substringAfterLast("@").isNotEmpty() && s.toString().substringAfterLast("@") != s.toString() && s.toString().takeLast(1) != " ")
+                    val textValidFirst = (s.toString()[0] == '@' && s.toString().substringAfterLast("@").isNotEmpty() && s.toString().substringAfterLast("@") != s.toString() && s.toString().takeLast(1) != " " && !s.toString().substringAfterLast("@").contains(" "))
                     when {
                         textValid -> {
                             textEntered = s.toString().substringAfterLast(" @")
@@ -210,14 +247,14 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             override fun afterTextChanged(s: Editable?) {}
         })
 
-        mentionHelper = TagHelper.Creator.create(
+        mentionHelper = MentionHelper.Creator.create(
             R.color.colorAccent,
-            object : TagHelper.OnMentionClickListener {
+            object : MentionHelper.OnMentionClickListener {
                 override fun onMentionClicked(mention: String?) {
-                    //userTaggedListener.onUserTaggedClicked(commentModel.tagged?.single { userInfoDTO -> userInfoDTO.userName == mention })
                 } },
             null,
-            resources
+            resources,
+            listOfUsersTagged
         )
         mentionHelper.handle(comments_edittext)
 
@@ -570,6 +607,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         detailed_timenote_username.setOnClickListener(this)
         detailed_timenote_pic_user.setOnClickListener(this)
         detailed_timenote_address.setOnClickListener(this)
+        detailed_timenote_add_picture.setOnClickListener(this)
 
         detailed_timenote_btn_back.setOnClickListener { findNavController().popBackStack() }
     }
@@ -578,6 +616,21 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onClick(v: View?) {
         when (v) {
+            addPicIv -> {
+                if(imagesUrl.isNullOrBlank()) openGallery()
+                else  MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                    title(text = getString(R.string.picture_attached_to_comment))
+                    listItems(items= listOf(getString(R.string.delete), getString(R.string.replace))){ dialog, index, text ->
+                        when(text.toString()){
+                            getString(R.string.delete) -> {
+                                imagesUrl = null
+                                addPicIv.setImageDrawable(resources.getDrawable(R.drawable.ic_outline_add_a_photo_24))
+                            }
+                            getString(R.string.replace) -> openGallery()
+                        }
+                    }
+                }
+            }
             detailed_timenote_address -> findNavController().navigate(
                 DetailedTimenoteDirections.actionGlobalTimenoteAddress(
                     args.event
@@ -608,7 +661,8 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                         userInfoDTO.id!!,
                         args.event?.id!!,
                         comments_edittext.text.toString(),
-                        listOf(), listOfUsersTagged.filter { userInfoDTO -> mentionHelper.allMentions.contains(userInfoDTO.userName?.replace("\\s".toRegex(), "")?.replace("[^A-Za-z0-9 ]".toRegex(), "") ) }.map { userInfoDTO -> userInfoDTO.id!! }
+                        listOf(), listOfUsersTagged.filter { userInfoDTO -> mentionHelper.allMentions.contains(userInfoDTO.userName?.replace("\\s".toRegex(), "")?.replace("[^A-Za-z0-9 ]".toRegex(), "") ) }.map { userInfoDTO -> userInfoDTO.id!! },
+                        imagesUrl
                     )
                 ).observe(viewLifecycleOwner, {
                     if (it.isSuccessful) {
@@ -810,6 +864,100 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (imagesUrl.isNullOrBlank() && !isLoading){
+            addPicIv.visibility = View.VISIBLE
+            detailed_timenote_add_picture_pb.visibility = View.GONE
+            addPicIv.setImageDrawable(resources.getDrawable(R.drawable.ic_outline_add_a_photo_24))
+        }
+        else if(!imagesUrl.isNullOrBlank() && !isLoading) {
+            addPicIv.visibility = View.VISIBLE
+            detailed_timenote_add_picture_pb.visibility = View.GONE
+            addPicIv.setImageDrawable(resources.getDrawable(R.drawable.ic_baseline_check_24))
+        }
+    }
+
+    private fun openGallery(){
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED
+            && ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED) {
+
+            detailed_timenote_add_picture.visibility = View.INVISIBLE
+            detailed_timenote_add_picture_pb.visibility = View.VISIBLE
+
+            InsGallery
+                .openGallery(
+                    requireActivity(),
+                    GlideEngine.createGlideEngine(),
+                    object : OnResultCallbackListener<LocalMedia> {
+                        override fun onResult(result: MutableList<LocalMedia>?) {
+                            for (media in result!!) {
+                                var path: String =
+                                    if (media.isCut && !media.isCompressed) {
+                                        media.cutPath
+                                    } else if (media.isCompressed || media.isCut && media.isCompressed) {
+                                        media.compressPath
+                                    } else if (PictureMimeType.isHasVideo(media.mimeType) && !TextUtils.isEmpty(
+                                            media.coverPath
+                                        )
+                                    ) {
+                                        media.coverPath
+                                    } else {
+                                        media.path
+                                    }
+                                ImageCompressor.compressBitmap(requireContext(), File(path)) {
+                                    isLoading = true
+                                    pushPic(it)
+                                }
+                            }
+                        }
+
+                        override fun onCancel() {
+
+                        }
+
+                    }, 1)
+        } else requestPermissions(PERMISSIONS_STORAGE, 2)
+    }
+
+    private fun pushPic(file: File){
+        val transferUtiliy = TransferUtility(am, requireContext())
+        val key = "timenote/${UUID.randomUUID().mostSignificantBits}"
+        val transferObserver = transferUtiliy.upload(
+            bucket_dayzee_dev_image, key,
+            file, CannedAccessControlList.Private
+        )
+        transferObserver.setTransferListener(object : TransferListener {
+            override fun onStateChanged(id: Int, state: TransferState?) {
+                Log.d(ContentValues.TAG, "onStateChanged: ${state?.name}")
+                if (state == TransferState.COMPLETED) {
+                    isLoading = false
+                    detailed_timenote_add_picture_pb.visibility = View.GONE
+                    detailed_timenote_add_picture.setImageDrawable(resources.getDrawable(R.drawable.ic_baseline_check_24))
+                    detailed_timenote_add_picture.visibility = View.VISIBLE
+                    imagesUrl = am.getResourceUrl(bucket_dayzee_dev_image, key).toString()
+                }
+
+            }
+
+            override fun onProgressChanged(id: Int, bytesCurrent: Long, bytesTotal: Long) {
+                Log.d(ContentValues.TAG, "onProgressChanged: ")
+            }
+
+            override fun onError(id: Int, ex: java.lang.Exception?) {
+                Log.d(ContentValues.TAG, "onError: ${ex?.message}")
+                Toast.makeText(requireContext(), ex?.message, Toast.LENGTH_LONG).show()
+            }
+
+        })
+
+    }
 
     @ExperimentalTime
     @RequiresApi(Build.VERSION_CODES.O)
@@ -1102,9 +1250,9 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     override fun onSearchClicked(userInfoDTO: UserInfoDTO, isTagged: Boolean) {
         if(isTagged){
             val textUpdated = allTextEntered.replace("\\Q@$textEntered\\E\\b".toRegex(), "") + "@" +userInfoDTO.userName!!.replace("\\s".toRegex(), "").replace("[^A-Za-z0-9 ]".toRegex(), "") + " "
+            if(!listOfUsersTagged.contains(userInfoDTO)) listOfUsersTagged.add(userInfoDTO)
             comments_edittext.setText(textUpdated)
             comments_edittext.setSelection(comments_edittext.text.toString().length)
-            if(!listOfUsersTagged.contains(userInfoDTO)) listOfUsersTagged.add(userInfoDTO)
         } else {
             if (userInfoDTO.id == this.userInfoDTO.id) goToProfileLisner.goToProfile()
             else findNavController().navigate(
@@ -1135,6 +1283,27 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             getString(R.string.no_user_corresponding_to_mention),
             Toast.LENGTH_SHORT
         ).show()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if(requestCode == 2){
+            if (resultCode == Activity.RESULT_OK){
+                openGallery()
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if(requestCode == 2){
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                openGallery()
+            }
+        }
     }
 
 }
