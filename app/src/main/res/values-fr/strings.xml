@@ -370,6 +370,7 @@
     <string name="alarm_updated">Alarme Modifiée</string>
     <string name="hided">Masquée</string>
     <string name="crypto">Crypto</string>
+    <string name="total_events_retrieve_google_calendar">%1$d évènements ont été importés à partir de Google Calendar sur %2$d en tout (%3$d déjà importés)</string>
     <string name="invitation_externe">%1$s vous a invité à : %2$s le %3$s à %4$s \n %5$s</string>
     <string name="profile_externe">%1$s a partagé un profil : %2$s \n %3$s</string>
     <string name="for_kids">For kids</string>

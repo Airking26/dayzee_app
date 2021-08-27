@@ -286,7 +286,7 @@
                 android:layout_marginTop="8dp"
                 android:id="@+id/settings_synchro_cl"
                 android:background="@color/colorElevated"
-                android:paddingHorizontal="16dp"
+                android:padding="16dp"
                 android:paddingVertical="8dp"
                 app:layout_constraintTop_toBottomOf="@id/settings_synchro_label"
                 app:layout_constraintStart_toStartOf="parent"
@@ -305,13 +305,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
-                <com.google.android.material.switchmaterial.SwitchMaterial
-                    android:id="@+id/settings_switch_account_synchro_google"
+                <ProgressBar
+                    android:visibility="gone"
+                    android:id="@+id/settings_switch_account_synchro_google_pb"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

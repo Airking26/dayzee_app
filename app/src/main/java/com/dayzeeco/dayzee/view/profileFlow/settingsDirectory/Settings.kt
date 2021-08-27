@@ -65,6 +65,7 @@ import java.util.concurrent.TimeUnit
 
 class Settings : Fragment(), View.OnClickListener {
 
+    private var sizeAlreadyImported: Int = 0
     private var totalEventsCount: Int? = 0
     private val REQUEST_ACCOUNT_PICKER = 1000
     private val REQUEST_AUTHORIZATION = 1001
@@ -110,6 +111,7 @@ class Settings : Fragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         map = Gson().fromJson(prefs.getString(map_event_id_to_timenote, null), object : TypeToken<MutableMap<String, String>>() {}.type) ?: mutableMapOf()
+        sizeAlreadyImported = map.size
         credential = GoogleAccountCredential.usingOAuth2(requireContext(), listOf(CalendarScopes.CALENDAR_READONLY))
             .setBackOff(ExponentialBackOff())
             .setSelectedAccountName(prefs.getString(gmail, null))
@@ -127,8 +129,7 @@ class Settings : Fragment(), View.OnClickListener {
         }
 
         profileModifyData = ProfileModifyData(requireContext())
-        settings_switch_account_synchro_google.isChecked = prefs.getBoolean(
-            google_calendar_synchronized, false)
+        //settings_switch_account_synchro_google.isChecked = prefs.getBoolean(google_calendar_synchronized, false)
 
         prefs.stringLiveData(user_info_dto, Gson().toJson(profileModifyData.loadProfileModifyModel())).observe(viewLifecycleOwner, Observer {
             val type: Type = object : TypeToken<UpdateUserInfoDTO?>() {}.type
@@ -177,21 +178,24 @@ class Settings : Fragment(), View.OnClickListener {
         profile_settings_disconnect.setOnClickListener(this)
         profile_settings_asked_sent.setOnClickListener(this)
         profile_settings_awaiting.setOnClickListener(this)
+        settings_synchro_cl.setOnClickListener(this)
         profile_settings_switch_account_status.setOnCheckedChangeListener { _, isChecked ->
             if(isChecked) profileModifyData.setStatusAccount(1)
             else profileModifyData.setStatusAccount(0)
         }
-        settings_switch_account_synchro_google.setOnCheckedChangeListener { _, isChecked ->
+
+        /*settings_switch_account_synchro_google.setOnCheckedChangeListener { _, isChecked ->
             prefs.edit().putBoolean(google_calendar_synchronized, isChecked).apply()
             settings_switch_account_synchro_google.isChecked = isChecked
             if(isChecked) chooseAccount()
             else WorkManager.getInstance(requireContext()).cancelUniqueWork(
                 synchronize_google_calendar_worker)
-        }
+        }*/
     }
 
     override fun onClick(v: View?) {
         when(v) {
+            settings_synchro_cl -> chooseAccount()
             profile_settings_notification_manager -> findNavController().navigate(SettingsDirections.actionSettingsToNotificationManager())
             profile_settings_edit_personnal_infos -> findNavController().navigate(SettingsDirections.actionGlobalProfilModify(false, null))
             profile_settings_date_format -> MaterialDialog(
@@ -286,6 +290,7 @@ class Settings : Fragment(), View.OnClickListener {
         } else {
             var li : Events? = null
             try {
+                settings_switch_account_synchro_google_pb.visibility = View.VISIBLE
                 lifecycleScope.launch {
                     withContext(Dispatchers.IO){
                         try {
@@ -352,13 +357,14 @@ class Settings : Fragment(), View.OnClickListener {
                 loopThroughCalendar(mEventsList.iterator())
             }
         } else {
-            Toast.makeText(requireContext(), "$totalImported events from google calendar imported on $totalEventsCount total", Toast.LENGTH_SHORT).show()
+            settings_switch_account_synchro_google_pb.visibility = View.GONE
+            Toast.makeText(requireContext(), if(sizeAlreadyImported == 0) String.format(resources.getString(R.string.total_events_retrieve_google_calendar, totalImported, totalEventsCount, sizeAlreadyImported)).split("(")[0] else String.format(resources.getString(R.string.total_events_retrieve_google_calendar, totalImported, totalEventsCount, sizeAlreadyImported)), Toast.LENGTH_LONG).show()
             prefs.edit().putString(map_event_id_to_timenote, Gson().toJson(map)).apply()
-            val data = workDataOf(user_id to userInfoDTO.id, token_id to tokenId)
+            /*val data = workDataOf(user_id to userInfoDTO.id, token_id to tokenId)
             val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).setRequiresCharging(true).build()
             val worker = PeriodicWorkRequestBuilder<SynchronizeGoogleCalendarWorker>(6, TimeUnit.HOURS).setConstraints(constraints).setInputData(data).build()
             WorkManager.getInstance(requireContext()).enqueueUniquePeriodicWork(
-                synchronize_google_calendar_worker, ExistingPeriodicWorkPolicy.REPLACE ,worker)
+                synchronize_google_calendar_worker, ExistingPeriodicWorkPolicy.REPLACE ,worker)*/
         }
     }
 

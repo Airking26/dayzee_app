@@ -351,6 +351,7 @@
     <string name="saved_by_thousands">Saved by %1$s and thousands of others</string>
     <string name="saved_by_millions">Saved by %1$s and millions of others</string>
     <string name="saved_by_one_and_other">Saved by %1$s and %2$d others</string>
+    <string name="total_events_retrieve_google_calendar">%1$d events from Google Calendar have been imported on %2$d total (%3$d already imported)</string>
     <string name="everyone">Everyone</string>
     <string name="groups">Groups</string>
     <string name="shared">Shared</string>

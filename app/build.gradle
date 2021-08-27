@@ -120,6 +120,7 @@ dependencies {
     implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
 
     implementation project(':picture_library')
+    implementation 'com.github.stfalcon:stfalcon-imageviewer:1.0.1'
 
     implementation 'com.google.android.gms:play-services-auth:19.0.0'
     implementation 'pub.devrel:easypermissions:0.3.0'

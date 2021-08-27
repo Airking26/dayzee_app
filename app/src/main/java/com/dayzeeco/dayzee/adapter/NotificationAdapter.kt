@@ -58,6 +58,9 @@ class NotificationAdapter(
             if(notification.type == TypeOfNotification.ASKEDTOFOLLOW.ordinal){
                 itemView.notification_item_user_accept.visibility =View.VISIBLE
                 itemView.notification_item_user_decline.visibility =  View.VISIBLE
+            } else {
+                itemView.notification_item_user_accept.visibility =View.GONE
+                itemView.notification_item_user_decline.visibility =  View.GONE
             }
 
             if(!notification.hasBeenRead){

@@ -665,17 +665,45 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                         imagesUrl
                     )
                 ).observe(viewLifecycleOwner, {
-                    if (it.isSuccessful) {
-                        comments_edittext.clearFocus()
+                    if(it.code() == 401){
+                        authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { newAccessToken ->
+                            tokenId = newAccessToken
+                            commentViewModel.postComment(tokenId!!, CommentCreationDTO(userInfoDTO.id!!, args.event?.id!!, comments_edittext.text.toString(), listOf(), listOfUsersTagged.filter { userInfoDTO -> mentionHelper.allMentions.contains(userInfoDTO.userName?.replace("\\s".toRegex(), "")?.replace("[^A-Za-z0-9 ]".toRegex(), "") ) }.map { userInfoDTO -> userInfoDTO.id!! }, imagesUrl)).observe(viewLifecycleOwner, {
+                                newReq -> if(newReq.isSuccessful) {
+                          comments_edittext.clearFocus()
                         imm.hideSoftInputFromWindow(comments_edittext.windowToken, 0)
                         comments_edittext.text.clear()
+                        imagesUrl = null
+                                addPicIv.setImageDrawable(resources.getDrawable(R.drawable.ic_outline_add_a_photo_24))
 
-                        lifecycleScope.launch {
+                                commentAdapter.refresh()
+                                commentAdapter.notifyDataSetChanged()
+
+                                /*lifecycleScope.launch {
                             commentViewModel.getComments(tokenId!!, args.event?.id!!, prefs)
                                 .collectLatest { data ->
                                     commentAdapter.submitData(data)
                                 }
-                        }
+                        }*/
+                            }
+                            })
+                        })
+                    }
+                    if (it.isSuccessful) {
+                        comments_edittext.clearFocus()
+                        imm.hideSoftInputFromWindow(comments_edittext.windowToken, 0)
+                        comments_edittext.text.clear()
+                        imagesUrl = null
+                        addPicIv.setImageDrawable(resources.getDrawable(R.drawable.ic_outline_add_a_photo_24))
+                        commentAdapter.refresh()
+                        commentAdapter.notifyDataSetChanged()
+
+                        /*lifecycleScope.launch {
+                            commentViewModel.getComments(tokenId!!, args.event?.id!!, prefs)
+                                .collectLatest { data ->
+                                    commentAdapter.submitData(data)
+                                }
+                        }*/
                     }
                 })}
             timenote_share -> {

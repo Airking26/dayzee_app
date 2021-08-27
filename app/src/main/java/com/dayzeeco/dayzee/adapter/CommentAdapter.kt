@@ -1,12 +1,14 @@
 package com.dayzeeco.dayzee.adapter
 
 import android.graphics.Typeface
+import android.media.Image
 import android.os.Build
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -15,6 +17,7 @@ import com.dayzeeco.dayzee.common.MentionHelper
 import com.dayzeeco.dayzee.common.MentionHelperComment
 import com.dayzeeco.dayzee.model.CommentInfoDTO
 import com.dayzeeco.dayzee.model.UserInfoDTO
+import com.stfalcon.imageviewer.StfalconImageViewer
 import kotlinx.android.synthetic.main.item_comment_pic.view.*
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -77,6 +80,18 @@ class CommentAdapter(
                 .with(itemView)
                 .load(commentModel.picture)
                 .into(itemView.comment_pic)
+
+
+            itemView.comment_pic.setOnClickListener {
+                StfalconImageViewer.Builder(itemView.context, listOf(commentModel)){ view, image ->
+                    Glide
+                        .with(itemView)
+                        .load(image.picture)
+                        .into(view)
+                }.withBackgroundColor(itemView.resources.getColor(R.color.places_text_black_alpha_87))
+                    .show()
+            }
+
 
             val nameAndComment =
                 commentModel.createdBy.userName + " " + commentModel.description
