@@ -142,6 +142,7 @@
                 app:layout_constraintTop_toBottomOf="@id/timenote_root">
 
                 <androidx.recyclerview.widget.RecyclerView
+                    tools:listitem="@layout/item_comment_pic"
                     android:id="@+id/detailed_timenote_comments_rv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -167,12 +168,13 @@
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:background="@color/colorBackground"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
-        android:background="@color/colorBackground"
         app:layout_anchor="@id/detailed_timenote_scc"
         app:layout_anchorGravity="bottom">
+
 
         <ImageView
             android:paddingStart="12dp"
@@ -184,6 +186,17 @@
             app:layout_constraintTop_toTopOf="@id/fragment_detailed_comment_ll"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
+
+        <ImageView
+            android:visibility="gone"
+            android:paddingHorizontal="8dp"
+            android:id="@+id/detailed_timenote_picture_prev"
+            app:layout_constraintEnd_toStartOf="@+id/fragment_detailed_comment_ll"
+            app:layout_constraintBottom_toBottomOf="@id/fragment_detailed_comment_ll"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/fragment_detailed_comment_ll"
+            android:layout_width="48dp"
+            android:layout_height="48dp"/>
 
         <ProgressBar
             android:visibility="gone"
@@ -205,10 +218,11 @@
             android:background="@drawable/circle_black_stroke_background_comment"
             android:gravity="center"
             android:orientation="horizontal"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/detailed_timenote_add_picture"
-            app:layout_constraintTop_toTopOf="parent">
+            >
 
             <EditText
                 android:id="@+id/comments_edittext"

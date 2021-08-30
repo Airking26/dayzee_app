@@ -124,6 +124,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     private val utils = Utils()
     private var timer : CountDownTimer? = null
     private lateinit var addPicIv: ImageView
+    private lateinit var previewPic: ImageView
     private var textEntered : String = ""
     val PERMISSIONS_STORAGE = arrayOf(
         Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -155,6 +156,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         addPicIv = detailed_timenote_add_picture
+        previewPic = detailed_timenote_picture_prev
         imm = (requireActivity().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager)!!
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
         userInfoDTO = Gson().fromJson(prefs.getString(user_info_dto, ""), typeUserInfo)
@@ -608,6 +610,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         detailed_timenote_pic_user.setOnClickListener(this)
         detailed_timenote_address.setOnClickListener(this)
         detailed_timenote_add_picture.setOnClickListener(this)
+        detailed_timenote_picture_prev.setOnClickListener(this)
 
         detailed_timenote_btn_back.setOnClickListener { findNavController().popBackStack() }
     }
@@ -617,14 +620,18 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     override fun onClick(v: View?) {
         when (v) {
             addPicIv -> {
-                if(imagesUrl.isNullOrBlank()) openGallery()
-                else  MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                openGallery()
+            }
+            previewPic ->{
+                 MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                     title(text = getString(R.string.picture_attached_to_comment))
                     listItems(items= listOf(getString(R.string.delete), getString(R.string.replace))){ dialog, index, text ->
                         when(text.toString()){
                             getString(R.string.delete) -> {
                                 imagesUrl = null
-                                addPicIv.setImageDrawable(resources.getDrawable(R.drawable.ic_outline_add_a_photo_24))
+
+                                addPicIv.visibility = View.VISIBLE
+                                previewPic.visibility =View.GONE
                             }
                             getString(R.string.replace) -> openGallery()
                         }
@@ -674,8 +681,8 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                         imm.hideSoftInputFromWindow(comments_edittext.windowToken, 0)
                         comments_edittext.text.clear()
                         imagesUrl = null
-                                addPicIv.setImageDrawable(resources.getDrawable(R.drawable.ic_outline_add_a_photo_24))
-
+                                addPicIv.visibility = View.VISIBLE
+                                previewPic.visibility = View.GONE
                                 commentAdapter.refresh()
                                 commentAdapter.notifyDataSetChanged()
 
@@ -694,7 +701,8 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                         imm.hideSoftInputFromWindow(comments_edittext.windowToken, 0)
                         comments_edittext.text.clear()
                         imagesUrl = null
-                        addPicIv.setImageDrawable(resources.getDrawable(R.drawable.ic_outline_add_a_photo_24))
+                        addPicIv.visibility = View.VISIBLE
+                        previewPic.visibility = View.GONE
                         commentAdapter.refresh()
                         commentAdapter.notifyDataSetChanged()
 
@@ -897,12 +905,12 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         if (imagesUrl.isNullOrBlank() && !isLoading){
             addPicIv.visibility = View.VISIBLE
             detailed_timenote_add_picture_pb.visibility = View.GONE
-            addPicIv.setImageDrawable(resources.getDrawable(R.drawable.ic_outline_add_a_photo_24))
+            previewPic.visibility =View.GONE
         }
         else if(!imagesUrl.isNullOrBlank() && !isLoading) {
-            addPicIv.visibility = View.VISIBLE
+            addPicIv.visibility = View.INVISIBLE
+            previewPic.visibility = View.VISIBLE
             detailed_timenote_add_picture_pb.visibility = View.GONE
-            addPicIv.setImageDrawable(resources.getDrawable(R.drawable.ic_baseline_check_24))
         }
     }
 
@@ -917,6 +925,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             ) == PackageManager.PERMISSION_GRANTED) {
 
             detailed_timenote_add_picture.visibility = View.INVISIBLE
+            detailed_timenote_picture_prev.visibility = View.GONE
             detailed_timenote_add_picture_pb.visibility = View.VISIBLE
 
             InsGallery
@@ -966,9 +975,13 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                 Log.d(ContentValues.TAG, "onStateChanged: ${state?.name}")
                 if (state == TransferState.COMPLETED) {
                     isLoading = false
+                    Glide.
+                        with(requireContext())
+                        .load(am.getResourceUrl(bucket_dayzee_dev_image, key).toString())
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(detailed_timenote_picture_prev)
+                    detailed_timenote_picture_prev.visibility = View.VISIBLE
                     detailed_timenote_add_picture_pb.visibility = View.GONE
-                    detailed_timenote_add_picture.setImageDrawable(resources.getDrawable(R.drawable.ic_baseline_check_24))
-                    detailed_timenote_add_picture.visibility = View.VISIBLE
                     imagesUrl = am.getResourceUrl(bucket_dayzee_dev_image, key).toString()
                 }
 
