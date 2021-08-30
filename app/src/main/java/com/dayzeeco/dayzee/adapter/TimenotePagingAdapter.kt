@@ -226,7 +226,6 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
                     }
                 } else if (timenote.price.price > 0 && timenote.url.isNullOrBlank()){
                     if(itemView.timenote_buy_cl.visibility == View.GONE) {
-
                         allSelected.add(absoluteAdapterPosition)
                         itemView.timenote_buy_cl.visibility = View.VISIBLE
                         itemView.timenote_buy.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)

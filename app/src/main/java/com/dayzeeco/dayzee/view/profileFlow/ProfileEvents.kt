@@ -103,6 +103,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
     @ExperimentalPagingApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
+        profileEventPagingAdapter?.resetAllSelected()
         if(!prefs.getString(accessToken, null).isNullOrBlank()){
             val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
             userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString(user_info_dto, ""), typeUserInfo)
@@ -133,6 +134,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
 
     @ExperimentalPagingApi
     private fun loadData(userInfoDTO: UserInfoDTO) {
+        profileEventPagingAdapter?.resetAllSelected()
         profileEventPagingAdapter = ProfileEventPagingAdapter(
             ProfileEventComparator,
             this,

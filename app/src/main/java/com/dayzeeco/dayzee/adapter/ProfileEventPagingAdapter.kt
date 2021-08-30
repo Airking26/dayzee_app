@@ -33,7 +33,10 @@ import java.time.Duration
 import java.time.Instant
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.math.abs
 import kotlin.time.ExperimentalTime
+
+var allSelectedProfile : MutableList<Int> = mutableListOf()
 
 class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<TimenoteInfoDTO>,
                                 private val timenoteOptionsListener: TimenoteOptionsListener,
@@ -56,6 +59,10 @@ class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<Timenote
                 onCardClicked,
                 isMine, isUpcoming,
                 listOfAlarms, isOnMyProfile, utils)
+    }
+
+    fun resetAllSelected(){
+        allSelectedProfile.clear()
     }
 
 
@@ -99,7 +106,14 @@ class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         }
         else itemView.timenote_place?.text = ""
         itemView.profile_item_name_owner.text = event.createdBy.userName
+
+
         if(isUpcoming) {
+            val o = SimpleDateFormat(ISO)
+            o.timeZone = TimeZone.getTimeZone("UTC")
+            val m = o.parse(event.startingAt)
+            o.timeZone = TimeZone.getDefault()
+
             val duration = Duration.between(Instant.now(), Instant.parse(event.startingAt)).toMillis()
             val calendar = Calendar.getInstance()
             calendar.timeInMillis = duration
@@ -119,7 +133,7 @@ class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
                         TimeUnit.MILLISECONDS.toHours(millisUntilFinished))
                     val seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(
                         TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))
-                   itemView.profile_item_date_event.text =  utils.formatInTime(years.toLong(), months.toLong(), daysToSubstract.toLong(),hours, minutes, seconds, itemView.context)
+                   itemView.profile_item_date_event.text = if(allSelectedProfile.contains(absoluteAdapterPosition)) SimpleDateFormat(DATE_FORMAT_DAY_AND_TIME, Locale.getDefault()).format(m.time) else utils.formatInTime(years.toLong(), months.toLong(), daysToSubstract.toLong(),hours, minutes, seconds, itemView.context)
                 }
 
                 override fun onFinish() {
@@ -127,18 +141,20 @@ class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
                 }
 
             }.start()
-        }
-        else itemView.profile_item_date_event.text = Utils().sinceTime(event.endingAt, itemView.context)
+        } else itemView.profile_item_date_event.text = Utils().sinceTime(event.endingAt, itemView.context)
+
+
         itemView.profile_item_date_event.setOnClickListener {
             if(itemView.profile_item_date_event.text.contains(itemView.context.getString(R.string.in_time), true) || itemView.profile_item_date_event.text.contains(itemView.context.getString(R.string.since_time), true)){
+                allSelectedProfile.add(absoluteAdapterPosition)
                 val o = SimpleDateFormat(ISO)
                 o.timeZone = TimeZone.getTimeZone("UTC")
                 val m = o.parse(event.startingAt)
                 o.timeZone = TimeZone.getDefault()
                 itemView.profile_item_date_event.text = SimpleDateFormat(DATE_FORMAT_DAY_AND_TIME, Locale.getDefault()).format(m.time)
             } else {
+                allSelectedProfile.remove(absoluteAdapterPosition)
                 if(isUpcoming){
-
                     val duration = Duration.between(Instant.now(), Instant.parse(event.startingAt)).toMillis()
                     val calendar = Calendar.getInstance()
                     calendar.timeInMillis = duration
@@ -214,6 +230,8 @@ class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
                         mutableListOf(
                             context.getString(R.string.share_to),
                             context.getString(R.string.create_alarm),
+                            context.getString(R.string.hide_post),
+                            context.getString(R.string.hide_all_posts),
                             context.getString(R.string.duplicate),
                             context.getString(R.string.report),
                             context.getString(
@@ -236,6 +254,8 @@ class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
                     } else {
                         li = mutableListOf(
                             context.getString(R.string.share_to),
+                            context.getString(R.string.hide_post),
+                            context.getString(R.string.hide_all_posts),
                             context.getString(R.string.update_alarm),
                             context.getString(R.string.delete_alarm),
                             context.getString(R.string.duplicate),
@@ -259,6 +279,8 @@ class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
                         mutableListOf(
                             context.getString(R.string.share_to),
                             context.getString(R.string.create_alarm),
+                            context.getString(R.string.hide_post),
+                            context.getString(R.string.hide_all_posts),
                             context.getString(R.string.duplicate),
                             context.getString(R.string.report),
                             context.getString(
@@ -281,6 +303,8 @@ class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
             } else {
                 mutableListOf(
                     context.getString(R.string.share_to),
+                    context.getString(R.string.hide_post),
+                    context.getString(R.string.hide_all_posts),
                     context.getString(R.string.duplicate),
                     context.getString(R.string.report)
 
@@ -301,6 +325,8 @@ class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
                     context.getString(R.string.delete_alarm) -> timenoteListenerListener.onAlarmClicked(event, 2)
                     context.getString(R.string.delete) -> timenoteListenerListener.onDeleteClicked(event)
                     context.getString(R.string.hide_to_others) -> timenoteListenerListener.onHideToOthersClicked(event)
+                    context.getString(R.string.hide_post) -> timenoteListenerListener.onHidePostClicked(event, absoluteAdapterPosition)
+                    context.getString(R.string.hide_all_posts) -> timenoteListenerListener.onHideUserClicked(event, absoluteAdapterPosition)
                 }
             }
         }

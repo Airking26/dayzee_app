@@ -471,23 +471,27 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         else {
             if (isAdded) {
                 timenoteViewModel.joinTimenote(tokenId!!, timenoteInfoDTO.id)
-                    .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                    .observe(viewLifecycleOwner, {
                         if (it.code() == 401) {
                             loginViewModel.refreshToken(prefs).observe(
                                 viewLifecycleOwner,
-                                androidx.lifecycle.Observer { newAccessToken ->
+                                { newAccessToken ->
                                     tokenId = newAccessToken
-                                    timenoteViewModel.joinTimenote(tokenId!!, timenoteInfoDTO.id)
+                                    timenoteViewModel.joinTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, {
+                                        //nr -> if(nr.isSuccessful) timenotePagingAdapter?.notifyDataSetChanged()
+                                    })
                                 })
+                        } else if(it.isSuccessful){
+                            //timenotePagingAdapter?.notifyDataSetChanged()
                         }
                     })
             } else {
                 timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id)
-                    .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                    .observe(viewLifecycleOwner, {
                         if (it.code() == 401) {
                             loginViewModel.refreshToken(prefs).observe(
                                 viewLifecycleOwner,
-                                androidx.lifecycle.Observer { newAccessToken ->
+                                { newAccessToken ->
                                     tokenId = newAccessToken
                                     timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id)
                                 })

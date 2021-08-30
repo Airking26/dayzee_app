@@ -686,7 +686,6 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                                 addPicIv.visibility = View.VISIBLE
                                 previewPic.visibility = View.GONE
                                 commentAdapter.refresh()
-                                commentAdapter.notifyDataSetChanged()
 
                                 /*lifecycleScope.launch {
                             commentViewModel.getComments(tokenId!!, args.event?.id!!, prefs)
@@ -706,7 +705,6 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                         addPicIv.visibility = View.VISIBLE
                         previewPic.visibility = View.GONE
                         commentAdapter.refresh()
-                        commentAdapter.notifyDataSetChanged()
 
                         /*lifecycleScope.launch {
                             commentViewModel.getComments(tokenId!!, args.event?.id!!, prefs)
