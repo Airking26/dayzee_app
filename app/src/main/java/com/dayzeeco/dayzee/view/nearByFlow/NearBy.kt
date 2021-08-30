@@ -97,6 +97,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     private lateinit var nearbyDateTv: TextView
     private val loginViewModel : LoginViewModel by activityViewModels()
     private val searchViewModel: SearchViewModel by activityViewModels()
+    private val timenoteHiddedViewModel: TimenoteHiddedViewModel by activityViewModels()
     private val DATE_FORMAT = "EEE, d MMM yyyy"
     val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     private lateinit var dateFormat : SimpleDateFormat
@@ -935,5 +936,30 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         vectorDrawable.draw(canvas)
         return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
+
+    override fun onHidePostClicked(timenoteInfoDTO: TimenoteInfoDTO, position: Int) {
+        timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO?.id!!, timenote = timenoteInfoDTO.id)).observe(viewLifecycleOwner, {
+            if(it.code() == 401){
+                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
+                        newAccessToken -> tokenId = newAccessToken
+                    timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO?.id!!,timenote= timenoteInfoDTO.id)).observe(viewLifecycleOwner, {
+                        timenotePagingAdapter?.notifyDataSetChanged()
+                    })
+                })
+            }
+        })
+    }
+
+    override fun onHideUserClicked(timenoteInfoDTO: TimenoteInfoDTO, position: Int) {
+        timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO?.id!!, user = timenoteInfoDTO.createdBy.id)).observe(viewLifecycleOwner, {
+            if(it.code() == 401){
+                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
+                        newAccessToken -> tokenId = newAccessToken
+                    timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO?.id!!,user= timenoteInfoDTO.createdBy.id)).observe(viewLifecycleOwner, {
+                        timenotePagingAdapter?.refresh()
+                    })
+                })
+            }
+        })    }
 
 }

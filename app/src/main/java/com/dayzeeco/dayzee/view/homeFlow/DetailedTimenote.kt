@@ -118,6 +118,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     private val searchViewModel: SearchViewModel by activityViewModels()
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
     private val authViewModel: LoginViewModel by activityViewModels()
+    private val timenoteHiddedViewModel: TimenoteHiddedViewModel by activityViewModels()
     private var tokenId: String? = null
     private lateinit var screenSlideCreationTimenotePagerAdapter: ScreenSlideTimenotePagerAdapter
     private val args: DetailedTimenoteArgs by navArgs()
@@ -662,6 +663,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                 userInfoDTO.id == args.event?.createdBy?.id
             )
             timenote_detailed_send_comment -> {
+                if(imagesUrl != null || comments_edittext.text.isNotEmpty()){
                 commentViewModel.postComment(
                     tokenId!!,
                     CommentCreationDTO(
@@ -713,7 +715,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                                 }
                         }*/
                     }
-                })}
+                })}}
             timenote_share -> {
                 sendTo.clear()
                 val dial =
@@ -1072,6 +1074,8 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     private fun createOptionsOnTimenote(context: Context, isMine: Boolean) {
         val listItems: MutableList<String> = if (!isMine) mutableListOf(
             context.getString(R.string.share_to),
+            context.getString(R.string.hide_post),
+            context.getString(R.string.hide_all_posts),
             context.getString(R.string.duplicate),
             context.getString(R.string.report)
         )
@@ -1186,6 +1190,30 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                                         })
                                 }
                             })
+                    }
+                    context.getString(R.string.hide_post) -> {
+                        timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!, timenote = args.event?.id)).observe(viewLifecycleOwner, {
+                            if(it.code() == 401){
+                                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
+                                    newAccessToken -> tokenId = newAccessToken
+                                    timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!,timenote= args.event?.id)).observe(viewLifecycleOwner, {
+
+                                    })
+                                })
+                            }
+                        })
+                    }
+                    context.getString(R.string.hide_all_posts) -> {
+                        timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!, user = args.event?.createdBy?.id)).observe(viewLifecycleOwner, {
+                            if(it.code() == 401){
+                                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
+                                        newAccessToken -> tokenId = newAccessToken
+                                    timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!,timenote= args.event?.createdBy?.id)).observe(viewLifecycleOwner, {
+
+                                    })
+                                })
+                            }
+                        })
                     }
                 }
             }

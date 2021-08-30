@@ -59,4 +59,8 @@ class DayzeeRepository {
     fun getNotificationService(): NotificationService{
         return service.create(NotificationService::class.java)
     }
+
+    fun getTimenoteHiddedService(): TimenoteHiddedService{
+        return service.create(TimenoteHiddedService::class.java)
+    }
 }

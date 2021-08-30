@@ -35,10 +35,7 @@ import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.listeners.GoToProfile
 import com.dayzeeco.dayzee.listeners.TimenoteOptionsListener
 import com.dayzeeco.dayzee.model.*
-import com.dayzeeco.dayzee.viewModel.FollowViewModel
-import com.dayzeeco.dayzee.viewModel.LoginViewModel
-import com.dayzeeco.dayzee.viewModel.SearchViewModel
-import com.dayzeeco.dayzee.viewModel.TimenoteViewModel
+import com.dayzeeco.dayzee.viewModel.*
 import kotlinx.android.synthetic.main.fragment_timenote_tag.*
 import kotlinx.android.synthetic.main.friends_search_cl.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
@@ -54,6 +51,7 @@ class TimenoteTAG: Fragment(), TimenoteOptionsListener, View.OnClickListener,
     private val timenoteViewModel : TimenoteViewModel by activityViewModels()
     private val authViewModel: LoginViewModel by activityViewModels()
     private val searchViewModel: SearchViewModel by activityViewModels()
+    private val timenoteHiddedViewModel: TimenoteHiddedViewModel by activityViewModels()
     private val utils = Utils()
     private lateinit var prefs: SharedPreferences
     private var tokenId : String? = null
@@ -329,4 +327,29 @@ class TimenoteTAG: Fragment(), TimenoteOptionsListener, View.OnClickListener,
     override fun onRemove(userInfoDTO: UserInfoDTO, createGroup: Int?) {
         sendTo.remove(userInfoDTO.id!!)
     }
+
+    override fun onHidePostClicked(timenoteInfoDTO: TimenoteInfoDTO, position: Int) {
+        timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!, timenote = timenoteInfoDTO.id)).observe(viewLifecycleOwner, {
+            if(it.code() == 401){
+                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
+                        newAccessToken -> tokenId = newAccessToken
+                    timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!,timenote= timenoteInfoDTO.id)).observe(viewLifecycleOwner, {
+                        timenotePagingAdapter?.notifyDataSetChanged()
+                    })
+                })
+            }
+        })
+    }
+
+    override fun onHideUserClicked(timenoteInfoDTO: TimenoteInfoDTO, position: Int) {
+        timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!, user = timenoteInfoDTO.createdBy.id)).observe(viewLifecycleOwner, {
+            if(it.code() == 401){
+                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
+                        newAccessToken -> tokenId = newAccessToken
+                    timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!,user= timenoteInfoDTO.createdBy.id)).observe(viewLifecycleOwner, {
+                        timenotePagingAdapter?.refresh()
+                    })
+                })
+            }
+        })    }
 }

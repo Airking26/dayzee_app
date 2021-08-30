@@ -71,6 +71,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
     private val searchViewModel : SearchViewModel by activityViewModels()
     private val meViewModel : MeViewModel by activityViewModels()
+    private val timenoteHiddedViewModel: TimenoteHiddedViewModel by activityViewModels()
     private var timenotePagingAdapter: TimenotePagingAdapter? = null
     private var timenoteRecentPagingAdapter: TimenoteRecentPagingAdapter? = null
     private lateinit var onGoToNearby: OnGoToNearby
@@ -579,6 +580,44 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
     override fun onHashtagClicked(timenoteInfoDTO: TimenoteInfoDTO, hashtag: String?) {
         findNavController().navigate(HomeDirections.actionGlobalTimenoteTAG(timenoteInfoDTO, hashtag))
+    }
+
+    override fun onHidePostClicked(timenoteInfoDTO: TimenoteInfoDTO, position: Int) {
+        timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!, timenote = timenoteInfoDTO.id)).observe(viewLifecycleOwner, {
+            if(it.code() == 401){
+                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
+                        newAccessToken -> tokenId = newAccessToken
+                    timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!,timenote= timenoteInfoDTO.id)).observe(viewLifecycleOwner, { nr ->
+                        if(nr.isSuccessful){
+                        //timenotePagingAdapter?.refresh()
+                        //timenoteRecentPagingAdapter?.refresh()
+                        }
+                    })
+                })
+            } else if(it.isSuccessful){
+                timenotePagingAdapter?.notifyItemRemoved(position)
+                //timenotePagingAdapter?.refresh()
+                //timenoteRecentPagingAdapter?.notifyDataSetChanged()
+            }
+        })
+    }
+
+    override fun onHideUserClicked(timenoteInfoDTO: TimenoteInfoDTO, position: Int) {
+        timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!, user = timenoteInfoDTO.createdBy.id)).observe(viewLifecycleOwner, {
+            if(it.code() == 401){
+                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
+                        newAccessToken -> tokenId = newAccessToken
+                    timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!,user= timenoteInfoDTO.createdBy.id)).observe(viewLifecycleOwner, { nr ->
+                        if(nr.isSuccessful){
+                        timenotePagingAdapter?.refresh()
+                        timenoteRecentPagingAdapter?.refresh()}
+                    })
+                })
+            } else if(it.isSuccessful){
+                timenotePagingAdapter?.refresh()
+                timenoteRecentPagingAdapter?.refresh()
+            }
+        })
     }
 
     override fun onAdd(userInfoDTO: UserInfoDTO, createGroup: Int?) {

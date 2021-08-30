@@ -378,7 +378,8 @@
     <string name="pending">En Attente</string>
     <string name="picture_attached_to_comment">Photo attaché au commentaire</string>
     <string name="replace">Remplacer</string>
-
+    <string name="hide_post">Masquer cet évènement</string>
+    <string name="hide_all_posts">Masquer tous les évènements de cet utilisateur</string>
     <plurals name="time_minutes_comment">
         <item quantity="one">%1$d minute</item>
         <item quantity="other">%1$d minutes</item>

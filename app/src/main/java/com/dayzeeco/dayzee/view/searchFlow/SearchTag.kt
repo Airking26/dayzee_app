@@ -53,6 +53,7 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
     private val searchViewModel : SearchViewModel by activityViewModels()
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
     private val loginViewModel: LoginViewModel by activityViewModels()
+    private val timenoteHiddedViewModel: TimenoteHiddedViewModel by activityViewModels()
     private val utils = Utils()
     private lateinit var prefs : SharedPreferences
     private lateinit var handler: Handler
@@ -60,6 +61,7 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
     private val AUTO_COMPLETE_DELAY: Long = 200
     private var tokenId: String? = ""
     private lateinit var userInfoDTO: UserInfoDTO
+    private lateinit var userAdapter: TimenotePagingAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,7 +77,7 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            val userAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils, userInfoDTO.id, prefs.getInt(
+            userAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils, userInfoDTO.id, prefs.getInt(
                 format_date_default, 0))
             search_tag_rv.apply {
                 layoutManager = LinearLayoutManager(requireContext())
@@ -344,4 +346,30 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
     override fun onRemove(userInfoDTO: UserInfoDTO, createGroup: Int?) {
         sendTo.remove(userInfoDTO.id!!)
     }
+
+
+    override fun onHidePostClicked(timenoteInfoDTO: TimenoteInfoDTO, position: Int) {
+        timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!, timenote = timenoteInfoDTO.id)).observe(viewLifecycleOwner, {
+            if(it.code() == 401){
+                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
+                        newAccessToken -> tokenId = newAccessToken
+                    timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!,timenote= timenoteInfoDTO.id)).observe(viewLifecycleOwner, {
+                        userAdapter?.notifyDataSetChanged()
+                    })
+                })
+            }
+        })
+    }
+
+    override fun onHideUserClicked(timenoteInfoDTO: TimenoteInfoDTO, position: Int) {
+        timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!, user = timenoteInfoDTO.createdBy.id)).observe(viewLifecycleOwner, {
+            if(it.code() == 401){
+                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
+                        newAccessToken -> tokenId = newAccessToken
+                    timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!,user= timenoteInfoDTO.createdBy.id)).observe(viewLifecycleOwner, {
+                        userAdapter?.refresh()
+                    })
+                })
+            }
+        })    }
 }

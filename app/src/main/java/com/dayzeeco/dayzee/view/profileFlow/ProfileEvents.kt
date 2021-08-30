@@ -70,10 +70,10 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
     private val ISOX = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
     private var isFuture = true
     private lateinit var onRemoveFilterBarListener: OnRemoveFilterBarListener
-    private val followViewModel: FollowViewModel by activityViewModels()
     private val searchViewModel: SearchViewModel by activityViewModels()
     private val profileViewModel : ProfileViewModel by activityViewModels()
     private val timenoteViewModel: TimenoteViewModel by activityViewModels()
+    private val timenoteHiddedViewModel: TimenoteHiddedViewModel by activityViewModels()
     private val alarmViewModel: AlarmViewModel by activityViewModels()
     private val authViewModel: LoginViewModel by activityViewModels()
     private var profileEventPagingAdapter : ProfileEventPagingAdapter? = null
@@ -575,5 +575,29 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
     override fun onMaskThisUser() {}
     override fun onDoubleClick() {}
 
+    override fun onHidePostClicked(timenoteInfoDTO: TimenoteInfoDTO, position: Int) {
+        timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO?.id!!, timenote = timenoteInfoDTO.id)).observe(viewLifecycleOwner, {
+            if(it.code() == 401){
+                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
+                        newAccessToken -> tokenId = newAccessToken
+                    timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO?.id!!,timenote= timenoteInfoDTO.id)).observe(viewLifecycleOwner, {
+                        profileEventPagingAdapter?.notifyDataSetChanged()
+                    })
+                })
+            }
+        })
+    }
+
+    override fun onHideUserClicked(timenoteInfoDTO: TimenoteInfoDTO, position: Int) {
+        timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO?.id!!, user = timenoteInfoDTO.createdBy.id)).observe(viewLifecycleOwner, {
+            if(it.code() == 401){
+                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
+                        newAccessToken -> tokenId = newAccessToken
+                    timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO?.id!!,user= timenoteInfoDTO.createdBy.id)).observe(viewLifecycleOwner, {
+                        profileEventPagingAdapter?.refresh()
+                    })
+                })
+            }
+        })    }
 
 }

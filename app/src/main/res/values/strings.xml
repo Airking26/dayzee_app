@@ -399,6 +399,8 @@
     <string name="pending">Pending</string>
     <string name="picture_attached_to_comment">Picture attached to comment</string>
     <string name="replace">Replace</string>
+    <string name="hide_post">Hide this event</string>
+    <string name="hide_all_posts">Hide all events from this user</string>
     <plurals name="time_minutes_comment">
         <item quantity="one">%1$d minute</item>
         <item quantity="other">%1$d minutes</item>

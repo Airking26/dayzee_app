@@ -355,7 +355,7 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         }
 
         itemView.timenote_options.setOnClickListener {
-            createOptionsOnTimenote(itemView.context,  timenoteListenerListener, timenote, createdBy)
+            createOptionsOnTimenote(itemView.context,  timenoteListenerListener, timenote, createdBy, absoluteAdapterPosition)
         }
 
         itemView.timenote_comment_account.setOnClickListener { timenoteListenerListener.onSeeMoreClicked(timenote) }
@@ -453,11 +453,12 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         context: Context,
         timenoteListenerListener: TimenoteOptionsListener,
         timenote: TimenoteInfoDTO,
-        createdBy: String?
+        createdBy: String?,
+        absoluteAdapterPosition: Int
     ){
         val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
         val ISO =  "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
-        val listItems: MutableList<String> = if(createdBy == timenote.createdBy.id) mutableListOf(context.getString(R.string.share_to) ,context.getString(R.string.duplicate), context.getString(R.string.edit), context.getString(R.string.delete)) else mutableListOf(context.getString(R.string.share_to) ,context.getString(R.string.duplicate), context.getString(R.string.report))
+        val listItems: MutableList<String> = if(createdBy == timenote.createdBy.id) mutableListOf(context.getString(R.string.share_to) ,context.getString(R.string.duplicate), context.getString(R.string.edit), context.getString(R.string.delete)) else mutableListOf(context.getString(R.string.share_to), context.getString(R.string.hide_post), context.getString(R.string.hide_all_posts) ,context.getString(R.string.duplicate), context.getString(R.string.report))
         MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             title(text = dateFormat.format(SimpleDateFormat(ISO).parse(timenote.createdAt).time))
             listItems (items = listItems){ _, _, text ->
@@ -467,6 +468,8 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
                     context.getString(R.string.share_to) -> timenoteListenerListener.onAlarmClicked(timenote, 0)
                     context.getString(R.string.edit) -> timenoteListenerListener.onEditClicked(timenote)
                     context.getString(R.string.delete)  -> timenoteListenerListener.onDeleteClicked(timenote)
+                    context.getString(R.string.hide_post) -> timenoteListenerListener.onHidePostClicked(timenote, absoluteAdapterPosition)
+                    context.getString(R.string.hide_all_posts) -> timenoteListenerListener.onHideUserClicked(timenote, absoluteAdapterPosition)
                 }
             }
         }
