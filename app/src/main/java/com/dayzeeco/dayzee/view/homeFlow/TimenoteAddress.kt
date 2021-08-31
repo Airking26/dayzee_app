@@ -102,7 +102,7 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
         timenote_address_toolbar.text = args.timenoteInfoDTO?.location?.address?.address?.plus(", ")?.plus(args.timenoteInfoDTO?.location?.address?.city)?.plus(" ")?.plus(args.timenoteInfoDTO?.location?.address?.country)
 
         timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils, userInfoDTO.id, prefs.getInt(
-            format_date_default, 0))
+            format_date_default, 0), userInfoDTO)
         timenote_around_rv.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter =  timenotePagingAdapter!!.withLoadStateFooter(
@@ -351,10 +351,10 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
                 authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
                         newAccessToken -> tokenId = newAccessToken
                     timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!,timenote= timenoteInfoDTO.id)).observe(viewLifecycleOwner, {
-                        timenotePagingAdapter?.notifyDataSetChanged()
+                        nr -> if(nr.isSuccessful) timenotePagingAdapter?.notifyDataSetChanged()
                     })
                 })
-            }
+            } else if(it.isSuccessful) timenotePagingAdapter?.refresh()
         })
     }
 
@@ -364,10 +364,10 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
                 authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
                         newAccessToken -> tokenId = newAccessToken
                     timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!,user= timenoteInfoDTO.createdBy.id)).observe(viewLifecycleOwner, {
-                        timenotePagingAdapter?.refresh()
+                        nr -> if(nr.isSuccessful) timenotePagingAdapter?.refresh()
                     })
                 })
-            }
+            } else if(it.isSuccessful) timenotePagingAdapter?.refresh()
         })    }
 
 }

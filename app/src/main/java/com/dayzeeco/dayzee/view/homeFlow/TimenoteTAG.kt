@@ -84,7 +84,7 @@ class TimenoteTAG: Fragment(), TimenoteOptionsListener, View.OnClickListener,
         timenote_tag_toolbar.text = "#${args.hashtag}"
 
         timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils, userInfoDTO.id, prefs.getInt(
-            format_date_default, 0))
+            format_date_default, 0), userInfoDTO)
         timenote_tag_rv.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter =  timenotePagingAdapter!!.withLoadStateFooter(
@@ -334,10 +334,10 @@ class TimenoteTAG: Fragment(), TimenoteOptionsListener, View.OnClickListener,
                 authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
                         newAccessToken -> tokenId = newAccessToken
                     timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!,timenote= timenoteInfoDTO.id)).observe(viewLifecycleOwner, {
-                        timenotePagingAdapter?.notifyDataSetChanged()
+                        nr -> if(nr.isSuccessful) timenotePagingAdapter?.notifyDataSetChanged()
                     })
                 })
-            }
+            } else if (it.isSuccessful) timenotePagingAdapter?.refresh()
         })
     }
 
@@ -347,9 +347,9 @@ class TimenoteTAG: Fragment(), TimenoteOptionsListener, View.OnClickListener,
                 authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
                         newAccessToken -> tokenId = newAccessToken
                     timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!,user= timenoteInfoDTO.createdBy.id)).observe(viewLifecycleOwner, {
-                        timenotePagingAdapter?.refresh()
+                        nr -> if(nr.isSuccessful) timenotePagingAdapter?.refresh()
                     })
                 })
-            }
+            } else if(it.isSuccessful) timenotePagingAdapter?.refresh()
         })    }
 }

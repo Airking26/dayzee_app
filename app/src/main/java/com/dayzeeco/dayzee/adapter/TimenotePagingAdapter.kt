@@ -31,6 +31,7 @@ import com.dayzeeco.dayzee.common.bytesEqualTo
 import com.dayzeeco.dayzee.common.pixelsEqualTo
 import com.dayzeeco.dayzee.listeners.TimenoteOptionsListener
 import com.dayzeeco.dayzee.model.TimenoteInfoDTO
+import com.dayzeeco.dayzee.model.UserInfoDTO
 import kotlinx.android.synthetic.main.item_timenote.view.*
 import kotlinx.android.synthetic.main.item_timenote_root.view.*
 import java.text.SimpleDateFormat
@@ -44,7 +45,7 @@ val allSelected : MutableList<Int> = mutableListOf()
 class TimenotePagingAdapter(diffCallbacks: DiffUtil.ItemCallback<TimenoteInfoDTO>,
                             private val timenoteListenerListener: TimenoteOptionsListener,
                             val fragment: Fragment, private val isFromFuture: Boolean,
-                            private val utils: Utils, private val createdBy: String?, private val formatOfDate: Int)
+                            private val utils: Utils, private val createdBy: String?, private val formatOfDate: Int, private val userInfoDTO: UserInfoDTO?)
     : PagingDataAdapter<TimenoteInfoDTO, TimenoteViewHolder>(diffCallbacks){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimenoteViewHolder =
@@ -53,7 +54,7 @@ class TimenotePagingAdapter(diffCallbacks: DiffUtil.ItemCallback<TimenoteInfoDTO
     @ExperimentalTime
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: TimenoteViewHolder, position: Int) =
-        holder.bindTimenote(getItem(position)!!, timenoteListenerListener, fragment, isFromFuture, utils, createdBy, formatOfDate)
+        holder.bindTimenote(getItem(position)!!, timenoteListenerListener, fragment, isFromFuture, utils, createdBy, formatOfDate, userInfoDTO)
 
     fun resetAllSelected(){
         allSelected.clear()
@@ -66,7 +67,16 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
 
     @ExperimentalTime
     @RequiresApi(Build.VERSION_CODES.O)
-    fun bindTimenote(timenote: TimenoteInfoDTO, timenoteListenerListener: TimenoteOptionsListener, fragment: Fragment, isFromFuture: Boolean, utils: Utils, createdBy: String?, formatOfDate: Int) {
+    fun bindTimenote(
+        timenote: TimenoteInfoDTO,
+        timenoteListenerListener: TimenoteOptionsListener,
+        fragment: Fragment,
+        isFromFuture: Boolean,
+        utils: Utils,
+        createdBy: String?,
+        formatOfDate: Int,
+        userInfoDTO: UserInfoDTO?
+    ) {
         if(allSelected.contains(absoluteAdapterPosition)){
             itemView.timenote_buy_cl.visibility = View.VISIBLE
             if (timenote.price.price > 0) itemView.timenote_buy.text =
@@ -354,7 +364,7 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         }
 
         itemView.timenote_options.setOnClickListener {
-            createOptionsOnTimenote(itemView.context,  timenoteListenerListener, timenote, createdBy, absoluteAdapterPosition)
+            createOptionsOnTimenote(itemView.context,  timenoteListenerListener, timenote, createdBy, absoluteAdapterPosition, userInfoDTO)
         }
 
         itemView.timenote_comment_account.setOnClickListener { timenoteListenerListener.onSeeMoreClicked(timenote) }
@@ -453,11 +463,15 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         timenoteListenerListener: TimenoteOptionsListener,
         timenote: TimenoteInfoDTO,
         createdBy: String?,
-        absoluteAdapterPosition: Int
+        absoluteAdapterPosition: Int,
+        userInfoDTO: UserInfoDTO?
     ){
         val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
         val ISO =  "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
-        val listItems: MutableList<String> = if(createdBy == timenote.createdBy.id) mutableListOf(context.getString(R.string.share_to) ,context.getString(R.string.duplicate), context.getString(R.string.edit), context.getString(R.string.delete)) else mutableListOf(context.getString(R.string.share_to), context.getString(R.string.hide_post), context.getString(R.string.hide_all_posts) ,context.getString(R.string.duplicate), context.getString(R.string.report))
+        val listItems: MutableList<String> =
+            if(createdBy == timenote.createdBy.id && userInfoDTO != null) mutableListOf(context.getString(R.string.share_to) ,context.getString(R.string.duplicate), context.getString(R.string.edit), context.getString(R.string.delete))
+            else if(createdBy != timenote.createdBy.id && userInfoDTO != null) mutableListOf(context.getString(R.string.share_to), context.getString(R.string.hide_post), context.getString(R.string.hide_all_posts) ,context.getString(R.string.duplicate), context.getString(R.string.report))
+            else mutableListOf(context.getString(R.string.share_to))
         MaterialDialog(context, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             title(text = dateFormat.format(SimpleDateFormat(ISO).parse(timenote.createdAt).time))
             listItems (items = listItems){ _, _, text ->

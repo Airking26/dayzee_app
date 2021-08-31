@@ -3,11 +3,13 @@ package com.dayzeeco.dayzee.view.searchFlow
 import android.content.ContentValues.TAG
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.util.Log.DEBUG
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -31,6 +33,8 @@ import com.dayzeeco.dayzee.webService.repo.DayzeeRepository
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.fragment_search_top.*
+import kotlinx.coroutines.CompletionHandler
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 
@@ -61,6 +65,7 @@ class SearchTop: Fragment(), SuggestionAdapter.SuggestionItemListener,
 
         mapSCRtoLUI = mutableMapOf()
 
+        search_top_pb.visibility = View.VISIBLE
         prefs.stringLiveData(
             list_subcategory_rated, Gson().toJson(prefs.getString(
             list_subcategory_rated, null))).observe(viewLifecycleOwner, {
@@ -72,7 +77,8 @@ class SearchTop: Fragment(), SuggestionAdapter.SuggestionItemListener,
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = topAdapter
             }
-            getTopAlt()
+
+             getTopAlt()
         })
     }
 
@@ -142,16 +148,12 @@ class SearchTop: Fragment(), SuggestionAdapter.SuggestionItemListener,
     private fun getTopAlt(){
                 lifecycleScope.launch {
                     preferencesCategoryRated.shuffle()
-                    if(view != null) preferencesCategoryRated.forEach { scr ->
+                    if(view != null) preferencesCategoryRated.forEachIndexed { index, element ->
+                        if(index == preferencesCategoryRated.size - 1) topAdapter.setLoadingFooter(false)
                         if(view != null)
-                            if (scr.rating > 0) {
+                            if (element.rating > 0) {
                             var i = 0
-                            var req =
-                                searchService.searchBasedOnCategory(
-                                    "Bearer " + tokenId!!,
-                                    scr.category,
-                                    i
-                                )
+                            var req = searchService.searchBasedOnCategory("Bearer " + tokenId!!, element.category, i)
                             if (req.code() == 401) {
                                 loginViewModel.refreshToken(prefs)
                                     .observe(viewLifecycleOwner, { nat ->
@@ -159,29 +161,29 @@ class SearchTop: Fragment(), SuggestionAdapter.SuggestionItemListener,
                                         getTopAlt()
                                     })
 
-                            } else {
-                                val body =
-                                    req.body()?.filter { userInfoDTO -> !userInfoDTO.isInFollowers }
+                            }
+                            else {
+                                val body = req.body()?.filter { userInfoDTO -> !userInfoDTO.isInFollowers }
                                 if (body?.size != 0) {
-                                    if (body?.size!! > scr.rating) {
-                                        mapSCRtoLUI[scr] = body.subList(0, scr.rating)
+                                    if (body?.size!! > element.rating) {
+                                        mapSCRtoLUI[element] = body.subList(0, element.rating)
                                         topAdapter.setLoadingFooter(true)
                                         topAdapter.notifyDataSetChanged()
                                         search_top_pb.visibility = View.GONE
-                                    } else {
+                                    }
+                                    else {
                                         var continueBrowsing = true
                                         do {
                                             req = searchService.searchBasedOnCategory(
                                                 "Bearer " + tokenId,
-                                                scr.category,
+                                                element.category,
                                                 i++
                                             )
                                             if (req.body()?.size!! > 0) {
                                                 body.toMutableList().addAll(
-                                                    req.body()
-                                                        ?.filter { userInfoDTO -> !userInfoDTO.isInFollowers }!!
+                                                    req.body()?.filter { userInfoDTO -> !userInfoDTO.isInFollowers }!!
                                                 )
-                                                if (body.size > scr.rating) {
+                                                if (body.size > element.rating) {
                                                     continueBrowsing = false
                                                 }
                                             } else {
@@ -189,7 +191,7 @@ class SearchTop: Fragment(), SuggestionAdapter.SuggestionItemListener,
                                             }
 
                                         } while (req.body()?.size != 0 || continueBrowsing)
-                                        mapSCRtoLUI[scr] = body
+                                        mapSCRtoLUI[element] = body
                                         topAdapter.setLoadingFooter(true)
                                         topAdapter.notifyDataSetChanged()
                                         search_top_pb.visibility = View.GONE
@@ -199,7 +201,7 @@ class SearchTop: Fragment(), SuggestionAdapter.SuggestionItemListener,
                         }
                     }
                     topAdapter.setLoadingFooter(false)
-        }
+                }
     }
 
     override fun onItemSelected(follow: Boolean, userInfoDTO: UserInfoDTO) {

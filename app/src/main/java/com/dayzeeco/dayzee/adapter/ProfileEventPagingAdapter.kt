@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 import kotlin.time.ExperimentalTime
 
-var allSelectedProfile : MutableList<Int> = mutableListOf()
+val allSelectedProfile : MutableList<Int> = mutableListOf()
 
 class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<TimenoteInfoDTO>,
                                 private val timenoteOptionsListener: TimenoteOptionsListener,

@@ -68,7 +68,7 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         tokenId = prefs.getString(accessToken, null)
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
-        userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString(user_info_dto, ""), typeUserInfo)
+        userInfoDTO = Gson().fromJson(prefs.getString(user_info_dto, ""), typeUserInfo)
 
     }
 
@@ -78,14 +78,14 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             userAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils, userInfoDTO.id, prefs.getInt(
-                format_date_default, 0))
+                format_date_default, 0), userInfoDTO)
             search_tag_rv.apply {
                 layoutManager = LinearLayoutManager(requireContext())
-                adapter =  userAdapter!!.withLoadStateFooter(
-                    footer = TimenoteLoadStateAdapter{ userAdapter!!.retry() }
+                adapter =  userAdapter.withLoadStateFooter(
+                    footer = TimenoteLoadStateAdapter{ userAdapter.retry() }
                 )
             }
-            searchViewModel.getTagSearchLiveData().observe(viewLifecycleOwner, Observer {
+            searchViewModel.getTagSearchLiveData().observe(viewLifecycleOwner, {
                 lifecycleScope.launch {
                     it.collectLatest {
                         userAdapter.submitData(it)
@@ -93,7 +93,7 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
                 }
             })
 
-        searchViewModel.getSearchIsEmptyLiveData().observe(viewLifecycleOwner, Observer {
+        searchViewModel.getSearchIsEmptyLiveData().observe(viewLifecycleOwner, {
             if(it) {
                 lifecycleScope.launch {
                     userAdapter.submitData(PagingData.empty())
@@ -106,7 +106,7 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
     override fun onReportClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         timenoteViewModel.signalTimenote(tokenId!!, TimenoteCreationSignalementDTO(userInfoDTO.id!!, timenoteInfoDTO.id, "")).observe(viewLifecycleOwner, Observer {
             if(it.code() == 401){
-                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
+                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { newAccessToken ->
                     tokenId = newAccessToken
                     timenoteViewModel.signalTimenote(tokenId!!, TimenoteCreationSignalementDTO(userInfoDTO.id!!, timenoteInfoDTO.id, "")).observe(viewLifecycleOwner, Observer { rsp ->
                         if(rsp.isSuccessful) Toast.makeText(
@@ -354,10 +354,10 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
                 loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
                         newAccessToken -> tokenId = newAccessToken
                     timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!,timenote= timenoteInfoDTO.id)).observe(viewLifecycleOwner, {
-                        userAdapter?.notifyDataSetChanged()
+                        nr -> if(nr.isSuccessful) userAdapter.notifyDataSetChanged()
                     })
                 })
-            }
+            } else if(it.isSuccessful) userAdapter.refresh()
         })
     }
 
@@ -367,9 +367,9 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
                 loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
                         newAccessToken -> tokenId = newAccessToken
                     timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!,user= timenoteInfoDTO.createdBy.id)).observe(viewLifecycleOwner, {
-                        userAdapter?.refresh()
+                        nr -> if(nr.isSuccessful) userAdapter.refresh()
                     })
                 })
-            }
+            } else if(it.isSuccessful) userAdapter.refresh()
         })    }
 }

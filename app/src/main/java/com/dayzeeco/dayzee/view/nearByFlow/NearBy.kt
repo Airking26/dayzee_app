@@ -135,7 +135,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
             TimenoteComparator, this, this, true, Utils(), userInfoDTO?.id, prefs.getInt(
                 format_date_default, 0
             )
-        )
+        , userInfoDTO)
         timenotePagingAdapter?.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
         tokenId = prefs.getString(accessToken, null)
         loginViewModel.getAuthenticationState().observe(requireActivity(), {
@@ -942,28 +942,30 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     }
 
     override fun onHidePostClicked(timenoteInfoDTO: TimenoteInfoDTO, position: Int) {
+        if(userInfoDTO == null) loginViewModel.markAsUnauthenticated() else
         timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO?.id!!, timenote = timenoteInfoDTO.id)).observe(viewLifecycleOwner, {
             if(it.code() == 401){
                 loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
                         newAccessToken -> tokenId = newAccessToken
                     timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO?.id!!,timenote= timenoteInfoDTO.id)).observe(viewLifecycleOwner, {
-                        timenotePagingAdapter?.notifyDataSetChanged()
+                       nr -> if(nr.isSuccessful) timenotePagingAdapter?.notifyDataSetChanged()
                     })
                 })
-            }
+            } else if(it.isSuccessful) timenotePagingAdapter?.refresh()
         })
     }
 
     override fun onHideUserClicked(timenoteInfoDTO: TimenoteInfoDTO, position: Int) {
+        if(userInfoDTO == null) loginViewModel.markAsUnauthenticated() else
         timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO?.id!!, user = timenoteInfoDTO.createdBy.id)).observe(viewLifecycleOwner, {
             if(it.code() == 401){
                 loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
                         newAccessToken -> tokenId = newAccessToken
                     timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO?.id!!,user= timenoteInfoDTO.createdBy.id)).observe(viewLifecycleOwner, {
-                        timenotePagingAdapter?.refresh()
+                        nr -> if(nr.isSuccessful) timenotePagingAdapter?.refresh()
                     })
                 })
-            }
+            } else if(it.isSuccessful) timenotePagingAdapter?.refresh()
         })    }
 
 }

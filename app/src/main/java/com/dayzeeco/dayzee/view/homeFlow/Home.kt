@@ -261,7 +261,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         timenotePagingAdapter?.resetAllSelected()
 
         timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils, userInfoDTO.id, prefs.getInt(
-            format_date_default, 0))
+            format_date_default, 0), userInfoDTO)
         lifecycleScope.launch {
             timenoteViewModel.getUpcomingTimenotePagingFlow(tokenId!!, true, prefs).collectLatest {
                 timenotePagingAdapter?.submitData(it)
@@ -313,7 +313,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         timenotePagingAdapter?.resetAllSelected()
 
         timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, false, utils, userInfoDTO.id, prefs.getInt(
-            format_date_default, 0))
+            format_date_default, 0), userInfoDTO)
         lifecycleScope.launch {
             timenoteViewModel.getUpcomingTimenotePagingFlow(tokenId!!, false, prefs).collectLatest {
                 timenotePagingAdapter?.submitData(it)
@@ -589,15 +589,14 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                         newAccessToken -> tokenId = newAccessToken
                     timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!,timenote= timenoteInfoDTO.id)).observe(viewLifecycleOwner, { nr ->
                         if(nr.isSuccessful){
-                        //timenotePagingAdapter?.refresh()
-                        //timenoteRecentPagingAdapter?.refresh()
+                            timenotePagingAdapter?.refresh()
+                            timenoteRecentPagingAdapter?.refresh()
                         }
                     })
                 })
             } else if(it.isSuccessful){
-                timenotePagingAdapter?.notifyItemRemoved(position)
-                //timenotePagingAdapter?.refresh()
-                //timenoteRecentPagingAdapter?.notifyDataSetChanged()
+                timenotePagingAdapter?.refresh()
+                timenoteRecentPagingAdapter?.refresh()
             }
         })
     }

@@ -102,6 +102,7 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
         var list : MutableList<SubCategoryRated> = mutableListOf()
         prefList?.distinctBy { subCategoryRated -> subCategoryRated.category.category }?.forEach { chips.add(it.category.category) }
         prefList?.forEach {
+            if(it.rating > 0){
             if(subcategories.containsKey(it.category.category)){
                 list.add(it)
                 subcategories[it.category.category] = list
@@ -110,7 +111,7 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
                 list.add(it)
                 subcategories[it.category.category] = list
             }
-        }
+        }}
         chipAdapter.notifyDataSetChanged()
         cardAdapter.notifyDataSetChanged()
     }
@@ -124,6 +125,7 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
     }
 
     private fun saveAndNavigate() {
+        preferencesCategoryRated = preferencesCategoryRated.filter { it.rating > 0 }.toMutableList()
         preferencesViewModel.modifyPreferences(tokenId, Preferences(preferencesCategoryRated)).observe(viewLifecycleOwner, {
             prefs.edit().putString(list_subcategory_rated, Gson().toJson(preferencesCategoryRated)).apply()
             if(it.isSuccessful){

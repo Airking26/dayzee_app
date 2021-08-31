@@ -102,8 +102,6 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
 
     @ExperimentalPagingApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
-        profileEventPagingAdapter?.resetAllSelected()
         if(!prefs.getString(accessToken, null).isNullOrBlank()){
             val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
             userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString(user_info_dto, ""), typeUserInfo)
@@ -134,13 +132,13 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
 
     @ExperimentalPagingApi
     private fun loadData(userInfoDTO: UserInfoDTO) {
-        profileEventPagingAdapter?.resetAllSelected()
         profileEventPagingAdapter = ProfileEventPagingAdapter(
             ProfileEventComparator,
             this,
             this,
             userInfoDTO.id,
             isFuture, listOfAlarms.getAlarms(), isOnMyProfile, utils)
+        profileEventPagingAdapter?.resetAllSelected()
         profile_rv.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             adapter =  profileEventPagingAdapter!!.withLoadStateFooter(
@@ -583,10 +581,10 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
                 authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
                         newAccessToken -> tokenId = newAccessToken
                     timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO?.id!!,timenote= timenoteInfoDTO.id)).observe(viewLifecycleOwner, {
-                        profileEventPagingAdapter?.notifyDataSetChanged()
+                        nr -> if(nr.isSuccessful) profileEventPagingAdapter?.refresh()
                     })
                 })
-            }
+            } else if(it.isSuccessful) profileEventPagingAdapter?.refresh()
         })
     }
 
@@ -596,10 +594,10 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
                 authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
                         newAccessToken -> tokenId = newAccessToken
                     timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO?.id!!,user= timenoteInfoDTO.createdBy.id)).observe(viewLifecycleOwner, {
-                        profileEventPagingAdapter?.refresh()
+                        nr -> if(nr.isSuccessful) profileEventPagingAdapter?.refresh()
                     })
                 })
-            }
+            } else if(it.isSuccessful) profileEventPagingAdapter?.refresh()
         })    }
 
 }
