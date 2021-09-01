@@ -20,7 +20,6 @@ import org.json.JSONObject
 class MyFirebaseNotificationService : FirebaseMessagingService() {
 
     private lateinit var prefs : SharedPreferences
-    private var meService: MeService = DayzeeRepository().getMeService()
 
     override fun onCreate() {
         super.onCreate()
@@ -55,7 +54,7 @@ class MyFirebaseNotificationService : FirebaseMessagingService() {
 
 
         val builder = NotificationCompat.Builder(this, channel_id)
-            .setSmallIcon(R.drawable.ic_icon_launcher_dayzee)
+            .setSmallIcon(R.drawable.ic_stat_notif)
             .setContentTitle(message.notification?.title)
             .setContentText(message.notification?.body)
             .setStyle(NotificationCompat.BigTextStyle().bigText(message.notification?.body))
@@ -68,7 +67,7 @@ class MyFirebaseNotificationService : FirebaseMessagingService() {
         }
     }
 
-    private fun extractTimenoteInfoDTO(data: JSONObject, s: String?): TimenoteInfoDTO{
+   /* private fun extractTimenoteInfoDTO(data: JSONObject, s: String?): TimenoteInfoDTO{
         val ki = GsonBuilder().create().fromJson(s, TimenoteInfoDTO::class.java)
         val createdBy = data["createdBy"] as JSONObject
         val user = extractUserInfoDTO(createdBy)
@@ -181,6 +180,6 @@ class MyFirebaseNotificationService : FirebaseMessagingService() {
                 LinkedIn(linkedin["url"] as String, linkedin["enabled"] as Boolean)
             )
         )
-    }
+    }*/
 
 }

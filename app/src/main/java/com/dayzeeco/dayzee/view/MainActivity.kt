@@ -46,7 +46,6 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
     private val utils = Utils()
     private lateinit var receiver: BroadcastReceiver
     private lateinit var prefs : SharedPreferences
-    private var isOngoing = true
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,11 +54,6 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
         registerNotificationReceiver()
         setupController()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        isOngoing = false
     }
 
     private fun registerNotificationReceiver() {
@@ -161,8 +155,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
 
     override fun onResume() {
         super.onResume()
-        val k = intent.hasExtra("USER")
-        if(!intent.getStringExtra(type).isNullOrBlank() && !isOngoing){
+        if(!intent.getStringExtra(type).isNullOrBlank()){
             goToProfile()
             ViewModelProviders.of(this, object : ViewModelProvider.Factory {
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {
