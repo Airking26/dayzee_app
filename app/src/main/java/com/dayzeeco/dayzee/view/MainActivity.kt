@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
             override fun onReceive(context: Context?, intent: Intent?) {
                 val type = intent?.getIntExtra("type", 0)
                 if(type != 1){
-                    if(type == 0 || type == 5 || type == 6) control.navigate(HomeDirections.actionGlobalDetailedTimenote(1, intent?.getParcelableExtra("event")))
+                    if(type == 0 || type == 6) control.navigate(HomeDirections.actionGlobalDetailedTimenote(1, intent?.getParcelableExtra("event")))
                     else control.navigate(HomeDirections.actionGlobalProfileElse(1).setUserInfoDTO(intent?.getParcelableExtra("user")))
                 }
             }

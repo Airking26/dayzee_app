@@ -133,7 +133,8 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                 || home_nothing_to_display?.visibility == View.VISIBLE
                 || home_posted_recently.visibility == View.GONE) &&
                 home_past_timeline.drawable.bytesEqualTo(resources.getDrawable(R.drawable.ic_passe_ok))
-                && home_past_timeline.drawable.pixelsEqualTo(resources.getDrawable(R.drawable.ic_passe_ok))) loadUpcomingData()
+                && home_past_timeline.drawable.pixelsEqualTo(resources.getDrawable(R.drawable.ic_passe_ok)))
+                    loadUpcomingData()
             tokenId = prefs.getString(accessToken, null)
             retrieveCurrentRegistrationToken(prefs.getString(accessToken, null)!!)
             onRefreshPicBottomNavListener.onrefreshPicBottomNav(userInfoDTO.picture)
@@ -371,7 +372,6 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     }
 
     override fun onCommentClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        //findNavController().navigate(HomeDirections.actionGlobalDetailedTimenoteCarousel(1, timenoteInfoDTO))
         findNavController().navigate(HomeDirections.actionGlobalDetailedTimenote(1, timenoteInfoDTO))
     }
 
@@ -379,23 +379,25 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         if(isAdded){
             timenoteViewModel.joinTimenote(tokenId!!, timenoteInfoDTO.id).observe(
                 viewLifecycleOwner,
-                Observer {
+                {
                     if(it.code() == 401) {
-                        loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
-                            tokenId = newAccessToken
-                            timenoteViewModel.joinTimenote(tokenId!!, timenoteInfoDTO.id)
-                        })
+                        loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner,
+                            { newAccessToken ->
+                                tokenId = newAccessToken
+                                timenoteViewModel.joinTimenote(tokenId!!, timenoteInfoDTO.id)
+                            })
                     }
                 })
         } else {
-            timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {
-                if(it.code() == 401) {
-                    loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
-                        tokenId = newAccessToken
-                        timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id)
-                    })
-                }
-            })
+            timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner,
+                {
+                    if(it.code() == 401) {
+                        loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { newAccessToken ->
+                            tokenId = newAccessToken
+                            timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id)
+                        })
+                    }
+                })
         }
     }
 

@@ -1368,6 +1368,9 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     ) {
         if(requestCode == 2){
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                detailed_timenote_add_picture.visibility = View.INVISIBLE
+                detailed_timenote_picture_prev.visibility = View.GONE
+                detailed_timenote_add_picture_pb.visibility = View.VISIBLE
                 openGallery()
             }
         }

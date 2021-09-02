@@ -26,7 +26,7 @@ class SearchExploreCategoryAdapter(
         fun onSubCategorySelected(category: Category)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchExploreHolder =
+    override fun onCreateViewHolder(parent: ViewGroup, itemViewType: Int): SearchExploreHolder =
         SearchExploreHolder(
             LayoutInflater.from(parent.context).inflate(
                 R.layout.adapter_search_explore,
@@ -57,147 +57,148 @@ class SearchExploreCategoryAdapter(
                 itemView.context.getString(R.string.sports).toLowerCase(), itemView.context.getString(
                     R.string.sport
                 ).toLowerCase() ->
-                    itemView.search_explore_category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_sport))
-                /*Glide
-                    .with(view)
-                    .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_sport.jpg")
-                    .centerCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(view.category_iv)*/
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_sport))
+                    Glide
+                        .with(itemView)
+                        .load(R.drawable.category_sport)
+                        .centerCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(itemView.search_explore_category_iv)
                 itemView.context.getString(R.string.crypto).toLowerCase() ->
-                    itemView.search_explore_category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_crypto))
-                /*Glide
-                        .with(view)
-                        .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_crypto.jpg")
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_crypto))
+                    Glide
+                        .with(itemView)
+                        .load(R.drawable.category_crypto)
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(view.category_iv)*/
+                        .into(itemView.search_explore_category_iv)
                 itemView.context.getString(R.string.influencers).toLowerCase() ->
-                    itemView.search_explore_category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_influencers))
-                /*Glide
-                        .with(view)
-                        .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_influencers.jpg")
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_influencers))
+                    Glide
+                        .with(itemView)
+                        .load(R.drawable.category_influencers)
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(view.category_iv)*/
+                        .into(itemView.search_explore_category_iv)
                 itemView.context.getString(R.string.social_and_meeting).toLowerCase() ->
-                    itemView.search_explore_category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_social_and_meeting))
-                /*Glide
-                    .with(view)
-                    .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_social_and_meeting.jpg")
-                    .centerCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(view.category_iv)*/
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_social_and_meeting))
+                    Glide
+                        .with(itemView)
+                        .load(R.drawable.category_social_and_meeting)
+                        .centerCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(itemView.search_explore_category_iv)
                 itemView.context.getString(R.string.for_kids).toLowerCase() ->
-                    itemView.search_explore_category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_for_kids))
-                /*Glide
-                    .with(view)
-                    .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_for_kids.jpg")
-                    .centerCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(view.category_iv)*/
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_for_kids))
+                    Glide
+                        .with(itemView)
+                        .load(R.drawable.category_for_kids)
+                        .centerCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(itemView.search_explore_category_iv)
                 itemView.context.getString(R.string.esports)
                     .toLowerCase(), itemView.context.getString(
                     R.string.esport
                 ).toLowerCase() ->
-                    itemView.search_explore_category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_esport))
-                /*Glide
-                    .with(view)
-                    .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_esport.jpg")
-                    .centerCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(view.category_iv)*/
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_esport))
+                    Glide
+                        .with(itemView)
+                        .load(R.drawable.category_esport)
+                        .centerCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(itemView.search_explore_category_iv)
                 itemView.context.getString(R.string.music).toLowerCase() ->
-                    itemView.search_explore_category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_music))
-                /*Glide
-                    .with(view)
-                    .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_music.jpg")
-                    .centerCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(view.category_iv)*/
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_music))
+                    Glide
+                        .with(itemView)
+                        .load(R.drawable.category_music)
+                        .centerCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(itemView.search_explore_category_iv)
                 itemView.context.getString(R.string.holidays)
                     .toLowerCase(), itemView.context.getString(
                     R.string.holiday
                 ).toLowerCase() ->
-                    itemView.search_explore_category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_holidays))
-                /*Glide
-                    .with(view)
-                    .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_holidays.jpg")
-                    .centerCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(view.category_iv)*/
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_holidays)) *
+                    Glide
+                        .with(itemView)
+                        .load(R.drawable.category_holidays)
+                        .centerCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(itemView.search_explore_category_iv)
                 itemView.context.getString(R.string.shopping).toLowerCase() ->
-                    itemView.search_explore_category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_shopping))
-                /*Glide
-                    .with(view)
-                    .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_shopping.jpg")
-                    .centerCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(view.category_iv)*/
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_shopping))
+                    Glide
+                        .with(itemView)
+                        .load(R.drawable.category_shopping)
+                        .centerCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(itemView.search_explore_category_iv)
                 itemView.context.getString(R.string.films_n_amp_series).replace("\n", "")
                     .toLowerCase(),
                 itemView.context.getString(R.string.behind_the_screen).toLowerCase() ->
-                    itemView.search_explore_category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_film))
-                /*Glide
-                    .with(view)
-                    .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_film.jpg")
-                    .centerCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(view.category_iv)*/
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_film))
+                    Glide
+                        .with(itemView)
+                        .load(R.drawable.category_film)
+                        .centerCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(itemView.search_explore_category_iv)
                 itemView.context.getString(R.string.culture_n_amp_loisirs).replace("\n", "")
                     .toLowerCase(),
                 itemView.context.getString(R.string.culture).toLowerCase() ->
-                    itemView.search_explore_category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_culture))
-                /* Glide
-                     .with(view)
-                     .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_culture.jpg")
-                     .centerCrop()
-                     .diskCacheStrategy(DiskCacheStrategy.ALL)
-                     .into(view.category_iv)*/
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_culture))
+                    Glide
+                        .with(itemView)
+                        .load(R.drawable.category_culture)
+                        .centerCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(itemView.search_explore_category_iv)
                 itemView.context.getString(R.string.youtubers), itemView.context.getString(R.string.youtube_channels)
                     .toLowerCase() ->
-                    itemView.search_explore_category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_youtuber))
-                /*Glide
-                    .with(view)
-                    .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_youtuber.jpg")
-                    .centerCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(view.category_iv)*/
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_youtuber))
+                    Glide
+                        .with(itemView)
+                        .load(R.drawable.category_youtuber)
+                        .centerCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(itemView.search_explore_category_iv)
                 itemView.context.getString(R.string.religions)
                     .toLowerCase(), itemView.context.getString(
                     R.string.religion
                 ).toLowerCase() ->
-                    itemView.search_explore_category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_religion))
-                /*Glide
-                    .with(view)
-                    .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_religion.jpg")
-                    .centerCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(view.category_iv)*/
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_religion))
+                    Glide
+                        .with(itemView)
+                        .load(R.drawable.category_religion)
+                        .centerCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(itemView.search_explore_category_iv)
                 itemView.context.getString(R.string.calendrier_n_interessant).replace("\n", "")
                     .toLowerCase().trim() ->
-                    itemView.search_explore_category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_interesting_calendar))
-                /*Glide
-                    .with(view)
-                    .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_interesting_calendar.jpg")
-                    .centerCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(view.category_iv)*/
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_interesting_calendar))
+                    Glide
+                        .with(itemView)
+                        .load(R.drawable.category_interesting_calendar)
+                        .centerCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(itemView.search_explore_category_iv)
                 itemView.context.getString(R.string.fair_trade), itemView.context.getString(R.string.events_and_fair_trade)
                     .toLowerCase() ->
-                    itemView.search_explore_category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_else))
-                /*Glide
-                    .with(view)
-                    .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_else.jpg")
-                    .centerCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(view.category_iv)*/
-                else -> itemView.search_explore_category_iv.setImageDrawable(
-                    ContextCompat.getDrawable(
-                        itemView.context,
-                        R.drawable.audiance
-                    )
-                )
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_else))
+                    Glide
+                        .with(itemView)
+                        .load(R.drawable.category_else)
+                        .centerCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(itemView.search_explore_category_iv)
+                else ->
+                    Glide
+                        .with(itemView)
+                        .load(R.drawable.category_else)
+                        .centerCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(itemView.search_explore_category_iv)
             }
 
             if(allCategoriesSelected.contains(absoluteAdapterPosition)){
@@ -246,7 +247,7 @@ class SearchExploreSubCategoryAdapter(
 
 ): RecyclerView.Adapter<SearchExploreSubCategoryAdapter.ItemSearchExploreHolder>(){
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemSearchExploreHolder =
+    override fun onCreateViewHolder(parent: ViewGroup, itemViewType: Int): ItemSearchExploreHolder =
         ItemSearchExploreHolder(
             LayoutInflater.from(parent.context).inflate(
                 R.layout.item_search_explore,

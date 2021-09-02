@@ -42,7 +42,7 @@ class MyFirebaseNotificationService : FirebaseMessagingService() {
         val broadcastIntent = Intent("NotificationOnClickListener")
         if(type != 1){
             broadcastIntent.putExtra("user", GsonBuilder().create().fromJson(message.data["user"], UserInfoDTO::class.java))
-            if(type == 0 || type == 5 || type == 6) broadcastIntent.putExtra("event", GsonBuilder().create().fromJson(message.data["event"], TimenoteInfoDTO::class.java))
+            if(type == 0 || type == 6) broadcastIntent.putExtra("event", GsonBuilder().create().fromJson(message.data["event"], TimenoteInfoDTO::class.java))
         }
         broadcastIntent.putExtra("type", type)
         val intent = PendingIntent.getBroadcast(

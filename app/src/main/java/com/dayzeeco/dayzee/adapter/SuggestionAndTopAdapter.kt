@@ -16,7 +16,9 @@ import com.dayzeeco.dayzee.common.pixelsEqualTo
 import com.dayzeeco.dayzee.model.SubCategoryRated
 import com.dayzeeco.dayzee.model.UserInfoDTO
 import com.dayzeeco.dayzee.viewModel.SearchViewModel
+import kotlinx.android.synthetic.main.adapter_search_explore.view.*
 import kotlinx.android.synthetic.main.adapter_suggestion_card.view.*
+import kotlinx.android.synthetic.main.adapter_suggestion_card.view.suggestions_iv
 import kotlinx.android.synthetic.main.footer_loading.view.*
 import kotlinx.android.synthetic.main.item_category.view.*
 import kotlinx.android.synthetic.main.item_suggestion.view.*
@@ -87,41 +89,45 @@ class SuggestionAdapter(
             itemView.pref_sub_category_title_category.text = suggestions.keys.elementAt(position).category.subcategory
 
             when(suggestions.keys.elementAt(position).category.category.toLowerCase()){
-                itemView.context.getString(R.string.sports)
-                    .toLowerCase(), itemView.context.getString(
+                itemView.context.getString(R.string.sports).toLowerCase(), itemView.context.getString(
                     R.string.sport
                 ).toLowerCase() ->
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_sport))
                     Glide
                         .with(itemView)
-                        .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_sport.jpg")
+                        .load(R.drawable.category_sport)
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(itemView.suggestions_iv)
                 itemView.context.getString(R.string.crypto).toLowerCase() ->
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_crypto))
                     Glide
                         .with(itemView)
-                        .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_crypto.jpg")
+                        .load(R.drawable.category_crypto)
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(itemView.suggestions_iv)
                 itemView.context.getString(R.string.influencers).toLowerCase() ->
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_influencers))
                     Glide
                         .with(itemView)
-                        .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_influencers.jpg")
+                        .load(R.drawable.category_influencers)
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(itemView.suggestions_iv)
                 itemView.context.getString(R.string.social_and_meeting).toLowerCase() ->
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_social_and_meeting))
                     Glide
                         .with(itemView)
-                        .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_social_and_meeting.jpg")
+                        .load(R.drawable.category_social_and_meeting)
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(itemView.suggestions_iv)
+                        .into(itemView.search_explore_category_iv)
                 itemView.context.getString(R.string.for_kids).toLowerCase() ->
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_for_kids))
                     Glide
                         .with(itemView)
-                        .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_for_kids.jpg")
+                        .load(R.drawable.category_for_kids)
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(itemView.suggestions_iv)
@@ -129,16 +135,18 @@ class SuggestionAdapter(
                     .toLowerCase(), itemView.context.getString(
                     R.string.esport
                 ).toLowerCase() ->
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_esport))
                     Glide
                         .with(itemView)
-                        .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_esport.jpg")
+                        .load(R.drawable.category_esport)
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(itemView.suggestions_iv)
                 itemView.context.getString(R.string.music).toLowerCase() ->
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_music))
                     Glide
                         .with(itemView)
-                        .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_music.jpg")
+                        .load(R.drawable.category_music)
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(itemView.suggestions_iv)
@@ -146,42 +154,47 @@ class SuggestionAdapter(
                     .toLowerCase(), itemView.context.getString(
                     R.string.holiday
                 ).toLowerCase() ->
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_holidays)) *
                     Glide
                         .with(itemView)
-                        .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_holidays.jpg")
+                        .load(R.drawable.category_holidays)
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(itemView.suggestions_iv)
                 itemView.context.getString(R.string.shopping).toLowerCase() ->
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_shopping))
                     Glide
                         .with(itemView)
-                        .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_shopping.jpg")
+                        .load(R.drawable.category_shopping)
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(itemView.suggestions_iv)
                 itemView.context.getString(R.string.films_n_amp_series).replace("\n", "")
                     .toLowerCase(),
                 itemView.context.getString(R.string.behind_the_screen).toLowerCase() ->
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_film))
                     Glide
                         .with(itemView)
-                        .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_film.jpg")
+                        .load(R.drawable.category_film)
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(itemView.suggestions_iv)
                 itemView.context.getString(R.string.culture_n_amp_loisirs).replace("\n", "")
                     .toLowerCase(),
                 itemView.context.getString(R.string.culture).toLowerCase() ->
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_culture))
                     Glide
                         .with(itemView)
-                        .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_culture.jpg")
+                        .load(R.drawable.category_culture)
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(itemView.suggestions_iv)
                 itemView.context.getString(R.string.youtubers), itemView.context.getString(R.string.youtube_channels)
                     .toLowerCase() ->
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_youtuber))
                     Glide
                         .with(itemView)
-                        .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_youtuber.jpg")
+                        .load(R.drawable.category_youtuber)
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(itemView.suggestions_iv)
@@ -189,34 +202,38 @@ class SuggestionAdapter(
                     .toLowerCase(), itemView.context.getString(
                     R.string.religion
                 ).toLowerCase() ->
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_religion))
                     Glide
                         .with(itemView)
-                        .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_religion.jpg")
+                        .load(R.drawable.category_religion)
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(itemView.suggestions_iv)
                 itemView.context.getString(R.string.calendrier_n_interessant).replace("\n", "")
                     .toLowerCase().trim() ->
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_interesting_calendar))
                     Glide
                         .with(itemView)
-                        .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_interesting_calendar.jpg")
+                        .load(R.drawable.category_interesting_calendar)
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(itemView.suggestions_iv)
                 itemView.context.getString(R.string.fair_trade), itemView.context.getString(R.string.events_and_fair_trade)
                     .toLowerCase() ->
+                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_else))
                     Glide
                         .with(itemView)
-                        .load("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/category_else.jpg")
+                        .load(R.drawable.category_else)
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(itemView.suggestions_iv)
-                else -> itemView.suggestions_iv.setImageDrawable(
-                    ContextCompat.getDrawable(
-                        itemView.context,
-                        R.drawable.audiance
-                    )
-                )
+                else ->
+                    Glide
+                        .with(itemView)
+                        .load(R.drawable.category_else)
+                        .centerCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(itemView.suggestions_iv)
             }
 
             val subadapter = SuggestionItemAdapter(suggestions.values.elementAt(position), listener, picClicked)

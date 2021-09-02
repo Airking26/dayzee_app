@@ -21,7 +21,6 @@
         <ImageView
             android:id="@+id/suggestions_iv"
             android:scaleType="centerCrop"
-            android:src="@drawable/audiance"
             app:layout_constraintBottom_toTopOf="@id/suggestion_rv"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
