@@ -146,7 +146,26 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
                         profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_linkedin_colored))
                         stateSwitchUrl = userInfoDTO?.socialMedias?.linkedIn?.url
                     }
-                } else {
+                }
+        else if(userInfoDTO?.socialMedias?.twitter?.enabled!!){
+            if(!userInfoDTO?.socialMedias?.twitter?.url?.isBlank()!!){
+                profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_icon_twitter_colored))
+                stateSwitchUrl = userInfoDTO?.socialMedias?.twitter?.url
+            }
+        }
+        else if(userInfoDTO?.socialMedias?.discord?.enabled!!){
+            if(!userInfoDTO?.socialMedias?.discord?.url?.isBlank()!!){
+                profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_icon_discord_colored))
+                stateSwitchUrl = userInfoDTO?.socialMedias?.discord?.url
+            }
+        }
+        else if(userInfoDTO?.socialMedias?.telegram?.enabled!!){
+            if(!userInfoDTO?.socialMedias?.telegram?.url?.isBlank()!!){
+                profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_icon_telegram_colored))
+                stateSwitchUrl = userInfoDTO?.socialMedias?.telegram?.url
+            }
+        }
+        else {
                     isDetailShown = false
                     profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_icons8_contacts))
                 }

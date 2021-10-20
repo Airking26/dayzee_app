@@ -68,6 +68,8 @@
     <string name="notification_manager_settings">Notification manager</string>
     <string name="comments">Commentaires</string>
     <string name="publish">Publier</string>
+    <string name="users_hidden">Utilisateurs masqués</string>
+    <string name="events_hidden">Evènements masqués</string>
     <string name="add_a_comment">Ajouter un commentaire…</string>
     <string name="large_text">
         "Material is the metaphor.\n\n"
@@ -380,6 +382,10 @@
     <string name="replace">Remplacer</string>
     <string name="hide_post">Masquer cet évènement</string>
     <string name="hide_all_posts">Masquer tous les évènements de cet utilisateur</string>
+    <string name="twitter">Twitter</string>
+    <string name="discord">Discord</string>
+    <string name="telegram">Telegram</string>
+    <string name="common">Common</string>
     <plurals name="time_minutes_comment">
         <item quantity="one">%1$d minute</item>
         <item quantity="other">%1$d minutes</item>

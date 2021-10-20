@@ -25,7 +25,7 @@ class CategoryAdapter(
     private val categoriesAlreadyChosen: List<Category>?
 ) : BaseAdapter() {
 
-    override fun getCount(): Int = categories?.size ?: 0
+    override fun getCount(): Int = categories?.size!! - 1
 
     override fun getItem(position: Int): Any = Any()
     override fun getItemId(position: Int): Long = 0

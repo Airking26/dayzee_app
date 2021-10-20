@@ -287,7 +287,8 @@ class Signup: Fragment(), View.OnClickListener {
                             when(it.code()){
                                 201 -> {
                                     meViewModel.modifyProfile(it.body()?.token!!, UpdateUserInfoDTO(language = Locale.getDefault().language, status = 0, dateFormat = 0, socialMedias = SocialMedias(
-                                        Youtube("", false), Facebook("", false), Instagram("", false), WhatsApp("", false), LinkedIn("", false)
+                                        Youtube("", false), Facebook("", false), Instagram("", false), WhatsApp("", false), LinkedIn("", false),
+                                        Twitter("", false), Discord("", false), Telegram("", false)
                                     ))).observe(viewLifecycleOwner, { rp ->
                                        if(rp.isSuccessful){
                                            findNavController().navigate(SignupDirections.actionSignupToPreferenceCategory(true))

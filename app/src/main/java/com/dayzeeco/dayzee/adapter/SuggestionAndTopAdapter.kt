@@ -227,6 +227,13 @@ class SuggestionAdapter(
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(itemView.suggestions_iv)
+                itemView.context.getString(R.string.common).toLowerCase() ->
+                    Glide
+                        .with(itemView)
+                        .load(R.drawable.trending)
+                        .centerCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(itemView.suggestions_iv)
                 else ->
                     Glide
                         .with(itemView)

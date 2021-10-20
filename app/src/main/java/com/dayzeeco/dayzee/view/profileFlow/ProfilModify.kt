@@ -3,14 +3,12 @@ package com.dayzeeco.dayzee.view.profileFlow
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.ContentValues
-import android.content.Context
-import android.content.Intent
-import android.content.SharedPreferences
+import android.content.*
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Rect
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.InputType
@@ -190,6 +188,9 @@ class ProfilModify: Fragment(), View.OnClickListener,
             profile_modify_insta_switch.visibility = View.GONE
             profile_modify_whatsapp_switch.visibility = View.GONE
             profile_modify_linkedin_switch.visibility = View.GONE
+            profile_modify_twitter_switch.visibility = View.GONE
+            profile_modify_discord_switch.visibility = View.GONE
+            profile_modify_telegram_switch.visibility = View.GONE
             if(profile_modify_youtube_channel.text == requireContext().resources.getString(R.string.youtube_channel) || profile_modify_youtube_channel.hint == requireContext().resources.getString(R.string.youtube_channel) || profile_modify_youtube_channel.text.isNullOrBlank() || profile_modify_youtube_channel.text.isNullOrEmpty()){
                 youtube_cl.visibility = View.GONE
             }
@@ -205,6 +206,15 @@ class ProfilModify: Fragment(), View.OnClickListener,
             if(profile_modify_linkedin.text == requireContext().resources.getString(R.string.linkedin) || profile_modify_linkedin.hint == requireContext().resources.getString(R.string.linkedin) || profile_modify_linkedin.text.isNullOrBlank() || profile_modify_linkedin.text.isNullOrEmpty()){
                 linkedin_cl.visibility = View.GONE
             }
+            if(profile_modify_twitter.text == requireContext().resources.getString(R.string.twitter) || profile_modify_twitter.hint == requireContext().resources.getString(R.string.twitter) || profile_modify_twitter.text.isNullOrBlank() || profile_modify_twitter.text.isNullOrEmpty()){
+                twitter_cl.visibility = View.GONE
+            }
+            if(profile_modify_discord.text == requireContext().resources.getString(R.string.discord) || profile_modify_discord.hint == requireContext().resources.getString(R.string.discord) || profile_modify_discord.text.isNullOrBlank() || profile_modify_discord.text.isNullOrEmpty()){
+                discord_cl.visibility = View.GONE
+            }
+            if(profile_modify_telegram.text == requireContext().resources.getString(R.string.telegram) || profile_modify_telegram.hint == requireContext().resources.getString(R.string.telegram) || profile_modify_telegram.text.isNullOrBlank() || profile_modify_telegram.text.isNullOrEmpty()){
+                telegram_cl.visibility = View.GONE
+            }
         } else {
             profile_from_switch.visibility = View.VISIBLE
             profile_modify_youtube_switch.visibility = View.VISIBLE
@@ -212,7 +222,9 @@ class ProfilModify: Fragment(), View.OnClickListener,
             profile_modify_insta_switch.visibility = View.VISIBLE
             profile_modify_whatsapp_switch.visibility = View.VISIBLE
             profile_modify_linkedin_switch.visibility = View.VISIBLE
-
+            profile_modify_twitter_switch.visibility = View.VISIBLE
+            profile_modify_discord_switch.visibility = View.VISIBLE
+            profile_modify_telegram_switch.visibility = View.VISIBLE
             profile_from_switch.isChecked =
                 prefs.getInt(location_pref, -1) == 1 || prefs.getInt(location_pref, -1) == 2
 
@@ -245,6 +257,21 @@ class ProfilModify: Fragment(), View.OnClickListener,
                 if (isChecked  && profileModifyData.loadProfileModifyModel()?.socialMedias?.linkedIn?.url?.isNotEmpty()!!) profileModifyData.setStateSwitch(4)
                 else profile_modify_linkedin_switch.isChecked = false
             }
+
+            profile_modify_twitter_switch.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked  && profileModifyData.loadProfileModifyModel()?.socialMedias?.twitter?.url?.isNotEmpty()!!) profileModifyData.setStateSwitch(5)
+                else profile_modify_twitter_switch.isChecked = false
+            }
+
+            profile_modify_discord_switch.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked  && profileModifyData.loadProfileModifyModel()?.socialMedias?.discord?.url?.isNotEmpty()!!) profileModifyData.setStateSwitch(6)
+                else profile_modify_discord_switch.isChecked = false
+            }
+
+            profile_modify_telegram_switch.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked  && profileModifyData.loadProfileModifyModel()?.socialMedias?.telegram?.url?.isNotEmpty()!!) profileModifyData.setStateSwitch(7)
+                else profile_modify_telegram_switch.isChecked = false
+            }
         }
 
 
@@ -269,35 +296,80 @@ class ProfilModify: Fragment(), View.OnClickListener,
                         profile_modify_facebook_switch,
                         profile_modify_insta_switch,
                         profile_modify_whatsapp_switch,
-                        profile_modify_linkedin_switch
+                        profile_modify_linkedin_switch,
+                        profile_modify_twitter_switch,
+                        profile_modify_discord_switch,
+                        profile_modify_telegram_switch
                     )
                     profilModifyModel.socialMedias.facebook.enabled -> setStateSwitch(
                         profile_modify_facebook_switch,
                         profile_modify_youtube_switch,
                         profile_modify_insta_switch,
                         profile_modify_whatsapp_switch,
-                        profile_modify_linkedin_switch
+                        profile_modify_linkedin_switch,
+                        profile_modify_twitter_switch,
+                        profile_modify_discord_switch,
+                        profile_modify_telegram_switch
                     )
                     profilModifyModel.socialMedias.instagram.enabled -> setStateSwitch(
                         profile_modify_insta_switch,
                         profile_modify_facebook_switch,
                         profile_modify_youtube_switch,
                         profile_modify_whatsapp_switch,
-                        profile_modify_linkedin_switch
+                        profile_modify_linkedin_switch,
+                        profile_modify_twitter_switch,
+                        profile_modify_discord_switch,
+                        profile_modify_telegram_switch
                     )
                     profilModifyModel.socialMedias.whatsApp.enabled -> setStateSwitch(
                         profile_modify_whatsapp_switch,
                         profile_modify_insta_switch,
                         profile_modify_facebook_switch,
                         profile_modify_youtube_switch,
-                        profile_modify_linkedin_switch
+                        profile_modify_linkedin_switch,
+                        profile_modify_twitter_switch,
+                        profile_modify_discord_switch,
+                        profile_modify_telegram_switch
                     )
                     profilModifyModel.socialMedias.linkedIn.enabled -> setStateSwitch(
                         profile_modify_linkedin_switch,
                         profile_modify_whatsapp_switch,
                         profile_modify_insta_switch,
                         profile_modify_facebook_switch,
-                        profile_modify_youtube_switch
+                        profile_modify_youtube_switch,
+                        profile_modify_twitter_switch,
+                        profile_modify_discord_switch,
+                        profile_modify_telegram_switch
+                    )
+                    profilModifyModel.socialMedias.twitter.enabled -> setStateSwitch(
+                        profile_modify_twitter_switch,
+                        profile_modify_linkedin_switch,
+                        profile_modify_whatsapp_switch,
+                        profile_modify_insta_switch,
+                        profile_modify_facebook_switch,
+                        profile_modify_youtube_switch,
+                        profile_modify_discord_switch,
+                        profile_modify_telegram_switch
+                    )
+                    profilModifyModel.socialMedias.discord.enabled -> setStateSwitch(
+                        profile_modify_discord_switch,
+                        profile_modify_twitter_switch,
+                        profile_modify_linkedin_switch,
+                        profile_modify_whatsapp_switch,
+                        profile_modify_insta_switch,
+                        profile_modify_facebook_switch,
+                        profile_modify_youtube_switch,
+                        profile_modify_telegram_switch
+                    )
+                    profilModifyModel.socialMedias.telegram.enabled -> setStateSwitch(
+                        profile_modify_telegram_switch,
+                        profile_modify_discord_switch,
+                        profile_modify_twitter_switch,
+                        profile_modify_linkedin_switch,
+                        profile_modify_whatsapp_switch,
+                        profile_modify_insta_switch,
+                        profile_modify_facebook_switch,
+                        profile_modify_youtube_switch,
                     )
                     else -> {
                         profile_modify_youtube_switch.isChecked = false
@@ -305,6 +377,9 @@ class ProfilModify: Fragment(), View.OnClickListener,
                         profile_modify_insta_switch.isChecked = false
                         profile_modify_whatsapp_switch.isChecked = false
                         profile_modify_linkedin_switch.isChecked = false
+                        profile_modify_twitter_switch.isChecked = false
+                        profile_modify_discord_switch.isChecked = false
+                        profile_modify_telegram_switch.isChecked = false
                     }
                 }
 
@@ -439,6 +514,33 @@ class ProfilModify: Fragment(), View.OnClickListener,
         }
         else profile_modify_linkedin.text = profilModifyModel?.socialMedias?.linkedIn?.url
 
+        if (profilModifyModel?.socialMedias?.twitter?.url.isNullOrBlank()) {
+            profile_modify_twitter.hint = getString(
+                R.string.twitter
+            )
+            profile_modify_twitter.text = ""
+            profile_modify_twitter_switch.isChecked = false
+        }
+        else profile_modify_twitter.text = profilModifyModel?.socialMedias?.twitter?.url
+
+        if (profilModifyModel?.socialMedias?.discord?.url.isNullOrBlank()) {
+            profile_modify_discord.hint = getString(
+                R.string.discord
+            )
+            profile_modify_discord.text = ""
+            profile_modify_discord_switch.isChecked = false
+        }
+        else profile_modify_discord.text = profilModifyModel?.socialMedias?.discord?.url
+
+        if (profilModifyModel?.socialMedias?.telegram?.url.isNullOrBlank()) {
+            profile_modify_telegram.hint = getString(
+                R.string.telegram
+            )
+            profile_modify_telegram.text = ""
+            profile_modify_telegram_switch.isChecked = false
+        }
+        else profile_modify_telegram.text = profilModifyModel?.socialMedias?.telegram?.url
+
         if (profilModifyModel?.description.isNullOrBlank()) profile_modify_description.hint =
             getString(R.string.describe_yourself) else profile_modify_description.text =
             profilModifyModel?.description
@@ -467,6 +569,9 @@ class ProfilModify: Fragment(), View.OnClickListener,
         profile_modify_instagram.setOnClickListener(this)
         profile_modify_whatsapp.setOnClickListener(this)
         profile_modify_linkedin.setOnClickListener(this)
+        profile_modify_twitter.setOnClickListener(this)
+        profile_modify_discord.setOnClickListener(this)
+        profile_modify_telegram.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
@@ -563,7 +668,17 @@ class ProfilModify: Fragment(), View.OnClickListener,
                         lifecycleOwner(this@ProfilModify)
                     }
                 } else {
-
+                    val intent = Intent(Intent.ACTION_VIEW)
+                    intent.data = Uri.parse(profileModifyData.loadProfileModifyModel()?.socialMedias?.youtube?.url)
+                    try {
+                        startActivity(intent)
+                    } catch (e: ActivityNotFoundException){
+                        Toast.makeText(
+                            requireContext(),
+                            "No app found to handle the url",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
             }
             profile_modify_facebook -> MaterialDialog(
@@ -773,13 +888,19 @@ class ProfilModify: Fragment(), View.OnClickListener,
         switchInactive1: SwitchMaterial,
         switchInactive2: SwitchMaterial,
         switchInactive3: SwitchMaterial,
-        switchInactive4: SwitchMaterial
+        switchInactive4: SwitchMaterial,
+        switchInactive5: SwitchMaterial,
+        switchInactive6: SwitchMaterial,
+        switchInactive7: SwitchMaterial
     ){
         switchActive.isChecked = true
         switchInactive1.isChecked = false
         switchInactive2.isChecked = false
         switchInactive3.isChecked = false
         switchInactive4.isChecked = false
+        switchInactive5.isChecked = false
+        switchInactive6.isChecked = false
+        switchInactive7.isChecked = false
     }
 
 

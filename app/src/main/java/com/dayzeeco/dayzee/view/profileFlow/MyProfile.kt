@@ -230,29 +230,31 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
             }
 
 
-                prefs.intLiveData(followers, userInfoDTO?.followers!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                prefs.intLiveData(followers, userInfoDTO?.followers!!).observe(viewLifecycleOwner, {
                     profile_nbr_followers.text = it.toString()
                 })
-                prefs.intLiveData(following, userInfoDTO?.following!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                prefs.intLiveData(following, userInfoDTO?.following!!).observe(viewLifecycleOwner, {
                     profile_nbr_following.text = it.toString()
                 })
 
-                meViewModel.getMyProfile(tokenId!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                meViewModel.getMyProfile(tokenId!!).observe(viewLifecycleOwner, {
                     if(it.code() == 401){
-                        loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer { newAccessToken ->
-                            tokenId = newAccessToken
-                            meViewModel.getMyProfile(tokenId!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer { response ->
-                                if(response.isSuccessful) {
-                                    prefs.edit().putInt(followers, response.body()?.followers!!).apply()
-                                    prefs.edit().putInt(following, response.body()?.following!!).apply()
+                        loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner,
+                            { newAccessToken ->
+                                tokenId = newAccessToken
+                                meViewModel.getMyProfile(tokenId!!).observe(viewLifecycleOwner,
+                                    { response ->
+                                        if(response.isSuccessful) {
+                                            prefs.edit().putInt(followers, response.body()?.followers!!).apply()
+                                            prefs.edit().putInt(following, response.body()?.following!!).apply()
 
-                                    profile_nbr_followers.text = response.body()?.followers?.toString()
-                                    profile_nbr_following.text = response.body()?.following?.toString()
-                                    profileModifyData.setNbrFollowers(response.body()?.followers!!)
-                                    profileModifyData.setNbrFollowing(response.body()?.following!!)
-                                }
+                                            profile_nbr_followers.text = response.body()?.followers?.toString()
+                                            profile_nbr_following.text = response.body()?.following?.toString()
+                                            profileModifyData.setNbrFollowers(response.body()?.followers!!)
+                                            profileModifyData.setNbrFollowing(response.body()?.following!!)
+                                        }
+                                    })
                             })
-                        })
                     }
                     if(it.isSuccessful) {
                         prefs.edit().putInt(followers, it.body()?.followers!!).apply()
@@ -269,7 +271,7 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
                 profileModifyData = ProfileModifyData(requireContext())
 
                 prefs.intLiveData(location_pref, -1)
-                    .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                    .observe(viewLifecycleOwner, {
                         if (userInfoDTO?.location == null || it == -1 || it == 0) profile_location.visibility =
                             View.GONE
                         else if (it == 1 && userInfoDTO?.location?.address?.city == null) profile_location.visibility =

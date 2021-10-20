@@ -218,6 +218,7 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
             }
         }
 
+
         val screenSlideCreationTimenotePagerAdapter =  ScreenSlideTimenotePagerAdapter(fragment, if(timenote.pictures.isNullOrEmpty()) listOf(if(timenote.colorHex.isNullOrEmpty()) "#09539d" else timenote.colorHex) else timenote.pictures, true, timenote.pictures.isNullOrEmpty()){ _ : Int, i1: Int ->
             if(i1 == 0) {
                 if (timenote.price.price >= 0 && !timenote.url.isNullOrBlank()) {
@@ -274,6 +275,7 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(itemView.timenote_indicator.adapterDataObserver)
         itemView.timenote_username.text = timenote.createdBy.userName
         if(timenote.location != null) {
+            itemView.timenote_place.visibility = View.VISIBLE
             if(timenote.location.address.address.isEmpty() && timenote.location.address.city.isNotEmpty() && timenote.location.address.country.isNotEmpty()){
                 itemView.timenote_place.text = timenote.location.address.city.plus(" ").plus(timenote.location.address.country)
             }
@@ -283,8 +285,10 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
                     .plus(timenote.location.address.country)
             }
             else itemView.timenote_place.text = timenote.location.address.address
+        } else {
+            itemView.timenote_place.text = ""
+            itemView.timenote_place.visibility = View.GONE
         }
-        else itemView.timenote_place.text = ""
 
         val hashTagHelper = HashTagHelper.Creator.create(R.color.colorAccent, object : HashTagHelper.OnHashTagClickListener{
             override fun onHashTagClicked(hashTag: String?) {

@@ -162,6 +162,48 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
+
+            <TextView
+                android:id="@+id/card_line_users_hidden"
+                app:layout_constraintTop_toBottomOf="@id/profile_settings_asked_sent"
+                style="@style/AppTheme.Divider.Toolbar"
+                tools:ignore="MissingConstraints" />
+
+            <TextView
+                android:fontFamily="sans-serif-light"
+                android:id="@+id/profile_settings_users_hidden"
+                android:background="@color/colorElevated"
+                android:padding="16dp"
+                android:textColor="@color/colorText"
+                android:text="@string/users_hidden"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/card_line_users_hidden"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+
+            <TextView
+                android:id="@+id/card_line_dayzee_hidden"
+                app:layout_constraintTop_toBottomOf="@id/profile_settings_users_hidden"
+                style="@style/AppTheme.Divider.Toolbar"
+                tools:ignore="MissingConstraints" />
+
+            <TextView
+                android:fontFamily="sans-serif-light"
+                android:id="@+id/profile_settings_dayzee_hidden"
+                android:background="@color/colorElevated"
+                android:padding="16dp"
+                android:textColor="@color/colorText"
+                android:text="@string/events_hidden"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/card_line_dayzee_hidden"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+
+
             <TextView
                 android:visibility="gone"
                 android:fontFamily="sans-serif-light"
@@ -170,7 +212,7 @@
                 android:text="@string/push"
                 android:textAllCaps="true"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/profile_settings_asked_sent"
+                app:layout_constraintTop_toBottomOf="@id/card_line_dayzee_hidden"
                 android:layout_marginTop="24dp"
                 android:layout_marginStart="16dp"
                 android:layout_width="wrap_content"
@@ -276,7 +318,7 @@
                 android:text="@string/synchro"
                 android:textAllCaps="true"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/profile_settings_notification_manager"
+                app:layout_constraintTop_toBottomOf="@id/profile_settings_dayzee_hidden"
                 android:layout_marginTop="24dp"
                 android:layout_marginStart="16dp"
                 android:layout_width="wrap_content"

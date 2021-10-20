@@ -35,13 +35,14 @@ class SearchExploreCategoryAdapter(
             )
         )
 
-    override fun getItemCount(): Int = explores?.size!!
+    override fun getItemCount(): Int = explores?.size!! - 1
 
     override fun getItemViewType(position: Int): Int {
         return position
     }
 
     override fun onBindViewHolder(holder: SearchExploreHolder, position: Int) {
+        if(explores?.keys?.elementAt(position)?.toLowerCase() != holder.itemView.context.getString(R.string.common).toLowerCase())
         holder.bindCategory(explores, position, subCategoryListener)
     }
 
@@ -52,172 +53,157 @@ class SearchExploreCategoryAdapter(
             position: Int,
             subCategoryListener: SearchSubCategoryListener
         ) {
-            itemView.search_explore_category.text = list?.keys?.elementAt(position)
-            when(list?.keys?.elementAt(position)?.toLowerCase()){
-                itemView.context.getString(R.string.sports).toLowerCase(), itemView.context.getString(
-                    R.string.sport
-                ).toLowerCase() ->
-                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_sport))
-                    Glide
-                        .with(itemView)
-                        .load(R.drawable.category_sport)
-                        .centerCrop()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(itemView.search_explore_category_iv)
-                itemView.context.getString(R.string.crypto).toLowerCase() ->
-                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_crypto))
-                    Glide
-                        .with(itemView)
-                        .load(R.drawable.category_crypto)
-                        .centerCrop()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(itemView.search_explore_category_iv)
-                itemView.context.getString(R.string.influencers).toLowerCase() ->
-                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_influencers))
-                    Glide
-                        .with(itemView)
-                        .load(R.drawable.category_influencers)
-                        .centerCrop()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(itemView.search_explore_category_iv)
-                itemView.context.getString(R.string.social_and_meeting).toLowerCase() ->
-                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_social_and_meeting))
-                    Glide
-                        .with(itemView)
-                        .load(R.drawable.category_social_and_meeting)
-                        .centerCrop()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(itemView.search_explore_category_iv)
-                itemView.context.getString(R.string.for_kids).toLowerCase() ->
-                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_for_kids))
-                    Glide
-                        .with(itemView)
-                        .load(R.drawable.category_for_kids)
-                        .centerCrop()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(itemView.search_explore_category_iv)
-                itemView.context.getString(R.string.esports)
-                    .toLowerCase(), itemView.context.getString(
-                    R.string.esport
-                ).toLowerCase() ->
-                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_esport))
-                    Glide
-                        .with(itemView)
-                        .load(R.drawable.category_esport)
-                        .centerCrop()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(itemView.search_explore_category_iv)
-                itemView.context.getString(R.string.music).toLowerCase() ->
-                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_music))
-                    Glide
-                        .with(itemView)
-                        .load(R.drawable.category_music)
-                        .centerCrop()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(itemView.search_explore_category_iv)
-                itemView.context.getString(R.string.holidays)
-                    .toLowerCase(), itemView.context.getString(
-                    R.string.holiday
-                ).toLowerCase() ->
-                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_holidays)) *
-                    Glide
-                        .with(itemView)
-                        .load(R.drawable.category_holidays)
-                        .centerCrop()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(itemView.search_explore_category_iv)
-                itemView.context.getString(R.string.shopping).toLowerCase() ->
-                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_shopping))
-                    Glide
-                        .with(itemView)
-                        .load(R.drawable.category_shopping)
-                        .centerCrop()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(itemView.search_explore_category_iv)
-                itemView.context.getString(R.string.films_n_amp_series).replace("\n", "")
-                    .toLowerCase(),
-                itemView.context.getString(R.string.behind_the_screen).toLowerCase() ->
-                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_film))
-                    Glide
-                        .with(itemView)
-                        .load(R.drawable.category_film)
-                        .centerCrop()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(itemView.search_explore_category_iv)
-                itemView.context.getString(R.string.culture_n_amp_loisirs).replace("\n", "")
-                    .toLowerCase(),
-                itemView.context.getString(R.string.culture).toLowerCase() ->
-                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_culture))
-                    Glide
-                        .with(itemView)
-                        .load(R.drawable.category_culture)
-                        .centerCrop()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(itemView.search_explore_category_iv)
-                itemView.context.getString(R.string.youtubers), itemView.context.getString(R.string.youtube_channels)
-                    .toLowerCase() ->
-                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_youtuber))
-                    Glide
-                        .with(itemView)
-                        .load(R.drawable.category_youtuber)
-                        .centerCrop()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(itemView.search_explore_category_iv)
-                itemView.context.getString(R.string.religions)
-                    .toLowerCase(), itemView.context.getString(
-                    R.string.religion
-                ).toLowerCase() ->
-                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_religion))
-                    Glide
-                        .with(itemView)
-                        .load(R.drawable.category_religion)
-                        .centerCrop()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(itemView.search_explore_category_iv)
-                itemView.context.getString(R.string.calendrier_n_interessant).replace("\n", "")
-                    .toLowerCase().trim() ->
-                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_interesting_calendar))
-                    Glide
-                        .with(itemView)
-                        .load(R.drawable.category_interesting_calendar)
-                        .centerCrop()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(itemView.search_explore_category_iv)
-                itemView.context.getString(R.string.fair_trade), itemView.context.getString(R.string.events_and_fair_trade)
-                    .toLowerCase() ->
-                    //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_else))
-                    Glide
-                        .with(itemView)
-                        .load(R.drawable.category_else)
-                        .centerCrop()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(itemView.search_explore_category_iv)
-                else ->
-                    Glide
-                        .with(itemView)
-                        .load(R.drawable.category_else)
-                        .centerCrop()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(itemView.search_explore_category_iv)
-            }
-
-            if(allCategoriesSelected.contains(absoluteAdapterPosition)){
-                itemView.search_explore_rv.apply {
-                    visibility = View.VISIBLE
-                    layoutManager = LinearLayoutManager(itemView.context)
-                    isNestedScrollingEnabled = false
-                    adapter = SearchExploreSubCategoryAdapter(
-                        list?.values?.elementAt(position),
-                        subCategoryListener
-                    )
+                itemView.search_explore_category.text = list?.keys?.elementAt(position)
+                when (list?.keys?.elementAt(position)?.toLowerCase()) {
+                    itemView.context.getString(R.string.sports)
+                        .toLowerCase(), itemView.context.getString(
+                        R.string.sport
+                    ).toLowerCase() ->
+                        //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_sport))
+                        Glide
+                            .with(itemView)
+                            .load(R.drawable.category_sport)
+                            .centerCrop()
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(itemView.search_explore_category_iv)
+                    itemView.context.getString(R.string.crypto).toLowerCase() ->
+                        //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_crypto))
+                        Glide
+                            .with(itemView)
+                            .load(R.drawable.category_crypto)
+                            .centerCrop()
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(itemView.search_explore_category_iv)
+                    itemView.context.getString(R.string.influencers).toLowerCase() ->
+                        //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_influencers))
+                        Glide
+                            .with(itemView)
+                            .load(R.drawable.category_influencers)
+                            .centerCrop()
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(itemView.search_explore_category_iv)
+                    itemView.context.getString(R.string.social_and_meeting).toLowerCase() ->
+                        //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_social_and_meeting))
+                        Glide
+                            .with(itemView)
+                            .load(R.drawable.category_social_and_meeting)
+                            .centerCrop()
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(itemView.search_explore_category_iv)
+                    itemView.context.getString(R.string.for_kids).toLowerCase() ->
+                        //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_for_kids))
+                        Glide
+                            .with(itemView)
+                            .load(R.drawable.category_for_kids)
+                            .centerCrop()
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(itemView.search_explore_category_iv)
+                    itemView.context.getString(R.string.esports)
+                        .toLowerCase(), itemView.context.getString(
+                        R.string.esport
+                    ).toLowerCase() ->
+                        //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_esport))
+                        Glide
+                            .with(itemView)
+                            .load(R.drawable.category_esport)
+                            .centerCrop()
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(itemView.search_explore_category_iv)
+                    itemView.context.getString(R.string.music).toLowerCase() ->
+                        //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_music))
+                        Glide
+                            .with(itemView)
+                            .load(R.drawable.category_music)
+                            .centerCrop()
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(itemView.search_explore_category_iv)
+                    itemView.context.getString(R.string.holidays)
+                        .toLowerCase(), itemView.context.getString(
+                        R.string.holiday
+                    ).toLowerCase() ->
+                        //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_holidays)) *
+                        Glide
+                            .with(itemView)
+                            .load(R.drawable.category_holidays)
+                            .centerCrop()
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(itemView.search_explore_category_iv)
+                    itemView.context.getString(R.string.shopping).toLowerCase() ->
+                        //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_shopping))
+                        Glide
+                            .with(itemView)
+                            .load(R.drawable.category_shopping)
+                            .centerCrop()
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(itemView.search_explore_category_iv)
+                    itemView.context.getString(R.string.films_n_amp_series).replace("\n", "")
+                        .toLowerCase(),
+                    itemView.context.getString(R.string.behind_the_screen).toLowerCase() ->
+                        //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_film))
+                        Glide
+                            .with(itemView)
+                            .load(R.drawable.category_film)
+                            .centerCrop()
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(itemView.search_explore_category_iv)
+                    itemView.context.getString(R.string.culture_n_amp_loisirs).replace("\n", "")
+                        .toLowerCase(),
+                    itemView.context.getString(R.string.culture).toLowerCase() ->
+                        //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_culture))
+                        Glide
+                            .with(itemView)
+                            .load(R.drawable.category_culture)
+                            .centerCrop()
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(itemView.search_explore_category_iv)
+                    itemView.context.getString(R.string.youtubers), itemView.context.getString(R.string.youtube_channels)
+                        .toLowerCase() ->
+                        //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_youtuber))
+                        Glide
+                            .with(itemView)
+                            .load(R.drawable.category_youtuber)
+                            .centerCrop()
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(itemView.search_explore_category_iv)
+                    itemView.context.getString(R.string.religions)
+                        .toLowerCase(), itemView.context.getString(
+                        R.string.religion
+                    ).toLowerCase() ->
+                        //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_religion))
+                        Glide
+                            .with(itemView)
+                            .load(R.drawable.category_religion)
+                            .centerCrop()
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(itemView.search_explore_category_iv)
+                    itemView.context.getString(R.string.calendrier_n_interessant).replace("\n", "")
+                        .toLowerCase().trim() ->
+                        //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_interesting_calendar))
+                        Glide
+                            .with(itemView)
+                            .load(R.drawable.category_interesting_calendar)
+                            .centerCrop()
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(itemView.search_explore_category_iv)
+                    itemView.context.getString(R.string.fair_trade), itemView.context.getString(R.string.events_and_fair_trade)
+                        .toLowerCase() ->
+                        //itemView.category_iv.setImageDrawable(itemView.context.resources.getDrawable(R.drawable.category_else))
+                        Glide
+                            .with(itemView)
+                            .load(R.drawable.category_else)
+                            .centerCrop()
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(itemView.search_explore_category_iv)
+                    else ->
+                        Glide
+                            .with(itemView)
+                            .load(R.drawable.category_else)
+                            .centerCrop()
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(itemView.search_explore_category_iv)
                 }
-            } else {
-                itemView.search_explore_rv.visibility = View.GONE
-            }
 
-            itemView.setOnClickListener {
-                if(!allCategoriesSelected.contains(absoluteAdapterPosition)) {
-                    allCategoriesSelected.add(absoluteAdapterPosition)
+                if (allCategoriesSelected.contains(absoluteAdapterPosition)) {
                     itemView.search_explore_rv.apply {
                         visibility = View.VISIBLE
                         layoutManager = LinearLayoutManager(itemView.context)
@@ -228,13 +214,29 @@ class SearchExploreCategoryAdapter(
                         )
                     }
                 } else {
-                    allCategoriesSelected.remove(absoluteAdapterPosition)
                     itemView.search_explore_rv.visibility = View.GONE
                 }
-            }
-            if(list?.values?.elementAt(position).isNullOrEmpty()) {
-                itemView.search_explore_rv.visibility = View.GONE
-            }
+
+                itemView.setOnClickListener {
+                    if (!allCategoriesSelected.contains(absoluteAdapterPosition)) {
+                        allCategoriesSelected.add(absoluteAdapterPosition)
+                        itemView.search_explore_rv.apply {
+                            visibility = View.VISIBLE
+                            layoutManager = LinearLayoutManager(itemView.context)
+                            isNestedScrollingEnabled = false
+                            adapter = SearchExploreSubCategoryAdapter(
+                                list?.values?.elementAt(position),
+                                subCategoryListener
+                            )
+                        }
+                    } else {
+                        allCategoriesSelected.remove(absoluteAdapterPosition)
+                        itemView.search_explore_rv.visibility = View.GONE
+                    }
+                }
+                if (list?.values?.elementAt(position).isNullOrEmpty()) {
+                    itemView.search_explore_rv.visibility = View.GONE
+                }
 
         }
 

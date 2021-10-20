@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout android:background="@color/colorBackground"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:id="@+id/events_hidden_ll"
+        style="@style/AppTheme.Toolbar.LinearLayout"
+        tools:ignore="MissingConstraints">
+
+        <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
+
+            <TextView
+                android:text="@string/events_hidden"
+                android:id="@+id/followPage_toolbar"
+                style="@style/AppTheme.Toolbar.Title" />
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <TextView style="@style/AppTheme.Divider.Toolbar"/>
+
+    </LinearLayout>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/events_hidden_ll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/colorBackground"
+        android:id="@+id/events_hidden_rv"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+

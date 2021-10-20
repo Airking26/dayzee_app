@@ -179,6 +179,8 @@ class Settings : Fragment(), View.OnClickListener {
         profile_settings_asked_sent.setOnClickListener(this)
         profile_settings_awaiting.setOnClickListener(this)
         settings_synchro_cl.setOnClickListener(this)
+        profile_settings_users_hidden.setOnClickListener(this)
+        profile_settings_dayzee_hidden.setOnClickListener(this)
         profile_settings_switch_account_status.setOnCheckedChangeListener { _, isChecked ->
             if(isChecked) profileModifyData.setStatusAccount(1)
             else profileModifyData.setStatusAccount(0)
@@ -281,6 +283,8 @@ class Settings : Fragment(), View.OnClickListener {
             profile_settings_asked_sent -> findNavController().navigate(
                 SettingsDirections.actionGlobalFollowPage(userInfoDTO.id!!, false, 0).setFollowers(3))
             profile_settings_awaiting -> findNavController().navigate(SettingsDirections.actionGlobalFollowPage(userInfoDTO.id!!, false, 0).setFollowers(2))
+            profile_settings_users_hidden -> findNavController().navigate(SettingsDirections.actionSettingsToUsersHidden())
+            profile_settings_dayzee_hidden -> findNavController().navigate(SettingsDirections.actionSettingsToEventsHidden())
         }
     }
 

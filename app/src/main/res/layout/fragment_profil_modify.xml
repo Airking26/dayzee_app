@@ -306,7 +306,7 @@
                     android:textSize="15sp"
                     android:padding="16dp"
                     android:backgroundTint="#60000000"
-                    android:drawableStart="@drawable/ic_profile_youtube"
+                    android:drawableStart="@drawable/ic_youtube_ok"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
@@ -481,6 +481,126 @@
 
                 <TextView
                     app:layout_constraintTop_toBottomOf="@id/profile_modify_linkedin"
+                    style="@style/AppTheme.Divider.Toolbar"
+                    tools:ignore="MissingConstraints" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/twitter_cl"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/linkedin_cl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:fontFamily="sans-serif-light"
+                    android:id="@+id/profile_modify_twitter"
+                    android:drawablePadding="8dp"
+                    android:hint="@string/twitter"
+                    android:textColor="@color/colorText"
+                    android:textSize="15sp"
+                    android:padding="16dp"
+                    android:backgroundTint="#60000000"
+                    android:drawableStart="@drawable/ic_icon_twitter_ok"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:layout_marginEnd="8dp"
+                    android:id="@+id/profile_modify_twitter_switch"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    app:layout_constraintTop_toBottomOf="@id/profile_modify_twitter"
+                    style="@style/AppTheme.Divider.Toolbar"
+                    tools:ignore="MissingConstraints" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/discord_cl"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/twitter_cl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:fontFamily="sans-serif-light"
+                    android:id="@+id/profile_modify_discord"
+                    android:drawablePadding="8dp"
+                    android:hint="@string/discord"
+                    android:textColor="@color/colorText"
+                    android:textSize="15sp"
+                    android:padding="16dp"
+                    android:backgroundTint="#60000000"
+                    android:drawableStart="@drawable/ic_icon_discord_ok"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:layout_marginEnd="8dp"
+                    android:id="@+id/profile_modify_discord_switch"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    app:layout_constraintTop_toBottomOf="@id/profile_modify_discord"
+                    style="@style/AppTheme.Divider.Toolbar"
+                    tools:ignore="MissingConstraints" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/telegram_cl"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/discord_cl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:fontFamily="sans-serif-light"
+                    android:id="@+id/profile_modify_telegram"
+                    android:drawablePadding="8dp"
+                    android:hint="@string/telegram"
+                    android:textColor="@color/colorText"
+                    android:textSize="15sp"
+                    android:padding="16dp"
+                    android:backgroundTint="#60000000"
+                    android:drawableStart="@drawable/ic_icon_telegram_ok"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:layout_marginEnd="8dp"
+                    android:id="@+id/profile_modify_telegram_switch"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    app:layout_constraintTop_toBottomOf="@id/profile_modify_telegram"
                     style="@style/AppTheme.Divider.Toolbar"
                     tools:ignore="MissingConstraints" />
 

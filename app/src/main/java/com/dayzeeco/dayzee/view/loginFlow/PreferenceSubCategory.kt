@@ -18,6 +18,7 @@ import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.SubCategoryCardAdapter
 import com.dayzeeco.dayzee.adapter.SubCategoryChipAdapter
 import com.dayzeeco.dayzee.common.accessToken
+import com.dayzeeco.dayzee.common.list_subcategory_noted
 import com.dayzeeco.dayzee.common.list_subcategory_rated
 import com.dayzeeco.dayzee.common.stringLiveData
 import com.dayzeeco.dayzee.listeners.GoToTop
@@ -87,8 +88,8 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
             adapter = cardAdapter
         }
 
-        prefs.stringLiveData(list_subcategory_rated, Gson().toJson(prefs.getString(
-            list_subcategory_rated, null))).observe(viewLifecycleOwner, {
+        prefs.stringLiveData(list_subcategory_noted, Gson().toJson(prefs.getString(
+            list_subcategory_noted, null))).observe(viewLifecycleOwner, {
             val typeSubCat: Type = object : TypeToken<MutableList<SubCategoryRated?>>() {}.type
             preferencesCategoryRated = Gson().fromJson(it, typeSubCat) ?: mutableListOf()
             updateListCategoryAndSubCategory(preferencesCategoryRated)
@@ -102,7 +103,7 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
         var list : MutableList<SubCategoryRated> = mutableListOf()
         prefList?.distinctBy { subCategoryRated -> subCategoryRated.category.category }?.forEach { chips.add(it.category.category) }
         prefList?.forEach {
-            if(it.rating > 0){
+            //if(it.rating > 0){
             if(subcategories.containsKey(it.category.category)){
                 list.add(it)
                 subcategories[it.category.category] = list
@@ -111,7 +112,8 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
                 list.add(it)
                 subcategories[it.category.category] = list
             }
-        }}
+        //}
+        }
         chipAdapter.notifyDataSetChanged()
         cardAdapter.notifyDataSetChanged()
     }
@@ -125,6 +127,7 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
     }
 
     private fun saveAndNavigate() {
+        prefs.edit().putString(list_subcategory_noted, Gson().toJson(preferencesCategoryRated)).apply()
         preferencesCategoryRated = preferencesCategoryRated.filter { it.rating > 0 }.toMutableList()
         preferencesViewModel.modifyPreferences(tokenId, Preferences(preferencesCategoryRated)).observe(viewLifecycleOwner, {
             prefs.edit().putString(list_subcategory_rated, Gson().toJson(preferencesCategoryRated)).apply()
@@ -148,6 +151,7 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
         if(subcategories.containsKey(category)) subcategories.remove(category)
         preferencesCategoryRated.removeIf { subcategories -> subcategories.category.category == category }
         prefs.edit().putString(list_subcategory_rated, Gson().toJson(preferencesCategoryRated)).apply()
+        prefs.edit().putString(list_subcategory_noted, Gson().toJson(preferencesCategoryRated)).apply()
     }
 
 

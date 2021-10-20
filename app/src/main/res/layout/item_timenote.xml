@@ -26,6 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:textColor="@color/colorText"
+        app:layout_constraintBottom_toTopOf="@id/timenote_place"
         android:textSize="15sp"
         android:maxLines="1"
         app:layout_constraintEnd_toStartOf="@id/timenote_options"

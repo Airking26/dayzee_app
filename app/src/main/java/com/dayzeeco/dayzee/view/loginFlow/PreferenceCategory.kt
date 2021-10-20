@@ -49,7 +49,7 @@ class PreferenceCategory : Fragment(), View.OnClickListener {
         pref_category_btn_next.setOnClickListener(this)
 
 
-        prefs.stringLiveData(list_subcategory_rated, Gson().toJson(prefs.getString(list_subcategory_rated, null))).observe(viewLifecycleOwner, {
+        prefs.stringLiveData(list_subcategory_noted, Gson().toJson(prefs.getString(list_subcategory_noted, null))).observe(viewLifecycleOwner, {
             val typeSubCat: Type = object : TypeToken<MutableList<SubCategoryRated?>>() {}.type
             preferencesCategoryRated = Gson().fromJson(it, typeSubCat) ?: mutableListOf()
         })
@@ -80,6 +80,7 @@ class PreferenceCategory : Fragment(), View.OnClickListener {
         when(v){
             pref_category_btn_next -> {
                 if(preferencesCategoryRated.size > 0){
+                    prefs.edit().putString(list_subcategory_noted, Gson().toJson(preferencesCategoryRated)).apply()
                     preferencesViewModel.modifyPreferences(tokenId!!, Preferences(preferencesCategoryRated)).observe(viewLifecycleOwner, {
                         prefs.edit().putString(list_subcategory_rated, Gson().toJson(preferencesCategoryRated)).apply()
                         if(it.isSuccessful) {

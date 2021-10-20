@@ -56,6 +56,7 @@ class SearchExplore : Fragment(), SearchExploreCategoryAdapter.SearchSubCategory
                             tokenId = newAccessToken
                             prefrenceViewModel.getCategories().observe(viewLifecycleOwner, { lc ->
                                 if (lc.isSuccessful) {
+                                    explores?.putAll(response.body()?.groupBy { it.category }!!)
                                     searchExploreAdapter.notifyDataSetChanged()
                                     search_explore_pb.visibility = View.GONE
                                     alreadyCreated = true

@@ -7,10 +7,12 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class SocialMedias (
-
 	@SerializedName("youtube") val youtube : Youtube,
 	@SerializedName("facebook") val facebook : Facebook,
 	@SerializedName("instagram") val instagram : Instagram,
 	@SerializedName("whatsApp") val whatsApp : WhatsApp,
-	@SerializedName("linkedIn") val linkedIn : LinkedIn
+	@SerializedName("linkedIn") val linkedIn : LinkedIn,
+	@SerializedName("twitter") val twitter: Twitter,
+	@SerializedName("discord") val discord: Discord,
+	@SerializedName("telegram") val telegram: Telegram
 ) : Parcelable

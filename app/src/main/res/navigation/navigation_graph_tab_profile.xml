@@ -82,6 +82,12 @@
         <action
             android:id="@+id/action_settings_to_notificationManager"
             app:destination="@id/notificationManager" />
+        <action
+            android:id="@+id/action_settings_to_usersHidden"
+            app:destination="@id/usersHidden" />
+        <action
+            android:id="@+id/action_settings_to_eventsHidden"
+            app:destination="@id/eventsHidden" />
     </fragment>
     <fragment
         android:id="@+id/notificationManager"
@@ -261,4 +267,12 @@
             app:argType="integer" />
     </fragment>
     <action android:id="@+id/action_global_profileElse" app:destination="@id/profileElse" />
+    <fragment
+        android:id="@+id/usersHidden"
+        android:name="com.dayzeeco.dayzee.view.profileFlow.settingsDirectory.UsersHidden"
+        android:label="UsersHidden" />
+    <fragment
+        android:id="@+id/eventsHidden"
+        android:name="com.dayzeeco.dayzee.view.profileFlow.settingsDirectory.EventsHidden"
+        android:label="EventsHidden" />
 </navigation>

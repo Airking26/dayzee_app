@@ -28,6 +28,7 @@
         android:textColor="@color/colorText"
         android:textSize="15sp"
         android:maxLines="1"
+        app:layout_constraintBottom_toTopOf="@id/timenote_place"
         app:layout_constraintEnd_toStartOf="@id/timenote_options"
         android:ellipsize="end"
         app:layout_constraintStart_toEndOf="@id/timenote_pic_user_imageview"

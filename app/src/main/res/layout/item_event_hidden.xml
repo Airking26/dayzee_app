@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorBackground"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:padding="4dp"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout
+        android:layout_marginVertical="8dp"
+        android:layout_marginStart="16dp"
+        android:id="@+id/event_hidden_rl"
+        android:background="@drawable/border_unselected"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="38dp"
+        android:layout_height="38dp">
+
+        <ImageView
+            android:layout_centerInParent="true"
+            android:id="@+id/event_hidden_imageview"
+            android:background="@drawable/border_pic_profile"
+            android:padding="0.8dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"/>
+
+    </RelativeLayout>
+
+
+    <TextView
+        android:fontFamily="sans-serif-light"
+        android:id="@+id/name_hidden_event"
+        android:textColor="@color/colorText"
+        tools:text="The grand tour - 16 avenue de la peiru lak1200"
+        android:textSize="15sp"
+        android:layout_marginStart="15dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        app:layout_constraintEnd_toStartOf="@id/item_event_hidden_on_off"
+        app:layout_constraintBottom_toTopOf="@id/givenName_event_hidden"
+        app:layout_constraintStart_toEndOf="@id/event_hidden_rl"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/event_hidden_rl" />
+
+    <TextView
+        tools:text="16 Oct. 2021 - 17 Oct. 2021"
+        android:layout_marginStart="15dp"
+        android:textSize="13sp"
+        android:textColor="@android:color/darker_gray"
+        app:layout_constraintTop_toBottomOf="@id/name_hidden_event"
+        android:id="@+id/givenName_event_hidden"
+        android:maxLines="1"
+        android:ellipsize="end"
+        app:layout_constraintEnd_toStartOf="@id/item_event_hidden_on_off"
+        app:layout_constraintBottom_toBottomOf="@id/event_hidden_rl"
+        app:layout_constraintStart_toEndOf="@id/event_hidden_rl"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"/>
+
+
+    <ImageView
+        android:src="@drawable/ic_baseline_visibility_off_24"
+        android:paddingVertical="6dp"
+        android:paddingHorizontal="8dp"
+        android:gravity="center"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/event_hidden_rl"
+        app:layout_constraintTop_toTopOf="@id/event_hidden_rl"
+        android:id="@+id/item_event_hidden_on_off"
+        android:layout_width="36dp"
+        android:layout_height="36dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

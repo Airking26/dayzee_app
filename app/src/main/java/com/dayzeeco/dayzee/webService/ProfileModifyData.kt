@@ -24,7 +24,9 @@ class ProfileModifyData(context: Context) {
             Facebook("", false),
             Instagram("", false),
             WhatsApp("", false),
-            LinkedIn("", false))
+            LinkedIn("", false),
+                Twitter("", false), Discord("", false), Telegram("", false))
+
         ))), type)
 
     fun loadProfileModifyModel(): UserInfoDTO? {
@@ -116,6 +118,9 @@ class ProfileModifyData(context: Context) {
                 profilModifyModel?.socialMedias?.instagram?.enabled = false
                 profilModifyModel?.socialMedias?.whatsApp?.enabled = false
                 profilModifyModel?.socialMedias?.linkedIn?.enabled = false
+                profilModifyModel?.socialMedias?.twitter?.enabled = false
+                profilModifyModel?.socialMedias?.discord?.enabled = false
+                profilModifyModel?.socialMedias?.telegram?.enabled = false
             }
             1 -> {
                 profilModifyModel?.socialMedias?.youtube?.enabled = false
@@ -123,6 +128,9 @@ class ProfileModifyData(context: Context) {
                 profilModifyModel?.socialMedias?.instagram?.enabled = false
                 profilModifyModel?.socialMedias?.whatsApp?.enabled = false
                 profilModifyModel?.socialMedias?.linkedIn?.enabled = false
+                profilModifyModel?.socialMedias?.twitter?.enabled = false
+                profilModifyModel?.socialMedias?.discord?.enabled = false
+                profilModifyModel?.socialMedias?.telegram?.enabled = false
             }
             2 ->{
                 profilModifyModel?.socialMedias?.youtube?.enabled = false
@@ -130,6 +138,9 @@ class ProfileModifyData(context: Context) {
                 profilModifyModel?.socialMedias?.instagram?.enabled = true
                 profilModifyModel?.socialMedias?.whatsApp?.enabled = false
                 profilModifyModel?.socialMedias?.linkedIn?.enabled = false
+                profilModifyModel?.socialMedias?.twitter?.enabled = false
+                profilModifyModel?.socialMedias?.discord?.enabled = false
+                profilModifyModel?.socialMedias?.telegram?.enabled = false
             }
             3 -> {
                 profilModifyModel?.socialMedias?.youtube?.enabled = false
@@ -137,6 +148,9 @@ class ProfileModifyData(context: Context) {
                 profilModifyModel?.socialMedias?.instagram?.enabled = false
                 profilModifyModel?.socialMedias?.whatsApp?.enabled = true
                 profilModifyModel?.socialMedias?.linkedIn?.enabled = false
+                profilModifyModel?.socialMedias?.twitter?.enabled = false
+                profilModifyModel?.socialMedias?.discord?.enabled = false
+                profilModifyModel?.socialMedias?.telegram?.enabled = false
             }
             4 -> {
                 profilModifyModel?.socialMedias?.youtube?.enabled = false
@@ -144,6 +158,9 @@ class ProfileModifyData(context: Context) {
                 profilModifyModel?.socialMedias?.instagram?.enabled = false
                 profilModifyModel?.socialMedias?.whatsApp?.enabled = false
                 profilModifyModel?.socialMedias?.linkedIn?.enabled = true
+                profilModifyModel?.socialMedias?.twitter?.enabled = false
+                profilModifyModel?.socialMedias?.discord?.enabled = false
+                profilModifyModel?.socialMedias?.telegram?.enabled = false
             }
             5 -> {
                 profilModifyModel?.socialMedias?.youtube?.enabled = false
@@ -151,6 +168,29 @@ class ProfileModifyData(context: Context) {
                 profilModifyModel?.socialMedias?.instagram?.enabled = false
                 profilModifyModel?.socialMedias?.whatsApp?.enabled = false
                 profilModifyModel?.socialMedias?.linkedIn?.enabled = false
+                profilModifyModel?.socialMedias?.twitter?.enabled = true
+                profilModifyModel?.socialMedias?.discord?.enabled = false
+                profilModifyModel?.socialMedias?.telegram?.enabled = false
+            }
+            6 -> {
+                profilModifyModel?.socialMedias?.youtube?.enabled = false
+                profilModifyModel?.socialMedias?.facebook?.enabled = false
+                profilModifyModel?.socialMedias?.instagram?.enabled = false
+                profilModifyModel?.socialMedias?.whatsApp?.enabled = false
+                profilModifyModel?.socialMedias?.linkedIn?.enabled = false
+                profilModifyModel?.socialMedias?.twitter?.enabled = false
+                profilModifyModel?.socialMedias?.discord?.enabled = true
+                profilModifyModel?.socialMedias?.telegram?.enabled = false
+            }
+            7 -> {
+                profilModifyModel?.socialMedias?.youtube?.enabled = false
+                profilModifyModel?.socialMedias?.facebook?.enabled = false
+                profilModifyModel?.socialMedias?.instagram?.enabled = false
+                profilModifyModel?.socialMedias?.whatsApp?.enabled = false
+                profilModifyModel?.socialMedias?.linkedIn?.enabled = false
+                profilModifyModel?.socialMedias?.twitter?.enabled = false
+                profilModifyModel?.socialMedias?.discord?.enabled = false
+                profilModifyModel?.socialMedias?.telegram?.enabled = true
             }
         }
         notifyProfileDataChanged()
