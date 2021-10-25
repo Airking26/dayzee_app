@@ -185,4 +185,13 @@
         android:id="@+id/carouselActivity"
         android:name="com.dayzeeco.dayzee.androidView.carousel.CarouselActivity"
         android:label="CarouselActivity" /><action android:id="@+id/action_global_carouselActivity" app:destination="@id/carouselActivity"/>
+    <fragment
+        android:id="@+id/changePassword"
+        android:name="com.dayzeeco.dayzee.view.loginFlow.ChangePassword"
+        android:label="ChangePassword" >
+        <argument
+            android:name="token"
+            app:argType="string" />
+    </fragment>
+    <action android:id="@+id/action_global_changePassword" app:destination="@id/changePassword" />
 </navigation>

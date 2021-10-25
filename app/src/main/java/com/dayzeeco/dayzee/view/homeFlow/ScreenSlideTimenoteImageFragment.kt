@@ -46,7 +46,7 @@ class ScreenSlideTimenoteImageFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         if(isNullOrEmpty!!){
-            if(!url.isNullOrEmpty() && !url.isNullOrBlank()) create_timenote_pic.setBackgroundColor((Color.parseColor(if(url?.contains("#")!!) url else  "#${url}")))
+            if(!url.isNullOrEmpty() && !url.isNullOrBlank()) create_timenote_pic.setBackgroundColor((Color.parseColor(if(url?.contains("#")!!) url else "#${url}")))
         } else Glide.with(this)
             .load(Uri.parse(url))
             .thumbnail(0.1f)

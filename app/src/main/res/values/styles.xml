@@ -25,6 +25,7 @@
         <item name="colorBackgroundSettings">@color/colorBackgroundSettings</item>
         <item name="colorElevated">@color/colorElevated</item>
         <item name="colorHashtag">@color/colorHashtag</item>
+        <item name="md_corner_radius">16dp</item>
     </style>
 
     <style name="AppTheme.Toolbar" parent="Theme.AppCompat.Light.NoActionBar">

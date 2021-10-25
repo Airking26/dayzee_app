@@ -275,4 +275,13 @@
         android:id="@+id/eventsHidden"
         android:name="com.dayzeeco.dayzee.view.profileFlow.settingsDirectory.EventsHidden"
         android:label="EventsHidden" />
+    <fragment
+        android:id="@+id/changePassword"
+        android:name="com.dayzeeco.dayzee.view.loginFlow.ChangePassword"
+        android:label="ChangePassword" >
+        <argument
+            android:name="token"
+            app:argType="string" />
+    </fragment>
+    <action android:id="@+id/action_global_changePassword" app:destination="@id/changePassword" />
 </navigation>

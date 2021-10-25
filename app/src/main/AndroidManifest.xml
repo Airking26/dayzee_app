@@ -63,7 +63,7 @@
             </intent-filter>
             <!-- Branch URI scheme -->
             <intent-filter>
-                <data android:scheme="timenote" android:host="open" />
+                <data android:scheme="dayzee" android:host="open" />
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />

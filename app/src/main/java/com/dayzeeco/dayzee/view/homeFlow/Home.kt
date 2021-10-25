@@ -30,6 +30,8 @@ import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
+import com.afollestad.materialdialogs.list.listItems
+import com.afollestad.materialdialogs.list.listItemsSingleChoice
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.gson.Gson
@@ -56,6 +58,7 @@ import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type
+import java.text.SimpleDateFormat
 
 class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListener,
     UsersPagingAdapter.SearchPeopleListener, ItemTimenoteRecentAdapter.TimenoteRecentClicked, UsersShareWithPagingAdapter.SearchPeopleListener,
@@ -207,27 +210,30 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                             message(R.string.cant_start_with_password)
                             input(hintRes = R.string.new_password_again, inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD) { _, newPasswordAgain ->
                                 if (newPassword.toString() == newPasswordAgain.toString()) {
-                                    meViewModel.changePassword(tokenId!!, newPasswordAgain.toString()).observe(viewLifecycleOwner, Observer { rsp ->
-                                        if (rsp.code() == 401) {
-                                            loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer { newToken ->
-                                                    tokenId = newToken
-                                                    meViewModel.changePassword(tokenId!!, newPasswordAgain.toString()).observe(viewLifecycleOwner, Observer { resp ->
-                                                        if (resp.isSuccessful) {
-                                                            prefs.edit().putBoolean(
-                                                                temporary_password, false).apply()
-                                                            Toast.makeText(requireContext(), getString(R.string.password_changed_successfully), Toast.LENGTH_SHORT).show()
-                                                        } else {
-                                                            changePasswordTemporary()
-                                                        }
-                                                    })
-                                                })
-                                        }
+                                    meViewModel.changePassword(tokenId!!, newPasswordAgain.toString()).observe(viewLifecycleOwner,
+                                        { rsp ->
+                                            if (rsp.code() == 401) {
+                                                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner,
+                                                    { newToken ->
+                                                            tokenId = newToken
+                                                            meViewModel.changePassword(tokenId!!, newPasswordAgain.toString()).observe(viewLifecycleOwner,
+                                                                { resp ->
+                                                                    if (resp.isSuccessful) {
+                                                                        prefs.edit().putBoolean(
+                                                                            temporary_password, false).apply()
+                                                                        Toast.makeText(requireContext(), getString(R.string.password_changed_successfully), Toast.LENGTH_SHORT).show()
+                                                                    } else {
+                                                                        changePasswordTemporary()
+                                                                    }
+                                                                })
+                                                        })
+                                            }
 
-                                        if (rsp.isSuccessful) {
-                                            prefs.edit().putBoolean(temporary_password, false).apply()
-                                            Toast.makeText(requireContext(), getString(R.string.password_changed_successfully), Toast.LENGTH_SHORT).show()
-                                        } else changePasswordTemporary()
-                                    })
+                                            if (rsp.isSuccessful) {
+                                                prefs.edit().putBoolean(temporary_password, false).apply()
+                                                Toast.makeText(requireContext(), getString(R.string.password_changed_successfully), Toast.LENGTH_SHORT).show()
+                                            } else changePasswordTemporary()
+                                        })
                                 }
                             }
                             lifecycleOwner(this@Home)
@@ -441,26 +447,60 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     }
 
     override fun onReportClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        timenoteViewModel.signalTimenote(tokenId!!, TimenoteCreationSignalementDTO(userInfoDTO.id!!, timenoteInfoDTO.id, "essai")).observe(viewLifecycleOwner, Observer {
-            if(it.code() == 401){
-                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer {newAccessToken ->
-                    tokenId = newAccessToken
-                    timenoteViewModel.signalTimenote(tokenId!!, TimenoteCreationSignalementDTO(userInfoDTO.id!!, timenoteInfoDTO.id, "essai")).observe(viewLifecycleOwner, Observer { rsp ->
-                        if(rsp.isSuccessful) Toast.makeText(
-                            requireContext(),
-                            getString(R.string.reported),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    })
-                })
+        MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            title(text = resources.getString(R.string.choose_a_reason))
+            message(text = resources.getString(R.string.choose_a_reason_message))
+            val listOfItems = mutableListOf(resources.getString(R.string.spam), resources.getString(R.string.nudity_post), resources.getString(R.string.dont_like_it), resources.getString(R.string.hate_speech),
+            resources.getString(R.string.scam_fraud), resources.getString(R.string.false_info), resources.getString(R.string.intimidation_bullying), resources.getString(R.string.violence_post),
+            resources.getString(R.string.intellectual_property), resources.getString(R.string.suicide_automutilation), resources.getString(R.string.illegal_sales))
+            listItemsSingleChoice(items = listOfItems){ _, _, text ->
+                when(text.toString()){
+                    context.getString(R.string.spam) -> signal(timenoteInfoDTO, context.getString(R.string.spam))
+                    context.getString(R.string.nudity_post) -> signal(timenoteInfoDTO, context.getString(R.string.nudity_post))
+                    context.getString(R.string.dont_like_it) -> signal(timenoteInfoDTO, context.getString(R.string.dont_like_it))
+                    context.getString(R.string.hate_speech) -> signal(timenoteInfoDTO, context.getString(R.string.hate_speech))
+                    context.getString(R.string.scam_fraud)  -> signal(timenoteInfoDTO, context.getString(R.string.scam_fraud))
+                    context.getString(R.string.false_info) -> signal(timenoteInfoDTO, context.getString(R.string.false_info))
+                    context.getString(R.string.intimidation_bullying) -> signal(timenoteInfoDTO, context.getString(R.string.intimidation_bullying))
+                    context.getString(R.string.violence_post) -> signal(timenoteInfoDTO, context.getString(R.string.violence_post))
+                    context.getString(R.string.intellectual_property) -> signal(timenoteInfoDTO, context.getString(R.string.intellectual_property))
+                    context.getString(R.string.suicide_automutilation) -> signal(timenoteInfoDTO, context.getString(R.string.suicide_automutilation))
+                    context.getString(R.string.illegal_sales) -> signal(timenoteInfoDTO, context.getString(R.string.illegal_sales))
+                }
             }
+        }
+    }
 
-            if(it.isSuccessful) Toast.makeText(
-                requireContext(),
-                getString(R.string.reported),
-                Toast.LENGTH_SHORT
-            ).show()
-        })
+    private fun signal(timenoteInfoDTO: TimenoteInfoDTO, reason: String) {
+        timenoteViewModel.signalTimenote(tokenId!!, TimenoteCreationSignalementDTO(userInfoDTO.id!!, timenoteInfoDTO.id, reason)).observe(viewLifecycleOwner, {
+                if (it.code() == 401) {
+                    loginViewModel.refreshToken(prefs)
+                        .observe(viewLifecycleOwner, { newAccessToken ->
+                            tokenId = newAccessToken
+                            timenoteViewModel.signalTimenote(
+                                tokenId!!,
+                                TimenoteCreationSignalementDTO(
+                                    userInfoDTO.id!!,
+                                    timenoteInfoDTO.id,
+                                    reason
+                                )
+                            ).observe(viewLifecycleOwner,
+                                { rsp ->
+                                    if (rsp.isSuccessful) Toast.makeText(
+                                        requireContext(),
+                                        getString(R.string.reported),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                })
+                        })
+                }
+
+                if (it.isSuccessful) Toast.makeText(
+                    requireContext(),
+                    getString(R.string.reported),
+                    Toast.LENGTH_SHORT
+                ).show()
+            })
     }
 
     override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO, type: Int) {
@@ -468,9 +508,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     }
 
     private fun share(timenoteInfoDTO: TimenoteInfoDTO) {
-
         val linkProperties: LinkProperties = LinkProperties().setChannel("whatsapp").setFeature("sharing")
-
         val branchUniversalObject = if(!timenoteInfoDTO.pictures?.isNullOrEmpty()!!) BranchUniversalObject()
             .setTitle(timenoteInfoDTO.title)
             .setContentDescription(timenoteInfoDTO.description)
@@ -535,15 +573,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
         })
         val recyclerview = dial.getCustomView().shareWith_rv
-        val  userAdapter = UsersShareWithPagingAdapter(
-            UsersPagingAdapter.UserComparator,
-            this,
-            this,
-            null,
-            sendTo,
-            null,
-            false
-        )
+        val  userAdapter = UsersShareWithPagingAdapter(UsersPagingAdapter.UserComparator, this, this, null, sendTo, null, false)
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{

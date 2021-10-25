@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dayzeeco.dayzee.R
@@ -15,8 +16,10 @@ import com.dayzeeco.dayzee.adapter.EventsHiddenPagingAdapter
 import com.dayzeeco.dayzee.adapter.TimenoteComparator
 import com.dayzeeco.dayzee.adapter.TimenoteRecentLoadStateAdapter
 import com.dayzeeco.dayzee.adapter.UsersHiddenPagingAdapter
+import com.dayzeeco.dayzee.common.Utils
 import com.dayzeeco.dayzee.common.accessToken
 import com.dayzeeco.dayzee.common.user_info_dto
+import com.dayzeeco.dayzee.model.TimenoteHiddedCreationDTO
 import com.dayzeeco.dayzee.model.TimenoteInfoDTO
 import com.dayzeeco.dayzee.model.UserInfoDTO
 import com.dayzeeco.dayzee.paging.HiddedEventsPagingSource
@@ -39,6 +42,7 @@ class EventsHidden: Fragment(), EventsHiddenPagingAdapter.GoToEvent,
     private var tokenId: String? = null
     private lateinit var eventsHiddenPagingAdapter: EventsHiddenPagingAdapter
     private lateinit var userInfoDTOMe: UserInfoDTO
+    private val utils : Utils = Utils()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,7 +63,7 @@ class EventsHidden: Fragment(), EventsHiddenPagingAdapter.GoToEvent,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        eventsHiddenPagingAdapter = EventsHiddenPagingAdapter(TimenoteComparator, this, this, false)
+        eventsHiddenPagingAdapter = EventsHiddenPagingAdapter(TimenoteComparator, this, this, false, utils)
         lifecycleScope.launch {
             hiddenViewModel.getEventsHidden(tokenId!!, prefs).collectLatest {
                 eventsHiddenPagingAdapter.submitData(it)
@@ -75,10 +79,23 @@ class EventsHidden: Fragment(), EventsHiddenPagingAdapter.GoToEvent,
     }
 
     override fun onEventClicked(timenote: TimenoteInfoDTO, isTagged: Boolean) {
-        TODO("Not yet implemented")
+        findNavController().navigate(EventsHiddenDirections.actionGlobalDetailedTimenote(4, timenote))
     }
 
     override fun onSwitch(timenote: TimenoteInfoDTO, unHide: Boolean) {
-        TODO("Not yet implemented")
-    }
+        if(unHide) hiddenViewModel.removeEventFromHiddens(tokenId!!, timenote.id).observe(viewLifecycleOwner){
+            if(it.code() == 401){
+                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner) { newToken ->
+                    tokenId = newToken
+                    hiddenViewModel.removeEventFromHiddens(tokenId!!, timenote.id).observe(viewLifecycleOwner){}
+                }
+            }
+        } else hiddenViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(userInfoDTOMe.id!!, timenote.id, null)).observe(viewLifecycleOwner){
+            if(it.code() == 401){
+                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner) { newToken ->
+                    tokenId = newToken
+                    hiddenViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(userInfoDTOMe.id!!, timenote.id, null)).observe(viewLifecycleOwner){}
+                }
+            }
+        }    }
 }

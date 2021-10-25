@@ -14,6 +14,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.get
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.*
@@ -31,6 +32,7 @@ import com.dayzeeco.dayzee.model.TimenoteInfoDTO
 import com.dayzeeco.dayzee.model.UserInfoDTO
 import com.dayzeeco.dayzee.view.homeFlow.Home
 import com.dayzeeco.dayzee.view.homeFlow.HomeDirections
+import com.dayzeeco.dayzee.view.loginFlow.SignupDirections
 import com.dayzeeco.dayzee.viewModel.SwitchToNotifViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -88,7 +90,8 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                                 timenoteInfoDTO
                             )
                         )
-                    } else {
+                    }
+                    else if(referringParams.has(user_info_dto)) {
                         val typeUserInfoDTO: Type = object : TypeToken<UserInfoDTO?>() {}.type
                         val userInfoDTO = Gson().fromJson<UserInfoDTO>(
                             referringParams.getString(
@@ -101,6 +104,10 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                                 userInfoDTO
                             )
                         )
+                    }
+                    else if(referringParams.has("accessToken")) {
+                        val a = referringParams.getString("accessToken")
+                        control.navigate(SignupDirections.actionGlobalChangePassword(a))
                     }
                 }
             }
@@ -127,7 +134,8 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                                 timenoteInfoDTO
                             )
                         )
-                    } else {
+                    }
+                    else if(referringParams.has(user_info_dto)) {
                         val typeUserInfoDTO: Type = object : TypeToken<UserInfoDTO?>() {}.type
                         val userInfoDTO = Gson().fromJson<UserInfoDTO>(
                             referringParams.getString(user_info_dto),
@@ -139,6 +147,11 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                             )
                         )
                         goToProfile()
+                    }
+                    else if(referringParams.has("accessToken")){
+                        val a = referringParams.getString("accessToken")
+                        control.navigate(SignupDirections.actionGlobalChangePassword(a))
+
                     }
                 }
             } else {

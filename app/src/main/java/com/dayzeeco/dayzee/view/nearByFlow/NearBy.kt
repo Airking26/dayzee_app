@@ -40,6 +40,8 @@ import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
 import com.afollestad.materialdialogs.datetime.datePicker
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
+import com.afollestad.materialdialogs.list.listItems
+import com.afollestad.materialdialogs.list.listItemsSingleChoice
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.*
 import com.dayzeeco.dayzee.common.*
@@ -583,40 +585,67 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
 
     override fun onReportClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         if(userInfoDTO == null) loginViewModel.markAsUnauthenticated()
-        else timenoteViewModel.signalTimenote(
-            tokenId!!, TimenoteCreationSignalementDTO(
-                userInfoDTO?.id!!,
-                timenoteInfoDTO.id,
-                ""
-            )
-        ).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            if (it.code() == 401) {
-                loginViewModel.refreshToken(prefs).observe(
-                    viewLifecycleOwner,
-                    androidx.lifecycle.Observer { newAccessToken ->
-                        tokenId = newAccessToken
-                        timenoteViewModel.signalTimenote(
-                            tokenId!!, TimenoteCreationSignalementDTO(
-                                userInfoDTO?.id!!,
-                                timenoteInfoDTO.id,
-                                ""
-                            )
-                        ).observe(viewLifecycleOwner, androidx.lifecycle.Observer { rsp ->
-                            if (rsp.isSuccessful) Toast.makeText(
-                                requireContext(),
-                                getString(R.string.reported),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        })
-                    })
+        else         MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            title(text = resources.getString(R.string.choose_a_reason))
+            message(text = resources.getString(R.string.choose_a_reason_message))
+            val listOfItems = mutableListOf(resources.getString(R.string.spam), resources.getString(R.string.nudity_post), resources.getString(R.string.dont_like_it), resources.getString(R.string.hate_speech),
+                resources.getString(R.string.scam_fraud), resources.getString(R.string.false_info), resources.getString(R.string.intimidation_bullying), resources.getString(R.string.violence_post),
+                resources.getString(R.string.intellectual_property), resources.getString(R.string.suicide_automutilation), resources.getString(R.string.illegal_sales))
+            listItemsSingleChoice (items = listOfItems){ _, _, text ->
+                when(text.toString()){
+                    context.getString(R.string.spam) -> signal(timenoteInfoDTO, context.getString(R.string.spam))
+                    context.getString(R.string.nudity_post) -> signal(timenoteInfoDTO, context.getString(R.string.nudity_post))
+                    context.getString(R.string.dont_like_it) -> signal(timenoteInfoDTO, context.getString(R.string.dont_like_it))
+                    context.getString(R.string.hate_speech) -> signal(timenoteInfoDTO, context.getString(R.string.hate_speech))
+                    context.getString(R.string.scam_fraud)  -> signal(timenoteInfoDTO, context.getString(R.string.scam_fraud))
+                    context.getString(R.string.false_info) -> signal(timenoteInfoDTO, context.getString(R.string.false_info))
+                    context.getString(R.string.intimidation_bullying) -> signal(timenoteInfoDTO, context.getString(R.string.intimidation_bullying))
+                    context.getString(R.string.violence_post) -> signal(timenoteInfoDTO, context.getString(R.string.violence_post))
+                    context.getString(R.string.intellectual_property) -> signal(timenoteInfoDTO, context.getString(R.string.intellectual_property))
+                    context.getString(R.string.suicide_automutilation) -> signal(timenoteInfoDTO, context.getString(R.string.suicide_automutilation))
+                    context.getString(R.string.illegal_sales) -> signal(timenoteInfoDTO, context.getString(R.string.illegal_sales))
+                }
             }
+        }
+    }
 
-            if (it.isSuccessful) Toast.makeText(
-                requireContext(),
-                getString(R.string.reported),
-                Toast.LENGTH_SHORT
-            ).show()
-        })
+    private fun signal(
+        timenoteInfoDTO: TimenoteInfoDTO,
+        reason: String
+    ) {
+        timenoteViewModel.signalTimenote(
+            tokenId!!,
+            TimenoteCreationSignalementDTO(userInfoDTO?.id!!, timenoteInfoDTO.id, reason)
+        ).observe(viewLifecycleOwner,
+            {
+                if (it.code() == 401) {
+                    loginViewModel.refreshToken(prefs)
+                        .observe(viewLifecycleOwner, { newAccessToken ->
+                            tokenId = newAccessToken
+                            timenoteViewModel.signalTimenote(
+                                tokenId!!,
+                                TimenoteCreationSignalementDTO(
+                                    userInfoDTO?.id!!,
+                                    timenoteInfoDTO.id,
+                                    reason
+                                )
+                            ).observe(viewLifecycleOwner,
+                                { rsp ->
+                                    if (rsp.isSuccessful) Toast.makeText(
+                                        requireContext(),
+                                        getString(R.string.reported),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                })
+                        })
+                }
+
+                if (it.isSuccessful) Toast.makeText(
+                    requireContext(),
+                    getString(R.string.reported),
+                    Toast.LENGTH_SHORT
+                ).show()
+            })
     }
 
     override fun onEditClicked(timenoteInfoDTO: TimenoteInfoDTO) {
