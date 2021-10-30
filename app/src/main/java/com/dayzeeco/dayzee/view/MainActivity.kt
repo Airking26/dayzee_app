@@ -33,6 +33,7 @@ import com.dayzeeco.dayzee.model.UserInfoDTO
 import com.dayzeeco.dayzee.view.homeFlow.Home
 import com.dayzeeco.dayzee.view.homeFlow.HomeDirections
 import com.dayzeeco.dayzee.view.loginFlow.SignupDirections
+import com.dayzeeco.dayzee.viewModel.AccessTokenForgottenPasswordViewModel
 import com.dayzeeco.dayzee.viewModel.SwitchToNotifViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -58,6 +59,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
         setupController()
     }
 
+
     private fun registerNotificationReceiver() {
         val filter = IntentFilter()
         filter.addAction("NotificationOnClickListener")
@@ -65,7 +67,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
             override fun onReceive(context: Context?, intent: Intent?) {
                 val type = intent?.getIntExtra("type", 0)
                 if(type != 1){
-                    if(type == 0 || type == 6) control.navigate(HomeDirections.actionGlobalDetailedTimenote(1, intent?.getParcelableExtra("event")))
+                    if(type == 0 || type == 6) control.navigate(HomeDirections.actionGlobalDetailedTimenote(1, intent.getParcelableExtra("event")))
                     else control.navigate(HomeDirections.actionGlobalProfileElse(1).setUserInfoDTO(intent?.getParcelableExtra("user")))
                 }
             }
@@ -78,36 +80,43 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
         Branch.sessionBuilder(this).withCallback { referringParams, error ->
             if (error == null) {
                 if (referringParams?.getBoolean("+clicked_branch_link")!!) {
-                    if(referringParams.has(timenote_info_dto)) {
-                        val typeTimenoteInfo: Type = object : TypeToken<TimenoteInfoDTO?>() {}.type
-                        val timenoteInfoDTO = Gson().fromJson<TimenoteInfoDTO>(
-                            referringParams.getString(timenote_info_dto),
-                            typeTimenoteInfo
-                        )
-                        control.navigate(
-                            HomeDirections.actionGlobalDetailedTimenote(
-                                1,
-                                timenoteInfoDTO
+                    when {
+                        referringParams.has(timenote_info_dto) -> {
+                            val typeTimenoteInfo: Type = object : TypeToken<TimenoteInfoDTO?>() {}.type
+                            val timenoteInfoDTO = Gson().fromJson<TimenoteInfoDTO>(
+                                referringParams.getString(timenote_info_dto),
+                                typeTimenoteInfo
                             )
-                        )
-                    }
-                    else if(referringParams.has(user_info_dto)) {
-                        val typeUserInfoDTO: Type = object : TypeToken<UserInfoDTO?>() {}.type
-                        val userInfoDTO = Gson().fromJson<UserInfoDTO>(
-                            referringParams.getString(
-                                user_info_dto
-                            ), typeUserInfoDTO
-                        )
-                        goToProfile()
-                        control.navigate(
-                            HomeDirections.actionGlobalProfileElse(1).setUserInfoDTO(
-                                userInfoDTO
+                            control.navigate(
+                                HomeDirections.actionGlobalDetailedTimenote(
+                                    1,
+                                    timenoteInfoDTO
+                                )
                             )
-                        )
-                    }
-                    else if(referringParams.has("accessToken")) {
-                        val a = referringParams.getString("accessToken")
-                        control.navigate(SignupDirections.actionGlobalChangePassword(a))
+                        }
+                        referringParams.has(user_info_dto) -> {
+                            val typeUserInfoDTO: Type = object : TypeToken<UserInfoDTO?>() {}.type
+                            val userInfoDTO = Gson().fromJson<UserInfoDTO>(
+                                referringParams.getString(
+                                    user_info_dto
+                                ), typeUserInfoDTO
+                            )
+                            goToProfile()
+                            control.navigate(
+                                HomeDirections.actionGlobalProfileElse(1).setUserInfoDTO(
+                                    userInfoDTO
+                                )
+                            )
+                        }
+                        referringParams.has("accessToken") -> {
+                            Log.d(TAG, "onCreate: " + prefs.getBoolean(notifications_saved, false).toString())
+                            val a = referringParams.getString("accessToken")
+                            if(!prefs.getBoolean(notifications_saved, false)) {
+                                prefs.edit().putBoolean(notifications_saved, true).apply()
+                                control.navigate(SignupDirections.actionGlobalChangePassword(a))
+                            }
+
+                        }
                     }
                 }
             }
@@ -121,37 +130,42 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
             if (error == null) {
                 Log.i("BRANCH SDK START", referringParams.toString())
                 if (referringParams?.getBoolean("+clicked_branch_link")!!) {
-                    if(referringParams.has(timenote_info_dto)) {
-                        val typeTimenoteInfo: Type = object : TypeToken<TimenoteInfoDTO?>() {}.type
-                        val timenoteInfoDTO = Gson().fromJson<TimenoteInfoDTO>(
-                            referringParams.getString(
-                                timenote_info_dto
-                            ), typeTimenoteInfo
-                        )
-                        control.navigate(
-                            HomeDirections.actionGlobalDetailedTimenote(
-                                1,
-                                timenoteInfoDTO
+                    when {
+                        referringParams.has(timenote_info_dto) -> {
+                            val typeTimenoteInfo: Type = object : TypeToken<TimenoteInfoDTO?>() {}.type
+                            val timenoteInfoDTO = Gson().fromJson<TimenoteInfoDTO>(
+                                referringParams.getString(
+                                    timenote_info_dto
+                                ), typeTimenoteInfo
                             )
-                        )
-                    }
-                    else if(referringParams.has(user_info_dto)) {
-                        val typeUserInfoDTO: Type = object : TypeToken<UserInfoDTO?>() {}.type
-                        val userInfoDTO = Gson().fromJson<UserInfoDTO>(
-                            referringParams.getString(user_info_dto),
-                            typeUserInfoDTO
-                        )
-                        control.navigate(
-                            HomeDirections.actionGlobalProfileElse(1).setUserInfoDTO(
-                                userInfoDTO
+                            control.navigate(
+                                HomeDirections.actionGlobalDetailedTimenote(
+                                    1,
+                                    timenoteInfoDTO
+                                )
                             )
-                        )
-                        goToProfile()
-                    }
-                    else if(referringParams.has("accessToken")){
-                        val a = referringParams.getString("accessToken")
-                        control.navigate(SignupDirections.actionGlobalChangePassword(a))
-
+                        }
+                        referringParams.has(user_info_dto) -> {
+                            val typeUserInfoDTO: Type = object : TypeToken<UserInfoDTO?>() {}.type
+                            val userInfoDTO = Gson().fromJson<UserInfoDTO>(
+                                referringParams.getString(user_info_dto),
+                                typeUserInfoDTO
+                            )
+                            control.navigate(
+                                HomeDirections.actionGlobalProfileElse(1).setUserInfoDTO(
+                                    userInfoDTO
+                                )
+                            )
+                            goToProfile()
+                        }
+                        referringParams.has("accessToken") -> {
+                            Log.d(TAG, "onCreate: " + prefs.getBoolean(notifications_saved, false).toString())
+                            val a = referringParams.getString("accessToken")
+                            if(!prefs.getBoolean(notifications_saved, false)){
+                                prefs.edit().putBoolean(notifications_saved, true).apply()
+                                control.navigate(SignupDirections.actionGlobalChangePassword(a))
+                            }
+                        }
                     }
                 }
             } else {
@@ -168,6 +182,9 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
 
     override fun onResume() {
         super.onResume()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            setupController()
+        }
         if(!intent.getStringExtra(type).isNullOrBlank()){
             goToProfile()
             ViewModelProviders.of(this, object : ViewModelProvider.Factory {
@@ -189,7 +206,6 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun setupController() {
-
         createNotificationChannel()
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
         val userInfoDTO = Gson().fromJson<UserInfoDTO>(
@@ -298,6 +314,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
             }
 
         })
+
         currentNavController = controller
     }
 

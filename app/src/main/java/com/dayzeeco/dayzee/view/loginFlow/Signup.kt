@@ -24,6 +24,8 @@ import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.androidView.dialog.input
 import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.model.*
+import com.dayzeeco.dayzee.view.homeFlow.HomeDirections
+import com.dayzeeco.dayzee.viewModel.AccessTokenForgottenPasswordViewModel
 import com.dayzeeco.dayzee.viewModel.LoginViewModel
 import com.dayzeeco.dayzee.viewModel.MeViewModel
 import kotlinx.android.synthetic.main.fragment_signup.*
@@ -39,6 +41,7 @@ class Signup: Fragment(), View.OnClickListener {
     private var availableMail : Boolean? = null
     private val loginViewModel: LoginViewModel by activityViewModels()
     private val meViewModel: MeViewModel by activityViewModels()
+    private val accessTokenForgottenPasswordViewModel: AccessTokenForgottenPasswordViewModel by activityViewModels()
     private var isOnLogin: Boolean = true
     private val TRIGGER_AUTO_COMPLETE = 200
     private val AUTO_COMPLETE_DELAY: Long = 200
@@ -60,17 +63,22 @@ class Signup: Fragment(), View.OnClickListener {
         signup_forgotten_password.setOnClickListener(this)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
 
+        /*accessTokenForgottenPasswordViewModel.getAccessTok().observe(viewLifecycleOwner){
+            if(it != null && !it.isNullOrBlank()){
+                findNavController().navigate(SignupDirections.actionSignupToChangePassword2(it))
+            }
+        }*/
+
         handlerPasswordSignup = Handler{
             if(it.what == TRIGGER_AUTO_COMPLETE){
                 if(!TextUtils.isEmpty(signup_password?.text)){
-                    if(signup_password?.text.toString()?.startsWith(dayzee_prefix, true)){
+                    if(signup_password?.text.toString().startsWith(dayzee_prefix, true)){
                         signup_password?.error = getString(R.string.cant_start_with_password)
                     } else passwordValidForm = true
                 }
             }
             false
         }
-
         handlerPasswordLogin = Handler{
             if(it.what == TRIGGER_AUTO_COMPLETE){
                 if(!TextUtils.isEmpty(signin_password?.text)){
@@ -81,7 +89,6 @@ class Signup: Fragment(), View.OnClickListener {
             }
             false
         }
-
         handlerMailUsername = Handler {
             if (it.what == TRIGGER_AUTO_COMPLETE) {
                 if (!TextUtils.isEmpty(signin_mail_username?.text)) {
@@ -94,7 +101,6 @@ class Signup: Fragment(), View.OnClickListener {
             }
             false
         }
-
         handlerMail = Handler { msg ->
             if (msg.what == TRIGGER_AUTO_COMPLETE) {
                 if (!TextUtils.isEmpty(signup_mail?.text)) {
@@ -113,24 +119,25 @@ class Signup: Fragment(), View.OnClickListener {
             }
             false
         }
-
-
-        handlerIdentifiant = Handler(Handler.Callback { msg ->
+        handlerIdentifiant = Handler { msg ->
             if (msg.what == TRIGGER_AUTO_COMPLETE) {
                 if (!TextUtils.isEmpty(signup_identifiant?.text)) {
-                    if(!loginViewModel.isValidUsername(signup_identifiant?.text.toString())){
-                        loginViewModel.checkIfUsernameAvailable(signup_identifiant?.text.toString()).observe(viewLifecycleOwner, Observer {
-                            if(it.code() == 200) availableIdentifiant = it.body()?.isAvailable!!
-                            if(!availableIdentifiant!! && !isOnLogin) signup_identifiant?.error = getString(R.string.usermane_already_exists)
-                            else usernameValidForm = true
-                        })
+                    if (!loginViewModel.isValidUsername(signup_identifiant?.text.toString())) {
+                        loginViewModel.checkIfUsernameAvailable(signup_identifiant?.text.toString())
+                            .observe(viewLifecycleOwner, Observer {
+                                if (it.code() == 200) availableIdentifiant =
+                                    it.body()?.isAvailable!!
+                                if (!availableIdentifiant!! && !isOnLogin) signup_identifiant?.error =
+                                    getString(R.string.usermane_already_exists)
+                                else usernameValidForm = true
+                            })
                     } else {
                         signup_identifiant?.error = getString(R.string.not_username_valid_form)
                     }
                 }
             }
             false
-        })
+        }
 
 
         signup_password.addTextChangedListener(object : TextWatcher{
@@ -142,7 +149,6 @@ class Signup: Fragment(), View.OnClickListener {
             }
 
         })
-
         signin_password.addTextChangedListener(object: TextWatcher{
             override fun afterTextChanged(s: Editable?) {}
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -152,7 +158,6 @@ class Signup: Fragment(), View.OnClickListener {
             }
 
         })
-
         signin_mail_username.addTextChangedListener(object: TextWatcher{
             override fun afterTextChanged(s: Editable?) {}
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -162,7 +167,6 @@ class Signup: Fragment(), View.OnClickListener {
             }
 
         })
-
         signup_mail.addTextChangedListener(object: TextWatcher{
             override fun afterTextChanged(s: Editable?) {}
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -173,7 +177,6 @@ class Signup: Fragment(), View.OnClickListener {
             }
 
         })
-
         signup_identifiant.addTextChangedListener(object: TextWatcher{
             override fun afterTextChanged(s: Editable?) {}
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -186,6 +189,8 @@ class Signup: Fragment(), View.OnClickListener {
         })
 
     }
+
+
     override fun onClick(v: View?) {
         when(v){
             guest_btn -> loginViewModel.markAsGuest()
@@ -193,13 +198,20 @@ class Signup: Fragment(), View.OnClickListener {
                 title(R.string.mail)
                 message(R.string.enter_mail)
                 input{ _, mail ->
-                    loginViewModel.forgotPassword(mail.toString().trim()).observe(viewLifecycleOwner, {
-                            if(it.isSuccessful && it.body()?.changed!!){
-                                Toast.makeText(requireContext(), getString(R.string.email_has_been_sent), Toast.LENGTH_SHORT).show()
-                            } else Toast.makeText(requireContext(), getString(R.string.error_try_again), Toast.LENGTH_SHORT).show()
-                        })
+                    loginViewModel.forgotPassword(mail.toString().trim()).observe(viewLifecycleOwner){
+                        if(it.isSuccessful) {
+                            prefs.edit().putBoolean(already_signed_in, true).apply()
+                            //prefs.edit().putBoolean(notifications_saved, true).apply()
+                            Toast.makeText(requireContext(), getString(R.string.email_has_been_sent), Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    /*.observe(viewLifecycleOwner, {
+                        if(it.isSuccessful){
+                            Toast.makeText(requireContext(), getString(R.string.email_has_been_sent), Toast.LENGTH_SHORT).show()
+                        } else Toast.makeText(requireContext(), getString(R.string.error_try_again), Toast.LENGTH_SHORT).show()
+                    })*/
                 }
-                lifecycleOwner(this@Signup)
+                //lifecycleOwner(this@Signup)
             }
             signup_signin_btn -> {
                 signup_forgotten_password.visibility = View.VISIBLE

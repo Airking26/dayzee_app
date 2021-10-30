@@ -1,6 +1,7 @@
 package com.dayzeeco.dayzee.view.homeFlow
 
 import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -10,6 +11,7 @@ import android.text.Editable
 import android.text.InputType
 import android.text.TextUtils
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -97,6 +99,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         if(!tokenId.isNullOrBlank()){
             loginViewModel.markAsAuthenticated()
         } else {
+            Log.d(TAG, "onCreate: " + prefs.getBoolean(already_signed_in, false).toString())
             if(prefs.getBoolean(already_signed_in, false)) loginViewModel.markAsUnauthenticated()
             else loginViewModel.markAsGuest()
         }
@@ -112,8 +115,8 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                 }
 
                 LoginViewModel.AuthenticationState.GUEST -> {
-                    findNavController().popBackStack(R.id.home, false)
-                    onGoToNearby.onGuestMode()
+                        findNavController().popBackStack(R.id.home, false)
+                        onGoToNearby.onGuestMode()
                 }
             }
         })
@@ -170,7 +173,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         if(prefs.getString(accessToken, null) != null) {
 
             if(tokenId == null) tokenId = prefs.getString(accessToken, null)
-            changePasswordTemporary()
+           // changePasswordTemporary()
 
             if(prefs.getString(alarms, null) == null) getAlarms()
 
@@ -191,7 +194,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
     }
 
-    private fun changePasswordTemporary() {
+    /*private fun changePasswordTemporary() {
         prefs.booleanLiveData(temporary_password, false).observe(viewLifecycleOwner, Observer {
             if (it) {
                 MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
@@ -243,7 +246,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                 }
             }
         })
-    }
+    }*/
 
     private fun getAlarms() {
         alarmViewModel.getAlarms(tokenId!!).observe(viewLifecycleOwner, {

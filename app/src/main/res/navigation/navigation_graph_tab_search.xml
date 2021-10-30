@@ -49,6 +49,15 @@
             <action
                 android:id="@+id/action_signup_to_preferenceCategory"
                 app:destination="@id/preferenceCategory" />
+            <action
+                android:id="@+id/action_signup_to_changePassword2"
+                app:destination="@id/changePassword2" />
+        </fragment>
+        <fragment
+            android:id="@+id/changePassword2"
+            android:name="com.dayzeeco.dayzee.view.loginFlow.ChangePassword"
+            android:label="ChangePassword" >
+            <argument android:name="token" />
         </fragment>
     </navigation>
     <fragment

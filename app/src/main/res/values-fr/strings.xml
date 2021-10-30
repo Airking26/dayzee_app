@@ -304,7 +304,7 @@
     <string name="button_sure">Sure(%1$d)</string>
     <string name="cant_start_with_password">Votre mot de passe ne peut commencer avec \"dayzee-\"</string>
     <string name="this_is_temporary_password">Ceci est un mot de passe temporaire, veuillez le changer afin de continuer</string>
-    <string name="enter_mail">Veuillez entrer votre mail lier à votre compte Dayzee afin de recevoir un mail</string>
+    <string name="enter_mail">Veuillez entrer votre mail lier à votre compte Dayzee</string>
     <string name="certify">Certifier</string>
     <string name="update_temporary_password">Mettre à jour le mot de passe temporaire</string>
     <string name="dayzee_connection">Connexion à Dayzee</string>
@@ -401,6 +401,7 @@
     <string name="suicide_automutilation">Sucide ou automutilation</string>
     <string name="continu">Continuer</string>
     <string name="not_same_value">Les mots de passe doivent être les mêmes</string>
+    <string name="validate_login"><![CDATA[Valider & Se Connecter]]></string>
     <plurals name="time_minutes_comment">
         <item quantity="one">%1$d minute</item>
         <item quantity="other">%1$d minutes</item>

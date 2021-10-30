@@ -61,6 +61,17 @@
             <action
                 android:id="@+id/action_signup_to_preferenceCategory"
                 app:destination="@id/preferenceCategory" />
+            <action
+                android:id="@+id/action_signup_to_changePassword"
+                app:destination="@id/changePassword" />
+        </fragment>
+        <fragment
+            android:id="@+id/changePassword"
+            android:name="com.dayzeeco.dayzee.view.loginFlow.ChangePassword"
+            android:label="ChangePassword" >
+            <argument
+                android:name="token"
+                app:argType="string" />
         </fragment>
     </navigation>
     <fragment
@@ -89,4 +100,13 @@
     </fragment>
     <action android:id="@+id/action_global_navigation" app:destination="@id/navigation" />
     <action android:id="@+id/action_global_detailedTimenote" app:destination="@id/detailedTimenote" />
+    <fragment
+        android:id="@+id/changePassword"
+        android:name="com.dayzeeco.dayzee.view.loginFlow.ChangePassword"
+        android:label="ChangePassword" >
+        <argument
+            android:name="token"
+            app:argType="string" />
+    </fragment>
+    <action android:id="@+id/action_global_changePassword" app:destination="@id/changePassword" />
 </navigation>

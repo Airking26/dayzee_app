@@ -68,7 +68,6 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
         locaPref = prefs.getInt(location_pref, -1)
         switchToNotifViewModel.getSwitchNotifLiveData().observe(requireActivity(),
             { if(it) findNavController().navigate(MyProfileDirections.actionMyProfileToNotifications()) })
-
         loginViewModel.getAuthenticationState().observe(requireActivity(), {
             when (it) {
                 LoginViewModel.AuthenticationState.GUEST ->  findNavController().popBackStack(R.id.myProfile, false)
@@ -76,7 +75,9 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
                 LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(MyProfileDirections.actionGlobalNavigation())
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> {
                     tokenId = prefs.getString(accessToken, null)
-                    if(arguments == null || arguments?.isEmpty!!) findNavController().popBackStack(R.id.myProfile, false)
+                    if(arguments == null || arguments?.isEmpty!!) {
+                        findNavController().popBackStack(R.id.myProfile, false)
+                    }
                     else arguments.let { bundle ->
                         if(!bundle?.getString(type).isNullOrBlank())
                             view?.post { findNavController().navigate(MyProfileDirections.actionMyProfileToNotifications()) }
