@@ -237,32 +237,82 @@ class Settings : Fragment(), View.OnClickListener {
                 }
                 lifecycleOwner(this@Settings)
             }
-            profile_settings_change_password -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            profile_settings_change_password -> MaterialDialog(
+                requireContext(),
+                BottomSheet(LayoutMode.WRAP_CONTENT)
+            ).show {
                 title(R.string.change_password)
-                message(R.string.cant_start_with_password)
-                input(hintRes = R.string.new_password, inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD) { _, newPassword ->
+                input(
+                    hintRes = R.string.current_password,
+                    inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
+                ) { _, oldPassword ->
                     MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                         title(R.string.change_password)
-                        message(R.string.cant_start_with_password)
-                        input(hintRes = R.string.new_password_again, inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD) { _, newPasswordAgain ->
-                            if (newPassword.toString() == newPasswordAgain.toString()) {
-                                meViewModel.changePassword(tokenId!!, newPasswordAgain.toString()).observe(viewLifecycleOwner, Observer { rsp ->
-                                    if (rsp.code() == 401) {
-                                        loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer { newToken ->
-                                                tokenId = newToken
-                                                meViewModel.changePassword(tokenId!!, newPasswordAgain.toString()).observe(viewLifecycleOwner, Observer { resp ->
-                                                    if (resp.isSuccessful) {
-                                                        Toast.makeText(requireContext(), getString(R.string.password_changed_successfully), Toast.LENGTH_SHORT).show()
-                                                    } else Toast.makeText(requireContext(), getString(R.string.error_try_again), Toast.LENGTH_SHORT).show()
-                                                })
-                                            })
-                                    }
+                        input(
+                            hintRes = R.string.new_password,
+                            inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
+                        ) { _, newPassword ->
+                            MaterialDialog(
+                                requireContext(),
+                                BottomSheet(LayoutMode.WRAP_CONTENT)
+                            ).show {
+                                title(R.string.change_password)
+                                input(
+                                    hintRes = R.string.new_password_again,
+                                    inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
+                                ) { _, newPasswordAgain ->
+                                    if (newPassword.toString() == newPasswordAgain.toString()) {
+                                        loginViewModel.modifyCurrentPassword(
+                                            tokenId!!,
+                                            userInfoDTO.userName!!,
+                                            oldPassword.toString(),
+                                            newPassword.toString()
+                                        ).observe(viewLifecycleOwner, { rsp ->
+                                            if (rsp.code() == 401) {
+                                                loginViewModel.refreshToken(prefs).observe(
+                                                    viewLifecycleOwner,
+                                                    { newToken ->
+                                                        tokenId = newToken
+                                                        loginViewModel.modifyCurrentPassword(
+                                                            tokenId!!,
+                                                            userInfoDTO.userName!!,
+                                                            oldPassword.toString(),
+                                                            newPasswordAgain.toString()
+                                                        ).observe(
+                                                            viewLifecycleOwner,
+                                                            { resp ->
+                                                                if (resp.isSuccessful) {
+                                                                    Toast.makeText(
+                                                                        requireContext(),
+                                                                        getString(R.string.password_changed_successfully),
+                                                                        Toast.LENGTH_SHORT
+                                                                    ).show()
+                                                                } else Toast.makeText(
+                                                                    requireContext(),
+                                                                    getString(R.string.error_try_again),
+                                                                    Toast.LENGTH_SHORT
+                                                                ).show()
+                                                            })
+                                                    })
+                                            }
 
-                                    if (rsp.isSuccessful) {
-                                        Toast.makeText(requireContext(), getString(R.string.password_changed_successfully), Toast.LENGTH_SHORT).show()
-                                    } else Toast.makeText(requireContext(), getString(R.string.error_try_again), Toast.LENGTH_SHORT).show()
-                                })
+                                            if (rsp.isSuccessful) {
+                                                Toast.makeText(
+                                                    requireContext(),
+                                                    getString(R.string.password_changed_successfully),
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            } else Toast.makeText(
+                                                requireContext(),
+                                                getString(R.string.error_try_again),
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        })
+                                    } else Toast.makeText(requireContext(), getString(R.string.not_same_value), Toast.LENGTH_SHORT)
+                                        .show()
+                                }
                             }
+
                         }
                         lifecycleOwner(this@Settings)
                     }

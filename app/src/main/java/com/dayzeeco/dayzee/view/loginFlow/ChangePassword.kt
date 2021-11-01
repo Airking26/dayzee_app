@@ -62,6 +62,7 @@ class ChangePassword: Fragment(), View.OnClickListener {
                     meViewModel.changePassword(args.token, new_password.text.toString())
                         .observe(viewLifecycleOwner) { o ->
                             if (o.isSuccessful) {
+                                Toast.makeText(requireContext(), getString(R.string.password_changed_successfully), Toast.LENGTH_SHORT).show()
                                 triggerRebirth(requireContext())
                             } else Toast.makeText(
                                 requireContext(),

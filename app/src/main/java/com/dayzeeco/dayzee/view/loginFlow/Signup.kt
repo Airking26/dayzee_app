@@ -72,9 +72,7 @@ class Signup: Fragment(), View.OnClickListener {
         handlerPasswordSignup = Handler{
             if(it.what == TRIGGER_AUTO_COMPLETE){
                 if(!TextUtils.isEmpty(signup_password?.text)){
-                    if(signup_password?.text.toString().startsWith(dayzee_prefix, true)){
-                        signup_password?.error = getString(R.string.cant_start_with_password)
-                    } else passwordValidForm = true
+                    passwordValidForm = true
                 }
             }
             false

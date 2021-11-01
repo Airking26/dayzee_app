@@ -27,4 +27,7 @@ interface AuthService {
     @GET("auth/resetPassword/{email}")
     suspend fun forgotPassword(@Path("email") email: String) : Response<Boolean>
 
+    @PATCH("auth/modifyPassword/{userName}/{oldPassword}/{newPassword}")
+    suspend fun modifyCurrentPassword(@Header("Authorization") token: String, @Path("userName") username: String, @Path("oldPassword") oldPassword: String, @Path("newPassword") newPassword: String): Response<UserInfoDTO>
+
 }

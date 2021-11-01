@@ -23,7 +23,7 @@
     <string name="birthday">Anniversaire</string>
     <string name="gender">Genre</string>
     <string name="account_status">Statut du compte</string>
-    <string name="timenote_date_format">Format de la date</string>
+    <string name="timenote_date_format">Apparence du format de la date des évènements</string>
     <string name="youtube_channel">Chaine Youtube</string>
     <string name="describe_yourself">Description</string>
     <string name="settings">Réglages</string>
@@ -36,7 +36,7 @@
     <string name="push_notifications">Notifications Push</string>
     <string name="certified_push_notifications">Notifications push certifiées </string>
     <string name="default_settings">REGLAGES PAR DEFAUT</string>
-    <string name="timenote_visibility_format">Visibilité des Dayzee</string>
+    <string name="timenote_visibility_format">Qui peut voir mes évènements</string>
     <string name="timenote_visibility">Visibilité des Dayzee</string>
     <string name="others">AUTRES</string>
     <string name="confidentiality_politic">Politique de confidentialité</string>
@@ -304,7 +304,7 @@
     <string name="button_sure">Sure(%1$d)</string>
     <string name="cant_start_with_password">Votre mot de passe ne peut commencer avec \"dayzee-\"</string>
     <string name="this_is_temporary_password">Ceci est un mot de passe temporaire, veuillez le changer afin de continuer</string>
-    <string name="enter_mail">Veuillez entrer votre mail lier à votre compte Dayzee</string>
+    <string name="enter_mail">Veuillez entrer votre mail lier à votre compte Dayzee. Un email, valide 15 minutes, vous sera envoyé pour changer votre mot de passer (verifiez vos spams).</string>
     <string name="certify">Certifier</string>
     <string name="update_temporary_password">Mettre à jour le mot de passe temporaire</string>
     <string name="dayzee_connection">Connexion à Dayzee</string>
@@ -353,7 +353,7 @@
     <string name="error_network">Erreur Réseau</string>
     <string name="youtubers">Youtubers</string>
     <string name="fair_trade">Fair Trade</string>
-    <string name="password_changed_successfully">Password changé avec succès</string>
+    <string name="password_changed_successfully">Mot de passe changé avec succès. Connectez vous.</string>
     <string name="live">EN COURS</string>
     <string name="in_time">Dans</string>
     <string name="since_time">Depuis</string>
@@ -402,6 +402,7 @@
     <string name="continu">Continuer</string>
     <string name="not_same_value">Les mots de passe doivent être les mêmes</string>
     <string name="validate_login"><![CDATA[Valider & Se Connecter]]></string>
+    <string name="current_password">Mot de passe actuel</string>
     <plurals name="time_minutes_comment">
         <item quantity="one">%1$d minute</item>
         <item quantity="other">%1$d minutes</item>

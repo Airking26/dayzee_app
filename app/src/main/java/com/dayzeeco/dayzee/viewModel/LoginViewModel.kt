@@ -58,6 +58,10 @@ class LoginViewModel: ViewModel() {
         }.asLiveData(viewModelScope.coroutineContext)
     }
 
+    fun modifyCurrentPassword(token: String, username: String, oldPassword: String, newPassword: String): LiveData<Response<UserInfoDTO>> {
+        return flow { emit(authService.modifyCurrentPassword("Bearer $token", username, oldPassword, newPassword)) }.asLiveData(viewModelScope.coroutineContext)
+    }
+
     fun checkIfUsernameAvailable(username: String): LiveData<Response<IsAvailable>> {
         return flow{
          emit(authService.checkUsernameAvailability(username))
