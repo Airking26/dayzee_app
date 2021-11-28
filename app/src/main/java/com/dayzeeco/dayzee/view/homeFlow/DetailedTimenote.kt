@@ -77,6 +77,7 @@ import kotlinx.android.synthetic.main.item_last_request.view.*
 import kotlinx.android.synthetic.main.item_profile_timenote_list_style.view.*
 import kotlinx.android.synthetic.main.item_timenote.view.*
 import kotlinx.android.synthetic.main.item_timenote_root.*
+import kotlinx.android.synthetic.main.item_user.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -592,6 +593,8 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             .into(detailed_timenote_pic_user)
 
         detailed_timenote_username.text = args.event?.createdBy?.userName
+        if(args.event?.createdBy?.certified!!) detailed_timenote_username.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_certified_other, 0)
+        else detailed_timenote_username.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
 
         comments_edittext.setOnClickListener(this)
         timenote_comment.setOnClickListener(this)

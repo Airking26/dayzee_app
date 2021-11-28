@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+<ImageView
+    android:scaleType="centerCrop"
+    app:layout_constrainedHeight="true"
+    android:src="@drawable/audiance"
+        android:background="@color/colorBackground"
+        android:id="@+id/create_timenote_pic"
+        app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHeight_min="200dp"
+    app:layout_constraintHeight_max="700dp"
+        android:adjustViewBounds="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

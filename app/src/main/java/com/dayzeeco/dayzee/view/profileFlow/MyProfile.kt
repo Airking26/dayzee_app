@@ -38,6 +38,23 @@ import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
 import io.branch.referral.util.LinkProperties
 import kotlinx.android.synthetic.main.fragment_my_profile.*
+import kotlinx.android.synthetic.main.fragment_my_profile.profile_calendar_btn
+import kotlinx.android.synthetic.main.fragment_my_profile.profile_day_name_calendar
+import kotlinx.android.synthetic.main.fragment_my_profile.profile_day_number_calendar
+import kotlinx.android.synthetic.main.fragment_my_profile.profile_desc
+import kotlinx.android.synthetic.main.fragment_my_profile.profile_followers_label
+import kotlinx.android.synthetic.main.fragment_my_profile.profile_following_label
+import kotlinx.android.synthetic.main.fragment_my_profile.profile_infos
+import kotlinx.android.synthetic.main.fragment_my_profile.profile_name
+import kotlinx.android.synthetic.main.fragment_my_profile.profile_name_toolbar
+import kotlinx.android.synthetic.main.fragment_my_profile.profile_nbr_followers
+import kotlinx.android.synthetic.main.fragment_my_profile.profile_nbr_following
+import kotlinx.android.synthetic.main.fragment_my_profile.profile_notif_btn
+import kotlinx.android.synthetic.main.fragment_my_profile.profile_pic_imageview
+import kotlinx.android.synthetic.main.fragment_my_profile.profile_settings_btn
+import kotlinx.android.synthetic.main.fragment_my_profile.profile_tablayout
+import kotlinx.android.synthetic.main.fragment_my_profile.profile_vp
+import kotlinx.android.synthetic.main.fragment_profile_else.*
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
@@ -220,6 +237,10 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
                 .into(profile_pic_imageview)
 
             profile_name_toolbar.text = userInfoDTO?.userName
+
+            if(userInfoDTO?.certified!!) profile_name_toolbar.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_certified_other, 0)
+            else profile_name_toolbar.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+
             if(userInfoDTO?.description.isNullOrBlank()) profile_desc.visibility = View.GONE else {
                 profile_desc.visibility = View.VISIBLE
                 profile_desc.text = userInfoDTO?.description

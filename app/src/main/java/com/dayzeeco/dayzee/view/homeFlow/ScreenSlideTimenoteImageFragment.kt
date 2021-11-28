@@ -47,11 +47,14 @@ class ScreenSlideTimenoteImageFragment : Fragment() {
 
         if(isNullOrEmpty!!){
             if(!url.isNullOrEmpty() && !url.isNullOrBlank()) create_timenote_pic.setBackgroundColor((Color.parseColor(if(url?.contains("#")!!) url else "#${url}")))
-        } else Glide.with(this)
-            .load(Uri.parse(url))
-            .thumbnail(0.1f)
+        } else {
+            create_timenote_pic.layout(0, 0, 0, 0)
+            Glide.with(this)
+                .load(Uri.parse(url))
+                .fitCenter()
+                .thumbnail(0.1f)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .into(create_timenote_pic)
+            .into(create_timenote_pic)}
 
         create_timenote_pic.setOnClickListener(object: DoubleClickListener(){
             override fun onSimpleClick() {

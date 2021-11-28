@@ -108,10 +108,12 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
                 .placeholder(R.drawable.circle_pic)
                 .into(profile_pic_imageview)
 
-        if(userInfoDTO?.certified!!) profile_name_toolbar.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_certification, 0)
-        else profile_name_toolbar.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0)
-
         profile_name_toolbar.text = userInfoDTO?.userName
+
+
+        if(userInfoDTO?.certified!!) profile_name_toolbar.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_certified_other, 0)
+        else profile_name_toolbar.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+
         if(userInfoDTO?.description.isNullOrBlank()) profile_desc.visibility = View.GONE else {
                 profile_desc.visibility = View.VISIBLE
                 profile_desc.text = userInfoDTO?.description

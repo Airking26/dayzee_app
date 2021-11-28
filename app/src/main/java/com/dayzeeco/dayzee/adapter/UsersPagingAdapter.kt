@@ -55,7 +55,7 @@ class UsersPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>,
             isTagged: Boolean
         ) {
 
-            if(userInfoDTO?.certified!!) itemView.name_user.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_certification, 0)
+            if(userInfoDTO?.certified!!) itemView.name_user.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_certified_other, 0)
             else itemView.name_user.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0)
 
             if(mine != null && mine == true){

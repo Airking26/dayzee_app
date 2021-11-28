@@ -219,6 +219,7 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         }
 
 
+
         val screenSlideCreationTimenotePagerAdapter =  ScreenSlideTimenotePagerAdapter(fragment, if(timenote.pictures.isNullOrEmpty()) listOf(if(timenote.colorHex.isNullOrEmpty()) "#09539d" else timenote.colorHex) else timenote.pictures, true, timenote.pictures.isNullOrEmpty()){ _ : Int, i1: Int ->
             if(i1 == 0) {
                 if (timenote.price.price >= 0 && !timenote.url.isNullOrBlank()) {
