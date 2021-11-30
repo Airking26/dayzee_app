@@ -17,14 +17,14 @@
     <string name="share_profile">PARTAGER PROFIL</string>
     <string name="modify">Modifier</string>
     <string name="follow">S\'abonner</string>
-    <string name="name_you_want_to_appear">Nom d\'apparance</string>
+    <string name="name_you_want_to_appear">Username</string>
     <string name="your_name">Nom</string>
     <string name="from">Depuis</string>
     <string name="birthday">Anniversaire</string>
     <string name="gender">Genre</string>
     <string name="account_status">Statut du compte</string>
     <string name="timenote_date_format">Apparence du format de la date des évènements</string>
-    <string name="youtube_channel">Chaine Youtube</string>
+    <string name="youtube_channel">Youtube</string>
     <string name="describe_yourself">Description</string>
     <string name="settings">Réglages</string>
     <string name="general">GENERAL</string>
@@ -254,7 +254,7 @@
     <string name="channel_name">dayzee</string>
     <string name="channel_description">dayzee channel</string>
     <string name="nothing_to_show_add_some_people_or_center_of_interest_to_begin_your_adventure_with_dayzee">Aucun Dayzee, ajouter des amis et/ou des centres d\'intérets</string>
-    <string name="nothing_to_show_nearby">Aucun Dayzee aux alentours, essayer différents filtres</string>
+    <string name="nothing_to_show_nearby">Aucun évènements aux alentours, essayez avec différents filtres</string>
     <string name="nothing_to_show_profile">Rien de Prévu</string>
     <string name="add_a_picture">Ajouter une photo</string>
     <string name="default_notification_channel_id">dayzee_channel</string>

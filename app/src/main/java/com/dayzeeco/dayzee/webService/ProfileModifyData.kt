@@ -105,6 +105,21 @@ class ProfileModifyData(context: Context) {
         notifyProfileDataChanged()
     }
 
+    fun setTwitterLink(link: String){
+        profilModifyModel?.socialMedias?.twitter?.url = link
+        notifyProfileDataChanged()
+    }
+
+    fun setDiscordLink(link: String){
+        profilModifyModel?.socialMedias?.discord?.url = link
+        notifyProfileDataChanged()
+    }
+
+    fun setTelegramLink(link: String){
+        profilModifyModel?.socialMedias?.telegram?.url = link
+        notifyProfileDataChanged()
+    }
+
     fun setDescription(description: String) {
         profilModifyModel?.description = description
         notifyProfileDataChanged()

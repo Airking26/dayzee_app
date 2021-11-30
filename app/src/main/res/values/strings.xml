@@ -31,14 +31,14 @@
     <string name="share_profile">SHARE PROFILE</string>
     <string name="modify">Modify</string>
     <string name="follow">Follow</string>
-    <string name="name_you_want_to_appear">Name you want to appear</string>
+    <string name="name_you_want_to_appear">Username</string>
     <string name="your_name">Your name</string>
     <string name="from">From</string>
     <string name="birthday">Birthday</string>
     <string name="gender">Gender</string>
     <string name="account_status">Account status</string>
     <string name="timenote_date_format">Date format appearance of events</string>
-    <string name="youtube_channel">Youtube channel</string>
+    <string name="youtube_channel">Youtube</string>
     <string name="describe_yourself">Describe yourself</string>
     <string name="settings">Settings</string>
     <string name="general">GENERAL</string>

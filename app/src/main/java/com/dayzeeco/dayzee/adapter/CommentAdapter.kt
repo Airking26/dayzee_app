@@ -68,6 +68,10 @@ class CommentAdapter(
             commentMoreListener: CommentMoreListener,
             userTaggedListener: UserTaggedListener
         ) {
+
+            if(commentModel.createdBy.certified!!) itemView.comment_certified.visibility = View.VISIBLE
+            else itemView.comment_certified.visibility = View.GONE
+
             Glide
                 .with(itemView)
                 .load(commentModel.createdBy.picture)

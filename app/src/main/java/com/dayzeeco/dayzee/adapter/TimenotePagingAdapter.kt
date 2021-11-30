@@ -275,6 +275,8 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         if(timenote.pictures?.size == 1 || timenote.pictures.isNullOrEmpty()) itemView.timenote_indicator.visibility = View.GONE
         screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(itemView.timenote_indicator.adapterDataObserver)
         itemView.timenote_username.text = timenote.createdBy.userName
+        if(timenote.createdBy.certified!!) itemView.timenote_username.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_certified_other, 0)
+        else  itemView.timenote_username.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
         if(timenote.location != null) {
             itemView.timenote_place.visibility = View.VISIBLE
             if(timenote.location.address.address.isEmpty() && timenote.location.address.city.isNotEmpty() && timenote.location.address.country.isNotEmpty()){

@@ -17,10 +17,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.Switch
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -95,6 +92,8 @@ class ProfilModify: Fragment(), View.OnClickListener,
         Manifest.permission.READ_EXTERNAL_STORAGE,
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     )
+    private lateinit var nameTv : TextView
+    private lateinit var descTv: TextView
     private lateinit var profilModifyModel: UserInfoDTO
     private var imagesUrl: String = ""
     private lateinit var am : AmazonS3Client
@@ -104,7 +103,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
     private lateinit var profileModifyPb: ProgressBar
     private lateinit var profileModifyData: ProfileModifyData
     private var dateFormat : SimpleDateFormat
-    private val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+    private val ISO = "dd.MM.yyyy"
     private val webSearchViewModel : WebSearchViewModel by activityViewModels()
     private val args : ProfilModifyArgs by navArgs()
     private var tokenId: String? = null
@@ -151,7 +150,8 @@ class ProfilModify: Fragment(), View.OnClickListener,
     @SuppressLint("RestrictedApi")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
+        nameTv = profile_modify_name
+        descTv = profile_modify_description
         when (context?.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
             Configuration.UI_MODE_NIGHT_YES -> { InsGallery.setCurrentTheme(InsGallery.THEME_STYLE_DARK) }
             Configuration.UI_MODE_NIGHT_NO -> {InsGallery.setCurrentTheme(InsGallery.THEME_STYLE_DEFAULT)}
@@ -408,9 +408,9 @@ class ProfilModify: Fragment(), View.OnClickListener,
                 if (profilModifyModel.dateFormat == 0) STATUS.PUBLIC.ordinal else STATUS.PRIVATE.ordinal,
                 profilModifyModel.socialMedias
             )
-        ).observe(viewLifecycleOwner, Observer { usr ->
+        ).observe(viewLifecycleOwner, { usr ->
             if(usr.code() == 401){
-                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, Observer { newAccesssToken ->
+                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { newAccesssToken ->
                     tokenId = newAccesssToken
                     modifyProfil(profilModifyModel)
                 })
@@ -433,10 +433,8 @@ class ProfilModify: Fragment(), View.OnClickListener,
             .placeholder(R.drawable.circle_pic)
             .into(profile_modify_pic_imageview)
         profile_modify_name_appearance.text = profilModifyModel?.userName
-
-        if (profilModifyModel?.givenName.isNullOrBlank()) profile_modify_name.hint =
-            getString(R.string.your_name) else profile_modify_name.text =
-            profilModifyModel?.givenName
+        if (profilModifyModel?.givenName.isNullOrBlank()) {nameTv.hint = getString(R.string.your_name)
+        nameTv.text = ""} else nameTv.text = profilModifyModel?.givenName
         if (profilModifyModel?.location?.address?.address.isNullOrBlank()) profile_modify_from.hint =
             getString(R.string.from) else profile_modify_from.text =
             profilModifyModel?.location?.address?.address.plus(
@@ -541,8 +539,8 @@ class ProfilModify: Fragment(), View.OnClickListener,
         }
         else profile_modify_telegram.text = profilModifyModel?.socialMedias?.telegram?.url
 
-        if (profilModifyModel?.description.isNullOrBlank()) profile_modify_description.hint =
-            getString(R.string.describe_yourself) else profile_modify_description.text =
+        if (profilModifyModel?.description.isNullOrBlank()) {descTv.hint = getString(R.string.describe_yourself)
+        descTv.text =  ""}else descTv.text =
             profilModifyModel?.description
     }
 
@@ -554,9 +552,9 @@ class ProfilModify: Fragment(), View.OnClickListener,
             profile_modify_account_status.setOnClickListener(this)
             profile_modify_format_timenote.setOnClickListener(this)
             profile_modify_name_appearance.setOnClickListener(this)
-            profile_modify_name.setOnClickListener(this)
+            nameTv.setOnClickListener(this)
             profile_modify_from.setOnClickListener(this)
-            profile_modify_description.setOnClickListener(this)
+            descTv.setOnClickListener(this)
             profile_modify_done_btn.setOnClickListener(this)
             profile_modify_pic_imageview.setOnClickListener(this)
             profile_modify_share_btn.setOnClickListener(this)
@@ -633,19 +631,32 @@ class ProfilModify: Fragment(), View.OnClickListener,
                 }
                 lifecycleOwner(this@ProfilModify)
             }
-            profile_modify_name -> MaterialDialog(
+            nameTv -> MaterialDialog(
                 requireContext(),
                 BottomSheet(LayoutMode.WRAP_CONTENT)
             ).show {
                 title(R.string.your_name)
                 input(
+                    allowEmpty = true,
                     inputType = InputType.TYPE_CLASS_TEXT,
                     prefill = profileModifyData.loadProfileModifyModel()?.givenName
                 ) { _, text ->
                     profileModifyData.setName(text.toString())
+                    if(text.toString().isEmpty()) nameTv.text = ""
                 }
                 positiveButton(R.string.done)
                 lifecycleOwner(this@ProfilModify)
+            }
+            descTv -> {
+                MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                    title(R.string.describe_yourself)
+                    input(allowEmpty = true, inputType = InputType.TYPE_CLASS_TEXT, prefill = profileModifyData.loadProfileModifyModel()?.description, maxLength = 120) { _, text ->
+                        profileModifyData.setDescription(text.toString())
+                        if(text.toString().isEmpty()) descTv.text = ""
+                    }
+                    positiveButton(R.string.done)
+                    lifecycleOwner(this@ProfilModify)
+                }
             }
             profile_modify_from -> startActivityForResult(
                 Autocomplete.IntentBuilder(
@@ -742,20 +753,63 @@ class ProfilModify: Fragment(), View.OnClickListener,
                     if(text.isEmpty()) profileModifyData.setLinkedinLink("")
                     else profileModifyData.setLinkedinLink(text.toString())
                 }
+
+                positiveButton(R.string.done)
+                lifecycleOwner(this@ProfilModify)
+            }
+            profile_modify_twitter -> MaterialDialog(
+                requireContext(),
+                BottomSheet(LayoutMode.WRAP_CONTENT)
+            ).show {
+                title(R.string.twitter)
+                input(
+                    allowEmpty = true,
+                    inputType = InputType.TYPE_CLASS_TEXT,
+                    prefill = profileModifyData.loadProfileModifyModel()?.socialMedias?.twitter?.url
+                ) { _, text ->
+                    if(text.isEmpty()) profileModifyData.setTwitterLink("")
+                    else profileModifyData.setTwitterLink(text.toString())
+                }
+
+                positiveButton(R.string.done)
+                lifecycleOwner(this@ProfilModify)
+            }
+            profile_modify_discord -> MaterialDialog(
+                requireContext(),
+                BottomSheet(LayoutMode.WRAP_CONTENT)
+            ).show {
+                title(R.string.discord)
+                input(
+                    allowEmpty = true,
+                    inputType = InputType.TYPE_CLASS_TEXT,
+                    prefill = profileModifyData.loadProfileModifyModel()?.socialMedias?.discord?.url
+                ) { _, text ->
+                    if(text.isEmpty()) profileModifyData.setDiscordLink("")
+                    else profileModifyData.setDiscordLink(text.toString())
+                }
+
+                positiveButton(R.string.done)
+                lifecycleOwner(this@ProfilModify)
+            }
+            profile_modify_telegram -> MaterialDialog(
+                requireContext(),
+                BottomSheet(LayoutMode.WRAP_CONTENT)
+            ).show {
+                title(R.string.telegram)
+                input(
+                    allowEmpty = true,
+                    inputType = InputType.TYPE_CLASS_TEXT,
+                    prefill = profileModifyData.loadProfileModifyModel()?.socialMedias?.telegram?.url
+                ) { _, text ->
+                    if(text.isEmpty()) profileModifyData.setTelegramLink("")
+                    else profileModifyData.setTelegramLink(text.toString())
+                }
+
                 positiveButton(R.string.done)
                 lifecycleOwner(this@ProfilModify)
             }
 
-            profile_modify_description -> {
-                val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                title(R.string.describe_yourself)
-                input(allowEmpty = true, inputType = InputType.TYPE_CLASS_TEXT, prefill = profileModifyData.loadProfileModifyModel()?.description, maxLength = 120) { _, text ->
-                    profileModifyData.setDescription(text.toString())
-                }
-                positiveButton(R.string.done)
-                lifecycleOwner(this@ProfilModify)
-            }
-            }
+
             profile_modify_pic_imageview -> {
                 openGallery()
             }

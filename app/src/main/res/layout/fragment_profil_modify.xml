@@ -139,6 +139,7 @@
                 tools:ignore="MissingConstraints" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:visibility="gone"
                 android:id="@+id/from_cl"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -176,6 +177,7 @@
 
 
             <TextView
+                android:visibility="gone"
                 app:layout_constraintTop_toBottomOf="@id/from_cl"
                 style="@style/AppTheme.Divider.Toolbar"
                 tools:ignore="MissingConstraints" />
@@ -245,6 +247,7 @@
                 tools:ignore="MissingConstraints" />
 
             <TextView
+                android:visibility="gone"
                 android:fontFamily="sans-serif-light"
                 android:focusable="false"
                 android:id="@+id/profile_modify_account_status"
@@ -261,11 +264,13 @@
                 android:layout_height="wrap_content"/>
 
             <TextView
+                android:visibility="gone"
                 app:layout_constraintTop_toBottomOf="@id/profile_modify_account_status"
                 style="@style/AppTheme.Divider.Toolbar"
                 tools:ignore="MissingConstraints" />
 
             <TextView
+                android:visibility="gone"
                 android:fontFamily="sans-serif-light"
                 android:focusable="false"
                 android:id="@+id/profile_modify_format_timenote"
@@ -282,6 +287,7 @@
                 android:layout_height="wrap_content"/>
 
             <TextView
+                android:visibility="gone"
                 app:layout_constraintTop_toBottomOf="@id/profile_modify_format_timenote"
                 style="@style/AppTheme.Divider.Toolbar"
                 tools:ignore="MissingConstraints" />
