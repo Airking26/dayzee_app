@@ -68,7 +68,7 @@
             android:name="com.dayzeeco.dayzee.view.loginFlow.CreateAccount"
             android:label="CreateAccount" >
             <action
-                android:id="@+id/action_createAccount_to_preferenceCategory3"
+                android:id="@+id/action_createAccount_to_preferenceCategory"
                 app:destination="@id/preferenceCategory" />
         </fragment>
         <fragment

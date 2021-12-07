@@ -134,7 +134,7 @@ class Menu : Fragment(), View.OnClickListener {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if(requestCode == 10){
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                findNavController().navigate(MenuDirections.actionMenuToContacts())
+               //findNavController().navigate(MenuDirections.actionMenuToContacts())
             }
         } else if(requestCode == PERMISSION_CALENDAR_CODE){
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {

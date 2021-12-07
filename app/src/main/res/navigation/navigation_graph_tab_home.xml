@@ -46,8 +46,8 @@
             tools:layout="@layout/fragment_signup"
             android:label="Signup">
             <action
-                android:id="@+id/action_signup_to_changePassword2"
-                app:destination="@id/changePassword2" />
+                android:id="@+id/action_signup_to_changePassword"
+                app:destination="@id/changePassword" />
             <action
                 android:id="@+id/action_signup_to_createAccount"
                 app:destination="@id/createAccount" />
@@ -56,7 +56,7 @@
                 app:destination="@id/seConnecter" />
         </fragment>
         <fragment
-            android:id="@+id/changePassword2"
+            android:id="@+id/changePassword"
             android:name="com.dayzeeco.dayzee.view.loginFlow.ChangePassword"
             android:label="ChangePassword" >
             <argument
@@ -68,7 +68,7 @@
             android:name="com.dayzeeco.dayzee.view.loginFlow.CreateAccount"
             android:label="CreateAccount" >
             <action
-                android:id="@+id/action_createAccount_to_preferenceCategory2"
+                android:id="@+id/action_createAccount_to_preferenceCategory"
                 app:destination="@id/preferenceCategory" />
         </fragment>
         <fragment

@@ -14,10 +14,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
 import com.dayzeeco.dayzee.R
-import com.dayzeeco.dayzee.common.already_signed_in
-import com.dayzeeco.dayzee.common.notifications_saved
-import com.dayzeeco.dayzee.viewModel.AccessTokenForgottenPasswordViewModel
-import com.dayzeeco.dayzee.viewModel.LoginViewModel
 import com.dayzeeco.dayzee.viewModel.MeViewModel
 import kotlinx.android.synthetic.main.fragment_new_password.*
 
@@ -25,9 +21,7 @@ import kotlinx.android.synthetic.main.fragment_new_password.*
 class ChangePassword: Fragment(), View.OnClickListener {
 
     private val meViewModel : MeViewModel by activityViewModels()
-    private val loginViewModel: LoginViewModel by activityViewModels()
     private val args : ChangePasswordArgs by navArgs()
-    private val accessTokenForgottenPasswordViewModel: AccessTokenForgottenPasswordViewModel by activityViewModels()
     private lateinit var prefs: SharedPreferences
 
 

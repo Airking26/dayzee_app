@@ -3,7 +3,6 @@ package com.dayzeeco.dayzee.view
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.*
-import android.content.ContentValues.TAG
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
@@ -14,9 +13,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.view.get
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.*
 import androidx.navigation.NavController
 import androidx.preference.PreferenceManager
@@ -33,7 +30,6 @@ import com.dayzeeco.dayzee.model.UserInfoDTO
 import com.dayzeeco.dayzee.view.homeFlow.Home
 import com.dayzeeco.dayzee.view.homeFlow.HomeDirections
 import com.dayzeeco.dayzee.view.loginFlow.SignupDirections
-import com.dayzeeco.dayzee.viewModel.AccessTokenForgottenPasswordViewModel
 import com.dayzeeco.dayzee.viewModel.SwitchToNotifViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -109,11 +105,11 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                             )
                         }
                         referringParams.has("accessToken") -> {
-                            Log.d(TAG, "onCreate: " + prefs.getBoolean(notifications_saved, false).toString())
-                            val a = referringParams.getString("accessToken")
-                            if(!prefs.getBoolean(notifications_saved, false)) {
-                                prefs.edit().putBoolean(notifications_saved, true).apply()
-                                control.navigate(SignupDirections.actionGlobalChangePassword(a))
+                            val at = referringParams.getString("accessToken")
+                            if(prefs.getString(accessTokenReferringParam, null) != at && prefs.getBoolean(
+                                    already_signed_in, false)) {
+                                prefs.edit().putString(accessTokenReferringParam, at).apply()
+                                control.navigate(SignupDirections.actionGlobalChangePassword(at))
                             }
 
                         }
@@ -159,11 +155,11 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                             goToProfile()
                         }
                         referringParams.has("accessToken") -> {
-                            Log.d(TAG, "onCreate: " + prefs.getBoolean(notifications_saved, false).toString())
-                            val a = referringParams.getString("accessToken")
-                            if(!prefs.getBoolean(notifications_saved, false)){
-                                prefs.edit().putBoolean(notifications_saved, true).apply()
-                                control.navigate(SignupDirections.actionGlobalChangePassword(a))
+                            val at = referringParams.getString("accessToken")
+                            if(prefs.getString(accessTokenReferringParam, null) != at && prefs.getBoolean(
+                                    already_signed_in, false)){
+                                prefs.edit().putString(accessTokenReferringParam, at).apply()
+                                control.navigate(SignupDirections.actionGlobalChangePassword(at))
                             }
                         }
                     }

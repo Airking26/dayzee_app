@@ -422,8 +422,10 @@
     <string name="suicide_automutilation">Sucid or self-harm</string>
     <string name="continu">Continue</string>
     <string name="not_same_value">Passwords must be the same</string>
-    <string name="validate_login"><![CDATA[Validate & Login]]></string>
+    <string name="validate_login"><![CDATA[Validate and login]]></string>
     <string name="current_password">Current password</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="username">Username</string>
     <plurals name="time_minutes_comment">
         <item quantity="one">%1$d minute</item>
         <item quantity="other">%1$d minutes</item>
