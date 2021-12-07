@@ -29,6 +29,18 @@ import com.dayzeeco.dayzee.viewModel.AccessTokenForgottenPasswordViewModel
 import com.dayzeeco.dayzee.viewModel.LoginViewModel
 import com.dayzeeco.dayzee.viewModel.MeViewModel
 import kotlinx.android.synthetic.main.fragment_signup.*
+import kotlinx.android.synthetic.main.fragment_signup.email_label
+import kotlinx.android.synthetic.main.fragment_signup.guest_btn
+import kotlinx.android.synthetic.main.fragment_signup.identifiant_label
+import kotlinx.android.synthetic.main.fragment_signup.signin_mail_username
+import kotlinx.android.synthetic.main.fragment_signup.signin_password
+import kotlinx.android.synthetic.main.fragment_signup.signup_forgotten_password
+import kotlinx.android.synthetic.main.fragment_signup.signup_identifiant
+import kotlinx.android.synthetic.main.fragment_signup.signup_mail
+import kotlinx.android.synthetic.main.fragment_signup.signup_password
+import kotlinx.android.synthetic.main.fragment_signup.signup_signin_btn
+import kotlinx.android.synthetic.main.fragment_signup.signup_signup_btn
+import kotlinx.android.synthetic.main.fragment_signup_new.*
 import java.util.*
 
 
@@ -54,7 +66,7 @@ class Signup: Fragment(), View.OnClickListener {
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        inflater.inflate(R.layout.fragment_signup, container, false)
+        inflater.inflate(R.layout.fragment_signup_new, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         signup_signup_btn.setOnClickListener(this)
@@ -68,6 +80,9 @@ class Signup: Fragment(), View.OnClickListener {
                 findNavController().navigate(SignupDirections.actionSignupToChangePassword2(it))
             }
         }*/
+
+        creercom.setOnClickListener(this)
+        secon.setOnClickListener(this)
 
         handlerPasswordSignup = Handler{
             if(it.what == TRIGGER_AUTO_COMPLETE){
@@ -191,6 +206,9 @@ class Signup: Fragment(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when(v){
+            secon -> findNavController().navigate(SignupDirections.actionSignupToSeConnecter())
+            creercom -> findNavController().navigate(SignupDirections.actionSignupToCreateAccount())
+            guest_btn_new -> loginViewModel.markAsGuest()
             guest_btn -> loginViewModel.markAsGuest()
             signup_forgotten_password -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.mail)
@@ -293,32 +311,33 @@ class Signup: Fragment(), View.OnClickListener {
 
                 if(availableIdentifiant != null && availableMail != null){
                     if(!isOnLogin && availableIdentifiant!! && availableMail!! && passwordValidForm){
-                        loginViewModel.checkAddUser(UserSignUpBody(signup_mail.text.toString(), signup_identifiant.text.toString(), signup_password.text.toString())).observe(viewLifecycleOwner, Observer {
-                            when(it.code()){
-                                201 -> {
-                                    meViewModel.modifyProfile(it.body()?.token!!, UpdateUserInfoDTO(language = Locale.getDefault().language, status = 0, dateFormat = 0, socialMedias = SocialMedias(
-                                        Youtube("", false), Facebook("", false), Instagram("", false), WhatsApp("", false), LinkedIn("", false),
-                                        Twitter("", false), Discord("", false), Telegram("", false)
-                                    ))).observe(viewLifecycleOwner, { rp ->
-                                       if(rp.isSuccessful){
-                                           findNavController().navigate(SignupDirections.actionSignupToPreferenceCategory(true))
-                                           prefs.edit().putString(accessToken, it.body()?.token).apply()
-                                           prefs.edit().putString(refreshToken, it.body()?.refreshToken).apply()
-                                           prefs.edit().putString(user_info_dto, Gson().toJson(it.body()?.user)).apply()
-                                           prefs.edit().putInt(followers, it.body()?.user?.followers!!).apply()
-                                           prefs.edit().putInt(following, it.body()?.user?.following!!).apply()
-                                       }
-                                    })
+                        loginViewModel.checkAddUser(UserSignUpBody(signup_mail.text.toString(), signup_identifiant.text.toString(), signup_password.text.toString())).observe(viewLifecycleOwner,
+                            {
+                                when(it.code()){
+                                    201 -> {
+                                        meViewModel.modifyProfile(it.body()?.token!!, UpdateUserInfoDTO(language = Locale.getDefault().language, status = 0, dateFormat = 0, socialMedias = SocialMedias(
+                                            Youtube("", false), Facebook("", false), Instagram("", false), WhatsApp("", false), LinkedIn("", false),
+                                            Twitter("", false), Discord("", false), Telegram("", false)
+                                        ))).observe(viewLifecycleOwner, { rp ->
+                                           if(rp.isSuccessful){
+                                               //findNavController().navigate(SignupDirections.actionSignupToPreferenceCategory(true))
+                                               prefs.edit().putString(accessToken, it.body()?.token).apply()
+                                               prefs.edit().putString(refreshToken, it.body()?.refreshToken).apply()
+                                               prefs.edit().putString(user_info_dto, Gson().toJson(it.body()?.user)).apply()
+                                               prefs.edit().putInt(followers, it.body()?.user?.followers!!).apply()
+                                               prefs.edit().putInt(following, it.body()?.user?.following!!).apply()
+                                           }
+                                        })
 
+                                    }
+                                    409 -> {
+                                        Toast.makeText(requireContext(), getString(R.string.invalid_authentication), Toast.LENGTH_SHORT).show()
+                                    }
+                                    400 -> {
+                                        Toast.makeText(requireContext(), getString(R.string.invalid_authentication), Toast.LENGTH_SHORT).show()
+                                    }
                                 }
-                                409 -> {
-                                    Toast.makeText(requireContext(), getString(R.string.invalid_authentication), Toast.LENGTH_SHORT).show()
-                                }
-                                400 -> {
-                                    Toast.makeText(requireContext(), getString(R.string.invalid_authentication), Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                        })
+                            })
                     }
                 }
 

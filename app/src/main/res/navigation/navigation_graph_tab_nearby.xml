@@ -46,11 +46,14 @@
             android:name="com.dayzeeco.dayzee.view.loginFlow.Signup"
             android:label="Signup">
             <action
-                android:id="@+id/action_signup_to_preferenceCategory"
-                app:destination="@id/preferenceCategory" />
-            <action
                 android:id="@+id/action_signup_to_changePassword2"
                 app:destination="@id/changePassword2" />
+            <action
+                android:id="@+id/action_signup_to_createAccount"
+                app:destination="@id/createAccount" />
+            <action
+                android:id="@+id/action_signup_to_seConnecter"
+                app:destination="@id/seConnecter" />
         </fragment>
         <fragment
             android:id="@+id/changePassword2"
@@ -60,6 +63,18 @@
                 android:name="token"
                 app:argType="string" />
         </fragment>
+        <fragment
+            android:id="@+id/createAccount"
+            android:name="com.dayzeeco.dayzee.view.loginFlow.CreateAccount"
+            android:label="CreateAccount" >
+            <action
+                android:id="@+id/action_createAccount_to_preferenceCategory3"
+                app:destination="@id/preferenceCategory" />
+        </fragment>
+        <fragment
+            android:id="@+id/seConnecter"
+            android:name="com.dayzeeco.dayzee.view.loginFlow.SeConnecter"
+            android:label="SeConnecter" />
     </navigation>
     <fragment
         android:id="@+id/nearBy"

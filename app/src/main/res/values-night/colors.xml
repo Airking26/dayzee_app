@@ -18,5 +18,6 @@
     <color name="colorBackgroundSettings">#121212</color>
     <color name="colorElevated">#282828</color>
     <color name="colorHashtag">#ffcc33</color>
+    <color name="colorBakcgroundlogin">#000000</color>
 
 </resources>

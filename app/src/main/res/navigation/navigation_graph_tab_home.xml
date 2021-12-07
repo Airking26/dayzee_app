@@ -46,11 +46,14 @@
             tools:layout="@layout/fragment_signup"
             android:label="Signup">
             <action
-                android:id="@+id/action_signup_to_preferenceCategory"
-                app:destination="@id/preferenceCategory" />
-            <action
                 android:id="@+id/action_signup_to_changePassword2"
                 app:destination="@id/changePassword2" />
+            <action
+                android:id="@+id/action_signup_to_createAccount"
+                app:destination="@id/createAccount" />
+            <action
+                android:id="@+id/action_signup_to_seConnecter"
+                app:destination="@id/seConnecter" />
         </fragment>
         <fragment
             android:id="@+id/changePassword2"
@@ -60,6 +63,18 @@
                 android:name="token"
                 app:argType="string" />
         </fragment>
+        <fragment
+            android:id="@+id/createAccount"
+            android:name="com.dayzeeco.dayzee.view.loginFlow.CreateAccount"
+            android:label="CreateAccount" >
+            <action
+                android:id="@+id/action_createAccount_to_preferenceCategory2"
+                app:destination="@id/preferenceCategory" />
+        </fragment>
+        <fragment
+            android:id="@+id/seConnecter"
+            android:name="com.dayzeeco.dayzee.view.loginFlow.SeConnecter"
+            android:label="SeConnecter" />
     </navigation>
     <fragment
         android:id="@+id/home"
@@ -192,10 +207,6 @@
     </fragment>
     <action android:id="@+id/action_global_profileCalendar" app:destination="@id/profileCalendar" />
     <action android:id="@+id/action_global_navigation" app:destination="@id/navigation" />
-    <fragment
-        android:id="@+id/carouselActivity"
-        android:name="com.dayzeeco.dayzee.androidView.carousel.CarouselActivity"
-        android:label="CarouselActivity" /><action android:id="@+id/action_global_carouselActivity" app:destination="@id/carouselActivity"/>
     <fragment
         android:id="@+id/changePassword"
         android:name="com.dayzeeco.dayzee.view.loginFlow.ChangePassword"

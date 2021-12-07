@@ -18,6 +18,7 @@
     <color name="colorBackgroundSettings">#10aaaaaa</color>
     <color name="colorElevated">#fff</color>
     <color name="colorHashtag">#4A3E8F</color>
+    <color name="colorBakcgroundlogin">#ffffff</color>
 
     //Material SearchBar Light Theme Colors
     <color name="searchBarIconColor">#3a3a3a</color>

@@ -24,7 +24,7 @@ class Login : Fragment() {
     private val viewModel: LoginViewModel by activityViewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
-            =  inflater.inflate(R.layout.fragment_login, container, false)
+            =  inflater.inflate(R.layout.fragment_signup_new, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         button1.setOnClickListener {
