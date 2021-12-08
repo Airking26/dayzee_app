@@ -76,11 +76,34 @@
         android:background="@drawable/edit_text_bg"
         app:layout_constraintVertical_chainStyle="packed"
         app:layout_constraintBottom_toTopOf="@+id/signup_connect"
-        android:layout_marginBottom="48dp"
+        android:layout_marginBottom="72dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/signup_mail" />
+
+    <CheckBox
+        android:id="@+id/agree_cb"
+        app:layout_constraintTop_toBottomOf="@id/signup_password"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="18dp"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:scaleY="0.9"
+        android:scaleX="0.9"
+        android:layout_marginTop="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/agreee_tv"
+        android:text="@string/i_agree_with_terms_and_privacy_policy"
+        app:layout_constraintStart_toEndOf="@id/agree_cb"
+        app:layout_constraintTop_toTopOf="@id/agree_cb"
+        app:layout_constraintBottom_toBottomOf="@id/agree_cb"
+        app:layout_constraintEnd_toEndOf="@id/signup_password"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"/>
 
     <mehdi.sakout.fancybuttons.FancyButton
         android:id="@+id/signup_connect"

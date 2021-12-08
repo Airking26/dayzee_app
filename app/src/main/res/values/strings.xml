@@ -426,6 +426,11 @@
     <string name="current_password">Current password</string>
     <string name="confirm_password">Confirm password</string>
     <string name="username">Username</string>
+    <string name="i_agree_with_terms_and_privacy_policy">I agree with Terms of use and Privacy policy</string>
+    <string name="terms">Terms of use</string>
+    <string name="privacy_policy">Privacy policy</string>
+    <string name="create_new_account">CREATE A NEW ACCOUNT</string>
+    <string name="to_connect">LOGIN</string>
     <plurals name="time_minutes_comment">
         <item quantity="one">%1$d minute</item>
         <item quantity="other">%1$d minutes</item>

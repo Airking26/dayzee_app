@@ -405,6 +405,11 @@
     <string name="current_password">Mot de passe actuel</string>
     <string name="confirm_password">Confirmer le mot de passe</string>
     <string name="username">Nom d\'utilisateur</string>
+    <string name="i_agree_with_terms_and_privacy_policy">J\'accepte les Conditions d\'utilisation et la Politique de confidentialité</string>
+    <string name="terms">Conditions d\'utilisation</string>
+    <string name="privacy_policy">Politique de confidentialité</string>
+    <string name="create_new_account">CREER UN NOUVEAU COMPTE</string>
+    <string name="to_connect">SE CONNECTER</string>
     <plurals name="time_minutes_comment">
         <item quantity="one">%1$d minute</item>
         <item quantity="other">%1$d minutes</item>
