@@ -3,7 +3,7 @@ package com.dayzeeco.dayzee.webService
 import android.graphics.Bitmap
 import com.dayzeeco.dayzee.model.*
 
-private var timenoteModel: CreationTimenoteDTO = CreationTimenoteDTO(createdBy = "", title = "", startingAt = "", endingAt = "", price = Price(0, ""))
+private var timenoteModel: CreationTimenoteDTO = CreationTimenoteDTO(createdBy = "", title = "", startingAt = "", endingAt = "", price = Price(0.0, ""))
 
 class CreationTimenoteData {
 
@@ -87,7 +87,7 @@ class CreationTimenoteData {
     }
 
     fun clear(): CreationTimenoteDTO {
-        timenoteModel = CreationTimenoteDTO(createdBy = "", title = "", startingAt = "", endingAt = "", price = Price(0, ""), pictures = listOf(), hashtags = listOf(), description = "", category = Category("", ""), colorHex = "")
+        timenoteModel = CreationTimenoteDTO(createdBy = "", title = "", startingAt = "", endingAt = "", price = Price(0.0, ""), pictures = listOf(), hashtags = listOf(), description = "", category = Category("", ""), colorHex = "")
         return timenoteModel
     }
 

@@ -381,7 +381,7 @@ class Settings : Fragment(), View.OnClickListener {
                     SimpleDateFormat(ISO, Locale.getDefault()).format(if(item.end.date == null) item.end.dateTime.value else item.end.date.value),
                     listOf(),
                     null,
-                    Price(0, ""),
+                    Price(0.0, ""),
                     listOf(userInfoDTO.id!!),
                     null
                 )

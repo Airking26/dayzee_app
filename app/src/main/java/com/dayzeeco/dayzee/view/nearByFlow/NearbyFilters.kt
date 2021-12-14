@@ -123,8 +123,8 @@ class NearbyFilters : Fragment(), View.OnClickListener {
                 else -> nearby_filter_from_tv.text = getString(R.string.discover)
             }
             when(nearbyModifyModel.price.price){
-                0 -> nearby_filter_paid_timenote_tv.text = getString(R.string.free)
-                in 1 .. Int.MAX_VALUE  -> nearby_filter_paid_timenote_tv.text = getString(R.string.paid)
+                0.0 -> nearby_filter_paid_timenote_tv.text = getString(R.string.free)
+                in 0.1 .. Double.MAX_VALUE  -> nearby_filter_paid_timenote_tv.text = getString(R.string.paid)
                 else -> nearby_filter_paid_timenote_tv.text = getText(R.string.free)
             }
             when(nearbyModifyModel.maxDistance){
@@ -161,8 +161,8 @@ class NearbyFilters : Fragment(), View.OnClickListener {
                 title(R.string.from)
                 listItems(null, listOf(getString(R.string.free), getString(R.string.paid))) { _, index, _ ->
                     when(index){
-                        0 -> nearbyFilterData.setPaidTimenote(Price(0, ""))
-                        1 -> nearbyFilterData.setPaidTimenote(Price(Int.MAX_VALUE, ""))
+                        0 -> nearbyFilterData.setPaidTimenote(Price(0.0, ""))
+                        1 -> nearbyFilterData.setPaidTimenote(Price(Double.MAX_VALUE, ""))
                     }
                 }
                 lifecycleOwner(this@NearbyFilters)

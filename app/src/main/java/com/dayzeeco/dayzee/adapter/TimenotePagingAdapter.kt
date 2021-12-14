@@ -79,12 +79,20 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
     ) {
         if(allSelected.contains(absoluteAdapterPosition)){
             itemView.timenote_buy_cl.visibility = View.VISIBLE
-            if (timenote.price.price > 0) itemView.timenote_buy.text =
-                timenote.price.price.toString().plus(timenote.price.currency)
-            if (!timenote.urlTitle.isNullOrEmpty() || !timenote.urlTitle.isNullOrBlank()) {
-                itemView.more_label.text = timenote.urlTitle.capitalize()
-            } else itemView.more_label.text =
-                itemView.resources.getString(R.string.find_out_more)
+
+            if (timenote.price.price > 0) itemView.timenote_buy.text = timenote.price.price.toString().plus(timenote.price.currency)
+            else itemView.timenote_buy.text = ""
+
+            if(timenote.url != null && timenote.url.isNotBlank()) {
+                itemView.timenote_buy.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_baseline_keyboard_arrow_right_white_24, 0)
+                itemView.timenote_buy.setPadding(0, 0, 0, 0)
+                if (!timenote.urlTitle.isNullOrBlank()) itemView.more_label.text = timenote.urlTitle.capitalize()
+                else itemView.more_label.text = itemView.resources.getString(R.string.find_out_more)
+            } else {
+                itemView.timenote_buy.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+                itemView.timenote_buy.setPadding(0, 0, 48, 0)
+                itemView.more_label.text = ""
+            }
         } else {
             itemView.timenote_buy_cl.visibility = View.GONE
         }
@@ -218,35 +226,29 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
             }
         }
 
-
-
         val screenSlideCreationTimenotePagerAdapter =  ScreenSlideTimenotePagerAdapter(fragment, if(timenote.pictures.isNullOrEmpty()) listOf(if(timenote.colorHex.isNullOrEmpty()) "#09539d" else timenote.colorHex) else timenote.pictures, true, timenote.pictures.isNullOrEmpty()){ _ : Int, i1: Int ->
             if(i1 == 0) {
-                if (timenote.price.price >= 0 && !timenote.url.isNullOrBlank()) {
-                    if(itemView.timenote_buy_cl.visibility == View.GONE) {
-                        allSelected.add(absoluteAdapterPosition)
-                        itemView.timenote_buy_cl.visibility = View.VISIBLE
-                        if (timenote.price.price > 0) itemView.timenote_buy.text =
-                            timenote.price.price.toString().plus(timenote.price.currency)
-                        if (!timenote.urlTitle.isNullOrEmpty() || !timenote.urlTitle.isNullOrBlank()) {
-                            itemView.more_label.text = timenote.urlTitle.capitalize()
-                        } else itemView.more_label.text =
-                            itemView.resources.getString(R.string.find_out_more)
+
+                if((timenote.price.price > 0 || !timenote.url.isNullOrBlank()) && itemView.timenote_buy_cl.visibility == View.GONE){
+                    allSelected.add(absoluteAdapterPosition)
+                    itemView.timenote_buy_cl.visibility = View.VISIBLE
+
+                    if (timenote.price.price > 0) itemView.timenote_buy.text = timenote.price.price.toString().plus(timenote.price.currency)
+                    else itemView.timenote_buy.text = ""
+
+                    if(timenote.url != null && timenote.url.isNotBlank()) {
+                        itemView.timenote_buy.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_baseline_keyboard_arrow_right_white_24, 0)
+                        itemView.timenote_buy.setPadding(0, 0, 0, 0)
+                        if (!timenote.urlTitle.isNullOrBlank()) itemView.more_label.text = timenote.urlTitle.capitalize()
+                        else itemView.more_label.text = itemView.resources.getString(R.string.find_out_more)
                     } else {
-                        allSelected.remove(absoluteAdapterPosition)
-                        itemView.timenote_buy_cl.visibility = View.GONE
-                    }
-                } else if (timenote.price.price > 0 && timenote.url.isNullOrBlank()){
-                    if(itemView.timenote_buy_cl.visibility == View.GONE) {
-                        allSelected.add(absoluteAdapterPosition)
-                        itemView.timenote_buy_cl.visibility = View.VISIBLE
                         itemView.timenote_buy.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
                         itemView.timenote_buy.setPadding(0, 0, 48, 0)
-                        itemView.timenote_buy.text = timenote.price.price.toString().plus(timenote.price.currency)
-                    } else {
-                        allSelected.remove(absoluteAdapterPosition)
-                        itemView.timenote_buy_cl.visibility = View.GONE
+                        itemView.more_label.text = ""
                     }
+                } else {
+                    allSelected.remove(absoluteAdapterPosition)
+                    itemView.timenote_buy_cl.visibility = View.GONE
                 }
             } else {
                 if(isFromFuture && createdBy != timenote.createdBy.id) {
@@ -264,8 +266,7 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         itemView.timenote_buy_cl.setOnClickListener {
             if(!timenote.url.isNullOrBlank()) {
                 val i = Intent(Intent.ACTION_VIEW)
-                i.data =
-                    Uri.parse(if (timenote.url?.contains("https://")!!) timenote.url else "https://" + timenote.url)
+                i.data = Uri.parse(if (timenote.url.contains("https://")) timenote.url else "https://" + timenote.url)
                 itemView.context.startActivity(i)
             }
         }
@@ -273,6 +274,7 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         itemView.timenote_vp.adapter = screenSlideCreationTimenotePagerAdapter
         itemView.timenote_indicator.setViewPager(itemView.timenote_vp)
         if(timenote.pictures?.size == 1 || timenote.pictures.isNullOrEmpty()) itemView.timenote_indicator.visibility = View.GONE
+        else itemView.timenote_indicator.visibility = View.VISIBLE
         screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(itemView.timenote_indicator.adapterDataObserver)
         itemView.timenote_username.text = timenote.createdBy.userName
         if(timenote.createdBy.certified!!) itemView.timenote_username.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_certified_other, 0)

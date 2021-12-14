@@ -72,8 +72,8 @@ class SearchTop: Fragment(), SuggestionAdapter.SuggestionItemListener,
             list_subcategory_rated, null))).observe(viewLifecycleOwner, {
             val typeSubCat: Type = object : TypeToken<MutableList<SubCategoryRated?>>() {}.type
             preferencesCategoryRated = Gson().fromJson(it, typeSubCat) ?: mutableListOf()
-            val common = SubCategoryRated(Category("Common", "Trending"), 5)
-            if(!preferencesCategoryRated.contains(common)) preferencesCategoryRated.add(common)
+            //val common = SubCategoryRated(Category("Common", "Trending"), 5)
+            //if(!preferencesCategoryRated.contains(common)) preferencesCategoryRated.add(common)
 
             topAdapter = SuggestionAdapter(mapSCRtoLUI, this@SearchTop, this@SearchTop)
             search_top_rv.apply {
@@ -82,144 +82,32 @@ class SearchTop: Fragment(), SuggestionAdapter.SuggestionItemListener,
                 Log.d(TAG, "onViewCreated: ADAPTER")
             }
 
-             getTopAlt()
+             getTopUsers()
         })
     }
 
-    private fun getTop(){
-                lifecycleScope.launch {
-                    val m : MutableMap<SubCategoryRated, List<UserInfoDTO>?> = mutableMapOf()
-                    preferencesCategoryRated.shuffle()
-                    preferencesCategoryRated.forEach { scr ->
-                        Log.d(TAG, scr.category.subcategory)
-                        if (scr.rating > 0) {
-                            var i = 0
-                            var req =
-                                searchService.searchBasedOnCategory(
-                                    "Bearer " + tokenId!!,
-                                    scr.category,
-                                    i
-                                )
-                            if (req.code() == 401) {
-                                loginViewModel.refreshToken(prefs)
-                                    .observe(viewLifecycleOwner, { nat ->
-                                        tokenId = nat
-                                        getTop()
-                                    })
-
-                            } else {
-                                val body =
-                                    req.body()?.filter { userInfoDTO -> !userInfoDTO.isInFollowers }
-                                if (body?.size != 0) {
-                                    if (body?.size!! > scr.rating) {
-                                        m[scr] = body.subList(0, scr.rating)
-                                    } else {
-                                        var continueBrowsing = true
-                                        do {
-                                            req = searchService.searchBasedOnCategory(
-                                                "Bearer " + tokenId,
-                                                scr.category,
-                                                i++
-                                            )
-                                            if (req.body()?.size!! > 0) {
-                                                body.toMutableList().addAll(
-                                                    req.body()
-                                                        ?.filter { userInfoDTO -> !userInfoDTO.isInFollowers }!!
-                                                )
-                                                if (body.size > scr.rating) {
-                                                    continueBrowsing = false
-                                                }
-                                            } else {
-                                                continueBrowsing = false
-                                            }
-
-                                        } while (req.body()?.size != 0 || continueBrowsing)
-                                        m[scr] = body
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    search_top_pb.visibility = View.GONE
-                    topAdapter = SuggestionAdapter(m.toList().sortedByDescending { it.first.rating }.toMap(), this@SearchTop, this@SearchTop)
-                    search_top_rv.apply {
-                        layoutManager = LinearLayoutManager(requireContext())
-                        adapter = topAdapter
-                    }
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-    }
-
-    private fun getTopAlt(){
-        Log.d(TAG, "onViewCreated: START REQUESTS")
+    private fun getTopUsers(){
         lifecycleScope.launch {
-                    preferencesCategoryRated.shuffle()
-                    if(view != null) preferencesCategoryRated.forEachIndexed { index, element ->
-                        Log.d(TAG, "onViewCreated: FOR EACH REQUESTS")
-                        if(index == preferencesCategoryRated.size - 1) topAdapter.setLoadingFooter(false)
-                        if(view != null)
-                            if (element.rating > 0) {
-                            var i = 0
-                            var req = searchService.searchBasedOnCategory("Bearer " + tokenId!!, element.category, i)
-                            if (req.code() == 401) {
-                                loginViewModel.refreshToken(prefs)
-                                    .observe(viewLifecycleOwner, { nat ->
-                                        tokenId = nat
-                                        getTopAlt()
-                                    })
-
-                            }
-                            else {
-                                val body = req.body()?.filter { userInfoDTO -> !userInfoDTO.isInFollowers }
-                                if (body?.size != 0) {
-                                    if (body?.size!! >= element.rating) {
-                                        if(view != null) {
-                                            Log.d(TAG, "onViewCreated: BODY")
-                                            mapSCRtoLUI[element] = body.subList(0, element.rating)
-                                            topAdapter.setLoadingFooter(true)
-                                            topAdapter.notifyDataSetChanged()
-                                            search_top_pb.visibility = View.GONE
-                                        }
-                                    }
-                                    else {
-                                        if (view != null) {
-                                            var continueBrowsing = true
-                                            Log.d(TAG, "onViewCreated: CONTINUE")
-                                            do {
-                                                    req = searchService.searchBasedOnCategory(
-                                                        "Bearer " + tokenId,
-                                                        element.category,
-                                                        i++
-                                                    )
-                                                if (req.body()?.size!! > 0) {
-                                                    if(view != null)
-                                                    body.toMutableList().addAll(req.body()?.filter { userInfoDTO -> !userInfoDTO.isInFollowers }!!)
-                                                    if (body.size > element.rating) {
-                                                        continueBrowsing = false
-                                                    }
-                                                } else {
-                                                    continueBrowsing = false
-                                                }
-
-                                            } while (req.body()?.size != 0 || continueBrowsing)
-                                            if(view != null) {
-                                                mapSCRtoLUI[element] = body
-                                                topAdapter.setLoadingFooter(true)
-                                                topAdapter.notifyDataSetChanged()
-                                                search_top_pb.visibility = View.GONE
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+            preferencesCategoryRated.shuffle()
+            if(view != null) preferencesCategoryRated.forEachIndexed { index, element ->
+                if(index == preferencesCategoryRated.size - 1) topAdapter.setLoadingFooter(false)
+                if(view != null) {
+                    val req = searchService.getTopUsers("Bearer " + tokenId!!, element.category)
+                    if (req.code() == 401) {
+                        loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { nat ->
+                            tokenId = nat
+                            getTopUsers()
+                        })
+                    } else {
+                        if(view != null && req.body() != null && req.body()!!.isNotEmpty()) mapSCRtoLUI[element] = req.body()
+                        topAdapter.setLoadingFooter(true)
+                        topAdapter.notifyDataSetChanged()
+                        search_top_pb?.visibility = View.GONE
                     }
-                    topAdapter.setLoadingFooter(false)
                 }
+            }
+            topAdapter.setLoadingFooter(false)
+        }
     }
 
     override fun onItemSelected(follow: Boolean, userInfoDTO: UserInfoDTO) {
@@ -237,5 +125,147 @@ class SearchTop: Fragment(), SuggestionAdapter.SuggestionItemListener,
 
     override fun onPicClicked(userInfoDTO: UserInfoDTO) {
         findNavController().navigate(SearchDirections.actionGlobalProfileElse(2).setUserInfoDTO(userInfoDTO))
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    private fun getTop(){
+        lifecycleScope.launch {
+            val m : MutableMap<SubCategoryRated, List<UserInfoDTO>?> = mutableMapOf()
+            preferencesCategoryRated.shuffle()
+            preferencesCategoryRated.forEach { scr ->
+                Log.d(TAG, scr.category.subcategory)
+                if (scr.rating > 0) {
+                    var i = 0
+                    var req =
+                        searchService.searchBasedOnCategory(
+                            "Bearer " + tokenId!!,
+                            scr.category,
+                            i
+                        )
+                    if (req.code() == 401) {
+                        loginViewModel.refreshToken(prefs)
+                            .observe(viewLifecycleOwner, { nat ->
+                                tokenId = nat
+                                getTop()
+                            })
+
+                    } else {
+                        val body =
+                            req.body()?.filter { userInfoDTO -> !userInfoDTO.isInFollowers }
+                        if (body?.size != 0) {
+                            if (body?.size!! > scr.rating) {
+                                m[scr] = body.subList(0, scr.rating)
+                            } else {
+                                var continueBrowsing = true
+                                do {
+                                    req = searchService.searchBasedOnCategory(
+                                        "Bearer " + tokenId,
+                                        scr.category,
+                                        i++
+                                    )
+                                    if (req.body()?.size!! > 0) {
+                                        body.toMutableList().addAll(
+                                            req.body()
+                                                ?.filter { userInfoDTO -> !userInfoDTO.isInFollowers }!!
+                                        )
+                                        if (body.size > scr.rating) {
+                                            continueBrowsing = false
+                                        }
+                                    } else {
+                                        continueBrowsing = false
+                                    }
+
+                                } while (req.body()?.size != 0 || continueBrowsing)
+                                m[scr] = body
+                            }
+                        }
+                    }
+                }
+            }
+            search_top_pb.visibility = View.GONE
+            topAdapter = SuggestionAdapter(m.toList().sortedByDescending { it.first.rating }.toMap(), this@SearchTop, this@SearchTop)
+            search_top_rv.apply {
+                layoutManager = LinearLayoutManager(requireContext())
+                adapter = topAdapter
+            }
+        }
+    }
+
+    private fun getTopAlt(){
+        Log.d(TAG, "onViewCreated: START REQUESTS")
+        lifecycleScope.launch {
+            preferencesCategoryRated.shuffle()
+            if(view != null) preferencesCategoryRated.forEachIndexed { index, element ->
+                Log.d(TAG, "onViewCreated: FOR EACH REQUESTS")
+                if(index == preferencesCategoryRated.size - 1) topAdapter.setLoadingFooter(false)
+                if(view != null)
+                    if (element.rating > 0) {
+                        var i = 0
+                        var req = searchService.searchBasedOnCategory("Bearer " + tokenId!!, element.category, i)
+                        if (req.code() == 401) {
+                            loginViewModel.refreshToken(prefs)
+                                .observe(viewLifecycleOwner, { nat ->
+                                    tokenId = nat
+                                    getTopAlt()
+                                })
+
+                        }
+                        else {
+                            val body = req.body()?.filter { userInfoDTO -> !userInfoDTO.isInFollowers }
+                            if (body?.size != 0) {
+                                if (body?.size!! >= element.rating) {
+                                    if(view != null) {
+                                        Log.d(TAG, "onViewCreated: BODY")
+                                        mapSCRtoLUI[element] = body.subList(0, element.rating)
+                                        topAdapter.setLoadingFooter(true)
+                                        topAdapter.notifyDataSetChanged()
+                                        search_top_pb.visibility = View.GONE
+                                    }
+                                }
+                                else {
+                                    if (view != null) {
+                                        var continueBrowsing = true
+                                        Log.d(TAG, "onViewCreated: CONTINUE")
+                                        do {
+                                            req = searchService.searchBasedOnCategory(
+                                                "Bearer " + tokenId,
+                                                element.category,
+                                                i++
+                                            )
+                                            if (req.body()?.size!! > 0) {
+                                                if(view != null)
+                                                    body.toMutableList().addAll(req.body()?.filter { userInfoDTO -> !userInfoDTO.isInFollowers }!!)
+                                                if (body.size > element.rating) {
+                                                    continueBrowsing = false
+                                                }
+                                            } else {
+                                                continueBrowsing = false
+                                            }
+
+                                        } while (req.body()?.size != 0 || continueBrowsing)
+                                        if(view != null) {
+                                            mapSCRtoLUI[element] = body
+                                            topAdapter.setLoadingFooter(true)
+                                            topAdapter.notifyDataSetChanged()
+                                            search_top_pb.visibility = View.GONE
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+            }
+            topAdapter.setLoadingFooter(false)
+        }
     }
 }

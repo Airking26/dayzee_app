@@ -404,14 +404,14 @@ class CreateTimenote : Fragment(), View.OnClickListener,
 
     private fun populateModel(it: CreationTimenoteDTO) {
         when (it.price.price) {
-            0 -> {
+            0.0 -> {
                 noAnswer.text = getString(R.string.free)
                     paidLabelTv.setTextColor(resources.getColor(R.color.colorText))
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         paidLabelTv.compoundDrawableTintList = ColorStateList.valueOf(resources.getColor(R.color.colorText))
                     }
             }
-            in 1..Int.MAX_VALUE -> {
+            in 0.1..Double.MAX_VALUE-> {
                 noAnswer.text = it.price.price.toString() + it.price.currency
                 paidLabelTv.setTextColor(resources.getColor(R.color.colorText))
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -859,7 +859,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                     when (index) {
                         0 -> {
                             noAnswer.text = text.toString()
-                            creationTimenoteViewModel.setPrice(Price(0, ""))
+                            creationTimenoteViewModel.setPrice(Price(0.0, ""))
                         }
                         1 -> {
                             noAnswer.text = text.toString()
@@ -867,7 +867,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                                 requireContext(),
                                 BottomSheet(LayoutMode.WRAP_CONTENT)
                             ).show {
-                                onCancel { creationTimenoteViewModel.setPrice(Price(0, "")) }
+                                onCancel { creationTimenoteViewModel.setPrice(Price(0.0, "")) }
                                 title(R.string.price)
                                 input(inputType = InputType.TYPE_CLASS_NUMBER) { _, price ->
                                     lifecycleOwner(this@CreateTimenote)
@@ -879,7 +879,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                                         input(inputType = InputType.TYPE_CLASS_TEXT) { _, charSequence ->
                                             creationTimenoteViewModel.setPrice(
                                                 Price(
-                                                    price.toString().toInt(),
+                                                    price.toString().toDouble(),
                                                     charSequence.toString()
                                                 )
                                             )

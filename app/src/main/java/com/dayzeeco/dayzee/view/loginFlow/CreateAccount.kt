@@ -255,6 +255,7 @@ fun TextView.makeLinks(vararg links: Pair<String, View.OnClickListener>) {
     for (link in links) {
         val clickableSpan = object : ClickableSpan() {
             override fun updateDrawState(textPaint: TextPaint) {
+                textPaint.color = Color.GRAY
                 textPaint.color = resources.getColor(R.color.colorText)
                 textPaint.isUnderlineText = false
             }
