@@ -11,6 +11,10 @@ android {
         viewBinding true
     }
 
+    packagingOptions {
+        exclude 'META-INF/core.kotlin_module'
+    }
+
     useLibrary 'org.apache.http.legacy'
 
     compileOptions {
@@ -132,7 +136,6 @@ dependencies {
     }
 
     implementation "androidx.camera:camera-camera2:1.1.0-alpha02"
-
     // Kotlin + coroutines
     implementation "androidx.work:work-runtime-ktx:2.5.0"
 

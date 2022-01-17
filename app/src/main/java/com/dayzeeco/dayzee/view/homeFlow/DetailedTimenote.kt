@@ -643,9 +643,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                 }
             }
             detailed_timenote_address -> findNavController().navigate(
-                DetailedTimenoteDirections.actionGlobalTimenoteAddress(
-                    args.event
-                )
+                DetailedTimenoteDirections.actionGlobalTimenoteAddress(args.event).setFrom(args.from)
             )
             detailed_timenote_username, detailed_timenote_pic_user -> {
                 if (userInfoDTO.id != args.event?.createdBy?.id) findNavController().navigate(

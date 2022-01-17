@@ -194,24 +194,24 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         tokenId = prefs.getString(accessToken, null)
-        loginViewModel.getAuthenticationState().observe(requireActivity(), {
-                when (it) {
-                    LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(
-                        CreateTimenoteDirections.actionGlobalNavigation()
-                    )
-                    LoginViewModel.AuthenticationState.AUTHENTICATED -> {
-                        tokenId = prefs.getString(accessToken, null)
-                        findNavController().popBackStack(
-                            R.id.createTimenote,
-                            false
-                        )
-                    }
-                    LoginViewModel.AuthenticationState.GUEST -> findNavController().popBackStack(
+        loginViewModel.getAuthenticationState().observe(requireActivity()) {
+            when (it) {
+                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> findNavController().navigate(
+                    CreateTimenoteDirections.actionGlobalNavigation()
+                )
+                LoginViewModel.AuthenticationState.AUTHENTICATED -> {
+                    tokenId = prefs.getString(accessToken, null)
+                    findNavController().popBackStack(
                         R.id.createTimenote,
                         false
                     )
                 }
-            })
+                LoginViewModel.AuthenticationState.GUEST -> findNavController().popBackStack(
+                    R.id.createTimenote,
+                    false
+                )
+            }
+        }
         Places.initialize(requireContext(), getString(R.string.api_web_key))
         placesClient = Places.createClient(requireContext())
     }
@@ -268,18 +268,18 @@ class CreateTimenote : Fragment(), View.OnClickListener,
             accountType = userInfoDTO.status
 
             if (args.modify == 0)
-                creationTimenoteViewModel.getCreateTimeNoteLiveData().observe(viewLifecycleOwner, {
-                populateModel(it)
-            }) else {
+                creationTimenoteViewModel.getCreateTimeNoteLiveData().observe(viewLifecycleOwner) {
+                    populateModel(it)
+                } else {
                 creationTimenoteViewModel.setDuplicateOrEdit(args.timenoteBody!!)
                 creationTimenoteViewModel.setCreatedBy(userInfoDTO.id!!)
-                creationTimenoteViewModel.getCreateTimeNoteLiveData().observe(viewLifecycleOwner, {
+                creationTimenoteViewModel.getCreateTimeNoteLiveData().observe(viewLifecycleOwner) {
                     populateModel(args.timenoteBody!!)
-                })
+                }
             }
 
-            prefs.stringLiveData(offset, "+00:00").observe(viewLifecycleOwner, {
-                if(isCreatedOffset) {
+            prefs.stringLiveData(offset, "+00:00").observe(viewLifecycleOwner) {
+                if (isCreatedOffset) {
                     if (creationTimenoteViewModel.getCreateTimeNoteLiveData().value != null && creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.startingAt?.isNotBlank()!!)
                         creationTimenoteViewModel.setStartDateOffset(
                             creationTimenoteViewModel.setOffset(
@@ -297,7 +297,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                             )
                         )
                 }
-            })
+            }
 
             visibilityTimenote = prefs.getInt(default_settings_at_creation_time, 1)
             when (visibilityTimenote) {

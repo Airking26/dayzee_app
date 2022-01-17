@@ -36,6 +36,7 @@ import io.branch.indexing.BranchUniversalObject
 import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
 import io.branch.referral.util.LinkProperties
+import kotlinx.android.synthetic.main.fragment_my_profile.*
 import kotlinx.android.synthetic.main.fragment_profile_else.*
 import kotlinx.android.synthetic.main.fragment_profile_else.profile_account_private
 import kotlinx.android.synthetic.main.fragment_profile_else.profile_calendar_btn
@@ -115,14 +116,18 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
         else profile_name_toolbar.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
 
         if(userInfoDTO?.description.isNullOrBlank()) profile_desc.visibility = View.GONE else {
-                profile_desc.visibility = View.VISIBLE
-                profile_desc.text = userInfoDTO?.description
-            }
+            profile_desc.visibility = View.VISIBLE
+            profile_desc.text = userInfoDTO?.description
+            if(userInfoDTO?.givenName.isNullOrBlank()){
+                setMargins(profile_desc, 0, 16, 0, 0)
+            } else setMargins(profile_desc, 0, 0, 0, 0)
+        }
 
         if(userInfoDTO?.givenName.isNullOrBlank()) profile_name.visibility = View.GONE else {
-                profile_name.visibility = View.VISIBLE
-                profile_name.text = userInfoDTO?.givenName
-            }
+            profile_name.visibility = View.VISIBLE
+            profile_name.text = userInfoDTO?.givenName
+        }
+
         if (userInfoDTO?.socialMedias?.youtube?.enabled!!) {
                     if (!userInfoDTO?.socialMedias?.youtube?.url?.isBlank()!!) {
                         profile_infos.setImageDrawable(resources.getDrawable(R.drawable.ic_youtube_colored))
@@ -269,6 +274,14 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
         profile_follow_btn.setOnClickListener(this)
         profile_notif_btn.setOnClickListener(this)
 
+    }
+
+    private fun setMargins(view: View, left: Int, top: Int, right: Int, bottom: Int) {
+        if (view.layoutParams is ViewGroup.MarginLayoutParams) {
+            val p = view.layoutParams as ViewGroup.MarginLayoutParams
+            p.setMargins(left, top, right, bottom)
+            view.requestLayout()
+        }
     }
 
     override fun onClick(v: View?) {

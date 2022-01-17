@@ -15,9 +15,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.model.Category
-import kotlinx.android.synthetic.main.adapter_suggestion_card.view.*
 import kotlinx.android.synthetic.main.item_category.view.*
-import java.util.*
 
 
 class CategoryAdapter(
