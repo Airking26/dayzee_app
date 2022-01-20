@@ -1,16 +1,25 @@
 package com.dayzeeco.dayzee.view.loginFlow
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
+import android.os.Message
 import android.text.*
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebChromeClient
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebView.WebViewTransport
+import android.webkit.WebViewClient
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -55,8 +64,44 @@ class CreateAccount : Fragment(), View.OnClickListener {
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
 
         agreee_tv.makeLinks(
-            Pair(resources.getString(R.string.terms), View.OnClickListener {  }),
-            Pair(resources.getString(R.string.privacy_policy), View.OnClickListener {  })
+            Pair(resources.getString(R.string.terms), View.OnClickListener {
+                val alert = AlertDialog.Builder(requireContext())
+                val webView = WebView(requireContext())
+                webView.setInitialScale(150)
+                webView.loadUrl("http://timenote-env.eba-2htqeacb.us-east-1.elasticbeanstalk.com/terms_of_use")
+                webView.webViewClient = object: WebViewClient(){
+                    override fun shouldOverrideUrlLoading(
+                        view: WebView?,
+                        request: WebResourceRequest?
+                    ): Boolean {
+                        view?.loadUrl(url)
+                        return  true
+                    }
+                }
+                alert.setView(webView)
+                alert.setNegativeButton("Close"
+                ) { dialog, _ -> dialog.dismiss() }
+                alert.show()
+            }),
+            Pair(resources.getString(R.string.privacy_policy), View.OnClickListener {
+                val alert = AlertDialog.Builder(requireContext())
+                val webView = WebView(requireContext())
+                webView.setInitialScale(150)
+                webView.loadUrl("http://timenote-env.eba-2htqeacb.us-east-1.elasticbeanstalk.com/privacy_policy")
+                webView.webViewClient = object: WebViewClient(){
+                    override fun shouldOverrideUrlLoading(
+                        view: WebView?,
+                        request: WebResourceRequest?
+                    ): Boolean {
+                        view?.loadUrl(url)
+                        return  true
+                    }
+                }
+                alert.setView(webView)
+                alert.setNegativeButton("Close"
+                ) { dialog, _ -> dialog.dismiss() }
+                alert.show()
+            })
         )
 
         handlerMail = Handler { msg ->
@@ -150,86 +195,87 @@ class CreateAccount : Fragment(), View.OnClickListener {
 
                 if (availableIdentifiant != null && availableMail != null) {
                     if (availableIdentifiant!! && availableMail!! && passwordValidForm) {
-                        loginViewModel.checkAddUser(
+                        if (!agree_cb.isChecked) {
+                            Toast.makeText(requireContext(), getString(R.string.check_box), Toast.LENGTH_SHORT).show()
+                        } else loginViewModel.checkAddUser(
                             UserSignUpBody(
                                 signup_mail.text.toString(),
                                 signup_username.text.toString(),
                                 signup_password.text.toString()
                             )
-                        ).observe(viewLifecycleOwner,
-                            {
-                                when (it.code()) {
-                                    201 -> {
-                                        meViewModel.modifyProfile(
-                                            it.body()?.token!!, UpdateUserInfoDTO(
-                                                language = Locale.getDefault().language,
-                                                status = 0,
-                                                dateFormat = 0,
-                                                socialMedias = SocialMedias(
-                                                    Youtube("", false),
-                                                    Facebook("", false),
-                                                    Instagram(
-                                                        "",
-                                                        false
-                                                    ),
-                                                    WhatsApp("", false),
-                                                    LinkedIn("", false),
-                                                    Twitter("", false),
-                                                    Discord("", false),
-                                                    Telegram(
-                                                        "",
-                                                        false
-                                                    )
+                        ).observe(viewLifecycleOwner, {
+                            when (it.code()) {
+                                201 -> {
+                                    meViewModel.modifyProfile(
+                                        it.body()?.token!!, UpdateUserInfoDTO(
+                                            language = Locale.getDefault().language,
+                                            status = 0,
+                                            dateFormat = 0,
+                                            socialMedias = SocialMedias(
+                                                Youtube("", false),
+                                                Facebook("", false),
+                                                Instagram(
+                                                    "",
+                                                    false
+                                                ),
+                                                WhatsApp("", false),
+                                                LinkedIn("", false),
+                                                Twitter("", false),
+                                                Discord("", false),
+                                                Telegram(
+                                                    "",
+                                                    false
                                                 )
                                             )
-                                        ).observe(viewLifecycleOwner, { rp ->
-                                            if (rp.isSuccessful) {
-                                                findNavController().navigate(
-                                                    CreateAccountDirections.actionCreateAccountToPreferenceCategory(
-                                                        true
-                                                    )
+                                        )
+                                    ).observe(viewLifecycleOwner, { rp ->
+                                        if (rp.isSuccessful) {
+                                            findNavController().navigate(
+                                                CreateAccountDirections.actionCreateAccountToPreferenceCategory(
+                                                    true
                                                 )
-                                                prefs.edit().putString(
-                                                    accessToken,
-                                                    it.body()?.token
-                                                ).apply()
-                                                prefs.edit().putString(
-                                                    refreshToken,
-                                                    it.body()?.refreshToken
-                                                ).apply()
-                                                prefs.edit().putString(
-                                                    user_info_dto, Gson().toJson(
-                                                        it.body()?.user
-                                                    )
-                                                ).apply()
-                                                prefs.edit().putInt(
-                                                    followers,
-                                                    it.body()?.user?.followers!!
-                                                ).apply()
-                                                prefs.edit().putInt(
-                                                    following,
-                                                    it.body()?.user?.following!!
-                                                ).apply()
-                                            }
-                                        })
+                                            )
+                                            prefs.edit().putString(
+                                                accessToken,
+                                                it.body()?.token
+                                            ).apply()
+                                            prefs.edit().putString(
+                                                refreshToken,
+                                                it.body()?.refreshToken
+                                            ).apply()
+                                            prefs.edit().putString(
+                                                user_info_dto, Gson().toJson(
+                                                    it.body()?.user
+                                                )
+                                            ).apply()
+                                            prefs.edit().putInt(
+                                                followers,
+                                                it.body()?.user?.followers!!
+                                            ).apply()
+                                            prefs.edit().putInt(
+                                                following,
+                                                it.body()?.user?.following!!
+                                            ).apply()
+                                        }
+                                    })
 
-                                    }
-                                    409 -> {
-                                        Toast.makeText(
-                                            requireContext(),
-                                            getString(R.string.invalid_authentication),
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                    400 -> {
-                                        Toast.makeText(
-                                            requireContext(),
-                                            getString(R.string.invalid_authentication),
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
                                 }
-                            })
+                                409 -> {
+                                    Toast.makeText(
+                                        requireContext(),
+                                        getString(R.string.invalid_authentication),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                                400 -> {
+                                    Toast.makeText(
+                                        requireContext(),
+                                        getString(R.string.invalid_authentication),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        })
                     }
                 }
 

@@ -71,6 +71,8 @@
     <string name="users_hidden">Utilisateurs masqués</string>
     <string name="events_hidden">Evènements masqués</string>
     <string name="add_a_comment">Ajouter un commentaire…</string>
+    <string name="check_box">Vous devez accepter les conditions pour continuer</string>
+    <string name="close">Fermer</string>
     <string name="large_text">
         "Material is the metaphor.\n\n"
 

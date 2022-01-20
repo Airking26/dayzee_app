@@ -431,6 +431,8 @@
     <string name="privacy_policy">Privacy policy</string>
     <string name="create_new_account">CREATE A NEW ACCOUNT</string>
     <string name="to_connect">LOGIN</string>
+    <string name="check_box">You have to accept the conditions in order to continue</string>
+    <string name="close">Close</string>
     <plurals name="time_minutes_comment">
         <item quantity="one">%1$d minute</item>
         <item quantity="other">%1$d minutes</item>
