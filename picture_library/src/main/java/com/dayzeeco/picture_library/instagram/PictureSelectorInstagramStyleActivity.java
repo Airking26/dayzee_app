@@ -209,6 +209,7 @@ public class PictureSelectorInstagramStyleActivity extends PictureBaseActivity i
             @Override
             public void onSelectionModeChange(boolean isMulti) {
                 if (isMulti) {
+                    mAdapter.getSelectedImages().clear();
                     config.selectionMode = PictureConfig.MULTIPLE;
                     config.isSingleDirectReturn = false;
                     if (mInstagramViewPager != null) {
@@ -1412,6 +1413,7 @@ public class PictureSelectorInstagramStyleActivity extends PictureBaseActivity i
         } else {
             // image
             if (media != null) {
+                media.setHeight(previewImages.get(0).getHeight());
                 mPreviewContainer.checkModel(InstagramPreviewContainer.PLAY_IMAGE_MODE);
                 final String path;
 //                if (media.isCut() && !media.isCompressed()) {

@@ -35,6 +35,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.paging.filter
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.viewpager2.widget.ViewPager2
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.WhichButton
@@ -84,8 +85,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
-import java.time.Duration
-import java.time.Instant
+import java.time.*
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.time.ExperimentalTime
@@ -358,7 +358,6 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                 }
             }
         }
-
 
         timenote_vp.adapter = screenSlideCreationTimenotePagerAdapter
         timenote_indicator.setViewPager(timenote_vp)
@@ -1035,24 +1034,39 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             }
             timer = object: CountDownTimer(duration, 1000){
                 override fun onTick(millisUntilFinished: Long) {
-                    val years = calendar[Calendar.YEAR] - 1970
-                    val months = calendar[Calendar.MONTH]
-                    var valueToSub: Int
-                    if(months == 0) valueToSub =  1 else valueToSub = months
-                    val daysToSubstract = calendar[Calendar.DAY_OF_MONTH] - valueToSub
-                    val hours = TimeUnit.MILLISECONDS.toHours(millisUntilFinished) - TimeUnit.DAYS.toHours(
-                        TimeUnit.MILLISECONDS.toDays(millisUntilFinished)
-                    )
-                    val minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(
-                        TimeUnit.MILLISECONDS.toHours(millisUntilFinished)
-                    )
-                    val seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(
-                        TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished)
-                    )
+                    val years : Long
+                    val months: Long
+                    val days : Long
+                    val hours: Long
+                    val minutes: Long
+                    val seconds: Long
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        val period = Period.between(
+                            LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC).toLocalDate(),
+                            LocalDateTime.ofInstant(Instant.parse(timenote.startingAt), ZoneOffset.UTC).toLocalDate()
+                        )
+
+                        years = period.years.toLong()
+                        months = period.minusYears(years).months.toLong()
+                        days = if(TimeUnit.MILLISECONDS.toDays(millisUntilFinished) < period.minusYears(years).minusMonths(months).days.toLong()) TimeUnit.MILLISECONDS.toDays(millisUntilFinished) else period.minusYears(years).minusMonths(months).days.toLong()
+                        hours = TimeUnit.MILLISECONDS.toHours(millisUntilFinished) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(millisUntilFinished))
+                        minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millisUntilFinished))
+                        seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))
+                    } else {
+                        val calendarLocal = Calendar.getInstance()
+                        calendarLocal.timeInMillis = millisUntilFinished
+                        years = (calendarLocal.get(Calendar.YEAR) - 1970).toLong()
+                        months = (calendarLocal.get(Calendar.MONTH)).toLong()
+                        days = (calendarLocal.get(Calendar.DAY_OF_MONTH) - 1).toLong()
+                        hours = (calendarLocal.get(Calendar.HOUR) + 12).toLong()
+                        minutes = (calendarLocal.get(Calendar.MINUTE)).toLong()
+                        seconds = (calendarLocal.get(Calendar.SECOND)).toLong()
+                    }
+
                     timenote_in_label?.text =  utils.formatInTime(
-                        years.toLong(),
-                        months.toLong(),
-                        daysToSubstract.toLong(),
+                        years,
+                        months,
+                        days,
                         hours,
                         minutes,
                         seconds,

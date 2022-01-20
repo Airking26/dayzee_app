@@ -77,6 +77,7 @@ import com.dayzeeco.dayzee.listeners.RefreshPicBottomNavListener
 import com.dayzeeco.dayzee.listeners.TimenoteCreationPicListeners
 import com.dayzeeco.dayzee.model.*
 import com.dayzeeco.dayzee.viewModel.*
+import com.dayzeeco.picture_library.PictureSelectionModel
 import com.dayzeeco.picture_library.config.PictureMimeType
 import com.dayzeeco.picture_library.entity.LocalMedia
 import com.dayzeeco.picture_library.instagram.InsGallery
@@ -148,6 +149,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     private var endDate: Long? = null
     private var formCompleted: Boolean = true
     private var startDate: Long? = null
+    private var height : Int  = 700
     private val creationTimenoteViewModel: CreationTimenoteViewModel by activityViewModels()
     private val profileViewModel : ProfileViewModel by activityViewModels()
     private val webSearchViewModel : WebSearchViewModel by activityViewModels()
@@ -960,13 +962,10 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                     when (text) {
                         resources.getString(R.string.add_a_picture) -> {
                             InsGallery
-                                .openGallery(
-                                    requireActivity(),
-                                    GlideEngine.createGlideEngine(),
-                                    object : OnResultCallbackListener<LocalMedia> {
+                                .openGallery(requireActivity(), GlideEngine.createGlideEngine(), object : OnResultCallbackListener<LocalMedia> {
                                         override fun onResult(result: MutableList<LocalMedia>?) {
                                             for (media in result!!) {
-                                                var path: String =
+                                                val path: String =
                                                     if (media.isCut && !media.isCompressed) {
                                                         media.cutPath
                                                     } else if (media.isCompressed || media.isCut && media.isCompressed) {
@@ -996,8 +995,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                                         override fun onCancel() {
                                         }
 
-                                    }, 4)
-                        }
+                                    }, 4) }
                         resources.getString(R.string.search_on_web) -> utils.createWebSearchDialog(
                             context,
                             webSearchViewModel,

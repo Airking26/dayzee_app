@@ -44,9 +44,11 @@ class ScreenSlideCreationTimenoteImageFragment: Fragment() {
         if(!picture.isNullOrBlank()){
             Glide.with(view)
                 .load(picture)
+                .fitCenter()
                 .into(create_timenote_pic)
         } else Glide.with(view)
             .load(Uri.parse(aws))
+            .fitCenter()
             .into(create_timenote_pic)
 
         if(hideIcons!! || fromDuplicateOrEdit!!){

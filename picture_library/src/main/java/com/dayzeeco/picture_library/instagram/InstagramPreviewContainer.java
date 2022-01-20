@@ -91,7 +91,7 @@ public class InstagramPreviewContainer extends FrameLayout {
 
         @Override
         public void onBitmapLoadComplete(@NonNull Bitmap bitmap) {
-            resetAspectRatio();
+            resetAspectRatio(isMulti);
         }
 
         @Override
@@ -213,7 +213,7 @@ public class InstagramPreviewContainer extends FrameLayout {
         mRatioView.setOnClickListener((v) -> {
             isAspectRatio = !isAspectRatio;
             if (mPlayMode == PLAY_IMAGE_MODE) {
-                resetAspectRatio();
+                resetAspectRatio(isMulti);
             } else if (mPlayMode == PLAY_VIDEO_MODE) {
                 changeVideoSize(mMediaPlayer, isAspectRatio);
             }
@@ -250,6 +250,7 @@ public class InstagramPreviewContainer extends FrameLayout {
     public void setMultiMode(boolean multi) {
         isMulti = multi;
         if (multi) {
+            resetAspectRatio(true);
             mRatioView.setVisibility(View.GONE);
         } else {
             mRatioView.setVisibility(View.VISIBLE);
@@ -295,7 +296,7 @@ public class InstagramPreviewContainer extends FrameLayout {
         mPlayAnimator.start();
     }
 
-    private void resetAspectRatio() {
+    private void resetAspectRatio(boolean multi) {
         mAspectRadio = 0;
         if (isAspectRatio) {
             Drawable drawable = mGestureCropImageView.getDrawable();
@@ -304,7 +305,7 @@ public class InstagramPreviewContainer extends FrameLayout {
             }
         }
 
-        mGestureCropImageView.setTargetAspectRatio(isAspectRatio ? mAspectRadio : 1.0f);
+        mGestureCropImageView.setTargetAspectRatio(isAspectRatio ? multi ? 1.0f : mAspectRadio : 1.0f);
         mGestureCropImageView.onImageLaidOut();
     }
 

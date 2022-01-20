@@ -1309,6 +1309,7 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
      * @param position
      */
     public void startPreview(List<LocalMedia> previewImages, int position) {
+
         LocalMedia media = previewImages.get(position);
         String mimeType = media.getMimeType();
         Bundle bundle = new Bundle();

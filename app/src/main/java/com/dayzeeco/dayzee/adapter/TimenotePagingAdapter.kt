@@ -228,7 +228,6 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
 
         val screenSlideCreationTimenotePagerAdapter =  ScreenSlideTimenotePagerAdapter(fragment, if(timenote.pictures.isNullOrEmpty()) listOf(if(timenote.colorHex.isNullOrEmpty()) "#09539d" else timenote.colorHex) else timenote.pictures, true, timenote.pictures.isNullOrEmpty()){ _ : Int, i1: Int ->
             if(i1 == 0) {
-
                 if((timenote.price.price > 0 || !timenote.url.isNullOrBlank()) && itemView.timenote_buy_cl.visibility == View.GONE){
                     allSelected.add(absoluteAdapterPosition)
                     itemView.timenote_buy_cl.visibility = View.VISIBLE
@@ -377,6 +376,7 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         }
 
         itemView.timenote_comment_account.setOnClickListener { timenoteListenerListener.onSeeMoreClicked(timenote) }
+        itemView.timenote_username_desc.setOnClickListener { timenoteListenerListener.onSeeMoreClicked(timenote) }
         itemView.timenote_share.setOnClickListener{timenoteListenerListener.onShareClicked(timenote)}
         itemView.timenote_pic_user_imageview.setOnClickListener { timenoteListenerListener.onPictureClicked(timenote.createdBy) }
         itemView.timenote_username.setOnClickListener { timenoteListenerListener.onPictureClicked(timenote.createdBy) }
