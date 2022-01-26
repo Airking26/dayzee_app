@@ -177,9 +177,9 @@ class Utils {
 
     fun setFormatedStartDate(startDate: String, endDate: String, context: Context) : String{
         val DATE_FORMAT_DAY = "d MMM yyyy"
-        val DATE_FORMAT_TIME = if(checkIf24HFormat(context)) "HH:mm" else "hh:mm aaa"
+        val DATE_FORMAT_TIME = "HH:mm"//if(checkIf24HFormat(context)) "HH:mm" else "hh:mm aaa"
         val DATE_FORMAT_TIME_FORMATED = "d\nMMM"
-        val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = if(checkIf24HFormat(context)) "d MMM\nHH:mm" else "d MMM\nhh:mm"
+        val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = "d MMM\nHH:mm"//if(checkIf24HFormat(context)) "d MMM\nHH:mm" else "d MMM\nhh:mm"
         val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
         val formatedStartDate: String
@@ -224,8 +224,8 @@ class Utils {
 
     fun setFormatedEndDate(startDate: String, endDate: String, context: Context): String{
         val DATE_FORMAT_DAY = "d MMM yyyy"
-        val DATE_FORMAT_TIME = if(checkIf24HFormat(context)) "HH:mm" else "hh:mm aaa"
-        val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = if(checkIf24HFormat(context)) "d MMM\nHH:mm" else "d MMM\nhh:mm"
+        val DATE_FORMAT_TIME = "HH:mm" //if(checkIf24HFormat(context)) "HH:mm" else "hh:mm aaa"
+        val DATE_FORMAT_SAME_DAY_DIFFERENT_TIME = "d MMM\nHH:mm"//if(checkIf24HFormat(context)) "d MMM\nHH:mm" else "d MMM\nhh:mm"
         val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
         var formatedEndDate: String

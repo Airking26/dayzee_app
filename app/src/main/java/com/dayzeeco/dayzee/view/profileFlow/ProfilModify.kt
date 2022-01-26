@@ -433,8 +433,10 @@ class ProfilModify: Fragment(), View.OnClickListener,
             .placeholder(R.drawable.circle_pic)
             .into(profile_modify_pic_imageview)
         profile_modify_name_appearance.text = profilModifyModel?.userName
-        if (profilModifyModel?.givenName.isNullOrBlank()) {nameTv.hint = getString(R.string.your_name)
-        nameTv.text = ""} else nameTv.text = profilModifyModel?.givenName
+        if (profilModifyModel?.givenName.isNullOrBlank()) {
+            nameTv.hint = getString(R.string.your_name)
+            nameTv.text = null
+        } else nameTv.text = profilModifyModel?.givenName
         if (profilModifyModel?.location?.address?.address.isNullOrBlank()) profile_modify_from.hint =
             getString(R.string.from) else profile_modify_from.text =
             profilModifyModel?.location?.address?.address.plus(
@@ -642,7 +644,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
                     prefill = profileModifyData.loadProfileModifyModel()?.givenName
                 ) { _, text ->
                     profileModifyData.setName(text.toString())
-                    if(text.toString().isEmpty()) nameTv.text = ""
+                    //if(text.toString().isEmpty()) nameTv.text = null
                 }
                 positiveButton(R.string.done)
                 lifecycleOwner(this@ProfilModify)
@@ -864,7 +866,6 @@ class ProfilModify: Fragment(), View.OnClickListener,
                     }, 1)
         } else requestPermissions(PERMISSIONS_STORAGE, 2)
     }
-
 
     private fun share() {
 
