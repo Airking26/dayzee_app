@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:background="@color/colorBackground"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:paddingHorizontal="8dp"
+                android:paddingTop="8dp"
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="true"
+                tools:listitem="@layout/item_pref_filter_chip"
+                android:id="@+id/profile_filter_rv_chips_in_rv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

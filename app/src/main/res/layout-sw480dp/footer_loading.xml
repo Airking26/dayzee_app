@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProgressBar
+    android:background="@color/colorBackground"
+    android:id="@+id/footer_rv"
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:paddingVertical="16dp"
+    android:layout_height="wrap_content">
+
+</ProgressBar>

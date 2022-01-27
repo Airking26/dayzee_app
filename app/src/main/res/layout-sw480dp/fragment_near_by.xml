@@ -1,0 +1,173 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/colorBackground"
+    android:id="@+id/nearBy_cl"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto">
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/nearBy_coordinator_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:background="@android:color/white"
+            android:layout_width="match_parent"
+            android:id="@+id/nearby_appbar"
+            android:layout_height="wrap_content">
+
+            <com.dayzeeco.dayzee.androidView.CollapsibleToolbar
+                android:layout_width="match_parent"
+                android:minHeight="200dp"
+                android:fitsSystemWindows="false"
+                android:id="@+id/nearby_ct"
+                app:layout_scrollFlags="scroll|enterAlways|snap|exitUntilCollapsed"
+                app:layoutDescription="@xml/motion_scene_map"
+                android:layout_height="wrap_content">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/nearBy_map_cl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <fragment
+                        android:id="@+id/map"
+                        android:name="com.google.android.gms.maps.SupportMapFragment"
+                        android:layout_width="match_parent"
+                        android:layout_height="350dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:context=".MapsFragment" />
+
+                    <ImageView
+                        android:id="@+id/transparent_image_map"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_width="match_parent"
+                        android:layout_height="350dp"/>
+
+
+                    <TextView
+                        android:id="@+id/nearby_place"
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:drawableStart="@drawable/ic_toolbar_location_nearby"
+                        android:drawablePadding="6dp"
+                        android:ellipsize="end"
+                        android:fontFamily="sans-serif-light"
+                        android:maxLines="1"
+                        android:shadowColor="@android:color/darker_gray"
+                        android:shadowDx="1"
+                        android:shadowDy="1"
+                        android:shadowRadius="1.5"
+                        tools:text="Tel Aviv"
+                        android:textColor="@android:color/black"
+                        android:textSize="19sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/nearby_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:fontFamily="sans-serif-light"
+                        android:shadowColor="@android:color/darker_gray"
+                        android:shadowDx="1"
+                        android:shadowDy="1"
+                        android:shadowRadius="1.5"
+                        tools:text="Today"
+                        android:textColor="@android:color/black"
+                        android:textSize="19sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+
+                    <mehdi.sakout.fancybuttons.FancyButton
+                        android:id="@+id/nearby_filter_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="sans-serif-light"
+                        android:gravity="center"
+                        android:paddingHorizontal="24dp"
+                        android:paddingVertical="6dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        fancy:fb_borderColor="@android:color/black"
+                        fancy:fb_borderWidth="1dp"
+                        fancy:fb_defaultColor="@android:color/transparent"
+                        fancy:fb_radius="5dp"
+                        fancy:fb_text="@string/filters_all_cap"
+                        fancy:fb_textColor="@android:color/black" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.dayzeeco.dayzee.androidView.CollapsibleToolbar>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:fillViewport="true"
+            android:id="@+id/nearby_swipe_refresh"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:gravity="center_horizontal"
+                android:focusableInTouchMode="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:id="@+id/nearby_nothing_to_display"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="8dp"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/nothing_to_show_nearby"
+                    android:textColor="@color/colorText"
+                    android:textSize="16sp"
+                    android:visibility="gone"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:visibility="visible"
+                    tools:listitem="@layout/item_timenote"
+                    android:background="@color/colorBackground"
+                    android:clipToPadding="false"
+                    android:paddingBottom="8dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/map"
+                    android:id="@+id/nearby_rv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+
+            </LinearLayout>
+
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+

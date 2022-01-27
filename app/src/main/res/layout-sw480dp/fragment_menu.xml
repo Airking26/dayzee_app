@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground"
+    tools:context=".view.profileFlow.menuDirectory.Menu">
+
+    <LinearLayout
+        android:id="@+id/profile_menu_ll"
+        style="@style/AppTheme.Toolbar.LinearLayout"
+        tools:ignore="MissingConstraints">
+
+        <androidx.appcompat.widget.Toolbar
+            style="@style/AppTheme.Toolbar"
+            android:background="@color/colorBackground">
+
+            <ImageView
+                style="@style/AppTheme.Toolbar.Title"
+                android:layout_width="80dp"
+                android:src="@drawable/dayzee"
+                android:text="@string/timeline" />
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <TextView
+            style="@style/AppTheme.Divider.Toolbar"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/profile_menu_iv"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:src="@drawable/beach"
+        app:layout_constraintStart_toStartOf="@id/menu_settings_cv"
+        app:layout_constraintTop_toBottomOf="@id/profile_menu_ll" />
+
+    <TextView
+        android:id="@+id/profile_menu_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textColor="@color/colorText"
+        android:textSize="22sp"
+        app:layout_constraintBottom_toTopOf="@id/profile_menu_location"
+        app:layout_constraintStart_toEndOf="@id/profile_menu_iv"
+        app:layout_constraintTop_toTopOf="@id/profile_menu_iv"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="sam2629" />
+
+    <TextView
+        android:id="@+id/profile_menu_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableStart="@drawable/ic_toolbar_location"
+        android:drawablePadding="4dp"
+        android:fontFamily="sans-serif-light"
+        android:textColor="@color/colorText"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@id/profile_menu_iv"
+        app:layout_constraintStart_toStartOf="@id/profile_menu_name"
+        app:layout_constraintTop_toBottomOf="@id/profile_menu_name"
+        tools:text="Paris, France" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/menu_settings_cv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="10dp"
+        app:layout_constraintBottom_toTopOf="@id/menu_profile_cv"
+        app:layout_constraintEnd_toStartOf="@+id/menu_invite_friends_cv"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/profile_menu_iv">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingVertical="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <ImageView
+                android:id="@+id/menu_setting_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_reg_grad_ok"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/settings"
+                android:textColor="@color/colorText"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="@id/menu_setting_iv"
+                app:layout_constraintTop_toBottomOf="@id/menu_setting_iv" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/menu_invite_friends_cv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        app:cardCornerRadius="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/menu_settings_cv"
+        app:layout_constraintTop_toBottomOf="@id/profile_menu_iv">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingVertical="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <ImageView
+                android:id="@+id/menu_invite_friends_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_add_friends_grad_ok"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@string/invite_friends"
+                android:textColor="@color/colorText"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="@id/menu_invite_friends_iv"
+                app:layout_constraintTop_toBottomOf="@id/menu_invite_friends_iv" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/menu_profile_cv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:visibility="visible"
+        app:cardCornerRadius="10dp"
+        app:layout_constraintEnd_toEndOf="@id/menu_settings_cv"
+        app:layout_constraintEnd_toStartOf="@id/menu_preferences_cv"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/menu_settings_cv">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingVertical="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <ImageView
+                android:id="@+id/menu_profile_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_prof_prev_ok"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/profile_preview"
+                android:textColor="@color/colorText"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="@id/menu_profile_iv"
+                app:layout_constraintTop_toBottomOf="@id/menu_profile_iv" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/menu_preferences_cv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        app:cardCornerRadius="10dp"
+        app:layout_constraintEnd_toEndOf="@id/menu_invite_friends_cv"
+        app:layout_constraintStart_toEndOf="@id/menu_profile_cv"
+        app:layout_constraintTop_toBottomOf="@id/menu_invite_friends_cv">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingVertical="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <ImageView
+                android:id="@+id/menu_preferences_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_cat_grad_ok"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/preferrence"
+                android:textColor="@color/colorText"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="@id/menu_preferences_iv"
+                app:layout_constraintTop_toBottomOf="@id/menu_preferences_iv" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/menu_synchro_cv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:visibility="gone"
+        app:cardCornerRadius="10dp"
+        app:layout_constraintEnd_toEndOf="@id/menu_settings_cv"
+        app:layout_constraintEnd_toStartOf="@id/menu_preferences_cv"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/menu_profile_cv">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingVertical="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <ProgressBar
+                android:visibility="gone"
+                android:id="@+id/sync_pb"
+                android:src="@drawable/ic_synchronize"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_width="21dp"
+                android:layout_height="21dp"/>
+
+            <ImageView
+                android:id="@+id/menu_synchro_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_synchronize"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/synchro"
+                android:textColor="@color/colorText"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@id/menu_synchro_iv"
+                app:layout_constraintTop_toBottomOf="@id/menu_synchro_iv" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/menu_synchro_wallet_cv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:visibility="gone"
+        app:cardCornerRadius="10dp"
+        app:layout_constraintEnd_toEndOf="@id/menu_settings_cv"
+        app:layout_constraintEnd_toStartOf="@id/menu_preferences_cv"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/menu_profile_cv">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingVertical="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <ProgressBar
+                android:visibility="gone"
+                android:id="@+id/sync_wallet_pb"
+                android:src="@drawable/ic_synchronize"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_width="21dp"
+                android:layout_height="21dp"/>
+
+            <ImageView
+                android:id="@+id/menu_synchro_wallet_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_synchronize"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/synchro"
+                android:textColor="@color/colorText"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@id/menu_synchro_wallet_iv"
+                app:layout_constraintTop_toBottomOf="@id/menu_synchro_wallet_iv" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

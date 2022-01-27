@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:cardCornerRadius="10dp"
+    android:padding="8dp"
+    android:layout_margin="8dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="@color/colorElevated"
+    app:cardBackgroundColor="@color/colorBackground"
+    android:layout_width="match_parent"
+    app:cardElevation="4dp"
+    android:layout_height="wrap_content"
+    tools:targetApi="lollipop">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            app:layout_constraintBottom_toTopOf="@id/pref_sub_category_rv"
+            android:id="@+id/subcategory_iv"
+            android:scaleType="centerCrop"
+            android:src="@drawable/audiance"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_width="0dp"
+            android:layout_height="75dp"/>
+
+        <TextView
+            app:layout_constraintBottom_toBottomOf="@id/subcategory_iv"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:id="@+id/pref_sub_category_title_category"
+            android:padding="24dp"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:textAllCaps="true"
+            android:textStyle="bold"
+            android:shadowColor="@android:color/black"
+            android:scaleX="1"
+            android:scaleY="1"
+            android:shadowRadius="1.5"
+            tools:text="Sports"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            app:layout_constraintTop_toBottomOf="@id/pref_sub_category_title_category"
+            android:background="@color/colorBackground"
+            tools:listitem="@layout/item_pref_sub_category"
+            android:id="@+id/pref_sub_category_rv"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+</com.google.android.material.card.MaterialCardView>

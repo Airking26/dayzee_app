@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".view.loginFlow.PreferenceSubCategory">
+
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/preference_subcategory_ll"
+            style="@style/AppTheme.Toolbar.LinearLayout">
+
+        <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
+
+                <TextView
+                    android:textStyle="bold"
+                    android:textColor="@color/colorAccent"
+                    android:fontFamily="sans-serif-light"
+                    android:id="@+id/pref_sub_category_btn_done"
+                    style="@style/AppTheme.Toolbar.TextLeft"
+                    android:text="@string/done"/>
+
+                <TextView
+                    android:paddingVertical="8dp"
+                    android:paddingEnd="8dp"
+                    android:fontFamily="sans-serif-light"
+                    android:drawableStart="@drawable/ic_back_thin"
+                    android:id="@+id/pref_sub_category_btn_back"
+                    style="@style/AppTheme.Toolbar.TextRight"
+                    android:text=""
+                    tools:ignore="RtlSymmetry" />
+
+            </androidx.appcompat.widget.Toolbar>
+
+            <TextView style="@style/AppTheme.Divider.Toolbar"/>
+
+        </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:background="@color/colorBackground"
+                android:paddingHorizontal="8dp"
+                android:clipToPadding="false"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="4dp"
+                tools:listitem="@layout/item_subcategory_category_removal"
+                android:id="@+id/pref_sub_category_rv_chips"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/preference_subcategory_ll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_gravity="center"
+                android:id="@+id/how_much_do_you_like_it"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/how_much_do_you_like_it"
+                android:textColor="@color/colorText"
+                android:textSize="18sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/pref_sub_category_rv_chips" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:background="@color/colorBackground"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp"
+                tools:listitem="@layout/adapter_pref_sub_category_card"
+                android:id="@+id/pref_sub_category_card_rv"
+                app:layout_constraintTop_toBottomOf="@id/how_much_do_you_like_it"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

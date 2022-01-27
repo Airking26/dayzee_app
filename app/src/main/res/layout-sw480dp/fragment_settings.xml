@@ -1,0 +1,542 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".view.profileFlow.settingsDirectory.Settings"
+    android:background="#F5F5F5">
+
+    <LinearLayout
+        android:id="@+id/profile_settings_ll"
+        style="@style/AppTheme.Toolbar.LinearLayout"
+        tools:ignore="MissingConstraints">
+
+        <androidx.appcompat.widget.Toolbar
+            style="@style/AppTheme.Toolbar">
+
+            <TextView
+                android:textColor="@color/colorText"
+                style="@style/AppTheme.Toolbar.Title"
+                android:text="@string/settings"/>
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <TextView style="@style/AppTheme.Divider.Toolbar"/>
+
+    </LinearLayout>
+
+    <ScrollView
+        android:background="@color/colorBackgroundSettings"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/profile_settings_ll"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:fontFamily="sans-serif-light"
+                android:id="@+id/general_label"
+                android:textColor="@color/colorText"
+                android:text="@string/general"
+                android:textAllCaps="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="24dp"
+                android:layout_marginStart="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:fontFamily="sans-serif-light"
+                android:background="@color/colorElevated"
+                android:id="@+id/profile_settings_edit_personnal_infos"
+                android:padding="16dp"
+                android:textColor="@color/colorText"
+                android:text="@string/edit_my_personnals_informations"
+                android:layout_marginTop="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/general_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/card_line_0"
+                app:layout_constraintTop_toBottomOf="@id/profile_settings_edit_personnal_infos"
+                style="@style/AppTheme.Divider.Toolbar"
+                tools:ignore="MissingConstraints" />
+
+            <TextView
+                android:fontFamily="sans-serif-light"
+                android:id="@+id/profile_settings_change_password"
+                android:background="@color/colorElevated"
+                android:padding="16dp"
+                android:textColor="@color/colorText"
+                android:text="@string/change_password"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/card_line_0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/card_line_1"
+                app:layout_constraintTop_toBottomOf="@id/profile_settings_change_password"
+                style="@style/AppTheme.Divider.Toolbar"
+                tools:ignore="MissingConstraints" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/private_account_cl"
+                android:background="@color/colorElevated"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp"
+                app:layout_constraintTop_toBottomOf="@id/card_line_1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:fontFamily="sans-serif-light"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_gravity="start"
+                    android:textColor="@color/colorText"
+                    android:text="@string/private_account"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/profile_settings_switch_account_status"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/card_line_9"
+                app:layout_constraintTop_toBottomOf="@id/private_account_cl"
+                style="@style/AppTheme.Divider.Toolbar"
+                tools:ignore="MissingConstraints" />
+
+            <TextView
+                android:fontFamily="sans-serif-light"
+                android:id="@+id/profile_settings_awaiting"
+                android:background="@color/colorElevated"
+                android:padding="16dp"
+                android:textColor="@color/colorText"
+                android:text="@string/waiting_for_approval"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/card_line_9"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+
+            <TextView
+                android:id="@+id/card_line_2"
+                app:layout_constraintTop_toBottomOf="@id/profile_settings_awaiting"
+                style="@style/AppTheme.Divider.Toolbar"
+                tools:ignore="MissingConstraints" />
+
+            <TextView
+                android:fontFamily="sans-serif-light"
+                android:id="@+id/profile_settings_asked_sent"
+                android:background="@color/colorElevated"
+                android:padding="16dp"
+                android:textColor="@color/colorText"
+                android:text="@string/asked_sent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/card_line_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+
+            <TextView
+                android:id="@+id/card_line_users_hidden"
+                app:layout_constraintTop_toBottomOf="@id/profile_settings_asked_sent"
+                style="@style/AppTheme.Divider.Toolbar"
+                tools:ignore="MissingConstraints" />
+
+            <TextView
+                android:fontFamily="sans-serif-light"
+                android:id="@+id/profile_settings_users_hidden"
+                android:background="@color/colorElevated"
+                android:padding="16dp"
+                android:textColor="@color/colorText"
+                android:text="@string/users_hidden"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/card_line_users_hidden"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+
+            <TextView
+                android:id="@+id/card_line_dayzee_hidden"
+                app:layout_constraintTop_toBottomOf="@id/profile_settings_users_hidden"
+                style="@style/AppTheme.Divider.Toolbar"
+                tools:ignore="MissingConstraints" />
+
+            <TextView
+                android:fontFamily="sans-serif-light"
+                android:id="@+id/profile_settings_dayzee_hidden"
+                android:background="@color/colorElevated"
+                android:padding="16dp"
+                android:textColor="@color/colorText"
+                android:text="@string/events_hidden"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/card_line_dayzee_hidden"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+
+
+            <TextView
+                android:visibility="gone"
+                android:fontFamily="sans-serif-light"
+                android:id="@+id/push_label"
+                android:textColor="@color/colorText"
+                android:text="@string/push"
+                android:textAllCaps="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/card_line_dayzee_hidden"
+                android:layout_marginTop="24dp"
+                android:layout_marginStart="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:visibility="gone"
+                android:layout_marginTop="8dp"
+                android:id="@+id/push_notification_cl"
+                android:background="@color/colorElevated"
+                android:padding="16dp"
+                app:layout_constraintTop_toBottomOf="@id/push_label"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:fontFamily="sans-serif-light"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_gravity="start"
+                    android:textColor="@color/colorText"
+                    android:text="@string/push_notifications"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/profile_settings_switch_push_notifications"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/card_line_3"
+                app:layout_constraintTop_toBottomOf="@id/push_notification_cl"
+                style="@style/AppTheme.Divider.Toolbar"
+                tools:ignore="MissingConstraints" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:visibility="gone"
+                android:id="@+id/push_notification_certified_cl"
+                android:background="@color/colorElevated"
+                android:padding="16dp"
+                app:layout_constraintTop_toBottomOf="@id/card_line_3"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:fontFamily="sans-serif-light"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_gravity="start"
+                    android:textColor="@color/colorText"
+                    android:text="@string/certified_push_notifications"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/profile_settings_switch_push_notifications_certified"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/card_line_6"
+                app:layout_constraintTop_toBottomOf="@id/push_notification_certified_cl"
+                style="@style/AppTheme.Divider.Toolbar"
+                tools:ignore="MissingConstraints" />
+
+            <TextView
+                android:visibility="gone"
+                android:fontFamily="sans-serif-light"
+                android:id="@+id/profile_settings_notification_manager"
+                android:background="@color/colorElevated"
+                android:padding="16dp"
+                android:textColor="@color/colorText"
+                android:text="@string/notification_manager_settings"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/card_line_6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:fontFamily="sans-serif-light"
+                android:id="@+id/settings_synchro_label"
+                android:textColor="@color/colorText"
+                android:text="@string/synchro"
+                android:textAllCaps="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/profile_settings_dayzee_hidden"
+                android:layout_marginTop="24dp"
+                android:layout_marginStart="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_marginTop="8dp"
+                android:id="@+id/settings_synchro_cl"
+                android:background="@color/colorElevated"
+                android:padding="16dp"
+                android:paddingVertical="8dp"
+                app:layout_constraintTop_toBottomOf="@id/settings_synchro_label"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:fontFamily="sans-serif-light"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_gravity="start"
+                    android:textColor="@color/colorText"
+                    android:text="@string/synchro_google"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <ProgressBar
+                    android:visibility="gone"
+                    android:id="@+id/settings_switch_account_synchro_google_pb"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/card_line_10"
+                app:layout_constraintTop_toBottomOf="@id/settings_synchro_cl"
+                style="@style/AppTheme.Divider.Toolbar"
+                tools:ignore="MissingConstraints" />
+
+
+            <TextView
+                android:fontFamily="sans-serif-light"
+                android:id="@+id/default_settings_label"
+                android:textColor="@color/colorText"
+                android:text="@string/default_settings"
+                android:textAllCaps="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/card_line_10"
+                android:layout_marginTop="24dp"
+                android:layout_marginStart="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_marginTop="8dp"
+                android:background="@color/colorElevated"
+                android:id="@+id/profile_settings_date_format"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/default_settings_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:fontFamily="sans-serif-light"
+                    android:padding="16dp"
+                    android:textColor="@color/colorText"
+                    android:text="@string/timenote_date_format"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/profile_setting_date_format_tv"
+                    android:textColor="@color/colorText"
+                    android:fontFamily="sans-serif-light"
+                    android:padding="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+            <TextView
+                android:fontFamily="sans-serif-light"
+                android:id="@+id/default_settings_creation_label"
+                android:textColor="@color/colorText"
+                android:text="@string/default_settings_at_creation"
+                android:textAllCaps="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/profile_settings_date_format"
+                android:layout_marginTop="24dp"
+                android:layout_marginStart="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:background="@color/colorElevated"
+                    android:id="@+id/profile_settings_timenote_format"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/default_settings_creation_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:padding="16dp"
+                        android:fontFamily="sans-serif-light"
+                        android:textColor="@color/colorText"
+                        android:text="@string/timenote_visibility_format"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:id="@+id/profile_settings_default_settings_at_creation_time"
+                        android:textColor="@color/colorText"
+                        android:fontFamily="sans-serif-light"
+                        android:padding="16dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/card_line_5"
+                app:layout_constraintTop_toBottomOf="@id/profile_settings_timenote_format"
+                style="@style/AppTheme.Divider.Toolbar"
+                tools:ignore="MissingConstraints" />
+
+            <TextView
+                android:fontFamily="sans-serif-light"
+                android:id="@+id/others_label"
+                android:textColor="@color/colorText"
+                android:text="@string/others"
+                android:textAllCaps="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/card_line_5"
+                android:layout_marginTop="24dp"
+                android:layout_marginStart="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:fontFamily="sans-serif-light"
+                android:id="@+id/profile_settings_confidentiality_politic"
+                android:background="@color/colorElevated"
+                android:padding="16dp"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/colorText"
+                android:text="@string/confidentiality_politic"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/others_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/card_line_7"
+                app:layout_constraintTop_toBottomOf="@id/profile_settings_confidentiality_politic"
+                style="@style/AppTheme.Divider.Toolbar"
+                tools:ignore="MissingConstraints" />
+
+            <TextView
+                android:fontFamily="sans-serif-light"
+                android:id="@+id/profile_settings_send_comments"
+                android:background="@color/colorElevated"
+                android:padding="16dp"
+                android:textColor="@color/colorText"
+                android:text="@string/send_comments"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/card_line_7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:fontFamily="sans-serif-light"
+                android:id="@+id/profile_settings_disconnect"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="72dp"
+                android:background="@color/colorElevated"
+                android:padding="16dp"
+                android:gravity="center"
+                android:text="@string/disconnect"
+                android:textColor="@android:color/holo_red_dark"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/profile_settings_send_comments" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp">
+
+    <ImageView
+        android:paddingTop="1dp"
+        android:paddingBottom="1dp"
+        android:scaleType="centerCrop"
+        android:background="@color/colorText"
+        android:id="@+id/search_explore_category_iv"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:adjustViewBounds="true"
+        android:tint="#75000000"
+        app:layout_constraintBottom_toTopOf="@id/search_explore_rv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/search_explore_category"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:padding="24dp"
+        android:src="@drawable/ic_keyboard_arrow_down_black_24dp"
+        android:textAllCaps="true"
+        android:textColor="@android:color/white"
+        android:textSize="22sp"
+        app:layout_constraintBottom_toTopOf="@id/search_explore_rv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="SPORT" />
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/search_explore_rv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorBackground"
+        android:clipToPadding="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/search_explore_category"
+        tools:listitem="@layout/item_search_explore" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

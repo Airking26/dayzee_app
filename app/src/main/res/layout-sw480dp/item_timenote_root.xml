@@ -27,7 +27,7 @@
         android:shadowDx="1"
         android:shadowDy="1"
         android:shadowRadius="1.5"
-        android:text="BEACH PARTY"
+        tools:text="BEACH PARTY"
         android:textAllCaps="true"
         android:textColor="@android:color/white"
         android:textSize="20sp"

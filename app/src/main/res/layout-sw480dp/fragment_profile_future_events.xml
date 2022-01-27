@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/colorBackground"
+    android:orientation="vertical"
+    android:nestedScrollingEnabled="true"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+        <ProgressBar
+            android:id="@+id/profile_pb"
+            android:layout_margin="16dp"
+            android:layout_gravity="center"
+            android:layout_width="32dp"
+            android:layout_height="32dp"/>
+
+         <androidx.recyclerview.widget.RecyclerView
+             android:visibility="gone"
+                    android:background="@color/colorBackground"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:paddingHorizontal="8dp"
+                    android:paddingTop="8dp"
+                    android:clipToPadding="false"
+                    android:nestedScrollingEnabled="true"
+                    tools:listitem="@layout/item_pref_filter_chip"
+                    android:id="@+id/profile_filter_rv_chips_in_rv"
+                    android:layout_width="match_parent"
+             android:layout_height="wrap_content"/>
+
+
+                <TextView
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:id="@+id/profile_nothing_to_display"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/nothing_to_show_profile"
+                    android:textColor="@color/colorText"
+                    android:textSize="14sp"
+                    android:visibility="gone"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:nestedScrollingEnabled="true"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                    android:layout_gravity="bottom"
+                    android:id="@+id/profile_rv"
+                    android:background="@color/colorBackground"
+                    android:paddingBottom="12dp"
+                    android:clipToPadding="false"
+                    tools:listitem="@layout/item_profile_timenote_list_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+
+
+        </LinearLayout>
+
+

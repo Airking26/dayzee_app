@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@android:color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".view.profileFlow.settingsDirectory.NotificationManager">
+
+    <LinearLayout
+        android:id="@+id/notification_manager_ll"
+        style="@style/AppTheme.Toolbar.LinearLayout">
+
+        <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
+
+            <TextView
+                style="@style/AppTheme.Toolbar.Title"
+                android:text="@string/notification_manager"/>
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <TextView style="@style/AppTheme.Divider.Toolbar"/>
+    </LinearLayout>
+
+    <TextView
+        android:fontFamily="sans-serif-light"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/colorText"
+        android:textSize="15sp"
+        android:id="@+id/notification_manager_label"
+        android:text="@string/allow_notifications_for"
+        app:layout_constraintTop_toBottomOf="@id/notification_manager_ll"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        tools:listitem="@layout/item_notification_manager"
+        android:id="@+id/notification_manager_rv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/notification_manager_label"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

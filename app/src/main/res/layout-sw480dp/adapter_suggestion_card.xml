@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:cardCornerRadius="10dp"
+    android:padding="8dp"
+    app:cardBackgroundColor="@color/colorBackground"
+    android:layout_margin="8dp"
+    app:cardElevation="4dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="@color/colorElevated"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:targetApi="lollipop">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/suggestions_iv"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toTopOf="@id/suggestion_rv"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_width="0dp"
+            android:layout_height="75dp"/>
+
+        <TextView
+            android:id="@+id/pref_sub_category_title_category"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:padding="24dp"
+            android:textColor="@android:color/white"
+            android:textSize="22sp"
+            android:textAllCaps="true"
+            android:shadowColor="@android:color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:scaleX="1"
+            android:scaleY="1"
+            android:shadowRadius="1.5"
+            tools:text="Sports"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/suggestion_rv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:clipToPadding="false"
+            android:paddingBottom="8dp"
+            android:background="@color/colorBackground"
+            android:id="@+id/suggestion_rv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/pref_sub_category_title_category"
+            tools:listitem="@layout/item_suggestion" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+</com.google.android.material.card.MaterialCardView>

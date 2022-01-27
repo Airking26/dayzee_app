@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".view.homeFlow.TimenoteAddress">
+
+
+    <LinearLayout
+        android:id="@+id/timenote_address_ll"
+        style="@style/AppTheme.Toolbar.LinearLayout"
+        tools:ignore="MissingConstraints">
+
+        <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
+
+            <TextView
+                android:layout_width="400dp"
+                android:textSize="17sp"
+                android:layout_marginHorizontal="24dp"
+                android:maxLines="2"
+                android:ellipsize="end"
+                tools:text="233 rue de la frannfolie, 13009 marseille ici c'est,pas la capitale c'est marseille bb encore pl"
+                android:gravity="center"
+                android:id="@+id/timenote_address_toolbar"
+                style="@style/AppTheme.Toolbar.Title"/>
+
+            <TextView
+                android:paddingVertical="8dp"
+                android:paddingEnd="8dp"
+                android:fontFamily="sans-serif-light"
+                android:drawableStart="@drawable/ic_back_thin"
+                android:id="@+id/timenote_address_btn_back"
+                style="@style/AppTheme.Toolbar.TextRight"
+                android:text=""
+                tools:ignore="RtlSymmetry" />
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <TextView style="@style/AppTheme.Divider.Toolbar"/>
+
+    </LinearLayout>
+
+    <fragment
+        android:id="@+id/map_timenote"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/timenote_address_ll"
+        tools:context=".MapsFragment" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/timenote_around_rv"
+        tools:listitem="@layout/item_timenote"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/map_timenote"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

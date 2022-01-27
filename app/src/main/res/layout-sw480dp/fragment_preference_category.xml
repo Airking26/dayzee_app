@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@color/colorBackground"
+    android:layout_height="match_parent"
+    tools:context=".view.loginFlow.PreferenceCategory">
+
+    <LinearLayout
+        android:id="@+id/preference_category_ll"
+        style="@style/AppTheme.Toolbar.LinearLayout"
+        tools:ignore="MissingConstraints">
+
+    <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
+
+        <TextView
+            android:textColor="@color/colorText"
+            style="@style/AppTheme.Toolbar.Title"/>
+
+        <TextView
+            android:textStyle="bold"
+            android:textColor="@color/colorAccent"
+            android:id="@+id/pref_category_btn_next"
+            style="@style/AppTheme.Toolbar.TextLeft"
+            android:text="@string/next"/>
+
+
+    </androidx.appcompat.widget.Toolbar>
+
+        <TextView style="@style/AppTheme.Divider.Toolbar"/>
+
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/select_what_you_like"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/select_what_you_like"
+        android:textColor="@color/colorText"
+        android:textSize="18sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/preference_category_ll" />
+
+    <GridView
+        android:scrollbars="none"
+        android:id="@+id/category_gv"
+        tools:listitem="@layout/item_category"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:paddingBottom="16dp"
+        android:layout_marginTop="16dp"
+        android:paddingHorizontal="12dp"
+        android:horizontalSpacing="16dp"
+        android:gravity="center"
+        android:numColumns="3"
+        android:verticalSpacing="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/select_what_you_like"
+        />
+
+    <ProgressBar
+        android:id="@+id/category_pb"
+        android:visibility="visible"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/select_what_you_like"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

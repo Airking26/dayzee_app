@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@android:color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <com.dayzeeco.dayzee.androidView.calendar.widget.CollapsibleCalendar
+        android:id="@+id/calendarView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:buttonLeft_drawableTintColor="@color/colorText"
+        app:buttonRight_drawableTintColor="@color/colorText"
+        app:expandIconColor="@color/colorText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:primaryColor="@color/colorBackground"
+        app:selectedItem_background="@drawable/circle_white_solid_background"
+        app:selectedItem_textColor="@color/colorBackground"
+        app:textColor="@color/colorText"
+        app:todayItem_background="@drawable/circle_white_stroke_background"
+        app:todayItem_textColor="@color/colorText"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:background="@color/colorBackground"
+        android:id="@+id/profile_calendar_rv"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:paddingTop="8dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/calendarView"
+        tools:listitem="@layout/item_profile_calendar" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,16 +5,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/colorBackground">
+    android:background="@color/colorBackground"
+    android:paddingBottom="8dp">
+
 
     <ImageView
         android:id="@+id/timenote_pic_user_imageview"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:background="@drawable/border_pic_profile"
-        android:padding="0.8dp"
+        android:padding="0.6dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -26,10 +28,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:textColor="@color/colorText"
-        app:layout_constraintBottom_toTopOf="@id/timenote_place"
         android:textSize="15sp"
         android:maxLines="1"
         app:layout_constraintEnd_toStartOf="@id/timenote_options"
+        app:layout_constraintBottom_toTopOf="@id/timenote_place"
         android:ellipsize="end"
         app:layout_constraintStart_toEndOf="@id/timenote_pic_user_imageview"
         app:layout_constraintTop_toTopOf="@id/timenote_pic_user_imageview"
@@ -58,17 +60,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="16dp"
         android:src="@drawable/ic_more_vert_black_24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
     <include
-        app:layout_constraintTop_toBottomOf="@id/timenote_pic_user_imageview"
-        android:layout_height="wrap_content"
+        android:id="@+id/timenote_root"
+        layout="@layout/item_timenote_root"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        layout="@layout/item_timenote_root"/>
+        app:layout_constraintTop_toBottomOf="@id/timenote_pic_user_imageview" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

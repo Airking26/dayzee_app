@@ -4,11 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:background="@color/colorBackground"
+    tools:context=".view.createTimenoteFlow.PreviewTimenoteCreated">
 
     <LinearLayout
         android:id="@+id/preview_created_timenote_ll"
-        style="@style/AppTheme.Toolbar.LinearLayout">
+        style="@style/AppTheme.Toolbar.LinearLayout"
+        tools:ignore="MissingConstraints">
 
         <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
 
@@ -72,7 +74,7 @@
         android:id="@+id/preview_created_timenote_year"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="12dp"
         android:fontFamily="sans-serif-light"
         android:gravity="center"
         android:shadowColor="@android:color/black"
@@ -91,11 +93,11 @@
         android:id="@+id/separator_1"
         android:layout_width="2dp"
         android:layout_height="48dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="12dp"
         android:background="@drawable/custom"
         android:fontFamily="sans-serif-light"
         app:layout_constraintStart_toStartOf="@id/preview_created_timenote_vp"
-        android:layout_marginStart="160dp"
+        android:layout_marginStart="135dp"
         app:layout_constraintBottom_toBottomOf="@id/preview_created_timenote_vp" />
 
     <TextView
@@ -120,10 +122,10 @@
         android:id="@+id/separator_2"
         android:layout_width="2dp"
         android:layout_height="48dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="12dp"
         android:background="@drawable/custom"
         android:fontFamily="sans-serif-light"
-        android:layout_marginEnd="160dp"
+        android:layout_marginEnd="135dp"
         app:layout_constraintEnd_toEndOf="@id/preview_created_timenote_vp"
         app:layout_constraintBottom_toBottomOf="@id/preview_created_timenote_vp"/>
 
@@ -131,7 +133,7 @@
         android:id="@+id/preview_created_timenote_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="12dp"
         android:fontFamily="sans-serif-light"
         android:gravity="center"
         android:shadowColor="@android:color/black"
@@ -193,7 +195,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
     <me.relex.circleindicator.CircleIndicator3
         android:id="@+id/preview_created_timenote_indicator"
         android:layout_width="wrap_content"
@@ -225,7 +226,7 @@
         android:textColor="@color/colorText"
         android:text="@string/share_to"
         android:layout_marginTop="16dp"
-        android:backgroundTint="@color/colorYellow"
+        android:backgroundTint="@color/colorBackground"
         android:drawableLeft="@drawable/ic_partage_sans_fleche_preview"
         android:drawablePadding="-16dp"
         android:paddingVertical="6dp"
@@ -238,12 +239,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
+
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_begin="205dp" />
+        app:layout_constraintGuide_begin="180dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

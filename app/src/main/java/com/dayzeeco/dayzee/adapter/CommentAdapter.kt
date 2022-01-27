@@ -79,11 +79,14 @@ class CommentAdapter(
                 .placeholder(R.drawable.circle_pic)
                 .into(itemView.comment_user_pic_imageview)
 
-            if(commentModel.picture.isNullOrBlank()) itemView.comment_pic?.visibility = View.GONE
-            else Glide
-                .with(itemView)
-                .load(commentModel.picture)
-                .into(itemView.comment_pic)
+            if(commentModel.picture.isNullOrBlank()) itemView.comment_cv?.visibility = View.GONE
+            else {
+                itemView.comment_cv?.visibility = View.VISIBLE
+                Glide
+                    .with(itemView)
+                    .load(commentModel.picture)
+                    .into(itemView.comment_pic)
+            }
 
 
             itemView.comment_pic.setOnClickListener {

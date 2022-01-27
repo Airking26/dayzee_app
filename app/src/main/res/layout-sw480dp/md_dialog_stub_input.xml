@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingLeft="24dp"
+    android:paddingRight="24dp"
+    android:paddingBottom="16dp">
+
+    <com.google.android.material.textfield.TextInputLayout
+        app:boxBackgroundColor="@android:color/transparent"
+        android:backgroundTint="@android:color/transparent"
+        android:background="@android:color/transparent"
+        android:id="@+id/md_input_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:background="@android:color/transparent"
+            android:backgroundTint="@android:color/transparent"
+            android:id="@+id/md_input_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="Hello, World!" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+</FrameLayout>
