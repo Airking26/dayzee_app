@@ -1,9 +1,10 @@
 package com.dayzeeco.dayzee.webService.repo
 
 import com.dayzeeco.dayzee.webService.service.*
-import okhttp3.*
+import com.google.gson.GsonBuilder
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+
 
 class DayzeeRepository {
 
@@ -11,9 +12,13 @@ class DayzeeRepository {
         private const val BASE_URL = "http://timenote-env.eba-2htqeacb.us-east-1.elasticbeanstalk.com/"
     }
 
+    var g = GsonBuilder()
+        .setLenient()
+        .create()
+
     private val service = Retrofit.Builder()
         .baseUrl(BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create())
+        .addConverterFactory(GsonConverterFactory.create(g))
         .build()
 
     fun getAuthService(): AuthService {

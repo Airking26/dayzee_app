@@ -353,6 +353,7 @@
     <string name="api_android_key">AIzaSyDozXNaca8OBwQO5hHQ_pdGYJ9IZmJTXQs</string>
     <string name="api_web_key">AIzaSyAuNAWVp93EPzSoDxd6p5uMCFH0R-Lynr4</string>
     <string name="error_network">Erreur Réseau</string>
+    <string name="calendar_permission">Allez dans vos réglages pour autoriser la lecture de calendrier</string>
     <string name="youtubers">Youtubers</string>
     <string name="fair_trade">Fair Trade</string>
     <string name="password_changed_successfully">Mot de passe changé avec succès. Connectez vous.</string>

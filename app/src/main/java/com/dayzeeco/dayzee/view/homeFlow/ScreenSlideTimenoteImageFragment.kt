@@ -9,6 +9,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.model.GlideUrl
+import com.bumptech.glide.load.model.LazyHeaders
+import com.bumptech.glide.request.target.Target
+import com.bumptech.glide.request.target.Target.SIZE_ORIGINAL
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.common.hide_icons
 import com.dayzeeco.dayzee.common.is_null_or_empty
@@ -48,9 +52,15 @@ class ScreenSlideTimenoteImageFragment : Fragment() {
         if(isNullOrEmpty!!){
             if(!url.isNullOrEmpty() && !url.isNullOrBlank()) create_timenote_pic.setBackgroundColor((Color.parseColor(if(url?.contains("#")!!) url else "#${url}")))
         } else {
+
+            val glideUrl = GlideUrl(url, LazyHeaders.Builder()
+                .addHeader("User-Agent",
+                    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit / 537.36(KHTML, like Gecko) Chrome  47.0.2526.106 Safari / 537.36")
+                .build())
+
             create_timenote_pic.layout(0, 0, 0, 0)
             Glide.with(this)
-                .load(Uri.parse(url))
+                .load(url)
                 .fitCenter()
                 .thumbnail(0.1f)
             .diskCacheStrategy(DiskCacheStrategy.ALL)

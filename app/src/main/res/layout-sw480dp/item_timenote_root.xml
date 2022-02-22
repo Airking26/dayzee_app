@@ -11,7 +11,7 @@
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/timenote_vp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="200dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -45,6 +45,7 @@
         app:layout_constraintTop_toTopOf="@id/separator_2" />
 
     <TextView
+        tools:text="2022"
         android:id="@+id/timenote_year"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -74,6 +75,7 @@
         app:layout_constraintStart_toEndOf="@id/timenote_year" />
 
     <TextView
+        tools:text="19 févr. \n 19:00"
         android:id="@+id/timenote_day_month"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -103,6 +105,7 @@
         app:layout_constraintStart_toEndOf="@id/timenote_day_month" />
 
     <TextView
+        tools:text="19 févr. \n 19:00"
         android:id="@+id/timenote_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

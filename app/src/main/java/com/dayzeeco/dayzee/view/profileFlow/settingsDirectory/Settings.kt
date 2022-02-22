@@ -1,19 +1,24 @@
 package com.dayzeeco.dayzee.view.profileFlow.settingsDirectory
 
+import android.Manifest
 import android.accounts.AccountManager
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Bundle
 import android.text.InputType
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
@@ -26,20 +31,16 @@ import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
 import com.amazonaws.mobile.auth.core.internal.util.ThreadUtils
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.androidView.dialog.input
 import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.listeners.RefreshPicBottomNavListener
+import com.dayzeeco.dayzee.listeners.SynchronizeWithGoogleCalendarListener
 import com.dayzeeco.dayzee.model.*
 import com.dayzeeco.dayzee.viewModel.LoginViewModel
 import com.dayzeeco.dayzee.viewModel.MeViewModel
 import com.dayzeeco.dayzee.viewModel.TimenoteViewModel
 import com.dayzeeco.dayzee.webService.ProfileModifyData
-import com.dayzeeco.dayzee.worker.SynchronizeGoogleCalendarWorker
-import com.dayzeeco.dayzee.worker.token_id
-import com.dayzeeco.dayzee.worker.user_id
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GooglePlayServicesUtil
 import com.google.api.client.extensions.android.http.AndroidHttp
@@ -54,6 +55,8 @@ import com.google.api.services.calendar.CalendarScopes
 import com.google.api.services.calendar.model.Event
 import com.google.api.services.calendar.model.Events
 import com.google.firebase.iid.FirebaseInstanceId
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.fragment_settings.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -61,15 +64,18 @@ import kotlinx.coroutines.withContext
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
 
-class Settings : Fragment(), View.OnClickListener {
+
+class Settings : Fragment(), View.OnClickListener, SynchronizeWithGoogleCalendarListener {
 
     private var sizeAlreadyImported: Int = 0
     private var totalEventsCount: Int? = 0
     private val REQUEST_ACCOUNT_PICKER = 1000
     private val REQUEST_AUTHORIZATION = 1001
     private val REQUEST_GOOGLE_PLAY_SERVICES = 1002
+    val callbackId = 42
+
     private lateinit var service: Calendar
     private lateinit var credential: GoogleAccountCredential
     private val transport = AndroidHttp.newCompatibleTransport()
@@ -94,7 +100,10 @@ class Settings : Fragment(), View.OnClickListener {
         tokenId = prefs.getString(accessToken, null)
 
         if(prefs.getString(pmtc, "") == "") prefs.edit().putString(pmtc, "").apply()
-        if(prefs.getInt(default_settings_at_creation_time, -1) == -1) prefs.edit().putInt(default_settings_at_creation_time, 0).apply()
+        if(prefs.getInt(default_settings_at_creation_time, -1) == -1) prefs.edit().putInt(
+            default_settings_at_creation_time,
+            0
+        ).apply()
         if(prefs.getInt(format_date_default, -1) == -1) prefs.edit().putInt(format_date_default, 0).apply()
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
         userInfoDTO = Gson().fromJson(prefs.getString(user_info_dto, ""), typeUserInfo)
@@ -105,69 +114,113 @@ class Settings : Fragment(), View.OnClickListener {
         onRefreshPicBottomNavListener = context as RefreshPicBottomNavListener
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? =
         inflater.inflate(R.layout.fragment_settings, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        map = Gson().fromJson(prefs.getString(map_event_id_to_timenote, null), object : TypeToken<MutableMap<String, String>>() {}.type) ?: mutableMapOf()
+        map = Gson().fromJson(
+            prefs.getString(map_event_id_to_timenote, null),
+            object : TypeToken<MutableMap<String, String>>() {}.type
+        ) ?: mutableMapOf()
         sizeAlreadyImported = map.size
-        credential = GoogleAccountCredential.usingOAuth2(requireContext(), listOf(CalendarScopes.CALENDAR_READONLY))
+        credential = GoogleAccountCredential.usingOAuth2(
+            requireContext(),
+            listOf(CalendarScopes.CALENDAR_READONLY)
+        )
             .setBackOff(ExponentialBackOff())
             .setSelectedAccountName(prefs.getString(gmail, null))
 
         service = Calendar.Builder(
-            transport, jsonFactory, credential)
+            transport, jsonFactory, credential
+        )
             .setApplicationName(getString(R.string.app_name))
             .build()
 
         dsactv = profile_settings_default_settings_at_creation_time
 
         when(prefs.getInt(default_settings_at_creation_time, 1)){
-            0 -> profile_settings_default_settings_at_creation_time.text = getString(R.string.only_me)
-            1 -> profile_settings_default_settings_at_creation_time.text = getString(R.string.public_label)
+            0 -> profile_settings_default_settings_at_creation_time.text =
+                getString(R.string.only_me)
+            1 -> profile_settings_default_settings_at_creation_time.text =
+                getString(R.string.public_label)
         }
 
         profileModifyData = ProfileModifyData(requireContext())
         //settings_switch_account_synchro_google.isChecked = prefs.getBoolean(google_calendar_synchronized, false)
 
-        prefs.stringLiveData(user_info_dto, Gson().toJson(profileModifyData.loadProfileModifyModel())).observe(viewLifecycleOwner, Observer {
+        prefs.stringLiveData(
+            user_info_dto,
+            Gson().toJson(profileModifyData.loadProfileModifyModel())
+        ).observe(viewLifecycleOwner, Observer {
             val type: Type = object : TypeToken<UpdateUserInfoDTO?>() {}.type
-            val profilModifyModel : UpdateUserInfoDTO? = Gson().fromJson<UpdateUserInfoDTO>(it, type)
+            val profilModifyModel: UpdateUserInfoDTO? = Gson().fromJson<UpdateUserInfoDTO>(
+                it,
+                type
+            )
             when (profilModifyModel?.status) {
                 STATUS.PUBLIC.ordinal -> profile_settings_switch_account_status.isChecked = false
-                STATUS.PRIVATE.ordinal  -> profile_settings_switch_account_status.isChecked = true
+                STATUS.PRIVATE.ordinal -> profile_settings_switch_account_status.isChecked = true
                 null -> profile_settings_switch_account_status.isChecked = false
             }
 
             when (profilModifyModel?.dateFormat) {
-                STATUS.PUBLIC.ordinal -> profile_setting_date_format_tv.text = getString(R.string.date)
-                STATUS.PRIVATE.ordinal -> profile_setting_date_format_tv.text = getString(R.string.countdown)
+                STATUS.PUBLIC.ordinal -> profile_setting_date_format_tv.text =
+                    getString(R.string.date)
+                STATUS.PRIVATE.ordinal -> profile_setting_date_format_tv.text =
+                    getString(R.string.countdown)
                 null -> profile_setting_date_format_tv.hint =
                     getString(R.string.timenote_date_format)
             }
 
-            if(prefs.getString(pmtc, "") != Gson().toJson(profileModifyData.loadProfileModifyModel())){
-                meViewModel.modifyProfile(tokenId!!, UpdateUserInfoDTO(
-                    profilModifyModel?.givenName, profilModifyModel?.familyName, profilModifyModel?.picture,
-                    profilModifyModel?.location, profilModifyModel?.birthday, profilModifyModel?.description,
-                    profilModifyModel?.gender, profilModifyModel?.status!!, profilModifyModel.dateFormat, profilModifyModel.socialMedias
-                )).observe(viewLifecycleOwner, { usrInfoDTO ->
-                    if(usrInfoDTO.code() == 401){
+            if (prefs.getString(
+                    pmtc,
+                    ""
+                ) != Gson().toJson(profileModifyData.loadProfileModifyModel())
+            ) {
+                meViewModel.modifyProfile(
+                    tokenId!!, UpdateUserInfoDTO(
+                        profilModifyModel?.givenName,
+                        profilModifyModel?.familyName,
+                        profilModifyModel?.picture,
+                        profilModifyModel?.location,
+                        profilModifyModel?.birthday,
+                        profilModifyModel?.description,
+                        profilModifyModel?.gender,
+                        profilModifyModel?.status!!,
+                        profilModifyModel.dateFormat,
+                        profilModifyModel.socialMedias
+                    )
+                ).observe(viewLifecycleOwner, { usrInfoDTO ->
+                    if (usrInfoDTO.code() == 401) {
                         loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner,
                             { newAccessToken ->
                                 tokenId = newAccessToken
-                                meViewModel.modifyProfile(tokenId!!, UpdateUserInfoDTO(
-                                    profilModifyModel.givenName, profilModifyModel.familyName, profilModifyModel.picture,
-                                    profilModifyModel.location, profilModifyModel.birthday, profilModifyModel.description,
-                                    profilModifyModel.gender, profilModifyModel.status, profilModifyModel.dateFormat, profilModifyModel.socialMedias
-                                ))
+                                meViewModel.modifyProfile(
+                                    tokenId!!, UpdateUserInfoDTO(
+                                        profilModifyModel.givenName,
+                                        profilModifyModel.familyName,
+                                        profilModifyModel.picture,
+                                        profilModifyModel.location,
+                                        profilModifyModel.birthday,
+                                        profilModifyModel.description,
+                                        profilModifyModel.gender,
+                                        profilModifyModel.status,
+                                        profilModifyModel.dateFormat,
+                                        profilModifyModel.socialMedias
+                                    )
+                                )
                             })
                     }
                 })
             }
 
-            prefs.edit().putString(pmtc, Gson().toJson(profileModifyData.loadProfileModifyModel())).apply()
+            prefs.edit().putString(pmtc, Gson().toJson(profileModifyData.loadProfileModifyModel()))
+                .apply()
         })
 
         profile_settings_change_password.setOnClickListener(this)
@@ -186,20 +239,18 @@ class Settings : Fragment(), View.OnClickListener {
             else profileModifyData.setStatusAccount(0)
         }
 
-        /*settings_switch_account_synchro_google.setOnCheckedChangeListener { _, isChecked ->
-            prefs.edit().putBoolean(google_calendar_synchronized, isChecked).apply()
-            settings_switch_account_synchro_google.isChecked = isChecked
-            if(isChecked) chooseAccount()
-            else WorkManager.getInstance(requireContext()).cancelUniqueWork(
-                synchronize_google_calendar_worker)
-        }*/
     }
 
     override fun onClick(v: View?) {
         when(v) {
-            settings_synchro_cl -> chooseAccount()
+            settings_synchro_cl -> checkPermission(callbackId, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)
             profile_settings_notification_manager -> findNavController().navigate(SettingsDirections.actionSettingsToNotificationManager())
-            profile_settings_edit_personnal_infos -> findNavController().navigate(SettingsDirections.actionGlobalProfilModify(false, null))
+            profile_settings_edit_personnal_infos -> findNavController().navigate(
+                SettingsDirections.actionGlobalProfilModify(
+                    false,
+                    null
+                )
+            )
             profile_settings_date_format -> MaterialDialog(
                 requireContext(),
                 BottomSheet(LayoutMode.WRAP_CONTENT)
@@ -308,7 +359,11 @@ class Settings : Fragment(), View.OnClickListener {
                                                 Toast.LENGTH_SHORT
                                             ).show()
                                         })
-                                    } else Toast.makeText(requireContext(), getString(R.string.not_same_value), Toast.LENGTH_SHORT)
+                                    } else Toast.makeText(
+                                        requireContext(),
+                                        getString(R.string.not_same_value),
+                                        Toast.LENGTH_SHORT
+                                    )
                                         .show()
                                 }
                             }
@@ -321,7 +376,7 @@ class Settings : Fragment(), View.OnClickListener {
             }
             profile_settings_disconnect -> {
                 lifecycleScope.launch {
-                    withContext(Dispatchers.IO){
+                    withContext(Dispatchers.IO) {
                         prefs.edit().clear().apply()
                         prefs.edit().putBoolean(already_signed_in, true).apply()
                         onRefreshPicBottomNavListener.onrefreshPicBottomNav(null)
@@ -331,10 +386,197 @@ class Settings : Fragment(), View.OnClickListener {
                 }
             }
             profile_settings_asked_sent -> findNavController().navigate(
-                SettingsDirections.actionGlobalFollowPage(userInfoDTO.id!!, false, 0).setFollowers(3))
-            profile_settings_awaiting -> findNavController().navigate(SettingsDirections.actionGlobalFollowPage(userInfoDTO.id!!, false, 0).setFollowers(2))
+                SettingsDirections.actionGlobalFollowPage(userInfoDTO.id!!, false, 0)
+                    .setFollowers(3)
+            )
+            profile_settings_awaiting -> findNavController().navigate(
+                SettingsDirections.actionGlobalFollowPage(
+                    userInfoDTO.id!!,
+                    false,
+                    0
+                ).setFollowers(2)
+            )
             profile_settings_users_hidden -> findNavController().navigate(SettingsDirections.actionSettingsToUsersHidden())
             profile_settings_dayzee_hidden -> findNavController().navigate(SettingsDirections.actionSettingsToEventsHidden())
+        }
+    }
+
+    private fun checkPermission(callbackId: Int, vararg permissionsId: String) {
+        if(ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CALENDAR) != PERMISSION_GRANTED)
+            requestPermissions(permissionsId, callbackId)
+        else chooseAccount()
+
+    }
+
+
+
+    private fun loopThroughCal(mEventsList: Iterator<CalendarEvent>) {
+        if (mEventsList.hasNext()) {
+            val item = mEventsList.next()
+            if(!map.keys.contains(item.id.toString())){
+                val creationTimenoteDTO = CreationTimenoteDTO(
+                    userInfoDTO.id!!,
+                    listOf(),
+                    item.title,
+                    item.description,
+                    listOf("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/toDL.jpg"),
+                    null,
+                    utils.getLocaFromAddress(
+                        requireActivity().applicationContext,
+                        item.location
+                    ),
+                    null,
+                    SimpleDateFormat(
+                        ISO,
+                        Locale.getDefault()
+                    ).format(if (item.allDay) item.begin.time - TimeZone.getDefault().getOffset(System.currentTimeMillis()) else item.begin.time),
+                    SimpleDateFormat(
+                        ISO,
+                        Locale.getDefault()
+                    ).format(if (item.allDay) item.end.time - TimeZone.getDefault().getOffset(System.currentTimeMillis()) else item.end.time),
+                    listOf(),
+                    null,
+                    Price(0.0, ""),
+                    listOf(userInfoDTO.id!!),
+                    null
+                )
+
+                timenoteViewModel.createTimenote(tokenId!!, creationTimenoteDTO).observe(
+                    viewLifecycleOwner,
+                    { rsp ->
+                        when {
+                            rsp.isSuccessful -> {
+                                map[item.id.toString()] = rsp.body()?.id!!
+                                totalImported++
+                                loopThroughCal(mEventsList.iterator())
+                            }
+                            rsp.code() == 400 -> loopThroughCal(mEventsList.iterator())
+                            rsp.code() == 401 -> {
+                                loginViewModel.refreshToken(prefs).observe(
+                                    viewLifecycleOwner,
+                                    { newToken ->
+                                        tokenId = newToken
+                                        timenoteViewModel.createTimenote(tokenId!!, creationTimenoteDTO)
+                                            .observe(
+                                                viewLifecycleOwner,
+                                                { sdRsp ->
+                                                    if (sdRsp.isSuccessful) {
+                                                        totalImported++
+                                                        map[item.id.toString()] = rsp.body()?.id!!
+                                                        loopThroughCal(mEventsList.iterator())
+                                                    } else if (sdRsp.code() == 400) loopThroughCal(
+                                                        mEventsList.iterator()
+                                                    )
+                                                })
+                                    })
+                            }
+                        }
+                    })
+            } else {
+                loopThroughCal(mEventsList.iterator())
+            }
+        } else {
+            settings_switch_account_synchro_google_pb.visibility = View.GONE
+            Toast.makeText(
+                requireContext(), if (sizeAlreadyImported == 0) String.format(
+                    resources.getString(
+                        R.string.total_events_retrieve_google_calendar,
+                        totalImported,
+                        totalEventsCount,
+                        sizeAlreadyImported
+                    )
+                ).split("(")[0] else String.format(
+                    resources.getString(
+                        R.string.total_events_retrieve_google_calendar,
+                        totalImported,
+                        totalEventsCount,
+                        sizeAlreadyImported
+                    )
+                ), Toast.LENGTH_LONG
+            ).show()
+            prefs.edit().putString(map_event_id_to_timenote, Gson().toJson(map)).apply()
+        }
+    }
+
+    private fun chooseAccount() {
+        startActivityForResult(credential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when(requestCode) {
+            callbackId ->
+                if (grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED) {
+                    chooseAccount()
+                } else {
+                    Toast.makeText(requireContext(), getString(R.string.calendar_permission), Toast.LENGTH_SHORT).show()
+                }
+
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            REQUEST_ACCOUNT_PICKER -> if (resultCode == Activity.RESULT_OK && data != null && data.extras != null) {
+                val accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
+                if (accountName != null) {
+                    credential.selectedAccountName = accountName
+                    prefs.edit().putString(gmail, accountName).apply()
+                    var m = SynchronizeCalendars(this)
+                    m.determineCalendar(requireContext(), accountName)
+                }
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                settings_switch_account_synchro_google_pb.visibility = View.GONE
+            }
+
+        }
+    }
+
+    override fun onSynchronize(mEventsList: ArrayList<CalendarEvent>) {
+        settings_switch_account_synchro_google_pb.visibility = View.VISIBLE
+        totalEventsCount = mEventsList.size
+        loopThroughCal(mEventsList.listIterator())
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    private fun isGooglePlayServicesAvailable(): Boolean {
+        val connectionStatusCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(
+            requireContext()
+        )
+        if (GooglePlayServicesUtil.isUserRecoverableError(connectionStatusCode)) {
+            showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode)
+            return false
+        } else if (connectionStatusCode != ConnectionResult.SUCCESS) {
+            return false
+        }
+        return true
+    }
+
+    private fun showGooglePlayServicesAvailabilityErrorDialog(
+        connectionStatusCode: Int
+    ) {
+        ThreadUtils.runOnUiThread {
+            val dialog: Dialog = GooglePlayServicesUtil.getErrorDialog(
+                connectionStatusCode,
+                requireActivity(),
+                REQUEST_GOOGLE_PLAY_SERVICES
+            )
+            dialog.show()
         }
     }
 
@@ -346,18 +588,48 @@ class Settings : Fragment(), View.OnClickListener {
             try {
                 settings_switch_account_synchro_google_pb.visibility = View.VISIBLE
                 lifecycleScope.launch {
-                    withContext(Dispatchers.IO){
+                    kotlin.runCatching{
                         try {
-                            li = service.events()?.list("primary")?.setMaxResults(Integer.MAX_VALUE)?.setTimeMin(DateTime( System.currentTimeMillis()))?.setOrderBy("startTime")?.setSingleEvents(true)?.execute()
-                        } catch (e : UserRecoverableAuthIOException){
+                            var fli = service.events().list("primary")?.execute()
+                            li = service.events()?.list("primary")?.setMaxResults(Integer.MAX_VALUE)?.setTimeMin(
+                                DateTime(
+                                    System.currentTimeMillis()
+                                )
+                            )?.setOrderBy("startTime")?.setSingleEvents(true)?.execute()
+                            var m = ""
+                        } catch (e: UserRecoverableAuthIOException){
                             startActivityForResult(e.intent, REQUEST_AUTHORIZATION);
                         }
-                    }
+                    }.getOrElse { exception -> print(exception) }
                 }.invokeOnCompletion {
                     totalEventsCount = li?.items?.size
-                    if(li != null && li?.items!= null && li?.items?.size!! > 0) loopThroughCalendar(li?.items?.iterator()!!)
+                    if(li != null && li?.items!= null && li?.items?.size!! > 0) loopThroughCalendar(
+                        li?.items?.iterator()!!
+                    )
+                    else {
+                        Toast.makeText(
+                            requireContext(), if (sizeAlreadyImported == 0) String.format(
+                                resources.getString(
+                                    R.string.total_events_retrieve_google_calendar,
+                                    totalImported,
+                                    totalEventsCount,
+                                    sizeAlreadyImported
+                                )
+                            ).split("(")[0] else String.format(
+                                resources.getString(
+                                    R.string.total_events_retrieve_google_calendar,
+                                    totalImported,
+                                    totalEventsCount,
+                                    sizeAlreadyImported
+                                )
+                            ), Toast.LENGTH_LONG
+                        ).show()
+                        settings_switch_account_synchro_google_pb.visibility = View.GONE
+                    }
+
                 }
-            } catch (e : UserRecoverableAuthIOException) {
+            } catch (e: UserRecoverableAuthIOException) {
+                Toast.makeText(requireContext(), e.message, Toast.LENGTH_SHORT).show()
                 startActivityForResult(e.intent, REQUEST_AUTHORIZATION);
             }
 
@@ -375,10 +647,19 @@ class Settings : Fragment(), View.OnClickListener {
                     item.description ?: "",
                     listOf("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/toDL.jpg"),
                     null,
-                    if(item.location != null) utils.getLocaFromAddress(requireActivity().applicationContext, item.location) else null,
+                    if (item.location != null) utils.getLocaFromAddress(
+                        requireActivity().applicationContext,
+                        item.location
+                    ) else null,
                     null,
-                    SimpleDateFormat(ISO, Locale.getDefault()).format(if(item.start.date == null) item.start.dateTime.value else item.start.date.value),
-                    SimpleDateFormat(ISO, Locale.getDefault()).format(if(item.end.date == null) item.end.dateTime.value else item.end.date.value),
+                    SimpleDateFormat(
+                        ISO,
+                        Locale.getDefault()
+                    ).format(if (item.start.date == null) item.start.dateTime.value else item.start.date.value),
+                    SimpleDateFormat(
+                        ISO,
+                        Locale.getDefault()
+                    ).format(if (item.end.date == null) item.end.dateTime.value else item.end.date.value),
                     listOf(),
                     null,
                     Price(0.0, ""),
@@ -386,25 +667,32 @@ class Settings : Fragment(), View.OnClickListener {
                     null
                 )
 
-                timenoteViewModel.createTimenote(tokenId!!, creationTimenoteDTO).observe(viewLifecycleOwner,
+                timenoteViewModel.createTimenote(tokenId!!, creationTimenoteDTO).observe(
+                    viewLifecycleOwner,
                     { rsp ->
                         if (rsp.isSuccessful) {
                             map[item.id] = rsp.body()?.id!!
                             totalImported++
                             loopThroughCalendar(mEventsList.iterator())
-                        }
-                        else if(rsp.code() == 400) loopThroughCalendar(mEventsList.iterator())
+                        } else if (rsp.code() == 400) loopThroughCalendar(mEventsList.iterator())
                         else if (rsp.code() == 401) {
-                            loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer { newToken ->
-                                tokenId = newToken
-                                timenoteViewModel.createTimenote(tokenId!!, creationTimenoteDTO).observe(viewLifecycleOwner, androidx.lifecycle.Observer { sdRsp ->
-                                    if (sdRsp.isSuccessful) {
-                                        totalImported++
-                                        map[item.id] = rsp.body()?.id!!
-                                        loopThroughCalendar(mEventsList.iterator())
-                                    } else if(sdRsp.code() == 400) loopThroughCalendar(mEventsList.iterator())
+                            loginViewModel.refreshToken(prefs).observe(
+                                viewLifecycleOwner,
+                                androidx.lifecycle.Observer { newToken ->
+                                    tokenId = newToken
+                                    timenoteViewModel.createTimenote(tokenId!!, creationTimenoteDTO)
+                                        .observe(
+                                            viewLifecycleOwner,
+                                            androidx.lifecycle.Observer { sdRsp ->
+                                                if (sdRsp.isSuccessful) {
+                                                    totalImported++
+                                                    map[item.id] = rsp.body()?.id!!
+                                                    loopThroughCalendar(mEventsList.iterator())
+                                                } else if (sdRsp.code() == 400) loopThroughCalendar(
+                                                    mEventsList.iterator()
+                                                )
+                                            })
                                 })
-                            })
                         }
                     })
             } else {
@@ -412,65 +700,29 @@ class Settings : Fragment(), View.OnClickListener {
             }
         } else {
             settings_switch_account_synchro_google_pb.visibility = View.GONE
-            Toast.makeText(requireContext(), if(sizeAlreadyImported == 0) String.format(resources.getString(R.string.total_events_retrieve_google_calendar, totalImported, totalEventsCount, sizeAlreadyImported)).split("(")[0] else String.format(resources.getString(R.string.total_events_retrieve_google_calendar, totalImported, totalEventsCount, sizeAlreadyImported)), Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                requireContext(), if (sizeAlreadyImported == 0) String.format(
+                    resources.getString(
+                        R.string.total_events_retrieve_google_calendar,
+                        totalImported,
+                        totalEventsCount,
+                        sizeAlreadyImported
+                    )
+                ).split("(")[0] else String.format(
+                    resources.getString(
+                        R.string.total_events_retrieve_google_calendar,
+                        totalImported,
+                        totalEventsCount,
+                        sizeAlreadyImported
+                    )
+                ), Toast.LENGTH_LONG
+            ).show()
             prefs.edit().putString(map_event_id_to_timenote, Gson().toJson(map)).apply()
             /*val data = workDataOf(user_id to userInfoDTO.id, token_id to tokenId)
             val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).setRequiresCharging(true).build()
             val worker = PeriodicWorkRequestBuilder<SynchronizeGoogleCalendarWorker>(6, TimeUnit.HOURS).setConstraints(constraints).setInputData(data).build()
             WorkManager.getInstance(requireContext()).enqueueUniquePeriodicWork(
                 synchronize_google_calendar_worker, ExistingPeriodicWorkPolicy.REPLACE ,worker)*/
-        }
-    }
-
-    private fun chooseAccount() {
-        startActivityForResult(credential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER)
-    }
-
-    private fun isGooglePlayServicesAvailable(): Boolean {
-        val connectionStatusCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(requireContext())
-        if (GooglePlayServicesUtil.isUserRecoverableError(connectionStatusCode)) {
-            showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode)
-            return false
-        } else if (connectionStatusCode != ConnectionResult.SUCCESS) {
-            return false
-        }
-        return true
-    }
-
-    private fun showGooglePlayServicesAvailabilityErrorDialog(
-        connectionStatusCode: Int) {
-        ThreadUtils.runOnUiThread {
-            val dialog: Dialog = GooglePlayServicesUtil.getErrorDialog(
-                connectionStatusCode,
-                requireActivity(),
-                REQUEST_GOOGLE_PLAY_SERVICES
-            )
-            dialog.show()
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        when (requestCode) {
-            REQUEST_GOOGLE_PLAY_SERVICES -> if (resultCode == Activity.RESULT_OK) {
-                refreshResults()
-            } else {
-                isGooglePlayServicesAvailable()
-            }
-            REQUEST_ACCOUNT_PICKER -> if (resultCode == Activity.RESULT_OK && data != null && data.extras != null) {
-                val accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)
-                if (accountName != null) {
-                    credential.selectedAccountName = accountName
-                    prefs.edit().putString(gmail, accountName).apply()
-                    refreshResults()
-                }
-            } else if (resultCode == Activity.RESULT_CANCELED) {
-            }
-            REQUEST_AUTHORIZATION -> if (resultCode == Activity.RESULT_OK) {
-                refreshResults()
-            } else {
-                chooseAccount()
-            }
         }
     }
 }

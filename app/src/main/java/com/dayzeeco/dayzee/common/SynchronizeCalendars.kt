@@ -27,7 +27,7 @@ class SynchronizeCalendars(val synchronizeWithGoogleCalendarListener: Synchroniz
     )
 
     @SuppressLint("MissingPermission")
-    fun readCalendar(context: Context, days: Int, hours: Int) {
+    fun readCalendar(context: Context) {
         val sharedPref =
             PreferenceManager.getDefaultSharedPreferences(context)
         if (sharedPref.getBoolean(email_linked, false)) {
@@ -117,7 +117,7 @@ class SynchronizeCalendars(val synchronizeWithGoogleCalendarListener: Synchroniz
             PreferenceManager.getDefaultSharedPreferences(context)
         val accountManager = AccountManager.get(context)
         val accounts = accountManager.getAccountsByType(null)
-        if (accounts.size != 0 && !sharedPref.getBoolean(email_linked, false)) {
+        if (accounts.isNotEmpty() && !sharedPref.getBoolean(email_linked, false)) {
             determineCalendar(context, sharedPref.getString(gmail, null))
         }
         val authority = CalendarContract.Calendars.CONTENT_URI.authority
@@ -165,7 +165,7 @@ class SynchronizeCalendars(val synchronizeWithGoogleCalendarListener: Synchroniz
     }
 
     @SuppressLint("MissingPermission")
-    private fun determineCalendar(
+    fun determineCalendar(
         context: Context,
         accountName: String?
     ) {
@@ -181,6 +181,7 @@ class SynchronizeCalendars(val synchronizeWithGoogleCalendarListener: Synchroniz
             editor.putBoolean(email_linked, true)
             editor.apply()
             cursor.close()
+            readCalendar(context)
             return
         }
         editor.putBoolean(email_linked, false)
