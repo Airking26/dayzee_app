@@ -181,6 +181,7 @@ class SynchronizeCalendars(val synchronizeWithGoogleCalendarListener: Synchroniz
             editor.putBoolean(email_linked, true)
             editor.apply()
             cursor.close()
+            syncCalendars(context)
             readCalendar(context)
             return
         }

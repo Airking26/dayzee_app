@@ -3,14 +3,16 @@ package com.dayzeeco.dayzee.view.homeFlow
 import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
 import android.content.Context
+import android.content.Context.WIFI_SERVICE
 import android.content.Intent
 import android.content.SharedPreferences
+import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
-import android.text.InputType
 import android.text.TextUtils
 import android.text.TextWatcher
+import android.text.format.Formatter
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -32,26 +34,20 @@ import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
-import com.afollestad.materialdialogs.list.listItems
 import com.afollestad.materialdialogs.list.listItemsSingleChoice
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.iid.FirebaseInstanceId
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.*
-import com.dayzeeco.dayzee.androidView.dialog.input
 import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.listeners.GoToProfile
-import com.dayzeeco.dayzee.listeners.GoToTop
 import com.dayzeeco.dayzee.listeners.RefreshPicBottomNavListener
 import com.dayzeeco.dayzee.listeners.TimenoteOptionsListener
 import com.dayzeeco.dayzee.model.*
 import com.dayzeeco.dayzee.viewModel.*
-import com.dayzeeco.picture_library.instagram.InsGallery
-import com.dayzeeco.picture_library.instagram.PictureSelectorInstagramStyleActivity
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.iid.FirebaseInstanceId
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import io.branch.indexing.BranchUniversalObject
-import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
 import io.branch.referral.util.LinkProperties
 import kotlinx.android.synthetic.main.fragment_home.*
@@ -60,7 +56,11 @@ import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type
-import java.text.SimpleDateFormat
+import java.net.InetAddress
+import java.net.NetworkInterface
+import java.net.UnknownHostException
+import java.util.*
+
 
 class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListener,
     UsersPagingAdapter.SearchPeopleListener, ItemTimenoteRecentAdapter.TimenoteRecentClicked, UsersShareWithPagingAdapter.SearchPeopleListener,
@@ -115,8 +115,8 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                 }
 
                 LoginViewModel.AuthenticationState.GUEST -> {
-                        findNavController().popBackStack(R.id.home, false)
-                        onGoToNearby.onGuestMode()
+                    findNavController().popBackStack(R.id.home, false)
+                    onGoToNearby.onGuestMode()
                 }
             }
         })
@@ -154,16 +154,20 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     @SuppressLint("StringFormatInvalid")
     fun retrieveCurrentRegistrationToken(tokenId: String){
         FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener(OnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    meViewModel.putFCMToken(tokenId, FCMDTO(task.result?.token!!)).observe(this, {
-                        if(it.isSuccessful) ""
-                    })
-                    return@OnCompleteListener
-                }
-            })
+            if (task.isSuccessful) {
+                meViewModel.putFCMToken(tokenId, FCMDTO(task.result?.token!!)).observe(this, {
+                    if (it.isSuccessful) ""
+                })
+                return@OnCompleteListener
+            }
+        })
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         return getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_home)
     }
@@ -180,11 +184,22 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
             val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
             userInfoDTO = Gson().fromJson(prefs.getString(user_info_dto, ""), typeUserInfo)
 
-            home_swipe_refresh.setColorSchemeResources(R.color.colorStartGradient, R.color.colorEndGradient)
+            home_swipe_refresh.setColorSchemeResources(
+                R.color.colorStartGradient,
+                R.color.colorEndGradient
+            )
             home_swipe_refresh.setOnRefreshListener {
                 timenotePagingAdapter?.resetAllSelected()
-                if(home_future_timeline.drawable.bytesEqualTo(resources.getDrawable(R.drawable.ic_futur_ok)) && home_future_timeline.drawable.pixelsEqualTo(resources.getDrawable(R.drawable.ic_futur_ok))) loadPastData()
-                else if(home_past_timeline.drawable.bytesEqualTo(resources.getDrawable(R.drawable.ic_passe_ok)) && home_past_timeline.drawable.pixelsEqualTo(resources.getDrawable(R.drawable.ic_passe_ok))) loadUpcomingData()
+                if(home_future_timeline.drawable.bytesEqualTo(resources.getDrawable(R.drawable.ic_futur_ok)) && home_future_timeline.drawable.pixelsEqualTo(
+                        resources.getDrawable(
+                            R.drawable.ic_futur_ok
+                        )
+                    )) loadPastData()
+                else if(home_past_timeline.drawable.bytesEqualTo(resources.getDrawable(R.drawable.ic_passe_ok)) && home_past_timeline.drawable.pixelsEqualTo(
+                        resources.getDrawable(
+                            R.drawable.ic_passe_ok
+                        )
+                    )) loadUpcomingData()
             }
 
             home_past_timeline.setOnClickListener(this)
@@ -270,8 +285,11 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         home_swipe_refresh?.isRefreshing = true
         timenotePagingAdapter?.resetAllSelected()
 
-        timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils, userInfoDTO.id, prefs.getInt(
-            format_date_default, 0), userInfoDTO)
+        timenotePagingAdapter = TimenotePagingAdapter(
+            TimenoteComparator, this, this, true, utils, userInfoDTO.id, prefs.getInt(
+                format_date_default, 0
+            ), userInfoDTO
+        )
         lifecycleScope.launch {
             timenoteViewModel.getUpcomingTimenotePagingFlow(tokenId!!, true, prefs).collectLatest {
                 timenotePagingAdapter?.submitData(it)
@@ -288,15 +306,23 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         home_rv?.apply {
             setHasFixedSize(true)
 
-            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            layoutManager = LinearLayoutManager(
+                requireContext(),
+                LinearLayoutManager.VERTICAL,
+                false
+            )
             adapter = timenotePagingAdapter!!.withLoadStateFooter(
-                footer = TimenoteLoadStateAdapter{ timenotePagingAdapter!!.retry() }
+                footer = TimenoteLoadStateAdapter { timenotePagingAdapter!!.retry() }
             )
         }
 
         home_recent_rv?.apply {
-            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-            adapter = timenoteRecentPagingAdapter!!.withLoadStateFooter(footer = TimenoteRecentLoadStateAdapter{timenoteRecentPagingAdapter!!.retry()})
+            layoutManager = LinearLayoutManager(
+                requireContext(),
+                LinearLayoutManager.HORIZONTAL,
+                false
+            )
+            adapter = timenoteRecentPagingAdapter!!.withLoadStateFooter(footer = TimenoteRecentLoadStateAdapter { timenoteRecentPagingAdapter!!.retry() })
         }
 
         timenotePagingAdapter?.addDataRefreshListener {
@@ -322,8 +348,11 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
         timenotePagingAdapter?.resetAllSelected()
 
-        timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, false, utils, userInfoDTO.id, prefs.getInt(
-            format_date_default, 0), userInfoDTO)
+        timenotePagingAdapter = TimenotePagingAdapter(
+            TimenoteComparator, this, this, false, utils, userInfoDTO.id, prefs.getInt(
+                format_date_default, 0
+            ), userInfoDTO
+        )
         lifecycleScope.launch {
             timenoteViewModel.getUpcomingTimenotePagingFlow(tokenId!!, false, prefs).collectLatest {
                 timenotePagingAdapter?.submitData(it)
@@ -335,7 +364,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
             layoutManager = LinearLayoutManager(requireContext())
             adapter = timenotePagingAdapter!!.withLoadStateFooter(
-                footer = TimenoteLoadStateAdapter{ timenotePagingAdapter!!.retry() }
+                footer = TimenoteLoadStateAdapter { timenotePagingAdapter!!.retry() }
             )        }
 
         timenotePagingAdapter?.addDataRefreshListener {
@@ -357,7 +386,12 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     override fun onClick(v: View?) {
         when(v){
             home_past_timeline -> {
-                if(home_past_timeline.drawable.bytesEqualTo(resources.getDrawable(R.drawable.ic_passe_ok)) && home_past_timeline.drawable.pixelsEqualTo(resources.getDrawable(R.drawable.ic_passe_ok))){
+                if (home_past_timeline.drawable.bytesEqualTo(resources.getDrawable(R.drawable.ic_passe_ok)) && home_past_timeline.drawable.pixelsEqualTo(
+                        resources.getDrawable(
+                            R.drawable.ic_passe_ok
+                        )
+                    )
+                ) {
                     home_recent_rv.visibility = View.GONE
                     home_posted_recently.visibility = View.GONE
                     home_past_timeline.setImageDrawable(resources.getDrawable(R.drawable.ic_passe_plein_grad_ok))
@@ -365,8 +399,13 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                     loadPastData()
                 }
             }
-            home_future_timeline ->{
-                if(home_future_timeline.drawable.bytesEqualTo(resources.getDrawable(R.drawable.ic_futur_ok)) && home_future_timeline.drawable.pixelsEqualTo(resources.getDrawable(R.drawable.ic_futur_ok))){
+            home_future_timeline -> {
+                if (home_future_timeline.drawable.bytesEqualTo(resources.getDrawable(R.drawable.ic_futur_ok)) && home_future_timeline.drawable.pixelsEqualTo(
+                        resources.getDrawable(
+                            R.drawable.ic_futur_ok
+                        )
+                    )
+                ) {
                     home_recent_rv.visibility = View.VISIBLE
                     home_future_timeline.setImageDrawable(resources.getDrawable(R.drawable.ic_futur_plein_grad))
                     home_past_timeline.setImageDrawable(resources.getDrawable(R.drawable.ic_passe_ok))
@@ -374,14 +413,19 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                 }
             }
             dayzee -> {
-                if(home_rv.layoutManager != null)
+                if (home_rv.layoutManager != null)
                     home_rv.layoutManager?.smoothScrollToPosition(home_rv, null, 0)
             }
         }
     }
 
     override fun onCommentClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(HomeDirections.actionGlobalDetailedTimenote(1, timenoteInfoDTO))
+        findNavController().navigate(
+            HomeDirections.actionGlobalDetailedTimenote(
+                1,
+                timenoteInfoDTO
+            )
+        )
     }
 
     override fun onPlusClicked(timenoteInfoDTO: TimenoteInfoDTO, isAdded: Boolean) {
@@ -389,7 +433,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
             timenoteViewModel.joinTimenote(tokenId!!, timenoteInfoDTO.id).observe(
                 viewLifecycleOwner,
                 {
-                    if(it.code() == 401) {
+                    if (it.code() == 401) {
                         loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner,
                             { newAccessToken ->
                                 tokenId = newAccessToken
@@ -398,13 +442,16 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                     }
                 })
         } else {
-            timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner,
+            timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id).observe(
+                viewLifecycleOwner,
                 {
-                    if(it.code() == 401) {
-                        loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { newAccessToken ->
-                            tokenId = newAccessToken
-                            timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id)
-                        })
+                    if (it.code() == 401) {
+                        loginViewModel.refreshToken(prefs).observe(
+                            viewLifecycleOwner,
+                            { newAccessToken ->
+                                tokenId = newAccessToken
+                                timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id)
+                            })
                     }
                 })
         }
@@ -412,7 +459,11 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
     override fun onPictureClicked(userInfoDTO: UserInfoDTO) {
         if(userInfoDTO.id == this.userInfoDTO.id) goToProfileLisner.goToProfile()
-        else findNavController().navigate(HomeDirections.actionGlobalProfileElse(1).setUserInfoDTO(userInfoDTO))
+        else findNavController().navigate(
+            HomeDirections.actionGlobalProfileElse(1).setUserInfoDTO(
+                userInfoDTO
+            )
+        )
     }
 
     override fun onDoubleClick() {}
@@ -453,57 +504,122 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             title(text = resources.getString(R.string.choose_a_reason))
             message(text = resources.getString(R.string.choose_a_reason_message))
-            val listOfItems = mutableListOf(resources.getString(R.string.spam), resources.getString(R.string.nudity_post), resources.getString(R.string.dont_like_it), resources.getString(R.string.hate_speech),
-            resources.getString(R.string.scam_fraud), resources.getString(R.string.false_info), resources.getString(R.string.intimidation_bullying), resources.getString(R.string.violence_post),
-            resources.getString(R.string.intellectual_property), resources.getString(R.string.suicide_automutilation), resources.getString(R.string.illegal_sales))
+            val listOfItems = mutableListOf(
+                resources.getString(R.string.spam),
+                resources.getString(
+                    R.string.nudity_post
+                ),
+                resources.getString(R.string.dont_like_it),
+                resources.getString(R.string.hate_speech),
+                resources.getString(R.string.scam_fraud),
+                resources.getString(R.string.false_info),
+                resources.getString(
+                    R.string.intimidation_bullying
+                ),
+                resources.getString(R.string.violence_post),
+                resources.getString(R.string.intellectual_property),
+                resources.getString(R.string.suicide_automutilation),
+                resources.getString(
+                    R.string.illegal_sales
+                )
+            )
             listItemsSingleChoice(items = listOfItems){ _, _, text ->
                 when(text.toString()){
-                    context.getString(R.string.spam) -> signal(timenoteInfoDTO, context.getString(R.string.spam))
-                    context.getString(R.string.nudity_post) -> signal(timenoteInfoDTO, context.getString(R.string.nudity_post))
-                    context.getString(R.string.dont_like_it) -> signal(timenoteInfoDTO, context.getString(R.string.dont_like_it))
-                    context.getString(R.string.hate_speech) -> signal(timenoteInfoDTO, context.getString(R.string.hate_speech))
-                    context.getString(R.string.scam_fraud)  -> signal(timenoteInfoDTO, context.getString(R.string.scam_fraud))
-                    context.getString(R.string.false_info) -> signal(timenoteInfoDTO, context.getString(R.string.false_info))
-                    context.getString(R.string.intimidation_bullying) -> signal(timenoteInfoDTO, context.getString(R.string.intimidation_bullying))
-                    context.getString(R.string.violence_post) -> signal(timenoteInfoDTO, context.getString(R.string.violence_post))
-                    context.getString(R.string.intellectual_property) -> signal(timenoteInfoDTO, context.getString(R.string.intellectual_property))
-                    context.getString(R.string.suicide_automutilation) -> signal(timenoteInfoDTO, context.getString(R.string.suicide_automutilation))
-                    context.getString(R.string.illegal_sales) -> signal(timenoteInfoDTO, context.getString(R.string.illegal_sales))
+                    context.getString(R.string.spam) -> signal(
+                        timenoteInfoDTO,
+                        context.getString(R.string.spam)
+                    )
+                    context.getString(R.string.nudity_post) -> signal(
+                        timenoteInfoDTO, context.getString(
+                            R.string.nudity_post
+                        )
+                    )
+                    context.getString(R.string.dont_like_it) -> signal(
+                        timenoteInfoDTO, context.getString(
+                            R.string.dont_like_it
+                        )
+                    )
+                    context.getString(R.string.hate_speech) -> signal(
+                        timenoteInfoDTO, context.getString(
+                            R.string.hate_speech
+                        )
+                    )
+                    context.getString(R.string.scam_fraud) -> signal(
+                        timenoteInfoDTO, context.getString(
+                            R.string.scam_fraud
+                        )
+                    )
+                    context.getString(R.string.false_info) -> signal(
+                        timenoteInfoDTO, context.getString(
+                            R.string.false_info
+                        )
+                    )
+                    context.getString(R.string.intimidation_bullying) -> signal(
+                        timenoteInfoDTO, context.getString(
+                            R.string.intimidation_bullying
+                        )
+                    )
+                    context.getString(R.string.violence_post) -> signal(
+                        timenoteInfoDTO, context.getString(
+                            R.string.violence_post
+                        )
+                    )
+                    context.getString(R.string.intellectual_property) -> signal(
+                        timenoteInfoDTO, context.getString(
+                            R.string.intellectual_property
+                        )
+                    )
+                    context.getString(R.string.suicide_automutilation) -> signal(
+                        timenoteInfoDTO, context.getString(
+                            R.string.suicide_automutilation
+                        )
+                    )
+                    context.getString(R.string.illegal_sales) -> signal(
+                        timenoteInfoDTO, context.getString(
+                            R.string.illegal_sales
+                        )
+                    )
                 }
             }
         }
     }
 
     private fun signal(timenoteInfoDTO: TimenoteInfoDTO, reason: String) {
-        timenoteViewModel.signalTimenote(tokenId!!, TimenoteCreationSignalementDTO(userInfoDTO.id!!, timenoteInfoDTO.id, reason)).observe(viewLifecycleOwner, {
-                if (it.code() == 401) {
-                    loginViewModel.refreshToken(prefs)
-                        .observe(viewLifecycleOwner, { newAccessToken ->
-                            tokenId = newAccessToken
-                            timenoteViewModel.signalTimenote(
-                                tokenId!!,
-                                TimenoteCreationSignalementDTO(
-                                    userInfoDTO.id!!,
-                                    timenoteInfoDTO.id,
-                                    reason
-                                )
-                            ).observe(viewLifecycleOwner,
-                                { rsp ->
-                                    if (rsp.isSuccessful) Toast.makeText(
-                                        requireContext(),
-                                        getString(R.string.reported),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                })
-                        })
-                }
+        timenoteViewModel.signalTimenote(
+            tokenId!!, TimenoteCreationSignalementDTO(
+                userInfoDTO.id!!,
+                timenoteInfoDTO.id,
+                reason
+            )
+        ).observe(viewLifecycleOwner, {
+            if (it.code() == 401) {
+                loginViewModel.refreshToken(prefs)
+                    .observe(viewLifecycleOwner, { newAccessToken ->
+                        tokenId = newAccessToken
+                        timenoteViewModel.signalTimenote(
+                            tokenId!!,
+                            TimenoteCreationSignalementDTO(
+                                userInfoDTO.id!!,
+                                timenoteInfoDTO.id,
+                                reason
+                            )
+                        ).observe(viewLifecycleOwner,
+                            { rsp ->
+                                if (rsp.isSuccessful) Toast.makeText(
+                                    requireContext(),
+                                    getString(R.string.reported),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            })
+                    })
+            }
 
-                if (it.isSuccessful) Toast.makeText(
-                    requireContext(),
-                    getString(R.string.reported),
-                    Toast.LENGTH_SHORT
-                ).show()
-            })
+            if (it.isSuccessful) Toast.makeText(
+                requireContext(),
+                getString(R.string.reported),
+                Toast.LENGTH_SHORT
+            ).show()
+        })
     }
 
     override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO, type: Int) {
@@ -517,18 +633,41 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
             .setContentDescription(timenoteInfoDTO.description)
             .setContentImageUrl(timenoteInfoDTO.pictures[0])
             .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
-            .setContentMetadata(ContentMetadata().addCustomMetadata(timenote_info_dto, Gson().toJson(timenoteInfoDTO)))
+            .setContentMetadata(
+                ContentMetadata().addCustomMetadata(
+                    timenote_info_dto, Gson().toJson(
+                        timenoteInfoDTO
+                    )
+                )
+            )
         else BranchUniversalObject()
             .setTitle(timenoteInfoDTO.title)
             .setContentDescription(timenoteInfoDTO.description)
             .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
-            .setContentMetadata(ContentMetadata().addCustomMetadata(timenote_info_dto, Gson().toJson(timenoteInfoDTO)))
+            .setContentMetadata(
+                ContentMetadata().addCustomMetadata(
+                    timenote_info_dto, Gson().toJson(
+                        timenoteInfoDTO
+                    )
+                )
+            )
 
         branchUniversalObject.generateShortUrl(requireContext(), linkProperties) { url, error ->
             branchUniversalObject.canonicalUrl = url
             val i = Intent(Intent.ACTION_SEND)
             i.type = "text/plain"
-            i.putExtra(Intent.EXTRA_TEXT, String.format(resources.getString(R.string.invitation_externe), userInfoDTO.userName, timenoteInfoDTO.title, utils.formatDateToShare(timenoteInfoDTO.startingAt), utils.formatHourToShare(timenoteInfoDTO.startingAt), url))
+            i.putExtra(
+                Intent.EXTRA_TEXT, String.format(
+                    resources.getString(R.string.invitation_externe),
+                    userInfoDTO.userName,
+                    timenoteInfoDTO.title,
+                    utils.formatDateToShare(
+                        timenoteInfoDTO.startingAt
+                    ),
+                    utils.formatHourToShare(timenoteInfoDTO.startingAt),
+                    url
+                )
+            )
             startActivityForResult(i, 111)
         }
 
@@ -536,13 +675,37 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     }
 
     override fun onDuplicateClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(HomeDirections.actionGlobalCreateTimenote().setFrom(1).setModify(1).setId(timenoteInfoDTO.id).setTimenoteBody(CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
-            timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
-            timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null, timenoteInfoDTO.urlTitle)))
+        findNavController().navigate(
+            HomeDirections.actionGlobalCreateTimenote().setFrom(1).setModify(
+                1
+            ).setId(timenoteInfoDTO.id).setTimenoteBody(
+                CreationTimenoteDTO(
+                    timenoteInfoDTO.createdBy.id!!,
+                    null,
+                    timenoteInfoDTO.title,
+                    timenoteInfoDTO.description,
+                    timenoteInfoDTO.pictures,
+                    timenoteInfoDTO.colorHex,
+                    timenoteInfoDTO.location,
+                    timenoteInfoDTO.category,
+                    timenoteInfoDTO.startingAt,
+                    timenoteInfoDTO.endingAt,
+                    timenoteInfoDTO.hashtags,
+                    timenoteInfoDTO.url,
+                    timenoteInfoDTO.price,
+                    null,
+                    timenoteInfoDTO.urlTitle
+                )
+            )
+        )
     }
 
     override fun onAddressClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(HomeDirections.actionGlobalTimenoteAddress(timenoteInfoDTO).setFrom(1))
+        findNavController().navigate(
+            HomeDirections.actionGlobalTimenoteAddress(timenoteInfoDTO).setFrom(
+                1
+            )
+        )
     }
 
     override fun onShareClicked(timenoteInfoDTO: TimenoteInfoDTO) {
@@ -551,14 +714,22 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
             customView(R.layout.friends_search_cl)
             lifecycleOwner(this@Home)
             positiveButton(R.string.send){
-                timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo)).observe(viewLifecycleOwner, Observer {
-                    if(it.code() == 401) {
-                        loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner) { newAccessToken ->
-                                tokenId = newAccessToken
-                                timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo))
-                            }
-                    }
-                })
+                timenoteViewModel.shareWith(tokenId!!, ShareTimenoteDTO(timenoteInfoDTO.id, sendTo)).observe(
+                    viewLifecycleOwner,
+                    Observer {
+                        if (it.code() == 401) {
+                            loginViewModel.refreshToken(prefs)
+                                .observe(viewLifecycleOwner) { newAccessToken ->
+                                    tokenId = newAccessToken
+                                    timenoteViewModel.shareWith(
+                                        tokenId!!, ShareTimenoteDTO(
+                                            timenoteInfoDTO.id,
+                                            sendTo
+                                        )
+                                    )
+                                }
+                        }
+                    })
             }
             negativeButton(R.string.cancel)
         }
@@ -566,21 +737,30 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         dial.getActionButton(WhichButton.NEGATIVE).updateTextColor(resources.getColor(android.R.color.darker_gray))
         val searchbar = dial.getCustomView().searchBar_friends
         searchbar.setCardViewElevation(0)
-        searchbar.addTextChangeListener(object : TextWatcher{
+        searchbar.addTextChangeListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 handler.removeMessages(TRIGGER_AUTO_COMPLETE)
                 handler.sendEmptyMessageDelayed(TRIGGER_AUTO_COMPLETE, AUTO_COMPLETE_DELAY)
             }
+
             override fun afterTextChanged(s: Editable?) {}
 
         })
         val recyclerview = dial.getCustomView().shareWith_rv
-        val  userAdapter = UsersShareWithPagingAdapter(UsersPagingAdapter.UserComparator, this, this, null, sendTo, null, false)
+        val  userAdapter = UsersShareWithPagingAdapter(
+            UsersPagingAdapter.UserComparator,
+            this,
+            this,
+            null,
+            sendTo,
+            null,
+            false
+        )
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
-            searchViewModel.getUsers(tokenId!!, userInfoDTO.id!!,  prefs).collectLatest {
+            searchViewModel.getUsers(tokenId!!, userInfoDTO.id!!, prefs).collectLatest {
                 userAdapter.submitData(it)
             }
         }
@@ -614,22 +794,37 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     }
 
     override fun onHashtagClicked(timenoteInfoDTO: TimenoteInfoDTO, hashtag: String?) {
-        findNavController().navigate(HomeDirections.actionGlobalTimenoteTAG(timenoteInfoDTO, hashtag))
+        findNavController().navigate(
+            HomeDirections.actionGlobalTimenoteTAG(
+                timenoteInfoDTO,
+                hashtag
+            )
+        )
     }
 
     override fun onHidePostClicked(timenoteInfoDTO: TimenoteInfoDTO, position: Int) {
-        timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!, timenote = timenoteInfoDTO.id)).observe(viewLifecycleOwner, {
-            if(it.code() == 401){
-                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
-                        newAccessToken -> tokenId = newAccessToken
-                    timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!,timenote= timenoteInfoDTO.id)).observe(viewLifecycleOwner, { nr ->
-                        if(nr.isSuccessful){
+        timenoteHiddedViewModel.hideEventOrUSer(
+            tokenId!!, TimenoteHiddedCreationDTO(
+                createdBy = userInfoDTO.id!!,
+                timenote = timenoteInfoDTO.id
+            )
+        ).observe(viewLifecycleOwner, {
+            if (it.code() == 401) {
+                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { newAccessToken ->
+                    tokenId = newAccessToken
+                    timenoteHiddedViewModel.hideEventOrUSer(
+                        tokenId!!, TimenoteHiddedCreationDTO(
+                            createdBy = userInfoDTO.id!!,
+                            timenote = timenoteInfoDTO.id
+                        )
+                    ).observe(viewLifecycleOwner, { nr ->
+                        if (nr.isSuccessful) {
                             timenotePagingAdapter?.refresh()
                             timenoteRecentPagingAdapter?.refresh()
                         }
                     })
                 })
-            } else if(it.isSuccessful){
+            } else if (it.isSuccessful) {
                 timenotePagingAdapter?.refresh()
                 timenoteRecentPagingAdapter?.refresh()
             }
@@ -637,17 +832,28 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     }
 
     override fun onHideUserClicked(timenoteInfoDTO: TimenoteInfoDTO, position: Int) {
-        timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!, user = timenoteInfoDTO.createdBy.id)).observe(viewLifecycleOwner, {
-            if(it.code() == 401){
-                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
-                        newAccessToken -> tokenId = newAccessToken
-                    timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!,user= timenoteInfoDTO.createdBy.id)).observe(viewLifecycleOwner, { nr ->
-                        if(nr.isSuccessful){
-                        timenotePagingAdapter?.refresh()
-                        timenoteRecentPagingAdapter?.refresh()}
+        timenoteHiddedViewModel.hideEventOrUSer(
+            tokenId!!, TimenoteHiddedCreationDTO(
+                createdBy = userInfoDTO.id!!,
+                user = timenoteInfoDTO.createdBy.id
+            )
+        ).observe(viewLifecycleOwner, {
+            if (it.code() == 401) {
+                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { newAccessToken ->
+                    tokenId = newAccessToken
+                    timenoteHiddedViewModel.hideEventOrUSer(
+                        tokenId!!, TimenoteHiddedCreationDTO(
+                            createdBy = userInfoDTO.id!!,
+                            user = timenoteInfoDTO.createdBy.id
+                        )
+                    ).observe(viewLifecycleOwner, { nr ->
+                        if (nr.isSuccessful) {
+                            timenotePagingAdapter?.refresh()
+                            timenoteRecentPagingAdapter?.refresh()
+                        }
                     })
                 })
-            } else if(it.isSuccessful){
+            } else if (it.isSuccessful) {
                 timenotePagingAdapter?.refresh()
                 timenoteRecentPagingAdapter?.refresh()
             }
@@ -664,38 +870,73 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
     override fun onSearchClicked(userInfoDTO: UserInfoDTO, isTagged: Boolean) {
         if(userInfoDTO.id == this.userInfoDTO.id) goToProfileLisner.goToProfile()
-        else findNavController().navigate(HomeDirections.actionGlobalProfileElse(1).setUserInfoDTO(userInfoDTO))
+        else findNavController().navigate(
+            HomeDirections.actionGlobalProfileElse(1).setUserInfoDTO(
+                userInfoDTO
+            )
+        )
     }
 
     override fun onDeleteClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        val map: MutableMap<Long, String> = Gson().fromJson(prefs.getString(map_event_id_to_timenote, null), object : TypeToken<MutableMap<String, String>>() {}.type) ?: mutableMapOf()
-        timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {
-            if(it.isSuccessful) {
-                timenotePagingAdapter?.refresh()
-                if(map.isNotEmpty() && map.filterValues { id -> id == timenoteInfoDTO.id }.keys.isNotEmpty()) {
-                    map.remove(map.filterValues { id -> id == timenoteInfoDTO.id }.keys.first())
-                    prefs.edit().putString(map_event_id_to_timenote, Gson().toJson(map)).apply()
+        val map: MutableMap<Long, String> = Gson().fromJson(
+            prefs.getString(
+                map_event_id_to_timenote,
+                null
+            ), object : TypeToken<MutableMap<String, String>>() {}.type
+        ) ?: mutableMapOf()
+        timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(
+            viewLifecycleOwner,
+            Observer {
+                if (it.isSuccessful) {
+                    timenotePagingAdapter?.refresh()
+                    if (map.isNotEmpty() && map.filterValues { id -> id == timenoteInfoDTO.id }.keys.isNotEmpty()) {
+                        map.remove(map.filterValues { id -> id == timenoteInfoDTO.id }.keys.first())
+                        prefs.edit().putString(map_event_id_to_timenote, Gson().toJson(map)).apply()
+                    }
+                } else if (it.code() == 401) {
+                    loginViewModel.refreshToken(prefs)
+                        .observe(viewLifecycleOwner, { newAccessToken ->
+                            tokenId = newAccessToken
+                            timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(
+                                viewLifecycleOwner,
+                                Observer { tid ->
+                                    if (tid.isSuccessful) timenotePagingAdapter?.refresh()
+                                    if (map.isNotEmpty() && map.filterValues { id -> id == timenoteInfoDTO.id }.keys.isNotEmpty()) {
+                                        map.remove(map.filterValues { id -> id == timenoteInfoDTO.id }.keys.first())
+                                        prefs.edit()
+                                            .putString(map_event_id_to_timenote, Gson().toJson(map))
+                                            .apply()
+                                    }
+                                })
+                        })
                 }
-            }
-            else if(it.code() == 401) {
-                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { newAccessToken ->
-                    tokenId = newAccessToken
-                    timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, Observer {tid ->
-                        if(tid.isSuccessful) timenotePagingAdapter?.refresh()
-                        if(map.isNotEmpty() && map.filterValues { id -> id == timenoteInfoDTO.id }.keys.isNotEmpty()) {
-                            map.remove(map.filterValues { id -> id == timenoteInfoDTO.id }.keys.first())
-                            prefs.edit().putString(map_event_id_to_timenote, Gson().toJson(map)).apply()
-                        }
-                    })
-                })
-            }
-        })
+            })
     }
 
     override fun onEditClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        findNavController().navigate(HomeDirections.actionGlobalCreateTimenote().setFrom(1).setModify(2).setId(timenoteInfoDTO.id).setTimenoteBody(CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,
-            timenoteInfoDTO.colorHex, timenoteInfoDTO.location, timenoteInfoDTO.category, timenoteInfoDTO.startingAt, timenoteInfoDTO.endingAt,
-            timenoteInfoDTO.hashtags, timenoteInfoDTO.url, timenoteInfoDTO.price, null, timenoteInfoDTO.urlTitle)))
+        findNavController().navigate(
+            HomeDirections.actionGlobalCreateTimenote().setFrom(1).setModify(
+                2
+            ).setId(timenoteInfoDTO.id).setTimenoteBody(
+                CreationTimenoteDTO(
+                    timenoteInfoDTO.createdBy.id!!,
+                    null,
+                    timenoteInfoDTO.title,
+                    timenoteInfoDTO.description,
+                    timenoteInfoDTO.pictures,
+                    timenoteInfoDTO.colorHex,
+                    timenoteInfoDTO.location,
+                    timenoteInfoDTO.category,
+                    timenoteInfoDTO.startingAt,
+                    timenoteInfoDTO.endingAt,
+                    timenoteInfoDTO.hashtags,
+                    timenoteInfoDTO.url,
+                    timenoteInfoDTO.price,
+                    null,
+                    timenoteInfoDTO.urlTitle
+                )
+            )
+        )
     }
 
     override fun onUnfollow(id: String) {}

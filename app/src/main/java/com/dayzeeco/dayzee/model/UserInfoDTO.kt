@@ -44,5 +44,8 @@ data class UserInfoDTO (
     @SerializedName("createdAt") var createdAt : String? = null,
     @SerializedName("certified") var certified: Boolean? = false,
     @SerializedName("isAdmin") var isAdmin: Boolean? = false,
-    @SerializedName("language") var language: String? = null
+    @SerializedName("language") var language: String? = null,
+    @SerializedName("ip") var ip: String? = null,
+    @SerializedName("platform") var platform: String? = null,
+    @SerializedName("updatedAt") var updatedAt: String? = null
 ) : Parcelable

@@ -1126,9 +1126,10 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                 when (createGroup) {
                     0 -> creationTimenoteViewModel.setSharedWith(sendTo)
                     1 -> {
-                        profileViewModel.createGroup(tokenId!!, CreateGroupDTO(groupName!!, sendTo)).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-                            if(it.isSuccessful) creationTimenoteViewModel.setSharedWith(sendTo)
-                        })
+                        profileViewModel.createGroup(tokenId!!, CreateGroupDTO(groupName!!, sendTo)).observe(viewLifecycleOwner,
+                            {
+                                if(it.isSuccessful) creationTimenoteViewModel.setSharedWith(sendTo)
+                            })
                     }
                     2 -> creationTimenoteViewModel.setOrganizers(organizers)
 

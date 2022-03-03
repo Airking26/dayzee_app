@@ -1,11 +1,13 @@
 package com.dayzeeco.dayzee.view.loginFlow
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
@@ -34,6 +36,8 @@ import com.dayzeeco.dayzee.viewModel.LoginViewModel
 import com.dayzeeco.dayzee.viewModel.MeViewModel
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_create_account.*
+import java.net.InetAddress
+import java.net.UnknownHostException
 import java.util.*
 
 
@@ -189,6 +193,28 @@ class CreateAccount : Fragment(), View.OnClickListener {
         signup_connect.setOnClickListener(this)
     }
 
+    private fun getIpAddress(context: Context): String {
+        val wifiManager = context.applicationContext
+            .getSystemService(Context.WIFI_SERVICE) as WifiManager
+        var ipAddress: String = intToInetAddress(wifiManager.dhcpInfo.ipAddress).toString()
+        ipAddress = ipAddress.substring(1)
+        return ipAddress
+    }
+
+    private fun intToInetAddress(hostAddress: Int): InetAddress {
+        val addressBytes = byteArrayOf(
+            (0xff and hostAddress).toByte(),
+            (0xff and (hostAddress shr 8)).toByte(),
+            (0xff and (hostAddress shr 16)).toByte(),
+            (0xff and (hostAddress shr 24)).toByte()
+        )
+        return try {
+            InetAddress.getByAddress(addressBytes)
+        } catch (e: UnknownHostException) {
+            throw AssertionError()
+        }
+    }
+
     override fun onClick(v: View?) {
         when(v) {
             signup_connect -> {
@@ -201,7 +227,9 @@ class CreateAccount : Fragment(), View.OnClickListener {
                             UserSignUpBody(
                                 signup_mail.text.toString(),
                                 signup_username.text.toString(),
-                                signup_password.text.toString()
+                                signup_password.text.toString(),
+                                getIpAddress(requireContext()),
+                                "ANDROID"
                             )
                         ).observe(viewLifecycleOwner, {
                             when (it.code()) {

@@ -416,7 +416,7 @@ class Settings : Fragment(), View.OnClickListener, SynchronizeWithGoogleCalendar
             if(!map.keys.contains(item.id.toString())){
                 val creationTimenoteDTO = CreationTimenoteDTO(
                     userInfoDTO.id!!,
-                    listOf(),
+                    listOf(userInfoDTO.id!!),
                     item.title,
                     item.description,
                     listOf("https://timenote-dev-images.s3.eu-west-3.amazonaws.com/timenote/toDL.jpg"),
@@ -437,7 +437,7 @@ class Settings : Fragment(), View.OnClickListener, SynchronizeWithGoogleCalendar
                     listOf(),
                     null,
                     Price(0.0, ""),
-                    listOf(userInfoDTO.id!!),
+                    listOf(),
                     null
                 )
 
