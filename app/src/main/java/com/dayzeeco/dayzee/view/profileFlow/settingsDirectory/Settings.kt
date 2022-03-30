@@ -590,13 +590,11 @@ class Settings : Fragment(), View.OnClickListener, SynchronizeWithGoogleCalendar
                 lifecycleScope.launch {
                     kotlin.runCatching{
                         try {
-                            var fli = service.events().list("primary")?.execute()
                             li = service.events()?.list("primary")?.setMaxResults(Integer.MAX_VALUE)?.setTimeMin(
                                 DateTime(
                                     System.currentTimeMillis()
                                 )
                             )?.setOrderBy("startTime")?.setSingleEvents(true)?.execute()
-                            var m = ""
                         } catch (e: UserRecoverableAuthIOException){
                             startActivityForResult(e.intent, REQUEST_AUTHORIZATION);
                         }

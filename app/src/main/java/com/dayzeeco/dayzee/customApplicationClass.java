@@ -13,6 +13,7 @@ import androidx.work.Configuration;
 import androidx.work.DelegatingWorkerFactory;
 import androidx.work.WorkerFactory;
 
+import com.appsflyer.AppsFlyerLib;
 import com.dayzeeco.dayzee.androidView.instaLike.PictureSelectorEngineImp;
 import com.dayzeeco.dayzee.webService.repo.DayzeeRepository;
 import com.dayzeeco.dayzee.webService.service.TimenoteService;
@@ -21,16 +22,26 @@ import com.dayzeeco.picture_library.app.IApp;
 import com.dayzeeco.picture_library.app.PictureAppMaster;
 import com.dayzeeco.picture_library.crash.PictureSelectorCrashUtils;
 import com.dayzeeco.picture_library.engine.PictureSelectorEngine;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import io.branch.referral.Branch;
 
+import static com.google.android.gms.common.util.CollectionUtils.listOf;
+
 public class customApplicationClass extends Application implements IApp, CameraXConfig.Provider, Configuration.Provider {
+
+    private FirebaseAnalytics mFirebaseAnalytics;
+
 
     @Override
     public void onCreate() {
         super.onCreate();
         Branch.enableDebugMode();
 
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        AppsFlyerLib.getInstance().start(this);
+        AppsFlyerLib.getInstance().setDebugLog(true);
+        AppsFlyerLib.getInstance().init("KdGKBY4Q3u3ooKjm4KT5am", null, this);
         Branch.getAutoInstance(this);
         PictureAppMaster.getInstance().setApp(this);
         PictureSelectorCrashUtils.init((t, e) -> {});

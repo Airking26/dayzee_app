@@ -3,16 +3,13 @@ package com.dayzeeco.dayzee.view.homeFlow
 import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
 import android.content.Context
-import android.content.Context.WIFI_SERVICE
 import android.content.Intent
 import android.content.SharedPreferences
-import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
-import android.text.format.Formatter
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -44,6 +41,7 @@ import com.dayzeeco.dayzee.listeners.TimenoteOptionsListener
 import com.dayzeeco.dayzee.model.*
 import com.dayzeeco.dayzee.viewModel.*
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -56,9 +54,6 @@ import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type
-import java.net.InetAddress
-import java.net.NetworkInterface
-import java.net.UnknownHostException
 import java.util.*
 
 
@@ -66,6 +61,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     UsersPagingAdapter.SearchPeopleListener, ItemTimenoteRecentAdapter.TimenoteRecentClicked, UsersShareWithPagingAdapter.SearchPeopleListener,
     UsersShareWithPagingAdapter.AddToSend{
 
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
     private lateinit var goToProfileLisner : GoToProfile
     private var sendTo: MutableList<String> = mutableListOf()
     private lateinit var handler: Handler
@@ -93,6 +89,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        firebaseAnalytics = FirebaseAnalytics.getInstance(requireContext())
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         tokenId = prefs.getString(accessToken, null)
         refreshTokenId = prefs.getString(refreshToken, null)
@@ -493,10 +490,22 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     }
 
     override fun onTimenoteRecentClicked(event: TimenoteInfoDTO) {
+        val bundle = Bundle()
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, event.id)
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, event.title)
+        bundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, event.category?.category)
+        bundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY2, event.category?.subcategory)
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle)
         findNavController().navigate(HomeDirections.actionGlobalDetailedTimenote(1, event))
     }
 
     override fun onSeeMoreClicked(event: TimenoteInfoDTO) {
+        val bundle = Bundle()
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, event.id)
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, event.title)
+        bundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, event.category?.category)
+        bundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY2, event.category?.subcategory)
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle)
         findNavController().navigate(HomeDirections.actionGlobalDetailedTimenote(1, event))
     }
 

@@ -119,9 +119,6 @@ class Menu : Fragment(), View.OnClickListener {
             }
             menu_preferences_cv -> findNavController().navigate(MenuDirections.actionMenuToPreferenceCategory())
             menu_synchro_wallet_cv -> {
-                val uri: Uri = Uri.parse("wc:228a04c6-c212-4174-90df-83f6f219f63e@1?bridge=https%3A%2F%2Fbridge.walletconnect.org&key=a3ad450f39d12443dc144d8e55950a3ce89b9375af5b7bf112f5045da7950b59")
-                val mapIntent = Intent(Intent.ACTION_VIEW, uri)
-                startActivity(mapIntent)
             }
         }
     }

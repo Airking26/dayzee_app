@@ -150,6 +150,9 @@
         <action
             android:id="@+id/action_menu_to_preferenceCategory"
             app:destination="@id/preferenceCategory" />
+        <action
+            android:id="@+id/action_menu_to_QRCode"
+            app:destination="@id/QRCode" />
     </fragment>
     <fragment
         android:id="@+id/preferenceCategory"
@@ -303,4 +306,8 @@
             app:argType="string" />
     </fragment>
     <action android:id="@+id/action_global_changePassword" app:destination="@id/changePassword" />
+    <fragment
+        android:id="@+id/QRCode"
+        android:name="com.dayzeeco.dayzee.view.profileFlow.menuDirectory.QRCode"
+        android:label="QRCode" />
 </navigation>

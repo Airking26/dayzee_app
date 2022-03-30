@@ -149,5 +149,6 @@ dependencies {
     // Kotlin + coroutines
     implementation "androidx.work:work-runtime-ktx:2.5.0"
     implementation 'com.appsflyer:af-android-sdk:6.3.2'
+    implementation 'com.github.yuriy-budiyev:code-scanner:2.1.2'
 
 }
