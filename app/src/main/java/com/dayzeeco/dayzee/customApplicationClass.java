@@ -14,6 +14,7 @@ import androidx.work.DelegatingWorkerFactory;
 import androidx.work.WorkerFactory;
 
 import com.appsflyer.AppsFlyerLib;
+import com.appsflyer.attribution.AppsFlyerRequestListener;
 import com.dayzeeco.dayzee.androidView.instaLike.PictureSelectorEngineImp;
 import com.dayzeeco.dayzee.webService.repo.DayzeeRepository;
 import com.dayzeeco.dayzee.webService.service.TimenoteService;
@@ -30,18 +31,27 @@ import static com.google.android.gms.common.util.CollectionUtils.listOf;
 
 public class customApplicationClass extends Application implements IApp, CameraXConfig.Provider, Configuration.Provider {
 
-    private FirebaseAnalytics mFirebaseAnalytics;
-
-
     @Override
     public void onCreate() {
         super.onCreate();
         Branch.enableDebugMode();
 
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-        AppsFlyerLib.getInstance().start(this);
+        FirebaseAnalytics.getInstance(this);
+        //AppsFlyerLib.getInstance().init("KdGKBY4Q3u3ooKjm4KT5am", null, this);
+        AppsFlyerLib.getInstance().start(this, "KdGKBY4Q3u3ooKjm4KT5am", new AppsFlyerRequestListener() {
+            @Override
+            public void onSuccess() {
+                Log.d("appsflyer", "Launch sent successfully, got 200 response code from server");
+            }
+
+            @Override
+            public void onError(int i, @NonNull String s) {
+                Log.d("Appsflyer", "Launch failed to be sent:\n" +
+                        "Error code: " + i + "\n"
+                        + "Error description: " + s);
+            }
+        });
         AppsFlyerLib.getInstance().setDebugLog(true);
-        AppsFlyerLib.getInstance().init("KdGKBY4Q3u3ooKjm4KT5am", null, this);
         Branch.getAutoInstance(this);
         PictureAppMaster.getInstance().setApp(this);
         PictureSelectorCrashUtils.init((t, e) -> {});

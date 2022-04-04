@@ -618,9 +618,16 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                     data?.let {
                         val place = Autocomplete.getPlaceFromIntent(data)
                         creationTimenoteViewModel.fetchLocation(place.id!!, getString(R.string.api_web_key)).observe(
-                            viewLifecycleOwner, {
-                                creationTimenoteViewModel.setLocation(utils.setLocation(it.body()!!, true, prefs))
-                            })
+                            viewLifecycleOwner
+                        ) {
+                            creationTimenoteViewModel.setLocation(
+                                utils.setLocation(
+                                    it.body()!!,
+                                    true,
+                                    prefs
+                                )
+                            )
+                        }
                     }
                 }
                 AutocompleteActivity.RESULT_ERROR -> {
@@ -758,7 +765,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                     creationTimenoteViewModel.setTitle(titleInput)
                 }
                 positiveButton(R.string.done) {
-                    if (!titleInput.isBlank()) {
+                    if (titleInput.isNotBlank()) {
                         descCv.visibility = View.VISIBLE
                     }
                 }
@@ -1024,15 +1031,16 @@ class CreateTimenote : Fragment(), View.OnClickListener,
 
     private fun createTimenoteEmptyPic() {
         timenoteViewModel.createTimenote(tokenId!!, creationTimenoteViewModel.getCreateTimeNoteLiveData().value!!
-        ).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            if(it.code() == 401) {
-                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer {newAccessToken ->
-                    tokenId = newAccessToken
-                    createTimenoteEmptyPic()
-                })
+        ).observe(viewLifecycleOwner) {
+            if (it.code() == 401) {
+                authViewModel.refreshToken(prefs)
+                    .observe(viewLifecycleOwner) { newAccessToken ->
+                        tokenId = newAccessToken
+                        createTimenoteEmptyPic()
+                    }
             }
-            if(it.isSuccessful) clearAndPreview(it)
-        })
+            if (it.isSuccessful) clearAndPreview(it)
+        }
     }
 
     private fun clearAndPreview(it: Response<TimenoteInfoDTO>) {
@@ -1085,37 +1093,47 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     }
 
     private fun MaterialDialog.getAllGroups() {
-        profileViewModel.getAllGroups(tokenId!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer { response ->
-                val listGroups: MutableList<String> = mutableListOf()
-                if(response.code() == 401) {
-                    authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer {newAccessToken ->
+        profileViewModel.getAllGroups(tokenId!!).observe(viewLifecycleOwner) { response ->
+            val listGroups: MutableList<String> = mutableListOf()
+            if (response.code() == 401) {
+                authViewModel.refreshToken(prefs)
+                    .observe(viewLifecycleOwner) { newAccessToken ->
                         tokenId = newAccessToken
                         getAllGroups()
-                    })
+                    }
+            }
+            if (response.isSuccessful) response.body()!!
+                .forEach { group -> listGroups.add(group.name) }
+            listItemsMultiChoice(
+                items = listGroups,
+                initialSelection = indexGroupChosen.toIntArray(),
+                allowEmptySelection = true
+            ) { _, index, text ->
+                index.forEach { indexes ->
+                    response.body()?.get(indexes)?.users?.forEach { user ->
+                        if (creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.sharedWith != null && !creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.sharedWith?.contains(
+                                user.id
+                            )!!
+                        ) {
+                            sendTo.add(user.id!!)
+                        } else if (!sendTo.contains(user.id)) sendTo.add(user.id!!)
+                    }
                 }
-                if (response.isSuccessful) response.body()!!.forEach { group -> listGroups.add(group.name) }
-                listItemsMultiChoice(items = listGroups, initialSelection = indexGroupChosen.toIntArray(), allowEmptySelection = true) { _, index, text ->
-                    index.forEach { indexes ->
+
+                val removedList =
+                    indexGroupChosen.filterNot { i -> index.toMutableList().any { i == it } }
+                if (removedList.isNotEmpty()) {
+                    removedList.forEach { indexes ->
                         response.body()?.get(indexes)?.users?.forEach { user ->
-                            if (creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.sharedWith != null && !creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.sharedWith?.contains(user.id)!!) {
-                                sendTo.add(user.id!!)
-                            } else if (!sendTo.contains(user.id)) sendTo.add(user.id!!)
+                            sendTo.remove(user.id)
                         }
                     }
-
-                    val removedList = indexGroupChosen.filterNot { i -> index.toMutableList().any { i == it } }
-                    if(removedList.isNotEmpty()){
-                        removedList.forEach {indexes ->
-                            response.body()?.get(indexes)?.users?.forEach {user ->
-                                sendTo.remove(user.id)
-                            }
-                        }
-                    }
-
-                    indexGroupChosen = index.toMutableList()
-                    creationTimenoteViewModel.setSharedWith(sendTo)
                 }
-            })
+
+                indexGroupChosen = index.toMutableList()
+                creationTimenoteViewModel.setSharedWith(sendTo)
+            }
+        }
     }
 
     private fun createFriendsBottomSheet(createGroup: Int, groupName: String?) {
@@ -1126,10 +1144,10 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                 when (createGroup) {
                     0 -> creationTimenoteViewModel.setSharedWith(sendTo)
                     1 -> {
-                        profileViewModel.createGroup(tokenId!!, CreateGroupDTO(groupName!!, sendTo)).observe(viewLifecycleOwner,
-                            {
-                                if(it.isSuccessful) creationTimenoteViewModel.setSharedWith(sendTo)
-                            })
+                        profileViewModel.createGroup(tokenId!!, CreateGroupDTO(groupName!!, sendTo)).observe(viewLifecycleOwner
+                        ) {
+                            if (it.isSuccessful) creationTimenoteViewModel.setSharedWith(sendTo)
+                        }
                     }
                     2 -> creationTimenoteViewModel.setOrganizers(organizers)
 
@@ -1317,15 +1335,16 @@ class CreateTimenote : Fragment(), View.OnClickListener,
             tokenId!!,
             args.id!!,
             creationTimenoteViewModel.getCreateTimeNoteLiveData().value!!
-        ).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            if(it.code() == 401) {
-                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer {newAccessToken ->
-                    tokenId = newAccessToken
-                    modifyTimenotePic()
-                })
+        ).observe(viewLifecycleOwner) {
+            if (it.code() == 401) {
+                authViewModel.refreshToken(prefs)
+                    .observe(viewLifecycleOwner) { newAccessToken ->
+                        tokenId = newAccessToken
+                        modifyTimenotePic()
+                    }
             }
-            if(it.isSuccessful) clearAndPreview(it)
-        })
+            if (it.isSuccessful) clearAndPreview(it)
+        }
     }
 
     private fun createTimenotePic() {
@@ -1333,16 +1352,17 @@ class CreateTimenote : Fragment(), View.OnClickListener,
             tokenId!!,
             creationTimenoteViewModel.getCreateTimeNoteLiveData().value!!
         ).observe(
-            viewLifecycleOwner,
-            androidx.lifecycle.Observer {
-                if(it.code() == 401) {
-                    authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer {newAccessToken ->
+            viewLifecycleOwner
+        ) {
+            if (it.code() == 401) {
+                authViewModel.refreshToken(prefs)
+                    .observe(viewLifecycleOwner) { newAccessToken ->
                         tokenId = newAccessToken
                         createTimenotePic()
-                    })
-                }
-                if(it.isSuccessful) clearAndPreview(it)
-            })
+                    }
+            }
+            if (it.isSuccessful) clearAndPreview(it)
+        }
     }
 
     override fun onCropPicClicked(uri: Uri?) {
@@ -1385,13 +1405,13 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         done_pb.visibility = View.VISIBLE
         if(webSearchViewModel.getBitmap().value != null) webSearchViewModel.getBitmap().removeObservers(viewLifecycleOwner)
         webSearchViewModel.decodeSampledBitmapFromResource(URL(bitmap), Rect(), 100, 100)
-        webSearchViewModel.getBitmap().observe(viewLifecycleOwner, {
+        webSearchViewModel.getBitmap().observe(viewLifecycleOwner) {
             if (it != null) {
                 saveTemporary(it, dialog)
                 webSearchViewModel.clearBitmap()
                 webSearchViewModel.getBitmap().removeObservers(viewLifecycleOwner)
             }
-        })
+        }
     }
 
     override fun onMoreImagesClicked(position: Int, query: String) {

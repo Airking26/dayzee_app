@@ -61,7 +61,6 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     UsersPagingAdapter.SearchPeopleListener, ItemTimenoteRecentAdapter.TimenoteRecentClicked, UsersShareWithPagingAdapter.SearchPeopleListener,
     UsersShareWithPagingAdapter.AddToSend{
 
-    private lateinit var firebaseAnalytics: FirebaseAnalytics
     private lateinit var goToProfileLisner : GoToProfile
     private var sendTo: MutableList<String> = mutableListOf()
     private lateinit var handler: Handler
@@ -89,7 +88,6 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        firebaseAnalytics = FirebaseAnalytics.getInstance(requireContext())
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         tokenId = prefs.getString(accessToken, null)
         refreshTokenId = prefs.getString(refreshToken, null)
@@ -428,29 +426,29 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     override fun onPlusClicked(timenoteInfoDTO: TimenoteInfoDTO, isAdded: Boolean) {
         if(isAdded){
             timenoteViewModel.joinTimenote(tokenId!!, timenoteInfoDTO.id).observe(
-                viewLifecycleOwner,
-                {
-                    if (it.code() == 401) {
-                        loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner,
-                            { newAccessToken ->
-                                tokenId = newAccessToken
-                                timenoteViewModel.joinTimenote(tokenId!!, timenoteInfoDTO.id)
-                            })
+                viewLifecycleOwner
+            ) {
+                if (it.code() == 401) {
+                    loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner
+                    ) { newAccessToken ->
+                        tokenId = newAccessToken
+                        timenoteViewModel.joinTimenote(tokenId!!, timenoteInfoDTO.id)
                     }
-                })
+                }
+            }
         } else {
             timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id).observe(
-                viewLifecycleOwner,
-                {
-                    if (it.code() == 401) {
-                        loginViewModel.refreshToken(prefs).observe(
-                            viewLifecycleOwner,
-                            { newAccessToken ->
-                                tokenId = newAccessToken
-                                timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id)
-                            })
+                viewLifecycleOwner
+            ) {
+                if (it.code() == 401) {
+                    loginViewModel.refreshToken(prefs).observe(
+                        viewLifecycleOwner
+                    ) { newAccessToken ->
+                        tokenId = newAccessToken
+                        timenoteViewModel.leaveTimenote(tokenId!!, timenoteInfoDTO.id)
                     }
-                })
+                }
+            }
         }
     }
 
@@ -490,22 +488,10 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     }
 
     override fun onTimenoteRecentClicked(event: TimenoteInfoDTO) {
-        val bundle = Bundle()
-        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, event.id)
-        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, event.title)
-        bundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, event.category?.category)
-        bundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY2, event.category?.subcategory)
-        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle)
         findNavController().navigate(HomeDirections.actionGlobalDetailedTimenote(1, event))
     }
 
     override fun onSeeMoreClicked(event: TimenoteInfoDTO) {
-        val bundle = Bundle()
-        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, event.id)
-        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, event.title)
-        bundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY, event.category?.category)
-        bundle.putString(FirebaseAnalytics.Param.ITEM_CATEGORY2, event.category?.subcategory)
-        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle)
         findNavController().navigate(HomeDirections.actionGlobalDetailedTimenote(1, event))
     }
 

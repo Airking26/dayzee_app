@@ -52,12 +52,6 @@ class ScreenSlideTimenoteImageFragment : Fragment() {
         if(isNullOrEmpty!!){
             if(!url.isNullOrEmpty() && !url.isNullOrBlank()) create_timenote_pic.setBackgroundColor((Color.parseColor(if(url?.contains("#")!!) url else "#${url}")))
         } else {
-
-            val glideUrl = GlideUrl(url, LazyHeaders.Builder()
-                .addHeader("User-Agent",
-                    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit / 537.36(KHTML, like Gecko) Chrome  47.0.2526.106 Safari / 537.36")
-                .build())
-
             create_timenote_pic.layout(0, 0, 0, 0)
             Glide.with(this)
                 .load(url)

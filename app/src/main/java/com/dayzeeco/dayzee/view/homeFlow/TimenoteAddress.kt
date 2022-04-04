@@ -306,36 +306,36 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
         timenoteViewModel.signalTimenote(
             tokenId!!,
             TimenoteCreationSignalementDTO(userInfoDTO.id!!, timenoteInfoDTO.id, reason)
-        ).observe(viewLifecycleOwner,
-            {
-                if (it.code() == 401) {
-                    authViewModel.refreshToken(prefs)
-                        .observe(viewLifecycleOwner, { newAccessToken ->
-                            tokenId = newAccessToken
-                            timenoteViewModel.signalTimenote(
-                                tokenId!!,
-                                TimenoteCreationSignalementDTO(
-                                    userInfoDTO.id!!,
-                                    timenoteInfoDTO.id,
-                                    reason
-                                )
-                            ).observe(viewLifecycleOwner,
-                                { rsp ->
-                                    if (rsp.isSuccessful) Toast.makeText(
-                                        requireContext(),
-                                        getString(R.string.reported),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                })
-                        })
-                }
+        ).observe(viewLifecycleOwner
+        ) {
+            if (it.code() == 401) {
+                authViewModel.refreshToken(prefs)
+                    .observe(viewLifecycleOwner) { newAccessToken ->
+                        tokenId = newAccessToken
+                        timenoteViewModel.signalTimenote(
+                            tokenId!!,
+                            TimenoteCreationSignalementDTO(
+                                userInfoDTO.id!!,
+                                timenoteInfoDTO.id,
+                                reason
+                            )
+                        ).observe(viewLifecycleOwner
+                        ) { rsp ->
+                            if (rsp.isSuccessful) Toast.makeText(
+                                requireContext(),
+                                getString(R.string.reported),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+            }
 
-                if (it.isSuccessful) Toast.makeText(
-                    requireContext(),
-                    getString(R.string.reported),
-                    Toast.LENGTH_SHORT
-                ).show()
-            })
+            if (it.isSuccessful) Toast.makeText(
+                requireContext(),
+                getString(R.string.reported),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 
 
@@ -391,28 +391,41 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
     }
 
     override fun onHidePostClicked(timenoteInfoDTO: TimenoteInfoDTO, position: Int) {
-        timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!, timenote = timenoteInfoDTO.id)).observe(viewLifecycleOwner, {
-            if(it.code() == 401){
-                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
-                        newAccessToken -> tokenId = newAccessToken
-                    timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!,timenote= timenoteInfoDTO.id)).observe(viewLifecycleOwner, {
-                        nr -> if(nr.isSuccessful) timenotePagingAdapter?.notifyDataSetChanged()
-                    })
-                })
-            } else if(it.isSuccessful) timenotePagingAdapter?.refresh()
-        })
+        timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!, timenote = timenoteInfoDTO.id)).observe(viewLifecycleOwner) {
+            if (it.code() == 401) {
+                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner) { newAccessToken ->
+                    tokenId = newAccessToken
+                    timenoteHiddedViewModel.hideEventOrUSer(
+                        tokenId!!,
+                        TimenoteHiddedCreationDTO(
+                            createdBy = userInfoDTO.id!!,
+                            timenote = timenoteInfoDTO.id
+                        )
+                    ).observe(viewLifecycleOwner) { nr ->
+                        if (nr.isSuccessful) timenotePagingAdapter?.notifyDataSetChanged()
+                    }
+                }
+            } else if (it.isSuccessful) timenotePagingAdapter?.refresh()
+        }
     }
 
     override fun onHideUserClicked(timenoteInfoDTO: TimenoteInfoDTO, position: Int) {
-        timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!, user = timenoteInfoDTO.createdBy.id)).observe(viewLifecycleOwner, {
-            if(it.code() == 401){
-                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
-                        newAccessToken -> tokenId = newAccessToken
-                    timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!,user= timenoteInfoDTO.createdBy.id)).observe(viewLifecycleOwner, {
-                        nr -> if(nr.isSuccessful) timenotePagingAdapter?.refresh()
-                    })
-                })
-            } else if(it.isSuccessful) timenotePagingAdapter?.refresh()
-        })    }
+        timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!, user = timenoteInfoDTO.createdBy.id)).observe(viewLifecycleOwner) {
+            if (it.code() == 401) {
+                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner) { newAccessToken ->
+                    tokenId = newAccessToken
+                    timenoteHiddedViewModel.hideEventOrUSer(
+                        tokenId!!,
+                        TimenoteHiddedCreationDTO(
+                            createdBy = userInfoDTO.id!!,
+                            user = timenoteInfoDTO.createdBy.id
+                        )
+                    ).observe(viewLifecycleOwner) { nr ->
+                        if (nr.isSuccessful) timenotePagingAdapter?.refresh()
+                    }
+                }
+            } else if (it.isSuccessful) timenotePagingAdapter?.refresh()
+        }
+    }
 
 }
