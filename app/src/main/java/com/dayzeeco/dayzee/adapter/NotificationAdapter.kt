@@ -114,6 +114,7 @@ class NotificationAdapter(
                     notification.username,
                     notification.eventName
                 )
+                7 -> String.format(itemView.context.getString(R.string.comment_body), notification.username, notification.eventName)
                 else -> ""
             }
             itemView.notification_time.text = calculateTimeSinceNotif(notification.createdAt)

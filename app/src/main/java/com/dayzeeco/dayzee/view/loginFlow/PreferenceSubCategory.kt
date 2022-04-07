@@ -89,11 +89,11 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
         }
 
         prefs.stringLiveData(list_subcategory_noted, Gson().toJson(prefs.getString(
-            list_subcategory_noted, null))).observe(viewLifecycleOwner, {
+            list_subcategory_noted, null))).observe(viewLifecycleOwner) {
             val typeSubCat: Type = object : TypeToken<MutableList<SubCategoryRated?>>() {}.type
             preferencesCategoryRated = Gson().fromJson(it, typeSubCat) ?: mutableListOf()
             updateListCategoryAndSubCategory(preferencesCategoryRated)
-        })
+        }
     }
 
 
@@ -129,10 +129,11 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
     private fun saveAndNavigate() {
         prefs.edit().putString(list_subcategory_noted, Gson().toJson(preferencesCategoryRated)).apply()
         preferencesCategoryRated = preferencesCategoryRated.filter { it.rating > 0 }.toMutableList()
-        preferencesViewModel.modifyPreferences(tokenId, Preferences(preferencesCategoryRated)).observe(viewLifecycleOwner, {
-            prefs.edit().putString(list_subcategory_rated, Gson().toJson(preferencesCategoryRated)).apply()
-            if(it.isSuccessful){
-                if(preferenceSubCategoryArgs.isInLogin){
+        preferencesViewModel.modifyPreferences(tokenId, Preferences(preferencesCategoryRated)).observe(viewLifecycleOwner) {
+            prefs.edit().putString(list_subcategory_rated, Gson().toJson(preferencesCategoryRated))
+                .apply()
+            if (it.isSuccessful) {
+                if (preferenceSubCategoryArgs.isInLogin) {
                     goToTopListener.goToTop()
                     loginViewModel.markAsAuthenticated()
                     findNavController().popBackStack(R.id.home, false)
@@ -140,9 +141,9 @@ class PreferenceSubCategory: Fragment(), SubCategoryCardAdapter.SubCategorySeekB
                     goToTopListener.goToTop()
                     findNavController().popBackStack(R.id.myProfile, false)
                 }
-        //        findNavController().navigate(PreferenceSubCategoryDirections.actionPreferenceSubCategoryToPreferenceSuggestion(preferenceSubCategoryArgs.isInLogin))
+                //        findNavController().navigate(PreferenceSubCategoryDirections.actionPreferenceSubCategoryToPreferenceSuggestion(preferenceSubCategoryArgs.isInLogin))
             }
-        })
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.N)

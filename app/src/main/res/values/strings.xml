@@ -53,7 +53,8 @@
     <string name="timenote_visibility_format">Who can see my events</string>
     <string name="timenote_visibility">Dayzee visibility</string>
     <string name="others">OTHERS</string>
-    <string name="confidentiality_politic">Confidentiality politic</string>
+    <string name="confidentiality_politic">Privacy policy</string>
+    <string name="terms_of_use">Terms of use</string>
     <string name="send_comments">Send comments</string>
     <string name="disconnect">DISCONNECT</string>
     <string name="new_timenote">New Dayzee</string>
@@ -346,6 +347,7 @@
     <string name="asked_to_follow_body">%1$s has requested to follow you</string>
     <string name="tagged_in_comment_title">Tagged on an event</string>
     <string name="tagged_in_comment_body">%1$s tagged you on an event : %2$s</string>
+    <string name="comment_body">%1$s commmented your event : %2$s</string>
     <string name="saved_by_tens">Saved by %1$s and tens of others</string>
     <string name="saved_by_hundreds">Saved by %1$s and hundreds of others</string>
     <string name="saved_by_thousands">Saved by %1$s and thousands of others</string>
@@ -434,6 +436,9 @@
     <string name="check_box">You have to accept the conditions in order to continue</string>
     <string name="close">Close</string>
     <string name="calendar_permission">Calendar permission denied, go to your settings to allow</string>
+    <string name="subcategory_needed">Choose a subcategory or clear selection</string>
+    <string name="when_create_event">When*</string>
+    <string name="title_create_event">Title*</string>
     <plurals name="time_minutes_comment">
         <item quantity="one">%1$d minute</item>
         <item quantity="other">%1$d minutes</item>
@@ -441,6 +446,26 @@
     <plurals name="time_hours_comment">
         <item quantity="one">%1$d hour</item>
         <item quantity="other">%1$d hours</item>
+    </plurals>
+    <plurals name="in_seconds">
+        <item quantity="one">In %1$d second</item>
+        <item quantity="other">In %1$d seconds</item>
+    </plurals>
+    <plurals name="in_minutes">
+        <item quantity="one">In %1$d minute</item>
+        <item quantity="other">In %1$d minutes</item>
+    </plurals>
+    <plurals name="in_hours">
+        <item quantity="one">In %1$d hour</item>
+        <item quantity="other">In %1$d hours</item>
+    </plurals>
+    <plurals name="in_days">
+        <item quantity="one">In %1$d day</item>
+        <item quantity="other">In %1$d days</item>
+    </plurals>
+    <plurals name="in_months">
+        <item quantity="one">In %1$d month</item>
+        <item quantity="other">In %1$d months</item>
     </plurals>
     <plurals name="time_days_comment">
         <item quantity="one">%1$d day</item>

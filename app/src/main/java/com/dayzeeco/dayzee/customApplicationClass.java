@@ -18,7 +18,6 @@ import com.appsflyer.attribution.AppsFlyerRequestListener;
 import com.dayzeeco.dayzee.androidView.instaLike.PictureSelectorEngineImp;
 import com.dayzeeco.dayzee.webService.repo.DayzeeRepository;
 import com.dayzeeco.dayzee.webService.service.TimenoteService;
-import com.dayzeeco.dayzee.worker.MyWorkerFactory;
 import com.dayzeeco.picture_library.app.IApp;
 import com.dayzeeco.picture_library.app.PictureAppMaster;
 import com.dayzeeco.picture_library.crash.PictureSelectorCrashUtils;
@@ -29,7 +28,7 @@ import io.branch.referral.Branch;
 
 import static com.google.android.gms.common.util.CollectionUtils.listOf;
 
-public class customApplicationClass extends Application implements IApp, CameraXConfig.Provider, Configuration.Provider {
+public class customApplicationClass extends Application implements IApp, CameraXConfig.Provider {
 
     @Override
     public void onCreate() {
@@ -73,14 +72,4 @@ public class customApplicationClass extends Application implements IApp, CameraX
         return Camera2Config.defaultConfig();
     }
 
-    @NonNull
-    @Override
-    public Configuration getWorkManagerConfiguration() {
-        DelegatingWorkerFactory dwf = new DelegatingWorkerFactory();
-        dwf.addFactory(new MyWorkerFactory(new DayzeeRepository().getTimenoteService(), new DayzeeRepository().getAuthService()));
-        return new Configuration.Builder()
-                .setMinimumLoggingLevel(Log.DEBUG)
-                .setWorkerFactory(dwf)
-                .build();
-    }
 }

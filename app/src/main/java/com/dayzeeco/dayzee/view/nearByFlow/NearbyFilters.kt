@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.ColorStateList
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -11,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
@@ -33,10 +36,9 @@ import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.common.Utils
 import com.dayzeeco.dayzee.common.nearby
 import com.dayzeeco.dayzee.common.stringLiveData
-import com.dayzeeco.dayzee.model.Categories
-import com.dayzeeco.dayzee.model.NearbyRequestBody
-import com.dayzeeco.dayzee.model.Price
+import com.dayzeeco.dayzee.model.*
 import com.dayzeeco.dayzee.viewModel.NearbyViewModel
+import com.dayzeeco.dayzee.viewModel.PreferencesViewModel
 import com.dayzeeco.dayzee.webService.NearbyFilterData
 import com.warkiz.widget.IndicatorSeekBar
 import com.warkiz.widget.OnSeekChangeListener
@@ -61,6 +63,8 @@ class NearbyFilters : Fragment(), View.OnClickListener {
     private lateinit var placesClient: PlacesClient
     private val AUTOCOMPLETE_REQUEST_CODE: Int = 12
     private val nearbyViewModel : NearbyViewModel by activityViewModels()
+    private val preferencesViewModel : PreferencesViewModel by activityViewModels()
+    private lateinit var subcatview : View
 
     enum class Type {
         FROMFOLLOWER,
@@ -79,6 +83,7 @@ class NearbyFilters : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
+        subcatview = nearby_filter_subcategory
         prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         nearbyFilterData = NearbyFilterData(requireContext())
         dateFormat = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
@@ -96,6 +101,7 @@ class NearbyFilters : Fragment(), View.OnClickListener {
         nearby_filter_when.setOnClickListener(this)
         nearby_filter_where.setOnClickListener(this)
         nearby_filter_clear_btn.setOnClickListener(this)
+        subcatview.setOnClickListener(this)
 
         nearby_distance_seekbar.onSeekChangeListener = object: OnSeekChangeListener{
             override fun onSeeking(seekParams: SeekParams?) {
@@ -115,8 +121,14 @@ class NearbyFilters : Fragment(), View.OnClickListener {
             val type = object : TypeToken<NearbyRequestBody?>() {}.type
             val nearbyModifyModel : NearbyRequestBody? = Gson().fromJson<NearbyRequestBody>(prefs.getString(
                 nearby, null), type)
-            if(nearbyModifyModel?.categories?.isNullOrEmpty()!!) nearby_filter_category_tv.text = getString(R.string.none) else nearby_filter_category_tv.text = nearbyModifyModel.categories?.get(0)!!.subcategory
-            when (nearbyModifyModel.type) {
+            if(nearbyModifyModel?.categories?.category.isNullOrBlank()) nearby_filter_category_tv.text = getString(R.string.none) else nearby_filter_category_tv.text = nearbyModifyModel?.categories?.category
+            if(nearbyModifyModel?.categories?.subcategory.isNullOrBlank()) {
+                nearby_filter_subcategory_tv.text = getString(R.string.none)
+            } else {
+                subcatview.visibility = View.VISIBLE
+                nearby_filter_subcategory_tv.text = nearbyModifyModel?.categories?.subcategory
+            }
+            when (nearbyModifyModel!!.type) {
                 Type.ALL.ordinal -> nearby_filter_from_tv.text = getString(R.string.all)
                 Type.FROMFOLLOWER.ordinal -> nearby_filter_from_tv.text = getString(R.string.friends)
                 Type.NOTFROMFOLLOWER.ordinal -> nearby_filter_from_tv.text = getString(R.string.discover)
@@ -139,8 +151,30 @@ class NearbyFilters : Fragment(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when (v) {
-            nearby_filter_category ->
-                nearbyFilterData.setCategories(listOf(Categories("Sport", "Football")))
+            nearby_filter_category -> preferencesViewModel.getCategories().observe(viewLifecycleOwner){
+                MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                    title(R.string.category)
+                    listItems(items = it.body()?.distinctBy { category -> category.category }?.map { it -> it.category }) { _, index, text ->
+                        subcatview.visibility = View.VISIBLE
+                        nearbyFilterData.setCategories(Categories(text.toString(), ""))
+                    }
+                }
+            }
+            subcatview -> {
+                preferencesViewModel.getCategories().observe(viewLifecycleOwner) {
+                    MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                        title(R.string.category)
+                        listItems(items = it.body()?.filter { it -> it.category == nearbyFilterData.loadNearbyFilter()?.categories?.category!! }?.map { it -> it.subcategory }) { _, index, text ->
+                            nearbyFilterData.setCategories(
+                                Categories(
+                                    nearbyFilterData.loadNearbyFilter()?.categories?.category!!,
+                                    text.toString()
+                                )
+                            )
+                        }
+                    }
+                }
+            }
             nearby_filter_from -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.from)
                 listItems(null, listOf(getString(R.string.discover), getString(R.string.friends), getString(R.string.all))) { _, index, _ ->
@@ -155,7 +189,16 @@ class NearbyFilters : Fragment(), View.OnClickListener {
             nearby_filter_done_btn -> {
                 nearby_filter_done_btn.visibility = View.INVISIBLE
                 nearby_filter_pb.visibility = View.VISIBLE
-                findNavController().navigate(NearbyFiltersDirections.actionNearbyFiltersToNearBy())
+                if (nearbyFilterData.loadNearbyFilter()?.categories != null && nearbyFilterData.loadNearbyFilter()?.categories?.category?.isNotBlank()!! && nearbyFilterData.loadNearbyFilter()?.categories?.subcategory?.isBlank()!!) {
+                    nearby_filter_done_btn.visibility = View.VISIBLE
+                    nearby_filter_pb.visibility = View.GONE
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.subcategory_needed),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                else findNavController().navigate(NearbyFiltersDirections.actionNearbyFiltersToNearBy())
             }
             nearby_filter_paid_timenote -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.from)
@@ -176,6 +219,7 @@ class NearbyFilters : Fragment(), View.OnClickListener {
                 Autocomplete.IntentBuilder(
                     AutocompleteActivityMode.OVERLAY, placesList).build(requireContext()), AUTOCOMPLETE_REQUEST_CODE)
             nearby_filter_clear_btn -> {
+                subcatview.visibility = View.GONE
                 nearbyFilterData.clearData(nearbyFilterData.loadNearbyFilter()!!)
             }
         }
@@ -205,7 +249,5 @@ class NearbyFilters : Fragment(), View.OnClickListener {
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
-
-
 
 }

@@ -49,19 +49,27 @@ class PreferenceCategory : Fragment(), View.OnClickListener {
         pref_category_btn_next.setOnClickListener(this)
 
 
-        prefs.stringLiveData(list_subcategory_noted, Gson().toJson(prefs.getString(list_subcategory_noted, null))).observe(viewLifecycleOwner, {
+        prefs.stringLiveData(list_subcategory_noted, Gson().toJson(prefs.getString(list_subcategory_noted, null))).observe(viewLifecycleOwner) {
             val typeSubCat: Type = object : TypeToken<MutableList<SubCategoryRated?>>() {}.type
             preferencesCategoryRated = Gson().fromJson(it, typeSubCat) ?: mutableListOf()
-        })
+        }
 
-        preferencesViewModel.getCategories().observe(viewLifecycleOwner, { resp ->
-            if(resp.isSuccessful){
+        preferencesViewModel.getCategories().observe(viewLifecycleOwner) { resp ->
+            if (resp.isSuccessful) {
                 categories = resp.body()
-                val adapterGV = CategoryAdapter(categories?.distinctBy { category -> category.category }, preferencesCategoryRated.distinctBy { ca -> ca.category }.map { subCategoryRated -> Category(subCategoryRated.category.category, subCategoryRated.category.subcategory) })
+                val adapterGV =
+                    CategoryAdapter(categories?.distinctBy { category -> category.category },
+                        preferencesCategoryRated.distinctBy { ca -> ca.category }
+                            .map { subCategoryRated ->
+                                Category(
+                                    subCategoryRated.category.category,
+                                    subCategoryRated.category.subcategory
+                                )
+                            })
                 category_gv.adapter = adapterGV
                 category_pb.visibility = View.GONE
             }
-        })
+        }
 
 
         category_gv.setOnItemClickListener { parent, viewChild, position, id ->
@@ -81,12 +89,19 @@ class PreferenceCategory : Fragment(), View.OnClickListener {
             pref_category_btn_next -> {
                 if(preferencesCategoryRated.size > 0){
                     prefs.edit().putString(list_subcategory_noted, Gson().toJson(preferencesCategoryRated)).apply()
-                    preferencesViewModel.modifyPreferences(tokenId!!, Preferences(preferencesCategoryRated)).observe(viewLifecycleOwner, {
-                        prefs.edit().putString(list_subcategory_rated, Gson().toJson(preferencesCategoryRated)).apply()
-                        if(it.isSuccessful) {
-                            view?.findNavController()?.navigate(PreferenceCategoryDirections.actionPreferenceCategoryToPreferenceSubCategory(preferenceCategoryArgs.isInLogin))
+                    preferencesViewModel.modifyPreferences(tokenId!!, Preferences(preferencesCategoryRated)).observe(viewLifecycleOwner) {
+                        prefs.edit().putString(
+                            list_subcategory_rated,
+                            Gson().toJson(preferencesCategoryRated)
+                        ).apply()
+                        if (it.isSuccessful) {
+                            view?.findNavController()?.navigate(
+                                PreferenceCategoryDirections.actionPreferenceCategoryToPreferenceSubCategory(
+                                    preferenceCategoryArgs.isInLogin
+                                )
+                            )
                         }
-                    })
+                    }
                 } else Toast.makeText(
                     requireContext(),
                     getString(R.string.choose_at_least_one_category),

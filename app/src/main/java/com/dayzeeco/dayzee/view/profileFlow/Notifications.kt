@@ -76,36 +76,57 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
     }
 
     override fun onNotificationClicked(notification: NotificationInfoDTO) {
-        if(notification.type == 0 || notification.type == 1|| notification.type == 6 || notification.type == 5){
-            timenoteViewModel.getSpecificTimenote(tokenId!!, notification.idData).observe(viewLifecycleOwner, Observer {
-                if(it.code() == 401){
-                    authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { newAccessToken ->
-                        tokenId = newAccessToken
-                        timenoteViewModel.getSpecificTimenote(tokenId!!, notification.idData).observe(viewLifecycleOwner,
-                            { timenoteInfoDTO ->
-                                if(timenoteInfoDTO.isSuccessful) findNavController().navigate(NotificationsDirections.actionGlobalDetailedTimenote(1, it.body()))
+        if(notification.type == 0 || notification.type == 1|| notification.type == 6 || notification.type == 5 || notification.type == 7){
+            timenoteViewModel.getSpecificTimenote(tokenId!!, notification.idData).observe(viewLifecycleOwner
+            ) {
+                if (it.code() == 401) {
+                    authViewModel.refreshToken(prefs)
+                        .observe(viewLifecycleOwner) { newAccessToken ->
+                            tokenId = newAccessToken
+                            timenoteViewModel.getSpecificTimenote(tokenId!!, notification.idData)
+                                .observe(
+                                    viewLifecycleOwner
+                                ) { timenoteInfoDTO ->
+                                    if (timenoteInfoDTO.isSuccessful) findNavController().navigate(
+                                        NotificationsDirections.actionGlobalDetailedTimenote(
+                                            1,
+                                            it.body()
+                                        )
+                                    )
 
-                            })
-                    })
+                                }
+                        }
                 }
-                if(it.isSuccessful)
-                findNavController().navigate(NotificationsDirections.actionGlobalDetailedTimenote(1, it.body()))
-            })
+                if (it.isSuccessful)
+                    findNavController().navigate(
+                        NotificationsDirections.actionGlobalDetailedTimenote(
+                            1,
+                            it.body()
+                        )
+                    )
+            }
         } else {
-            meViewModel.getSpecificUser(tokenId!!, notification.idData).observe(viewLifecycleOwner, {
-                if(it.code() == 401){
-                    authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { newAccessToken ->
-                        tokenId = newAccessToken
-                        meViewModel.getSpecificUser(tokenId!!, notification.idData).observe(viewLifecycleOwner,
-                            { userInfoDTO ->
-                                if(userInfoDTO.isSuccessful) findNavController().navigate(NotificationsDirections.actionGlobalProfileElse(4).setUserInfoDTO(it.body()))
+            meViewModel.getSpecificUser(tokenId!!, notification.idData).observe(viewLifecycleOwner) {
+                if (it.code() == 401) {
+                    authViewModel.refreshToken(prefs)
+                        .observe(viewLifecycleOwner) { newAccessToken ->
+                            tokenId = newAccessToken
+                            meViewModel.getSpecificUser(tokenId!!, notification.idData)
+                                .observe(viewLifecycleOwner
+                                ) { userInfoDTO ->
+                                    if (userInfoDTO.isSuccessful) findNavController().navigate(
+                                        NotificationsDirections.actionGlobalProfileElse(4)
+                                            .setUserInfoDTO(it.body())
+                                    )
 
-                            })
-                    })
+                                }
+                        }
                 }
-                if(it.isSuccessful)
-                findNavController().navigate(NotificationsDirections.actionGlobalProfileElse(4).setUserInfoDTO(it.body()))
-            })
+                if (it.isSuccessful)
+                    findNavController().navigate(
+                        NotificationsDirections.actionGlobalProfileElse(4).setUserInfoDTO(it.body())
+                    )
+            }
         }
     }
 

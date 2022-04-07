@@ -673,29 +673,50 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                         listOf(), listOfUsersTagged.filter { userInfoDTO -> mentionHelper.allMentions.contains(userInfoDTO.userName?.replace("\\s".toRegex(), "")?.replace("[^A-Za-z0-9 ]".toRegex(), "") ) }.map { userInfoDTO -> userInfoDTO.id!! },
                         imagesUrl
                     )
-                ).observe(viewLifecycleOwner, {
-                    if(it.code() == 401){
-                        authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { newAccessToken ->
-                            tokenId = newAccessToken
-                            commentViewModel.postComment(tokenId!!, CommentCreationDTO(userInfoDTO.id!!, args.event?.id!!, comments_edittext.text.toString(), listOf(), listOfUsersTagged.filter { userInfoDTO -> mentionHelper.allMentions.contains(userInfoDTO.userName?.replace("\\s".toRegex(), "")?.replace("[^A-Za-z0-9 ]".toRegex(), "") ) }.map { userInfoDTO -> userInfoDTO.id!! }, imagesUrl)).observe(viewLifecycleOwner, {
-                                newReq -> if(newReq.isSuccessful) {
-                          comments_edittext.clearFocus()
-                        imm.hideSoftInputFromWindow(comments_edittext.windowToken, 0)
-                        comments_edittext.text.clear()
-                        imagesUrl = null
-                                addPicIv.visibility = View.VISIBLE
-                                previewPic.visibility = View.GONE
-                                commentAdapter.refresh()
+                ).observe(viewLifecycleOwner) {
+                    if (it.code() == 401) {
+                        authViewModel.refreshToken(prefs)
+                            .observe(viewLifecycleOwner) { newAccessToken ->
+                                tokenId = newAccessToken
+                                commentViewModel.postComment(
+                                    tokenId!!,
+                                    CommentCreationDTO(
+                                        userInfoDTO.id!!,
+                                        args.event?.id!!,
+                                        comments_edittext.text.toString(),
+                                        listOf(),
+                                        listOfUsersTagged.filter { userInfoDTO ->
+                                            mentionHelper.allMentions.contains(
+                                                userInfoDTO.userName?.replace(
+                                                    "\\s".toRegex(),
+                                                    ""
+                                                )?.replace("[^A-Za-z0-9 ]".toRegex(), "")
+                                            )
+                                        }.map { userInfoDTO -> userInfoDTO.id!! },
+                                        imagesUrl
+                                    )
+                                ).observe(viewLifecycleOwner) { newReq ->
+                                    if (newReq.isSuccessful) {
+                                        comments_edittext.clearFocus()
+                                        imm.hideSoftInputFromWindow(
+                                            comments_edittext.windowToken,
+                                            0
+                                        )
+                                        comments_edittext.text.clear()
+                                        imagesUrl = null
+                                        addPicIv.visibility = View.VISIBLE
+                                        previewPic.visibility = View.GONE
+                                        commentAdapter.refresh()
 
-                                /*lifecycleScope.launch {
-                            commentViewModel.getComments(tokenId!!, args.event?.id!!, prefs)
-                                .collectLatest { data ->
-                                    commentAdapter.submitData(data)
+                                        /*lifecycleScope.launch {
+                                    commentViewModel.getComments(tokenId!!, args.event?.id!!, prefs)
+                                        .collectLatest { data ->
+                                            commentAdapter.submitData(data)
+                                        }
+                                }*/
+                                    }
                                 }
-                        }*/
                             }
-                            })
-                        })
                     }
                     if (it.isSuccessful) {
                         comments_edittext.clearFocus()
@@ -713,7 +734,8 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                                 }
                         }*/
                     }
-                })}}
+                }
+                }}
             timenote_share -> {
                 sendTo.clear()
                 val dial =

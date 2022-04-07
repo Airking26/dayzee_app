@@ -55,7 +55,7 @@ class SynchronizeCalendars(val synchronizeWithGoogleCalendarListener: Synchroniz
                             CalendarContract.Instances.EVENT_ID,
                             CalendarContract.Events.EVENT_LOCATION,
                             CalendarContract.Events.SELF_ATTENDEE_STATUS,
-                            CalendarContract.Events.DESCRIPTION
+                            CalendarContract.Events.DESCRIPTION,
                         ),
                         CalendarContract.Events.CALENDAR_ID + "=" + id,
                         null,

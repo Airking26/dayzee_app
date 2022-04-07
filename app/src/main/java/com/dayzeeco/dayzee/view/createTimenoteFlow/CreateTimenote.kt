@@ -497,7 +497,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
             }
         }
 
-        if (it.title.isBlank()) titleTv.text = getString(R.string.title) else titleTv.text = it.title
+        if (it.title.isBlank()) titleTv.text = getString(R.string.title_create_event) else titleTv.text = it.title
         if (it.location == null || it.location?.address?.address?.isBlank()!!) create_timenote_where_btn.text =
             getString(R.string.where) else create_timenote_where_btn.text = it.location?.address?.address?.plus(
             ", "
@@ -754,7 +754,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
             }
             title_cardview -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 titleError.visibility = View.GONE
-                title(R.string.title)
+                title(R.string.title_create_event)
                 input(
                     inputType = InputType.TYPE_CLASS_TEXT,
                     maxLength = 20,
@@ -996,7 +996,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                                             progressBar.visibility = View.GONE
                                             takeAddPicTv.visibility = View.GONE
                                             hideChooseBackground()
-                                            creationTimenoteViewModel.setTitle(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.title ?: getString(R.string.title))
+                                            creationTimenoteViewModel.setTitle(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.title ?: getString(R.string.title_create_event))
                                         }
 
                                         override fun onCancel() {

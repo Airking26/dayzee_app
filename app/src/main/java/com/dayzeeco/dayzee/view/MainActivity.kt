@@ -14,6 +14,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.*
 import androidx.navigation.NavController
 import androidx.preference.PreferenceManager
@@ -30,7 +31,7 @@ import com.dayzeeco.dayzee.model.UserInfoDTO
 import com.dayzeeco.dayzee.view.homeFlow.Home
 import com.dayzeeco.dayzee.view.homeFlow.HomeDirections
 import com.dayzeeco.dayzee.view.loginFlow.SignupDirections
-import com.dayzeeco.dayzee.viewModel.SwitchToNotifViewModel
+import com.dayzeeco.dayzee.viewModel.*
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.branch.referral.Branch
@@ -45,11 +46,17 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
     private val utils = Utils()
     private lateinit var receiver: BroadcastReceiver
     private lateinit var prefs : SharedPreferences
+    private lateinit var tvm: TimenoteViewModel
+    private lateinit var lvm: LoginViewModel
+    private lateinit var mvm : MeViewModel
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        tvm = ViewModelProvider(this).get(TimenoteViewModel::class.java)
+        lvm = ViewModelProvider(this).get(LoginViewModel::class.java)
+        mvm = ViewModelProvider(this).get(MeViewModel::class.java)
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
         registerNotificationReceiver()
         setupController()
@@ -63,8 +70,22 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
             override fun onReceive(context: Context?, intent: Intent?) {
                 val type = intent?.getIntExtra("type", 0)
                 if(type != 1){
-                    if(type == 0 || type == 6) control.navigate(HomeDirections.actionGlobalDetailedTimenote(1, intent.getParcelableExtra("event")))
-                    else control.navigate(HomeDirections.actionGlobalProfileElse(1).setUserInfoDTO(intent?.getParcelableExtra("user")))
+                    if(type == 0 || type == 6 || type == 7) {
+                        lvm.refreshToken(prefs).observe(this@MainActivity){
+                            tvm.getSpecificTimenote(it!!, intent.getStringExtra("event")!!).observe(this@MainActivity){ i ->
+                                control.navigate(HomeDirections.actionGlobalDetailedTimenote(1, i.body()))
+                            }
+                        }
+
+                    }
+                    else {
+                        lvm.refreshToken(prefs).observe(this@MainActivity){
+                            mvm.getSpecificUser(it!!, intent?.getStringExtra("userID")!!).observe(this@MainActivity){
+                                i -> control.navigate(HomeDirections.actionGlobalProfileElse(1).setUserInfoDTO(i.body()))
+
+                            }
+                        }
+                    }
                 }
             }
         }

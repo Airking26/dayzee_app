@@ -180,23 +180,24 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
                 profile_nbr_followers.text = userInfoDTO?.followers?.toString()
                 profile_nbr_following.text = userInfoDTO?.following?.toString()
 
-        followViewModel.checkUserWaitingApproval(tokenId!!, userInfoDTO?.id!!).observe(viewLifecycleOwner, {
-            if(it.code() == 401){
-                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { newAccessToken ->
+        followViewModel.checkUserWaitingApproval(tokenId!!, userInfoDTO?.id!!).observe(viewLifecycleOwner) {
+            if (it.code() == 401) {
+                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner) { newAccessToken ->
                     tokenId = newAccessToken
-                    followViewModel.followPrivateUser(tokenId!!, userInfoDTO?.id!!).observe(viewLifecycleOwner, { newResp ->
-                        if(it.isSuccessful && it.body()!!)
-                            profile_follow_btn.apply {
-                                setBorderColor(resources.getColor(android.R.color.darker_gray))
-                                setBorderWidth(1)
-                                setText(resources.getString(R.string.pending))
-                                setBackgroundColor(resources.getColor(android.R.color.transparent))
-                                setTextColor(resources.getColor(android.R.color.darker_gray))
-                            }
-                    })
-                })
+                    followViewModel.followPrivateUser(tokenId!!, userInfoDTO?.id!!)
+                        .observe(viewLifecycleOwner) { newResp ->
+                            if (it.isSuccessful && it.body()!!)
+                                profile_follow_btn.apply {
+                                    setBorderColor(resources.getColor(android.R.color.darker_gray))
+                                    setBorderWidth(1)
+                                    setText(resources.getString(R.string.pending))
+                                    setBackgroundColor(resources.getColor(android.R.color.transparent))
+                                    setTextColor(resources.getColor(android.R.color.darker_gray))
+                                }
+                        }
+                }
             } else {
-                if(it.isSuccessful && it.body()!!)
+                if (it.isSuccessful && it.body()!!)
                     profile_follow_btn.apply {
                         setBorderColor(resources.getColor(android.R.color.darker_gray))
                         setBorderWidth(1)
@@ -205,9 +206,9 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
                         setTextColor(resources.getColor(android.R.color.darker_gray))
                     }
             }
-        })
+        }
 
-            if (userInfoDTO?.isInFollowers!!) {
+        if (userInfoDTO?.isInFollowers!!) {
                 profile_follow_btn.apply {
                     setBorderColor(resources.getColor(android.R.color.darker_gray))
                     setBorderWidth(1)

@@ -42,7 +42,7 @@ import com.dayzeeco.dayzee.model.*
 import com.dayzeeco.dayzee.viewModel.*
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.branch.indexing.BranchUniversalObject
@@ -98,7 +98,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
             if(prefs.getBoolean(already_signed_in, false)) loginViewModel.markAsUnauthenticated()
             else loginViewModel.markAsGuest()
         }
-        loginViewModel.getAuthenticationState().observe(requireActivity(), {
+        loginViewModel.getAuthenticationState().observe(requireActivity()) {
             when (it) {
                 LoginViewModel.AuthenticationState.UNAUTHENTICATED -> {
                     findNavController().navigate(HomeDirections.actionGlobalNavigation())
@@ -114,7 +114,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                     onGoToNearby.onGuestMode()
                 }
             }
-        })
+        }
 
     }
 
@@ -148,11 +148,11 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
     @SuppressLint("StringFormatInvalid")
     fun retrieveCurrentRegistrationToken(tokenId: String){
-        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener(OnCompleteListener { task ->
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
             if (task.isSuccessful) {
-                meViewModel.putFCMToken(tokenId, FCMDTO(task.result?.token!!)).observe(this, {
+                meViewModel.putFCMToken(tokenId, FCMDTO(task.result)).observe(this) {
                     if (it.isSuccessful) ""
-                })
+                }
                 return@OnCompleteListener
             }
         })
@@ -259,19 +259,19 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
     }*/
 
     private fun getAlarms() {
-        alarmViewModel.getAlarms(tokenId!!).observe(viewLifecycleOwner, {
+        alarmViewModel.getAlarms(tokenId!!).observe(viewLifecycleOwner) {
             if (it.code() == 401) {
                 loginViewModel.refreshToken(prefs)
-                    .observe(viewLifecycleOwner, { newAccessToken ->
+                    .observe(viewLifecycleOwner) { newAccessToken ->
                         tokenId = newAccessToken
                         alarmViewModel.getAlarms(tokenId!!)
-                            .observe(viewLifecycleOwner, { lst ->
+                            .observe(viewLifecycleOwner) { lst ->
                                 prefs.edit().putString(alarms, Gson().toJson(lst.body())).apply()
-                            })
-                    })
+                            }
+                    }
             }
             prefs.edit().putString(alarms, Gson().toJson(it.body())).apply()
-        })
+        }
     }
 
     @ExperimentalPagingApi

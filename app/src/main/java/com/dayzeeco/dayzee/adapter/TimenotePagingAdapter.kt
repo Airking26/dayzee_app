@@ -306,7 +306,7 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
             itemView.timenote_username_desc.visibility = View.GONE
         } else {
             itemView.timenote_username_desc.visibility = View.VISIBLE
-            val ellipzise = "..."
+            val ellipzise = "...more"
             val ellipsizeClickable = SpannableString(ellipzise)
             val clickalbleEllipsize = object : ClickableSpan(){
                 override fun onClick(widget: View) {
@@ -317,7 +317,7 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
                     ds.isUnderlineText  = false
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                         ds.color = itemView.context.getColor(R.color.colorText)
-                        ds.typeface = Typeface.DEFAULT_BOLD
+                        ds.typeface = Typeface.DEFAULT
                     }
                 }
             }
@@ -333,9 +333,9 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
                     itemView.timenote_username_desc.viewTreeObserver.removeOnGlobalLayoutListener(this)
                     if(itemView.timenote_username_desc.lineCount > 2){
                         val endOfLastLine = itemView.timenote_username_desc.layout.getLineEnd(1)
-                        var descriptionWithEllipsize = TextUtils.concat(itemView.timenote_username_desc.text.subSequence(0, endOfLastLine - 4), ellipsizeClickable)
+                        var descriptionWithEllipsize = TextUtils.concat(itemView.timenote_username_desc.text.subSequence(0, endOfLastLine - 9), ellipsizeClickable)
                         itemView.timenote_username_desc.text = descriptionWithEllipsize
-                    }
+                    } else itemView.timenote_username_desc.text = descriptionFormatted
                 }
 
             })

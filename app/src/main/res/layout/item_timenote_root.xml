@@ -315,7 +315,7 @@
         android:layout_marginTop="8dp"
         android:breakStrategy="simple"
         android:ellipsize="end"
-        android:maxLines="2"
+        android:maxLines="3"
         android:textColor="@color/colorText"
         android:textSize="13sp"
         app:layout_constraintStart_toStartOf="@id/timenote_comment"

@@ -15,7 +15,6 @@ import kotlin.reflect.typeOf
 
 class FirebaseBroadcastReceiver : WakefulBroadcastReceiver() {
 
-    private var notifications: MutableList<Notification> = mutableListOf()
     private lateinit var prefs : SharedPreferences
     val TAG: String = FirebaseBroadcastReceiver::class.java.simpleName
 

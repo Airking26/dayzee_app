@@ -436,7 +436,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
                 if(view != null) nearbyViewModel.fetchLocation(
                     place?.id!!,
                     getString(R.string.api_web_key)
-                ).observe(viewLifecycleOwner, { detailedPlace ->
+                ).observe(viewLifecycleOwner) { detailedPlace ->
                     if (detailedPlace.isSuccessful) nearbyFilterData.setWhere(
                         Utils().setLocation(
                             detailedPlace.body()!!,
@@ -445,7 +445,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
                         )
                     )
                     firstTime = false
-                })
+                }
             }
         }
     }

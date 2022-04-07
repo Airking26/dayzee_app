@@ -40,6 +40,7 @@
     <string name="timenote_visibility">Visibilité des Dayzee</string>
     <string name="others">AUTRES</string>
     <string name="confidentiality_politic">Politique de confidentialité</string>
+    <string name="terms_of_use">Conditions d\'utilisation</string>
     <string name="send_comments">Envoyer un commentaire</string>
     <string name="disconnect">SE DECONNECTER</string>
     <string name="new_timenote">Nouveau Dayzee</string>
@@ -49,9 +50,10 @@
     <string name="to">A</string>
     <string name="where">Où</string>
     <string name="share_with">Partager Avec</string>
-    <string name="category">Catégories</string>
+    <string name="category">Catégorie</string>
     <string name="none">Aucune</string>
     <string name="title">Titre</string>
+    <string name="title_create_event">Titre*</string>
     <string name="preview">Aperçu</string>
     <string name="share_to">Partager</string>
     <string name="filters">Filtres</string>
@@ -413,6 +415,8 @@
     <string name="privacy_policy">Politique de confidentialité</string>
     <string name="create_new_account">CREER UN NOUVEAU COMPTE</string>
     <string name="to_connect">SE CONNECTER</string>
+    <string name="subcategory_needed">Choisissez une sous-catégorie ou effacer la sélection</string>
+    <string name="when_create_event">Quand*</string>
     <plurals name="time_minutes_comment">
         <item quantity="one">%1$d minute</item>
         <item quantity="other">%1$d minutes</item>
@@ -436,6 +440,26 @@
     <plurals name="saved_by_count">
         <item quantity="one">Enregistré par %1$d personne</item>
         <item quantity="other">Enregistré par %1$d personnes</item>
+    </plurals>
+    <plurals name="in_seconds">
+        <item quantity="one">Dans %1$d seconde</item>
+        <item quantity="other">Dans %1$d secondes</item>
+    </plurals>
+    <plurals name="in_minutes">
+        <item quantity="one">Dans %1$d minute</item>
+        <item quantity="other">Dans %1$d minutes</item>
+    </plurals>
+    <plurals name="in_hours">
+        <item quantity="one">Dans %1$d heure</item>
+        <item quantity="other">Dans %1$d heures</item>
+    </plurals>
+    <plurals name="in_days">
+        <item quantity="one">Dans %1$d jour</item>
+        <item quantity="other">Dans %1$d jours</item>
+    </plurals>
+    <plurals name="in_months">
+        <item quantity="one">Dans %1$d mois</item>
+        <item quantity="other">Dans %1$d mois</item>
     </plurals>
     <plurals name="hours_plural_minutes_vary">
         <item quantity="one">Dans %1$d heures et %2$d minute</item>

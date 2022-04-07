@@ -14,7 +14,7 @@ android {
             keyPassword 'Dayzee26!'
         }
     }
-    compileSdkVersion 29
+    compileSdkVersion 32
     buildFeatures {
         viewBinding true
     }
@@ -90,8 +90,8 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1'
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.4.31"
-    implementation 'com.google.firebase:firebase-analytics:18.0.2'
-    implementation 'com.google.firebase:firebase-messaging:21.0.1'
+    implementation 'com.google.firebase:firebase-analytics:20.1.2'
+    implementation 'com.google.firebase:firebase-messaging:23.0.2'
 
     implementation 'com.squareup.retrofit2:retrofit:2.8.1'
 
@@ -147,8 +147,8 @@ dependencies {
 
     implementation "androidx.camera:camera-camera2:1.1.0-alpha02"
     // Kotlin + coroutines
-    implementation "androidx.work:work-runtime-ktx:2.5.0"
     implementation 'com.appsflyer:af-android-sdk:6.3.2'
-    implementation 'com.github.yuriy-budiyev:code-scanner:2.1.2'
+    implementation 'androidx.work:work-runtime-ktx:2.7.1'
+
 
 }
