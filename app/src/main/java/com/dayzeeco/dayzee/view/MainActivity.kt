@@ -3,7 +3,7 @@ package com.dayzeeco.dayzee.view
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.*
-import android.graphics.Bitmap
+import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -14,10 +14,13 @@ import android.view.inputmethod.InputMethodManager
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.*
+import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.preference.PreferenceManager
+import com.amazonaws.auth.CognitoCachingCredentialsProvider
+import com.amazonaws.regions.Regions
+import com.amazonaws.services.s3.AmazonS3Client
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
@@ -31,12 +34,16 @@ import com.dayzeeco.dayzee.model.UserInfoDTO
 import com.dayzeeco.dayzee.view.homeFlow.Home
 import com.dayzeeco.dayzee.view.homeFlow.HomeDirections
 import com.dayzeeco.dayzee.view.loginFlow.SignupDirections
-import com.dayzeeco.dayzee.viewModel.*
+import com.dayzeeco.dayzee.viewModel.LoginViewModel
+import com.dayzeeco.dayzee.viewModel.MeViewModel
+import com.dayzeeco.dayzee.viewModel.SwitchToNotifViewModel
+import com.dayzeeco.dayzee.viewModel.TimenoteViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.branch.referral.Branch
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.reflect.Type
+import java.util.*
 
 
 class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby, ShowBarListener, ExitCreationTimenote, RefreshPicBottomNavListener, GoToProfile, GoToTop {
@@ -49,11 +56,19 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
     private lateinit var tvm: TimenoteViewModel
     private lateinit var lvm: LoginViewModel
     private lateinit var mvm : MeViewModel
+    private lateinit var am : AmazonS3Client
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        am = AmazonS3Client(
+            CognitoCachingCredentialsProvider(
+                this,
+                identity_pool_id, // ID du groupe d'identités
+                Regions.US_EAST_1 // Région
+            )
+        )
         tvm = ViewModelProvider(this).get(TimenoteViewModel::class.java)
         lvm = ViewModelProvider(this).get(LoginViewModel::class.java)
         mvm = ViewModelProvider(this).get(MeViewModel::class.java)
@@ -260,7 +275,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
             bottomNavView.menu[4].iconTintMode = null
         }
 
-        if(userInfoDTO != null) setPicBottomNav(userInfoDTO.picture)
+        if(userInfoDTO != null) setPicBottomNav(userInfoDTO.picture, userInfoDTO.userName)
 
         controller.observe(this, Observer {
             it.addOnDestinationChangedListener { navController, destination, _ ->
@@ -349,7 +364,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
         }
     }
 
-    private fun setPicBottomNav(picture: String?) {
+    private fun setPicBottomNav(picture: String?, userName: String?) {
         if (!picture.isNullOrBlank()) {
             Glide
                 .with(this)
@@ -368,7 +383,9 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
 
                     override fun onLoadCleared(placeholder: Drawable?) {}
                 })
-        } else bottomNavView.menu[4].icon = getDrawable(R.drawable.circle_pic)
+        } else {
+            bottomNavView.menu[4].icon = Utils().determineLetterLogo(userName!!, this)
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -398,8 +415,8 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
         }
     }
 
-    override fun onrefreshPicBottomNav(picture: String?) {
-        setPicBottomNav(picture)
+    override fun onrefreshPicBottomNav(picture: String?, userName: String?) {
+        setPicBottomNav(picture, userName)
     }
 
     override fun goToProfile() {
@@ -411,3 +428,4 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
     }
 
 }
+

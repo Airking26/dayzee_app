@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.dayzeeco.dayzee.R
+import com.dayzeeco.dayzee.common.Utils
 import com.dayzeeco.dayzee.common.bytesEqualTo
 import com.dayzeeco.dayzee.common.pixelsEqualTo
 import com.dayzeeco.dayzee.model.UserInfoDTO
@@ -34,7 +35,9 @@ class UsersTopPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>, pr
             userInfoDTO: UserInfoDTO?,
             searchPeopleListener: SearchPeopleListener) {
 
-                Glide
+            if (userInfoDTO?.picture.isNullOrBlank()){
+                Utils().determineLetterLogo(userInfoDTO?.userName!!, itemView.context)
+            } else Glide
                     .with(itemView)
                     .load(userInfoDTO?.picture)
                     .diskCacheStrategy(DiskCacheStrategy.RESOURCE)

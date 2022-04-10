@@ -1,6 +1,7 @@
 package com.dayzeeco.dayzee.view.homeFlow
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
@@ -196,7 +197,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             this,
             null,
             null,
-            true
+            true, Utils()
         )
 
         detailed_timenote_rv.apply {
@@ -262,7 +263,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         )
         mentionHelper.handle(comments_edittext)
 
-        commentAdapter = CommentPagingAdapter(CommentComparator, this, this, this)
+        commentAdapter = CommentPagingAdapter(CommentComparator, this, this, this, Utils())
 
         detailed_timenote_comments_rv.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -553,37 +554,6 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             timenote_username_desc.text = descriptionFormatted
         }
 
-        /*val username = SpannableStringBuilder(args.event?.createdBy?.userName)
-        username.setSpan(bold, 0, args.event?.createdBy?.userName?.length!!, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
-
-            if (args.event?.hashtags.isNullOrEmpty() && args.event?.description.isNullOrBlank()) {
-                timenote_username_desc.visibility = View.GONE
-            } else if (args.event?.hashtags.isNullOrEmpty() && !args.event?.description.isNullOrBlank()) {
-                val desc = SpannableStringBuilder(args.event?.description)
-                desc.setSpan(light, 0, args.event?.description?.length!!, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
-                timenote_username_desc.text = username.append(" ").append(desc)
-            } else if (!args.event?.hashtags.isNullOrEmpty() && args.event?.description.isNullOrBlank()) {
-                val hashtags =
-                    SpannableStringBuilder(args.event?.hashtags?.joinToString(separator = ""))
-                hashtags.setSpan(bold, 0, hashtags.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
-                timenote_username_desc.text = username.append(" ").append(hashtags)
-            } else {
-                val hashtags =
-                    SpannableStringBuilder(args.event?.hashtags?.joinToString(separator = ""))
-                val completeDesc =
-                    SpannableStringBuilder(args.event?.hashtags?.joinToString(separator = "")).append(
-                        " ${args.event?.description}"
-                    )
-                completeDesc.setSpan(bold, 0, hashtags.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
-                completeDesc.setSpan(
-                    light,
-                    hashtags.length,
-                    completeDesc.toString().length,
-                    Spannable.SPAN_EXCLUSIVE_INCLUSIVE
-                )
-                timenote_username_desc.text = username.append(" ").append(completeDesc)
-            }*/
-
         Glide
             .with(this)
             .load(args.event?.createdBy?.picture)
@@ -618,6 +588,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         detailed_timenote_btn_back.setOnClickListener { findNavController().popBackStack() }
     }
 
+    @SuppressLint("CheckResult")
     @ExperimentalTime
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onClick(v: View?) {
@@ -797,7 +768,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                     sendTo,
                     null,
                     false
-                )
+                    , Utils())
                 recyclerview.layoutManager = LinearLayoutManager(requireContext())
                 recyclerview.adapter = userAdapter
                 lifecycleScope.launch {
@@ -887,7 +858,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                     null,
                     null,
                     false
-                )
+                    , Utils())
                 recyclerview.layoutManager = LinearLayoutManager(requireContext())
                 recyclerview.adapter = userAdapter
                 lifecycleScope.launch {
@@ -1106,6 +1077,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         }
     }
 
+    @SuppressLint("CheckResult")
     private fun createOptionsOnTimenote(context: Context, isMine: Boolean) {
         val listItems: MutableList<String> = if (!isMine) mutableListOf(
             context.getString(R.string.share_to),
@@ -1184,7 +1156,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                             ), object : TypeToken<MutableMap<String, String>>() {}.type
                         ) ?: mutableMapOf()
                         timenoteViewModel.deleteTimenote(tokenId!!, args.event?.id!!)
-                            .observe(viewLifecycleOwner, Observer {
+                            .observe(viewLifecycleOwner) {
                                 if (it.isSuccessful) {
                                     if (map.isNotEmpty() && map.filterValues { id -> id == args.event?.id!! }.keys.isNotEmpty()) {
                                         map.remove(map.filterValues { id -> id == args.event?.id!! }.keys.first())
@@ -1200,12 +1172,12 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                                     findNavController().popBackStack()
                                 } else if (it.code() == 401) {
                                     authViewModel.refreshToken(prefs)
-                                        .observe(viewLifecycleOwner, Observer { newAccessToken ->
+                                        .observe(viewLifecycleOwner) { newAccessToken ->
                                             tokenId = newAccessToken
                                             timenoteViewModel.deleteTimenote(
                                                 tokenId!!,
                                                 args.event?.id!!
-                                            ).observe(viewLifecycleOwner, Observer { tid ->
+                                            ).observe(viewLifecycleOwner) { tid ->
                                                 if (tid.isSuccessful) {
                                                     Toast.makeText(
                                                         requireContext(),
@@ -1221,34 +1193,48 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                                                         Gson().toJson(map)
                                                     ).apply()
                                                 }
-                                            })
-                                        })
+                                            }
+                                        }
                                 }
-                            })
+                            }
                     }
                     context.getString(R.string.hide_post) -> {
-                        timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!, timenote = args.event?.id)).observe(viewLifecycleOwner, {
-                            if(it.code() == 401){
-                                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
-                                    newAccessToken -> tokenId = newAccessToken
-                                    timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!,timenote= args.event?.id)).observe(viewLifecycleOwner, {
+                        timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!, timenote = args.event?.id)).observe(viewLifecycleOwner) {
+                            if (it.code() == 401) {
+                                authViewModel.refreshToken(prefs)
+                                    .observe(viewLifecycleOwner) { newAccessToken ->
+                                        tokenId = newAccessToken
+                                        timenoteHiddedViewModel.hideEventOrUSer(
+                                            tokenId!!,
+                                            TimenoteHiddedCreationDTO(
+                                                createdBy = userInfoDTO.id!!,
+                                                timenote = args.event?.id
+                                            )
+                                        ).observe(viewLifecycleOwner) {
 
-                                    })
-                                })
+                                        }
+                                    }
                             }
-                        })
+                        }
                     }
                     context.getString(R.string.hide_all_posts) -> {
-                        timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!, user = args.event?.createdBy?.id)).observe(viewLifecycleOwner, {
-                            if(it.code() == 401){
-                                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
-                                        newAccessToken -> tokenId = newAccessToken
-                                    timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!,timenote= args.event?.createdBy?.id)).observe(viewLifecycleOwner, {
+                        timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO.id!!, user = args.event?.createdBy?.id)).observe(viewLifecycleOwner) {
+                            if (it.code() == 401) {
+                                authViewModel.refreshToken(prefs)
+                                    .observe(viewLifecycleOwner) { newAccessToken ->
+                                        tokenId = newAccessToken
+                                        timenoteHiddedViewModel.hideEventOrUSer(
+                                            tokenId!!,
+                                            TimenoteHiddedCreationDTO(
+                                                createdBy = userInfoDTO.id!!,
+                                                timenote = args.event?.createdBy?.id
+                                            )
+                                        ).observe(viewLifecycleOwner) {
 
-                                    })
-                                })
+                                        }
+                                    }
                             }
-                        })
+                        }
                     }
                 }
             }
@@ -1314,6 +1300,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         )
     }
 
+    @SuppressLint("CheckResult")
     override fun onCommentMoreClicked(createdBy: String?, commentId: String?) {
         val actionsComment: List<String> =
             if (userInfoDTO.id == createdBy || args.event?.createdBy?.id == userInfoDTO.id) listOf(

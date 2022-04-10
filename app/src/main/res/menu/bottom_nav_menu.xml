@@ -31,6 +31,7 @@
         android:id="@+id/navigation_graph_tab_4"
         android:title=""
         android:icon="@drawable/circle_pic"
+        android:iconTint="@color/colorAccent"
         app:showAsAction="always" />
 
 </menu>

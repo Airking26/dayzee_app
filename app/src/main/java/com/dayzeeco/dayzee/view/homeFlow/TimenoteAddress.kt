@@ -183,7 +183,7 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
             null,
             null,
             false
-        )
+            , Utils())
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
@@ -232,7 +232,7 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
             sendTo,
             null,
             false
-        )
+            , Utils())
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{

@@ -68,7 +68,9 @@ class ItemTimenoteRecentAdapter(private val timenotesToCome: List<TimenoteInfoDT
                     .into(itemView.timenote_recent_pic_imageview)
             }
 
-            Glide
+            if (timenote.createdBy.picture.isNullOrBlank()){
+                itemView.timenote_recent_pic_user_imageview.setImageDrawable(utils.determineLetterLogo(timenote.createdBy.userName!!, itemView.context))
+            } else Glide
                 .with(itemView)
                 .load(timenote.createdBy.picture)
                 .thumbnail(0.1f)

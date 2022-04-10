@@ -181,7 +181,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
     override fun onResume() {
         super.onResume()
         Utils().hideStatusBar(requireActivity())
-        if(!tokenId.isNullOrBlank()) onRefreshPicBottomNavListener.onrefreshPicBottomNav(userInfoDTO?.picture)
+        if(!tokenId.isNullOrBlank()) onRefreshPicBottomNavListener.onrefreshPicBottomNav(userInfoDTO?.picture, userInfoDTO?.userName)
         when(loginViewModel.getAuthenticationState().value){
             LoginViewModel.AuthenticationState.UNAUTHENTICATED -> goBackHome.onBackHome()
         }
@@ -566,7 +566,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
                 null,
                 null,
                 false
-            )
+                , Utils())
             recyclerview.layoutManager = LinearLayoutManager(requireContext())
             recyclerview.adapter = userAdapter
             lifecycleScope.launch {
@@ -778,7 +778,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
             sendTo,
             null,
             false
-        )
+            , Utils())
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch {

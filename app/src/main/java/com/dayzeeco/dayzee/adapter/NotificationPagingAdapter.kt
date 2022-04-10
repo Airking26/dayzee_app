@@ -7,17 +7,17 @@ import androidx.annotation.RequiresApi
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import com.dayzeeco.dayzee.R
-import com.dayzeeco.dayzee.model.CommentInfoDTO
+import com.dayzeeco.dayzee.common.Utils
 import com.dayzeeco.dayzee.model.NotificationInfoDTO
 
-class NotificationPagingAdapter(diffCallback: DiffUtil.ItemCallback<NotificationInfoDTO>, private val notificationClickListener: NotificationAdapter.NotificationClickListener): PagingDataAdapter<NotificationInfoDTO, NotificationAdapter.NotificationViewHolder>(diffCallback) {
+class NotificationPagingAdapter(diffCallback: DiffUtil.ItemCallback<NotificationInfoDTO>, private val notificationClickListener: NotificationAdapter.NotificationClickListener, private val utils: Utils): PagingDataAdapter<NotificationInfoDTO, NotificationAdapter.NotificationViewHolder>(diffCallback) {
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onBindViewHolder(
         holder: NotificationAdapter.NotificationViewHolder,
         position: Int
     ) {
-        holder.bindNotification(getItem(position)!!, notificationClickListener)
+        holder.bindNotification(getItem(position)!!, notificationClickListener, utils)
     }
 
     override fun onCreateViewHolder(

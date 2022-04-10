@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.dayzeeco.dayzee.R
+import com.dayzeeco.dayzee.common.Utils
 import com.dayzeeco.dayzee.common.bytesEqualTo
 import com.dayzeeco.dayzee.common.pixelsEqualTo
 import com.dayzeeco.dayzee.model.TimenoteInfoDTO
@@ -24,7 +25,8 @@ import kotlinx.android.synthetic.main.item_user_hidden.view.*
 class UsersHiddenPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>,
                                val searchPeopleListener: SearchPeopleListener,
                                val hideUnhide: HideUnhide,
-                               private val isTagged: Boolean
+                               private val isTagged: Boolean,
+                               private val utils: Utils
 )
     : PagingDataAdapter<UserInfoDTO, UsersHiddenPagingAdapter.UserViewHolder>(diffCallback){
 
@@ -41,10 +43,13 @@ class UsersHiddenPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>,
             userInfoDTO: UserInfoDTO?,
             searchPeopleListener: SearchPeopleListener,
             acceptDecline: HideUnhide,
-            isTagged: Boolean
+            isTagged: Boolean,
+            utils: Utils
         ) {
 
-                Glide
+            if (userInfoDTO?.picture.isNullOrBlank()){
+                itemView.user_hidden_imageview.setImageDrawable(utils.determineLetterLogo(userInfoDTO?.userName!!, itemView.context))
+            } else Glide
                     .with(itemView)
                     .load(userInfoDTO?.picture)
                     .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
@@ -75,7 +80,7 @@ class UsersHiddenPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>,
     }
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-        holder.bindUser(getItem(position), searchPeopleListener, hideUnhide, isTagged)
+        holder.bindUser(getItem(position), searchPeopleListener, hideUnhide, isTagged, utils)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder =

@@ -108,7 +108,9 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
 
         timenoteListenerListener.onAddMarker(timenote)
 
-        Glide
+        if (timenote.createdBy.picture.isNullOrBlank()){
+            itemView.timenote_pic_user_imageview.setImageDrawable(utils.determineLetterLogo(timenote.createdBy.userName!!, itemView.context))
+        } else Glide
             .with(itemView)
             .load(timenote.createdBy.picture)
             .thumbnail(0.1f)
@@ -149,7 +151,9 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
 
             when (timenote.joinedBy?.users?.size) {
                 1 -> {
-                    Glide
+                    if (timenote.joinedBy.users[0].picture.isNullOrBlank()){
+                        itemView.timenote_pic_participant_three.setImageDrawable(utils.determineLetterLogo(timenote.joinedBy.users[0].userName!!, itemView.context))
+                    } else Glide
                         .with(itemView)
                         .load(timenote.joinedBy.users[0].picture)
                         .thumbnail(0.1f)
@@ -161,7 +165,9 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
                     itemView.timenote_pic_participant_one_rl.visibility = View.GONE
                 }
                 2 -> {
-                    Glide
+                    if (timenote.joinedBy.users[0].picture.isNullOrBlank()){
+                        itemView.timenote_pic_participant_two.setImageDrawable(utils.determineLetterLogo(timenote.joinedBy.users[0].userName!!, itemView.context))
+                    } else Glide
                         .with(itemView)
                         .load(timenote.joinedBy.users[0].picture)
                         .thumbnail(0.1f)
@@ -170,7 +176,9 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
                         .apply(RequestOptions.circleCropTransform())
                         .into(itemView.timenote_pic_participant_two)
 
-                    Glide
+                    if (timenote.joinedBy.users[1].picture.isNullOrBlank()){
+                        itemView.timenote_pic_participant_three.setImageDrawable(utils.determineLetterLogo(timenote.joinedBy.users[1].userName!!, itemView.context))
+                    } else Glide
                         .with(itemView)
                         .load(timenote.joinedBy.users[1].picture)
                         .thumbnail(0.1f)
@@ -181,7 +189,9 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
                     itemView.timenote_pic_participant_one_rl.visibility = View.GONE
                 }
                 else -> {
-                    Glide
+                    if (timenote.joinedBy?.users?.get(0)?.picture.isNullOrBlank()){
+                        itemView.timenote_pic_participant_one.setImageDrawable(utils.determineLetterLogo(timenote.joinedBy?.users?.get(0)?.userName!!, itemView.context))
+                    } else Glide
                         .with(itemView)
                         .load(timenote.joinedBy?.users?.get(0)?.picture)
                         .thumbnail(0.1f)
@@ -190,7 +200,9 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
                         .apply(RequestOptions.circleCropTransform())
                         .into(itemView.timenote_pic_participant_one)
 
-                    Glide
+                    if (timenote.joinedBy?.users?.get(1)?.picture.isNullOrBlank()){
+                        itemView.timenote_pic_participant_two.setImageDrawable(utils.determineLetterLogo(timenote.joinedBy?.users?.get(0)?.userName!!, itemView.context))
+                    } else Glide
                         .with(itemView)
                         .load(timenote.joinedBy?.users?.get(1)?.picture)
                         .thumbnail(0.1f)
@@ -199,7 +211,9 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
                         .apply(RequestOptions.circleCropTransform())
                         .into(itemView.timenote_pic_participant_two)
 
-                    Glide
+                    if (timenote.joinedBy?.users?.get(2)?.picture.isNullOrBlank()){
+                        itemView.timenote_pic_participant_three.setImageDrawable(utils.determineLetterLogo(timenote.joinedBy?.users?.get(0)?.userName!!, itemView.context))
+                    } else Glide
                         .with(itemView)
                         .load(timenote.joinedBy?.users?.get(2)?.picture)
                         .thumbnail(0.1f)

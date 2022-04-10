@@ -227,7 +227,9 @@ class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
                 .into(itemView.profile_item_pic_event_imageview)
         } else if(!event.colorHex.isNullOrBlank() && !event.colorHex.isNullOrEmpty()) itemView.profile_item_pic_event_imageview.setBackgroundColor(Color.parseColor(if(event.colorHex?.contains("#")!!) event.colorHex else "#${event.colorHex}"))
 
-        Glide
+        if (event.createdBy.picture.isNullOrBlank()){
+            itemView.profile_item_pic_profile_imageview.setImageDrawable(utils.determineLetterLogo(event.createdBy.userName!!, itemView.context))
+        } else Glide
             .with(itemView)
             .load(event.createdBy.picture)
             .apply(RequestOptions.circleCropTransform())

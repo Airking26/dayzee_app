@@ -75,6 +75,7 @@ import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
 import io.branch.referral.util.LinkProperties
 import kotlinx.android.synthetic.main.fragment_create_timenote.*
+import kotlinx.android.synthetic.main.fragment_my_profile.*
 import kotlinx.android.synthetic.main.fragment_profil_modify.*
 import java.io.File
 import java.io.FileOutputStream
@@ -284,114 +285,118 @@ class ProfilModify: Fragment(), View.OnClickListener,
             user_info_dto,
             Gson().toJson(profileModifyData.loadProfileModifyModel())
         ).observe(
-            viewLifecycleOwner,
-            {
-                val type: Type = object : TypeToken<UserInfoDTO?>() {}.type
-                profilModifyModel = Gson().fromJson(it, type)
-                setUserInfoDTO(profilModifyModel)
+            viewLifecycleOwner
+        ) {
+            val type: Type = object : TypeToken<UserInfoDTO?>() {}.type
+            profilModifyModel = Gson().fromJson(it, type)
+            setUserInfoDTO(profilModifyModel)
 
-                when {
-                    profilModifyModel.socialMedias.youtube.enabled -> setStateSwitch(
-                        profile_modify_youtube_switch,
-                        profile_modify_facebook_switch,
-                        profile_modify_insta_switch,
-                        profile_modify_whatsapp_switch,
-                        profile_modify_linkedin_switch,
-                        profile_modify_twitter_switch,
-                        profile_modify_discord_switch,
-                        profile_modify_telegram_switch
-                    )
-                    profilModifyModel.socialMedias.facebook.enabled -> setStateSwitch(
-                        profile_modify_facebook_switch,
-                        profile_modify_youtube_switch,
-                        profile_modify_insta_switch,
-                        profile_modify_whatsapp_switch,
-                        profile_modify_linkedin_switch,
-                        profile_modify_twitter_switch,
-                        profile_modify_discord_switch,
-                        profile_modify_telegram_switch
-                    )
-                    profilModifyModel.socialMedias.instagram.enabled -> setStateSwitch(
-                        profile_modify_insta_switch,
-                        profile_modify_facebook_switch,
-                        profile_modify_youtube_switch,
-                        profile_modify_whatsapp_switch,
-                        profile_modify_linkedin_switch,
-                        profile_modify_twitter_switch,
-                        profile_modify_discord_switch,
-                        profile_modify_telegram_switch
-                    )
-                    profilModifyModel.socialMedias.whatsApp.enabled -> setStateSwitch(
-                        profile_modify_whatsapp_switch,
-                        profile_modify_insta_switch,
-                        profile_modify_facebook_switch,
-                        profile_modify_youtube_switch,
-                        profile_modify_linkedin_switch,
-                        profile_modify_twitter_switch,
-                        profile_modify_discord_switch,
-                        profile_modify_telegram_switch
-                    )
-                    profilModifyModel.socialMedias.linkedIn.enabled -> setStateSwitch(
-                        profile_modify_linkedin_switch,
-                        profile_modify_whatsapp_switch,
-                        profile_modify_insta_switch,
-                        profile_modify_facebook_switch,
-                        profile_modify_youtube_switch,
-                        profile_modify_twitter_switch,
-                        profile_modify_discord_switch,
-                        profile_modify_telegram_switch
-                    )
-                    profilModifyModel.socialMedias.twitter.enabled -> setStateSwitch(
-                        profile_modify_twitter_switch,
-                        profile_modify_linkedin_switch,
-                        profile_modify_whatsapp_switch,
-                        profile_modify_insta_switch,
-                        profile_modify_facebook_switch,
-                        profile_modify_youtube_switch,
-                        profile_modify_discord_switch,
-                        profile_modify_telegram_switch
-                    )
-                    profilModifyModel.socialMedias.discord.enabled -> setStateSwitch(
-                        profile_modify_discord_switch,
-                        profile_modify_twitter_switch,
-                        profile_modify_linkedin_switch,
-                        profile_modify_whatsapp_switch,
-                        profile_modify_insta_switch,
-                        profile_modify_facebook_switch,
-                        profile_modify_youtube_switch,
-                        profile_modify_telegram_switch
-                    )
-                    profilModifyModel.socialMedias.telegram.enabled -> setStateSwitch(
-                        profile_modify_telegram_switch,
-                        profile_modify_discord_switch,
-                        profile_modify_twitter_switch,
-                        profile_modify_linkedin_switch,
-                        profile_modify_whatsapp_switch,
-                        profile_modify_insta_switch,
-                        profile_modify_facebook_switch,
-                        profile_modify_youtube_switch,
-                    )
-                    else -> {
-                        profile_modify_youtube_switch.isChecked = false
-                        profile_modify_facebook_switch.isChecked = false
-                        profile_modify_insta_switch.isChecked = false
-                        profile_modify_whatsapp_switch.isChecked = false
-                        profile_modify_linkedin_switch.isChecked = false
-                        profile_modify_twitter_switch.isChecked = false
-                        profile_modify_discord_switch.isChecked = false
-                        profile_modify_telegram_switch.isChecked = false
-                    }
+            when {
+                profilModifyModel.socialMedias.youtube.enabled -> setStateSwitch(
+                    profile_modify_youtube_switch,
+                    profile_modify_facebook_switch,
+                    profile_modify_insta_switch,
+                    profile_modify_whatsapp_switch,
+                    profile_modify_linkedin_switch,
+                    profile_modify_twitter_switch,
+                    profile_modify_discord_switch,
+                    profile_modify_telegram_switch
+                )
+                profilModifyModel.socialMedias.facebook.enabled -> setStateSwitch(
+                    profile_modify_facebook_switch,
+                    profile_modify_youtube_switch,
+                    profile_modify_insta_switch,
+                    profile_modify_whatsapp_switch,
+                    profile_modify_linkedin_switch,
+                    profile_modify_twitter_switch,
+                    profile_modify_discord_switch,
+                    profile_modify_telegram_switch
+                )
+                profilModifyModel.socialMedias.instagram.enabled -> setStateSwitch(
+                    profile_modify_insta_switch,
+                    profile_modify_facebook_switch,
+                    profile_modify_youtube_switch,
+                    profile_modify_whatsapp_switch,
+                    profile_modify_linkedin_switch,
+                    profile_modify_twitter_switch,
+                    profile_modify_discord_switch,
+                    profile_modify_telegram_switch
+                )
+                profilModifyModel.socialMedias.whatsApp.enabled -> setStateSwitch(
+                    profile_modify_whatsapp_switch,
+                    profile_modify_insta_switch,
+                    profile_modify_facebook_switch,
+                    profile_modify_youtube_switch,
+                    profile_modify_linkedin_switch,
+                    profile_modify_twitter_switch,
+                    profile_modify_discord_switch,
+                    profile_modify_telegram_switch
+                )
+                profilModifyModel.socialMedias.linkedIn.enabled -> setStateSwitch(
+                    profile_modify_linkedin_switch,
+                    profile_modify_whatsapp_switch,
+                    profile_modify_insta_switch,
+                    profile_modify_facebook_switch,
+                    profile_modify_youtube_switch,
+                    profile_modify_twitter_switch,
+                    profile_modify_discord_switch,
+                    profile_modify_telegram_switch
+                )
+                profilModifyModel.socialMedias.twitter.enabled -> setStateSwitch(
+                    profile_modify_twitter_switch,
+                    profile_modify_linkedin_switch,
+                    profile_modify_whatsapp_switch,
+                    profile_modify_insta_switch,
+                    profile_modify_facebook_switch,
+                    profile_modify_youtube_switch,
+                    profile_modify_discord_switch,
+                    profile_modify_telegram_switch
+                )
+                profilModifyModel.socialMedias.discord.enabled -> setStateSwitch(
+                    profile_modify_discord_switch,
+                    profile_modify_twitter_switch,
+                    profile_modify_linkedin_switch,
+                    profile_modify_whatsapp_switch,
+                    profile_modify_insta_switch,
+                    profile_modify_facebook_switch,
+                    profile_modify_youtube_switch,
+                    profile_modify_telegram_switch
+                )
+                profilModifyModel.socialMedias.telegram.enabled -> setStateSwitch(
+                    profile_modify_telegram_switch,
+                    profile_modify_discord_switch,
+                    profile_modify_twitter_switch,
+                    profile_modify_linkedin_switch,
+                    profile_modify_whatsapp_switch,
+                    profile_modify_insta_switch,
+                    profile_modify_facebook_switch,
+                    profile_modify_youtube_switch,
+                )
+                else -> {
+                    profile_modify_youtube_switch.isChecked = false
+                    profile_modify_facebook_switch.isChecked = false
+                    profile_modify_insta_switch.isChecked = false
+                    profile_modify_whatsapp_switch.isChecked = false
+                    profile_modify_linkedin_switch.isChecked = false
+                    profile_modify_twitter_switch.isChecked = false
+                    profile_modify_discord_switch.isChecked = false
+                    profile_modify_telegram_switch.isChecked = false
                 }
+            }
 
-                if (prefs.getString(pmtc, "") != Gson().toJson(profileModifyData.loadProfileModifyModel())) {
-                    modifyProfil(profilModifyModel)
-                }
-
-                prefs.edit().putString(
+            if (prefs.getString(
                     pmtc,
-                    Gson().toJson(profileModifyData.loadProfileModifyModel())
-                ).apply()
-            })
+                    ""
+                ) != Gson().toJson(profileModifyData.loadProfileModifyModel())
+            ) {
+                modifyProfil(profilModifyModel)
+            }
+
+            prefs.edit().putString(
+                pmtc,
+                Gson().toJson(profileModifyData.loadProfileModifyModel())
+            ).apply()
+        }
     }
 
     private fun modifyProfil(profilModifyModel: UserInfoDTO) {
@@ -408,23 +413,26 @@ class ProfilModify: Fragment(), View.OnClickListener,
                 if (profilModifyModel.dateFormat == 0) STATUS.PUBLIC.ordinal else STATUS.PRIVATE.ordinal,
                 profilModifyModel.socialMedias
             )
-        ).observe(viewLifecycleOwner, { usr ->
-            if(usr.code() == 401){
-                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { newAccesssToken ->
+        ).observe(viewLifecycleOwner) { usr ->
+            if (usr.code() == 401) {
+                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner) { newAccesssToken ->
                     tokenId = newAccesssToken
                     modifyProfil(profilModifyModel)
-                })
+                }
             }
-            if(usr.isSuccessful) {
-                onRefreshPicBottomNavListener.onrefreshPicBottomNav(usr.body()?.picture)
+            if (usr.isSuccessful) {
+                onRefreshPicBottomNavListener.onrefreshPicBottomNav(usr.body()?.picture, usr.body()?.userName)
                 prefs.edit().putString(user_info_dto, Gson().toJson(usr.body())).apply()
                 prefs.edit().putInt(followers, usr.body()?.followers!!).apply()
                 prefs.edit().putInt(following, usr.body()?.following!!).apply()
             }
-        })
+        }
     }
 
     private fun setUserInfoDTO(profilModifyModel: UserInfoDTO?) {
+        if (profilModifyModel?.picture.isNullOrBlank()){
+            profile_pic_imageview.setImageDrawable(utils.determineLetterLogo(profilModifyModel?.userName!!, requireContext()))
+        } else
         Glide
             .with(this)
             .load(profilModifyModel?.picture)

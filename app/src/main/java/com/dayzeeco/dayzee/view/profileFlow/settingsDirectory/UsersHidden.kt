@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.TimenoteRecentLoadStateAdapter
 import com.dayzeeco.dayzee.adapter.UsersHiddenPagingAdapter
+import com.dayzeeco.dayzee.common.Utils
 import com.dayzeeco.dayzee.common.accessToken
 import com.dayzeeco.dayzee.common.user_info_dto
 import com.dayzeeco.dayzee.model.TimenoteHiddedCreationDTO
@@ -55,7 +56,7 @@ class UsersHidden: Fragment(), UsersHiddenPagingAdapter.HideUnhide,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        usersHiddenPagingAdapter = UsersHiddenPagingAdapter(UsersHiddenPagingAdapter.UserComparator, this, this, false)
+        usersHiddenPagingAdapter = UsersHiddenPagingAdapter(UsersHiddenPagingAdapter.UserComparator, this, this, false, Utils())
         lifecycleScope.launch {
             hiddenViewModel.getUsersHidden(tokenId!!, prefs).collectLatest {
                 usersHiddenPagingAdapter.submitData(it)

@@ -19,6 +19,7 @@ import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.TimenoteLoadStateAdapter
 import com.dayzeeco.dayzee.adapter.UsersPagingAdapter
+import com.dayzeeco.dayzee.common.Utils
 import com.dayzeeco.dayzee.common.user_info_dto
 import com.dayzeeco.dayzee.model.UserInfoDTO
 import com.dayzeeco.dayzee.viewModel.SearchViewModel
@@ -43,6 +44,7 @@ class SearchPeople: Fragment(), UsersPagingAdapter.SearchPeopleListener {
             null,
             null,
             false
+            , Utils()
         )
     }
 

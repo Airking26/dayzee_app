@@ -272,7 +272,7 @@ class TimenoteTAG: Fragment(), TimenoteOptionsListener, View.OnClickListener,
             null,
             null,
             false
-        )
+            , Utils())
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
@@ -321,7 +321,7 @@ class TimenoteTAG: Fragment(), TimenoteOptionsListener, View.OnClickListener,
             sendTo,
             null,
             false
-        )
+            , Utils())
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{

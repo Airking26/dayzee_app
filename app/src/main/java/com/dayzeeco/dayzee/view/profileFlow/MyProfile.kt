@@ -59,15 +59,16 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
     private lateinit var onRefreshPicBottomNavListener: RefreshPicBottomNavListener
     private var locaPref: Int = -1
     private lateinit var onBackHome : BackToHomeListener
+    private val utils: Utils = Utils()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         tokenId = prefs.getString(accessToken, null)
         locaPref = prefs.getInt(location_pref, -1)
-        switchToNotifViewModel.getSwitchNotifLiveData().observe(requireActivity(),
-            { if (it) findNavController().navigate(MyProfileDirections.actionMyProfileToNotifications()) })
-        loginViewModel.getAuthenticationState().observe(requireActivity(), {
+        switchToNotifViewModel.getSwitchNotifLiveData().observe(requireActivity()
+        ) { if (it) findNavController().navigate(MyProfileDirections.actionMyProfileToNotifications()) }
+        loginViewModel.getAuthenticationState().observe(requireActivity()) {
             when (it) {
                 LoginViewModel.AuthenticationState.GUEST -> findNavController().popBackStack(
                     R.id.myProfile,
@@ -91,7 +92,7 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
                     }
                 }
             }
-        })
+        }
     }
 
     override fun onAttach(context: Context) {
@@ -108,68 +109,58 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
             LoginViewModel.AuthenticationState.UNAUTHENTICATED -> onBackHome.onBackHome()
         }
         if (!prefs.getString(accessToken, null).isNullOrBlank()) {
-            onRefreshPicBottomNavListener.onrefreshPicBottomNav(userInfoDTO?.picture)
+            onRefreshPicBottomNavListener.onrefreshPicBottomNav(userInfoDTO?.picture, userInfoDTO?.userName)
 
             notificationViewModel.checkUnreadNotifications(tokenId!!, userInfoDTO?.id!!).observe(
-                viewLifecycleOwner,
-                { resp ->
-                    if (resp.code() == 401) {
-                        loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner,
-                            { refreshedToken ->
-                                tokenId = refreshedToken
-                                notificationViewModel.checkUnreadNotifications(
-                                    tokenId!!,
-                                    userInfoDTO?.id!!
-                                ).observe(
-                                    viewLifecycleOwner,
-                                    { secondResp ->
-                                        if (secondResp.isSuccessful) {
-                                            if (secondResp.body()!!) {
-                                                profile_notif_btn.setImageDrawable(
-                                                    resources.getDrawable(
-                                                        R.drawable.ic_notification_rouge
-                                                    )
-                                                )
-                                            } else profile_notif_btn.setImageDrawable(
-                                                resources.getDrawable(
-                                                    R.drawable.ic_notifications_ok
-                                                )
-                                            )
+                viewLifecycleOwner
+            ) { resp ->
+                if (resp.code() == 401) {
+                    loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner
+                    ) { refreshedToken ->
+                        tokenId = refreshedToken
+                        notificationViewModel.checkUnreadNotifications(
+                            tokenId!!,
+                            userInfoDTO?.id!!
+                        ).observe(
+                            viewLifecycleOwner
+                        ) { secondResp ->
+                            if (secondResp.isSuccessful) {
+                                if (secondResp.body()!!) {
+                                    profile_notif_btn.setImageDrawable(
+                                        resources.getDrawable(
+                                            R.drawable.ic_notification_rouge
+                                        )
+                                    )
+                                } else profile_notif_btn.setImageDrawable(
+                                    resources.getDrawable(
+                                        R.drawable.ic_notifications_ok
+                                    )
+                                )
 
-                                        }
-                                    })
-                            })
-                    } else if (resp.isSuccessful) {
-                        if (resp.body()!!) {
-                            profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_notification_rouge))
-                        } else profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_notifications_ok))
+                            }
+                        }
                     }
-
-                })
-
-            /*prefs.stringLiveData(notifications_saved, Gson().toJson(prefs.getString(notifications_saved, null))).observe(viewLifecycleOwner, {
-                val typeNotification: Type = object : TypeToken<MutableList<Notification?>>() {}.type
-                notifications = Gson().fromJson<MutableList<Notification>>(it, typeNotification) ?: mutableListOf()
-                if(notifications.any { n -> !n.read }){
-                    profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_notification_rouge))
-                } else {
-                    profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_notifications_ok))
+                } else if (resp.isSuccessful) {
+                    if (resp.body()!!) {
+                        profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_notification_rouge))
+                    } else profile_notif_btn.setImageDrawable(resources.getDrawable(R.drawable.ic_notifications_ok))
                 }
-            })*/
+
+            }
 
             switchToDetailedTimenote.getswitchToPreviewDetailedTimenoteViewModel().observe(
-                viewLifecycleOwner,
-                {
-                    if (it) {
-                        findNavController().navigate(
-                            MyProfileDirections.actionGlobalDetailedTimenote(
-                                4,
-                                switchToDetailedTimenote.getTimenoteInfoDTO()
-                            )
+                viewLifecycleOwner
+            ) {
+                if (it) {
+                    findNavController().navigate(
+                        MyProfileDirections.actionGlobalDetailedTimenote(
+                            4,
+                            switchToDetailedTimenote.getTimenoteInfoDTO()
                         )
-                        switchToDetailedTimenote.switchToPreviewDetailedTimenoteViewModel(false)
-                    }
-                })
+                    )
+                    switchToDetailedTimenote.switchToPreviewDetailedTimenoteViewModel(false)
+                }
+            }
             profile_tablayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                 override fun onTabReselected(tab: TabLayout.Tab?) {
                     when (tab?.position) {
@@ -255,6 +246,9 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
             profile_day_name_calendar.text = simpleDateFormatDayName.format(System.currentTimeMillis())
             profile_day_number_calendar.text = simpleDateFormatDayNumber.format(System.currentTimeMillis())
 
+            if (userInfoDTO?.picture.isNullOrBlank()){
+                profile_pic_imageview.setImageDrawable(utils.determineLetterLogo(userInfoDTO?.userName!!, requireContext()))
+            } else
             Glide
                 .with(this)
                 .load(userInfoDTO?.picture)

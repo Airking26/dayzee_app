@@ -221,7 +221,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     override fun onResume() {
         super.onResume()
         isCreatedOffset = false
-        if(!prefs.getString(accessToken, null).isNullOrBlank()) onRefreshPicBottomNavListener.onrefreshPicBottomNav(userInfoDTO.picture)
+        if(!prefs.getString(accessToken, null).isNullOrBlank()) onRefreshPicBottomNavListener.onrefreshPicBottomNav(userInfoDTO.picture, userInfoDTO.userName)
         when(loginViewModel.getAuthenticationState().value){
             LoginViewModel.AuthenticationState.GUEST -> backToHomeListener.onBackHome()
             LoginViewModel.AuthenticationState.UNAUTHENTICATED -> backToHomeListener.onBackHome()
@@ -1177,7 +1177,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
             organizers,
             sendTo,
             createGroup,
-            false
+            false, Utils()
         )
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = userAdapter

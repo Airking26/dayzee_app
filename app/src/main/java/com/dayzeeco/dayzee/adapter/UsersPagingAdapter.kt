@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.dayzeeco.dayzee.R
+import com.dayzeeco.dayzee.common.Utils
 import com.dayzeeco.dayzee.model.TimenoteInfoDTO
 import com.dayzeeco.dayzee.model.UserInfoDTO
 import kotlinx.android.synthetic.main.item_user.view.*
@@ -19,7 +20,8 @@ class UsersPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>,
                          private val searchPeopleListener: SearchPeopleListener,
                          private val mine: Boolean?,
                          val followers: Int?,
-                         private val isTagged: Boolean
+                         private val isTagged: Boolean,
+                         val utils: Utils
 )
     : PagingDataAdapter<UserInfoDTO, UsersPagingAdapter.UserViewHolder>(diffCallback){
 
@@ -30,7 +32,7 @@ class UsersPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>,
     }
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-        holder.bindUser(getItem(position), searchPeopleListener, mine, followers, isTagged)
+        holder.bindUser(getItem(position), searchPeopleListener, mine, followers, isTagged, utils)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -52,7 +54,8 @@ class UsersPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>,
             searchPeopleListener: SearchPeopleListener,
             mine: Boolean?,
             followers: Int?,
-            isTagged: Boolean
+            isTagged: Boolean,
+            utils: Utils
         ) {
 
             if(userInfoDTO?.certified!!) itemView.name_user.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_certified_other, 0)
@@ -70,7 +73,9 @@ class UsersPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>,
                 }
             }
 
-            Glide
+            if (userInfoDTO.picture.isNullOrBlank()){
+                itemView.user_imageview.setImageDrawable(utils.determineLetterLogo(userInfoDTO.userName!!, itemView.context))
+            } else Glide
                 .with(itemView)
                 .load(userInfoDTO.picture)
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)

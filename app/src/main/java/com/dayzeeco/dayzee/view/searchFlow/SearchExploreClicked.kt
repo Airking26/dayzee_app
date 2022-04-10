@@ -17,6 +17,7 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.UsersShareWithPagingAdapter
+import com.dayzeeco.dayzee.common.Utils
 import com.dayzeeco.dayzee.common.accessToken
 import com.dayzeeco.dayzee.model.UserInfoDTO
 import com.dayzeeco.dayzee.viewModel.FollowViewModel
@@ -56,6 +57,7 @@ class SearchExploreClicked: Fragment(), UsersShareWithPagingAdapter.AddToSend,
             null,
             null,
             false
+            , Utils()
         )
         search_explore_clicked_rv.apply {
             layoutManager = LinearLayoutManager(requireContext())

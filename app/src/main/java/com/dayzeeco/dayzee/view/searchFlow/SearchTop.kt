@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.dayzeeco.dayzee.BuildConfig.DEBUG
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.SuggestionAdapter
-import com.dayzeeco.dayzee.adapter.UsersTopPagingAdapter
 import com.dayzeeco.dayzee.common.accessToken
 import com.dayzeeco.dayzee.common.list_subcategory_rated
 import com.dayzeeco.dayzee.common.stringLiveData

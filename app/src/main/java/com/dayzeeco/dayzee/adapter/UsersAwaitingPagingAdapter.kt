@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.dayzeeco.dayzee.R
+import com.dayzeeco.dayzee.common.Utils
 import com.dayzeeco.dayzee.model.TimenoteInfoDTO
 import com.dayzeeco.dayzee.model.UserInfoDTO
 import kotlinx.android.synthetic.main.item_user.view.givenName
@@ -21,7 +22,8 @@ class UsersAwaitingPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO
                                  val timenoteInfoDTO: TimenoteInfoDTO?,
                                  val searchPeopleListener: SearchPeopleListener,
                                  val acceptDecline: AcceptDecline,
-                                 private val isTagged: Boolean
+                                 private val isTagged: Boolean,
+                                 private val utils: Utils
 )
     : PagingDataAdapter<UserInfoDTO, UsersAwaitingPagingAdapter.UserViewHolder>(diffCallback){
 
@@ -40,10 +42,13 @@ class UsersAwaitingPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO
             searchPeopleListener: SearchPeopleListener,
             acceptDecline: AcceptDecline,
             position: Int,
-            isTagged: Boolean
+            isTagged: Boolean,
+            utils: Utils
         ) {
 
-                Glide
+            if (userInfoDTO?.picture.isNullOrBlank()){
+                itemView.user_imageview.setImageDrawable(utils.determineLetterLogo(userInfoDTO?.userName!!, itemView.context))
+            } else Glide
                     .with(itemView)
                     .load(userInfoDTO?.picture)
                     .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
@@ -66,7 +71,7 @@ class UsersAwaitingPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO
     }
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-        holder.bindUser(getItem(position), searchPeopleListener, acceptDecline, position, isTagged)
+        holder.bindUser(getItem(position), searchPeopleListener, acceptDecline, position, isTagged, utils)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder =

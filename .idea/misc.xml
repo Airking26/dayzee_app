@@ -8,11 +8,16 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable/ic_a.xml" value="0.1755" />
+        <entry key="app/src/main/res/drawable/ic_b.xml" value="0.244" />
+        <entry key="app/src/main/res/layout-sw480dp/activity_main.xml" value="0.1" />
         <entry key="app/src/main/res/layout-sw480dp/fragment_nearby_filters.xml" value="0.27867590454195534" />
         <entry key="app/src/main/res/layout-sw480dp/fragment_qr_code.xml" value="0.1" />
         <entry key="app/src/main/res/layout-sw480dp/fragment_settings.xml" value="0.2828125" />
         <entry key="app/src/main/res/layout-sw480dp/item_comment_pic.xml" value="0.27867590454195534" />
         <entry key="app/src/main/res/layout-sw480dp/item_timenote_root.xml" value="0.27867590454195534" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.240234375" />
+        <entry key="app/src/main/res/layout/custom_layout.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_create_account.xml" value="0.12361111111111112" />
         <entry key="app/src/main/res/layout/fragment_create_timenote.xml" value="0.27867590454195534" />
         <entry key="app/src/main/res/layout/fragment_nearby_filters.xml" value="0.165" />
@@ -22,6 +27,7 @@
         <entry key="app/src/main/res/layout/item_comment_pic.xml" value="0.27867590454195534" />
         <entry key="app/src/main/res/layout/item_timenote.xml" value="0.27867590454195534" />
         <entry key="app/src/main/res/layout/item_timenote_root.xml" value="0.27867590454195534" />
+        <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.240234375" />
       </map>
     </option>
   </component>

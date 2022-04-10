@@ -138,7 +138,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                     loadUpcomingData()
             tokenId = prefs.getString(accessToken, null)
             retrieveCurrentRegistrationToken(prefs.getString(accessToken, null)!!)
-            onRefreshPicBottomNavListener.onrefreshPicBottomNav(userInfoDTO.picture)
+            onRefreshPicBottomNavListener.onrefreshPicBottomNav(userInfoDTO.picture, userInfoDTO.userName)
         }
 
         when(loginViewModel.getAuthenticationState().value){
@@ -203,60 +203,6 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         }
 
     }
-
-    /*private fun changePasswordTemporary() {
-        prefs.booleanLiveData(temporary_password, false).observe(viewLifecycleOwner, Observer {
-            if (it) {
-                MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                    cancelOnTouchOutside(false)
-                    cancelable(false)
-                    title(R.string.update_temporary_password)
-                    message(R.string.cant_start_with_password)
-                    input(hintRes = R.string.new_password, inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD) { _, newPassword ->
-                        MaterialDialog(
-                            requireContext(),
-                            BottomSheet(LayoutMode.WRAP_CONTENT)
-                        ).show {
-                            cancelOnTouchOutside(false)
-                            cancelable(false)
-                            title(R.string.update_temporary_password)
-                            message(R.string.cant_start_with_password)
-                            input(hintRes = R.string.new_password_again, inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD) { _, newPasswordAgain ->
-                                if (newPassword.toString() == newPasswordAgain.toString()) {
-                                    meViewModel.changePassword(tokenId!!, newPasswordAgain.toString()).observe(viewLifecycleOwner,
-                                        { rsp ->
-                                            if (rsp.code() == 401) {
-                                                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner,
-                                                    { newToken ->
-                                                            tokenId = newToken
-                                                            meViewModel.changePassword(tokenId!!, newPasswordAgain.toString()).observe(viewLifecycleOwner,
-                                                                { resp ->
-                                                                    if (resp.isSuccessful) {
-                                                                        prefs.edit().putBoolean(
-                                                                            temporary_password, false).apply()
-                                                                        Toast.makeText(requireContext(), getString(R.string.password_changed_successfully), Toast.LENGTH_SHORT).show()
-                                                                    } else {
-                                                                        changePasswordTemporary()
-                                                                    }
-                                                                })
-                                                        })
-                                            }
-
-                                            if (rsp.isSuccessful) {
-                                                prefs.edit().putBoolean(temporary_password, false).apply()
-                                                Toast.makeText(requireContext(), getString(R.string.password_changed_successfully), Toast.LENGTH_SHORT).show()
-                                            } else changePasswordTemporary()
-                                        })
-                                }
-                            }
-                            lifecycleOwner(this@Home)
-                        }
-                    }
-                    lifecycleOwner(this@Home)
-                }
-            }
-        })
-    }*/
 
     private fun getAlarms() {
         alarmViewModel.getAlarms(tokenId!!).observe(viewLifecycleOwner) {
@@ -477,7 +423,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
             null,
             null,
             false
-        )
+            , Utils())
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
@@ -495,6 +441,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         findNavController().navigate(HomeDirections.actionGlobalDetailedTimenote(1, event))
     }
 
+    @SuppressLint("CheckResult")
     override fun onReportClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
             title(text = resources.getString(R.string.choose_a_reason))
@@ -586,10 +533,10 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                 timenoteInfoDTO.id,
                 reason
             )
-        ).observe(viewLifecycleOwner, {
+        ).observe(viewLifecycleOwner) {
             if (it.code() == 401) {
                 loginViewModel.refreshToken(prefs)
-                    .observe(viewLifecycleOwner, { newAccessToken ->
+                    .observe(viewLifecycleOwner) { newAccessToken ->
                         tokenId = newAccessToken
                         timenoteViewModel.signalTimenote(
                             tokenId!!,
@@ -598,15 +545,15 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                                 timenoteInfoDTO.id,
                                 reason
                             )
-                        ).observe(viewLifecycleOwner,
-                            { rsp ->
-                                if (rsp.isSuccessful) Toast.makeText(
-                                    requireContext(),
-                                    getString(R.string.reported),
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            })
-                    })
+                        ).observe(viewLifecycleOwner
+                        ) { rsp ->
+                            if (rsp.isSuccessful) Toast.makeText(
+                                requireContext(),
+                                getString(R.string.reported),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
             }
 
             if (it.isSuccessful) Toast.makeText(
@@ -614,7 +561,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                 getString(R.string.reported),
                 Toast.LENGTH_SHORT
             ).show()
-        })
+        }
     }
 
     override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO, type: Int) {
@@ -751,7 +698,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
             sendTo,
             null,
             false
-        )
+            , Utils())
         recyclerview.layoutManager = LinearLayoutManager(requireContext())
         recyclerview.adapter = userAdapter
         lifecycleScope.launch{
@@ -803,27 +750,27 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                 createdBy = userInfoDTO.id!!,
                 timenote = timenoteInfoDTO.id
             )
-        ).observe(viewLifecycleOwner, {
+        ).observe(viewLifecycleOwner) {
             if (it.code() == 401) {
-                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { newAccessToken ->
+                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner) { newAccessToken ->
                     tokenId = newAccessToken
                     timenoteHiddedViewModel.hideEventOrUSer(
                         tokenId!!, TimenoteHiddedCreationDTO(
                             createdBy = userInfoDTO.id!!,
                             timenote = timenoteInfoDTO.id
                         )
-                    ).observe(viewLifecycleOwner, { nr ->
+                    ).observe(viewLifecycleOwner) { nr ->
                         if (nr.isSuccessful) {
                             timenotePagingAdapter?.refresh()
                             timenoteRecentPagingAdapter?.refresh()
                         }
-                    })
-                })
+                    }
+                }
             } else if (it.isSuccessful) {
                 timenotePagingAdapter?.refresh()
                 timenoteRecentPagingAdapter?.refresh()
             }
-        })
+        }
     }
 
     override fun onHideUserClicked(timenoteInfoDTO: TimenoteInfoDTO, position: Int) {
@@ -832,27 +779,27 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                 createdBy = userInfoDTO.id!!,
                 user = timenoteInfoDTO.createdBy.id
             )
-        ).observe(viewLifecycleOwner, {
+        ).observe(viewLifecycleOwner) {
             if (it.code() == 401) {
-                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { newAccessToken ->
+                loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner) { newAccessToken ->
                     tokenId = newAccessToken
                     timenoteHiddedViewModel.hideEventOrUSer(
                         tokenId!!, TimenoteHiddedCreationDTO(
                             createdBy = userInfoDTO.id!!,
                             user = timenoteInfoDTO.createdBy.id
                         )
-                    ).observe(viewLifecycleOwner, { nr ->
+                    ).observe(viewLifecycleOwner) { nr ->
                         if (nr.isSuccessful) {
                             timenotePagingAdapter?.refresh()
                             timenoteRecentPagingAdapter?.refresh()
                         }
-                    })
-                })
+                    }
+                }
             } else if (it.isSuccessful) {
                 timenotePagingAdapter?.refresh()
                 timenoteRecentPagingAdapter?.refresh()
             }
-        })
+        }
     }
 
     override fun onAdd(userInfoDTO: UserInfoDTO, createGroup: Int?) {
@@ -890,20 +837,20 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                     }
                 } else if (it.code() == 401) {
                     loginViewModel.refreshToken(prefs)
-                        .observe(viewLifecycleOwner, { newAccessToken ->
+                        .observe(viewLifecycleOwner) { newAccessToken ->
                             tokenId = newAccessToken
                             timenoteViewModel.deleteTimenote(tokenId!!, timenoteInfoDTO.id).observe(
-                                viewLifecycleOwner,
-                                Observer { tid ->
-                                    if (tid.isSuccessful) timenotePagingAdapter?.refresh()
-                                    if (map.isNotEmpty() && map.filterValues { id -> id == timenoteInfoDTO.id }.keys.isNotEmpty()) {
-                                        map.remove(map.filterValues { id -> id == timenoteInfoDTO.id }.keys.first())
-                                        prefs.edit()
-                                            .putString(map_event_id_to_timenote, Gson().toJson(map))
-                                            .apply()
-                                    }
-                                })
-                        })
+                                viewLifecycleOwner
+                            ) { tid ->
+                                if (tid.isSuccessful) timenotePagingAdapter?.refresh()
+                                if (map.isNotEmpty() && map.filterValues { id -> id == timenoteInfoDTO.id }.keys.isNotEmpty()) {
+                                    map.remove(map.filterValues { id -> id == timenoteInfoDTO.id }.keys.first())
+                                    prefs.edit()
+                                        .putString(map_event_id_to_timenote, Gson().toJson(map))
+                                        .apply()
+                                }
+                            }
+                        }
                 }
             })
     }

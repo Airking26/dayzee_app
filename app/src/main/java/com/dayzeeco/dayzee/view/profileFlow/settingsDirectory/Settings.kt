@@ -438,7 +438,7 @@ class Settings : Fragment(), View.OnClickListener, SynchronizeWithGoogleCalendar
                     withContext(Dispatchers.IO) {
                         prefs.edit().clear().apply()
                         prefs.edit().putBoolean(already_signed_in, true).apply()
-                        onRefreshPicBottomNavListener.onrefreshPicBottomNav(null)
+                        onRefreshPicBottomNavListener.onrefreshPicBottomNav(null, "")
                         FirebaseMessaging.getInstance().deleteToken()
                         loginViewModel.markAsDisconnected()
                     }

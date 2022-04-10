@@ -78,6 +78,7 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
     private var showFilterBarPastEvents = false
     private var locaPref: Int = -1
     private var isDetailShown : Boolean = true
+    private val utils: Utils = Utils()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,7 +103,9 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
             profile_day_name_calendar.text = simpleDateFormatDayName.format(System.currentTimeMillis())
             profile_day_number_calendar.text = simpleDateFormatDayNumber.format(System.currentTimeMillis())
 
-            Glide
+        if (userInfoDTO?.picture.isNullOrBlank()){
+            profile_pic_imageview.setImageDrawable(utils.determineLetterLogo(userInfoDTO?.userName!!, requireContext()))
+        } else Glide
                 .with(this)
                 .load(userInfoDTO?.picture)
                 .apply(RequestOptions.circleCropTransform())

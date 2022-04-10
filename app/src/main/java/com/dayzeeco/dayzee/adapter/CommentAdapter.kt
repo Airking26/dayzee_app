@@ -1,20 +1,18 @@
 package com.dayzeeco.dayzee.adapter
 
 import android.graphics.Typeface
-import android.media.Image
 import android.os.Build
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.dayzeeco.dayzee.R
-import com.dayzeeco.dayzee.common.MentionHelper
 import com.dayzeeco.dayzee.common.MentionHelperComment
+import com.dayzeeco.dayzee.common.Utils
 import com.dayzeeco.dayzee.model.CommentInfoDTO
 import com.dayzeeco.dayzee.model.UserInfoDTO
 import com.stfalcon.imageviewer.StfalconImageViewer
@@ -29,7 +27,8 @@ class CommentAdapter(
     private val comments: List<CommentInfoDTO>,
     private val commentPicUserListener: CommentPicUserListener,
     private val commentMoreListener: CommentMoreListener,
-    private val userTaggedListener: UserTaggedListener
+    private val userTaggedListener: UserTaggedListener,
+    private val utils: Utils
 ) :
     RecyclerView.Adapter<CommentAdapter.CommentViewHolder>() {
 
@@ -57,7 +56,7 @@ class CommentAdapter(
     override fun getItemCount(): Int = comments.size
 
     override fun onBindViewHolder(holder: CommentViewHolder, position: Int) {
-        holder.bindComment(comments[position], commentPicUserListener, commentMoreListener, userTaggedListener)
+        holder.bindComment(comments[position], commentPicUserListener, commentMoreListener, userTaggedListener, utils)
     }
 
     class CommentViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
@@ -66,13 +65,16 @@ class CommentAdapter(
             commentModel: CommentInfoDTO,
             commentPicUserListener: CommentPicUserListener,
             commentMoreListener: CommentMoreListener,
-            userTaggedListener: UserTaggedListener
+            userTaggedListener: UserTaggedListener,
+            utils: Utils
         ) {
 
             if(commentModel.createdBy.certified!!) itemView.comment_certified.visibility = View.VISIBLE
             else itemView.comment_certified.visibility = View.GONE
 
-            Glide
+            if (commentModel.picture.isNullOrBlank()){
+                itemView.comment_user_pic_imageview.setImageDrawable(utils.determineLetterLogo(commentModel.createdBy.userName!!, itemView.context))
+            } else Glide
                 .with(itemView)
                 .load(commentModel.createdBy.picture)
                 .apply(RequestOptions.circleCropTransform())

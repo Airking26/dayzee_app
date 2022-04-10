@@ -17,6 +17,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
@@ -49,6 +50,7 @@ import kotlin.time.ExperimentalTime
 
 class Utils {
 
+    @SuppressLint("CheckResult")
     fun createWebSearchDialog(
         context: Context,
         webSearchViewModel: WebSearchViewModel,
@@ -126,6 +128,38 @@ class Utils {
 
     fun hideStatusBar(activity: Activity){
         activity.window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_IMMERSIVE
+    }
+
+    fun determineLetterLogo(name : String, context: Context): Drawable?{
+        when(name.first().toLowerCase()){
+            'a' -> return ResourcesCompat.getDrawable(context.resources, R.drawable.ic_a, null)
+            'b' -> return ResourcesCompat.getDrawable(context.resources, R.drawable.ic_b, null)
+            'c' -> return ResourcesCompat.getDrawable(context.resources, R.drawable.ic_c, null)
+            'd' -> return ResourcesCompat.getDrawable(context.resources, R.drawable.ic_d, null)
+            'e' -> return ResourcesCompat.getDrawable(context.resources, R.drawable.ic_e, null)
+            'f' -> return ResourcesCompat.getDrawable(context.resources, R.drawable.ic_f, null)
+            'g' -> return ResourcesCompat.getDrawable(context.resources, R.drawable.ic_g, null)
+            'h' -> return ResourcesCompat.getDrawable(context.resources, R.drawable.ic_h, null)
+            'i' -> return ResourcesCompat.getDrawable(context.resources, R.drawable.ic_i, null)
+            'j' -> return ResourcesCompat.getDrawable(context.resources, R.drawable.ic_j, null)
+            'k' -> return ResourcesCompat.getDrawable(context.resources, R.drawable.ic_k, null)
+            'l' -> return ResourcesCompat.getDrawable(context.resources, R.drawable.ic_l, null)
+            'm' -> return ResourcesCompat.getDrawable(context.resources, R.drawable.ic_m, null)
+            'n' -> return ResourcesCompat.getDrawable(context.resources, R.drawable.ic_n, null)
+            'o' -> return ResourcesCompat.getDrawable(context.resources, R.drawable.ic_o, null)
+            'p' -> return ResourcesCompat.getDrawable(context.resources, R.drawable.ic_p, null)
+            'q' -> return ResourcesCompat.getDrawable(context.resources, R.drawable.ic_q, null)
+            'r' -> return ResourcesCompat.getDrawable(context.resources, R.drawable.ic_r, null)
+            's' -> return ResourcesCompat.getDrawable(context.resources, R.drawable.ic_s, null)
+            't' -> return ResourcesCompat.getDrawable(context.resources, R.drawable.ic_t, null)
+            'u' -> return ResourcesCompat.getDrawable(context.resources, R.drawable.ic_u, null)
+            'v' -> return ResourcesCompat.getDrawable(context.resources, R.drawable.ic_v, null)
+            'w' -> return ResourcesCompat.getDrawable(context.resources, R.drawable.ic_w, null)
+            'x' -> return ResourcesCompat.getDrawable(context.resources, R.drawable.ic_x, null)
+            'y' -> return ResourcesCompat.getDrawable(context.resources, R.drawable.ic_y, null)
+            'z' -> return ResourcesCompat.getDrawable(context.resources, R.drawable.ic_z, null)
+            else -> return ResourcesCompat.getDrawable(context.resources, R.drawable.ic_pi, null)
+        }
     }
 
     @SuppressLint("InlinedApi")
@@ -873,12 +907,3 @@ fun Bitmap.toPixels() = IntArray(width * height).apply { getPixels(
     width,
     height
 ) }
-
-fun getSafeSubstring(s: String, maxLength: Int): String? {
-    if (!TextUtils.isEmpty(s)) {
-        if (s.length >= maxLength) {
-            return s.substring(0, maxLength).plus("...")
-        }
-    }
-    return s
-}

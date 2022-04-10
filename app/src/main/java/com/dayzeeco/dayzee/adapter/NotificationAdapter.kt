@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.dayzeeco.dayzee.R
+import com.dayzeeco.dayzee.common.Utils
 import com.dayzeeco.dayzee.model.NotificationInfoDTO
 import com.dayzeeco.dayzee.model.TypeOfNotification
 import kotlinx.android.synthetic.main.item_notification.view.*
@@ -21,7 +22,8 @@ import java.util.*
 
 class NotificationAdapter(
     private val notifications: MutableList<NotificationInfoDTO>,
-    private val notificationClickListener: NotificationClickListener
+    private val notificationClickListener: NotificationClickListener,
+    private val utils: Utils
 ): RecyclerView.Adapter<NotificationAdapter.NotificationViewHolder>() {
 
     interface NotificationClickListener{
@@ -44,7 +46,8 @@ class NotificationAdapter(
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onBindViewHolder(holder: NotificationViewHolder, position: Int) = holder.bindNotification(
         notifications[position],
-        notificationClickListener
+        notificationClickListener,
+        utils
     )
 
     class NotificationViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
@@ -52,7 +55,8 @@ class NotificationAdapter(
         @RequiresApi(Build.VERSION_CODES.M)
         fun bindNotification(
             notification: NotificationInfoDTO,
-            notificationClickListener: NotificationClickListener
+            notificationClickListener: NotificationClickListener,
+            utils: Utils
         ) {
 
             if(notification.type == TypeOfNotification.ASKEDTOFOLLOW.ordinal){
@@ -74,12 +78,9 @@ class NotificationAdapter(
                 )
             }
 
-            if(notification.type == 1) itemView.notification_user_pic_imageview.setImageDrawable(
-                itemView.resources.getDrawable(
-                    R.drawable.ic_baseline_notifications_active_24
-                )
-            )
-            else Glide
+            if (notification.picture.isNullOrBlank()){
+                itemView.notification_user_pic_imageview.setImageDrawable(utils.determineLetterLogo(notification.username, itemView.context))
+            } else Glide
                 .with(itemView)
                 .load(notification.picture)
                 .apply(RequestOptions.circleCropTransform())

@@ -5,13 +5,15 @@ import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import com.dayzeeco.dayzee.R
+import com.dayzeeco.dayzee.common.Utils
 import com.dayzeeco.dayzee.model.CommentInfoDTO
 
 class CommentPagingAdapter(
     diffCallback: DiffUtil.ItemCallback<CommentInfoDTO>,
     private val commentPicUserListener: CommentAdapter.CommentPicUserListener,
     private val commentMoreListener: CommentAdapter.CommentMoreListener,
-    private val userTaggedListener: CommentAdapter.UserTaggedListener) :
+    private val userTaggedListener: CommentAdapter.UserTaggedListener,
+    private val utils: Utils) :
     PagingDataAdapter<CommentInfoDTO, CommentAdapter.CommentViewHolder>(diffCallback) {
 
     override fun onBindViewHolder(holder: CommentAdapter.CommentViewHolder, position: Int) {
@@ -19,7 +21,8 @@ class CommentPagingAdapter(
             getItem(position)!!,
             commentPicUserListener,
             commentMoreListener,
-            userTaggedListener
+            userTaggedListener,
+            utils
         )
     }
 

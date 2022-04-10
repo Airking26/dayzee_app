@@ -21,6 +21,7 @@ import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.UsersAwaitingPagingAdapter
 import com.dayzeeco.dayzee.adapter.UsersPagingAdapter
 import com.dayzeeco.dayzee.adapter.UsersShareWithPagingAdapter
+import com.dayzeeco.dayzee.common.Utils
 import com.dayzeeco.dayzee.common.accessToken
 import com.dayzeeco.dayzee.common.user_info_dto
 import com.dayzeeco.dayzee.listeners.GoToProfile
@@ -71,7 +72,7 @@ class FollowPage : Fragment(), UsersPagingAdapter.SearchPeopleListener,
         }
 
         if(args.followers == 0 || args.followers == 1 || args.followers == 3){
-        usersPagingAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, null,this, args.isNotMine, args.followers, false)
+        usersPagingAdapter = UsersPagingAdapter(UsersPagingAdapter.UserComparator, null,this, args.isNotMine, args.followers, false, Utils())
         users_rv.layoutManager = LinearLayoutManager(requireContext())
         users_rv.adapter = usersPagingAdapter
             if(args.followers == 3) {
@@ -88,7 +89,7 @@ class FollowPage : Fragment(), UsersPagingAdapter.SearchPeopleListener,
                 }
             }
         } else if(args.followers == 2) {
-            usersAwaitingPagingAdapter = UsersAwaitingPagingAdapter(UsersShareWithPagingAdapter.UserComparator, null, this, this, false)
+            usersAwaitingPagingAdapter = UsersAwaitingPagingAdapter(UsersShareWithPagingAdapter.UserComparator, null, this, this, false, Utils())
             users_rv.layoutManager = LinearLayoutManager(requireContext())
             users_rv.adapter = usersAwaitingPagingAdapter
             if(args.followers == 2){

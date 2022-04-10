@@ -23,6 +23,7 @@ import com.dayzeeco.dayzee.adapter.NotificationAdapter
 import com.dayzeeco.dayzee.adapter.NotificationComparator
 import com.dayzeeco.dayzee.adapter.NotificationPagingAdapter
 import com.dayzeeco.dayzee.adapter.TimenoteLoadStateAdapter
+import com.dayzeeco.dayzee.common.Utils
 import com.dayzeeco.dayzee.common.accessToken
 import com.dayzeeco.dayzee.common.user_info_dto
 import com.dayzeeco.dayzee.model.NotificationInfoDTO
@@ -58,7 +59,7 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
         val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type
         userInfoDTO = Gson().fromJson<UserInfoDTO>(prefs.getString(user_info_dto, ""), typeUserInfo)
 
-            notificationAdapter = NotificationPagingAdapter(NotificationComparator, this)
+            notificationAdapter = NotificationPagingAdapter(NotificationComparator, this, Utils())
 
             notifications_rv.apply {
                 layoutManager = LinearLayoutManager(requireContext())
@@ -132,69 +133,79 @@ class Notifications : Fragment(), NotificationAdapter.NotificationClickListener 
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onAcceptedRequestClicked(notification: NotificationInfoDTO) {
-        followViewModel.acceptFollowingRequest(tokenId!!, notification.idData).observe(viewLifecycleOwner,
-            {
-                if(it.code() == 401){
-                    authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { newAccessToken ->
-                        tokenId = newAccessToken
-                        followViewModel.acceptFollowingRequest(tokenId!!, notification.idData).observe(viewLifecycleOwner,
-                            { userInfoDTO ->
-                                if(userInfoDTO.isSuccessful) {
-                                    notificationViewModel.deleteNotification(tokenId!!, notification.id).observe(viewLifecycleOwner,
-                                        { rd ->
-                                            if(rd.isSuccessful) {
-                                                notificationAdapter.notifyDataSetChanged()
-                                                notificationAdapter.refresh()
-                                            }
-                                        })
+        followViewModel.acceptFollowingRequest(tokenId!!, notification.idData).observe(viewLifecycleOwner
+        ) {
+            if (it.code() == 401) {
+                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner) { newAccessToken ->
+                    tokenId = newAccessToken
+                    followViewModel.acceptFollowingRequest(tokenId!!, notification.idData)
+                        .observe(viewLifecycleOwner
+                        ) { userInfoDTO ->
+                            if (userInfoDTO.isSuccessful) {
+                                notificationViewModel.deleteNotification(
+                                    tokenId!!,
+                                    notification.id
+                                ).observe(viewLifecycleOwner
+                                ) { rd ->
+                                    if (rd.isSuccessful) {
+                                        notificationAdapter.notifyDataSetChanged()
+                                        notificationAdapter.refresh()
+                                    }
                                 }
-                            })
-                    })
+                            }
+                        }
                 }
-                if(it.isSuccessful) {
-                    notificationViewModel.deleteNotification(tokenId!!, notification.id).observe(viewLifecycleOwner, {
-                            rd -> if(rd.isSuccessful) notificationAdapter.notifyDataSetChanged()
-                    })
-                    Thread.sleep(5000)
-                    notificationAdapter.notifyDataSetChanged()
-                    notificationAdapter.refresh()
-                }
+            }
+            if (it.isSuccessful) {
+                notificationViewModel.deleteNotification(tokenId!!, notification.id)
+                    .observe(viewLifecycleOwner) { rd ->
+                        if (rd.isSuccessful) notificationAdapter.notifyDataSetChanged()
+                    }
+                Thread.sleep(5000)
+                notificationAdapter.notifyDataSetChanged()
+                notificationAdapter.refresh()
+            }
 
-            })
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onDeclinedRequestClicked(notification: NotificationInfoDTO) {
-        followViewModel.declineFollowingRequest(tokenId!!, notification.idData).observe(viewLifecycleOwner,
-            {
-                if(it.code() == 401){
-                    authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { newAccessToken ->
-                        tokenId = newAccessToken
-                        followViewModel.declineFollowingRequest(tokenId!!, notification.idData).observe(viewLifecycleOwner,
-                            { userInfoDTO ->
-                                if(userInfoDTO.isSuccessful){
-                                    notificationViewModel.deleteNotification(tokenId!!, notification.id).observe(viewLifecycleOwner,
-                                        { rd ->
-                                            if(rd.isSuccessful) {
-                                                notificationAdapter.notifyDataSetChanged()
-                                                notificationAdapter.refresh()
-                                            }
-                                        })
+        followViewModel.declineFollowingRequest(tokenId!!, notification.idData).observe(viewLifecycleOwner
+        ) {
+            if (it.code() == 401) {
+                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner) { newAccessToken ->
+                    tokenId = newAccessToken
+                    followViewModel.declineFollowingRequest(tokenId!!, notification.idData)
+                        .observe(viewLifecycleOwner
+                        ) { userInfoDTO ->
+                            if (userInfoDTO.isSuccessful) {
+                                notificationViewModel.deleteNotification(
+                                    tokenId!!,
+                                    notification.id
+                                ).observe(viewLifecycleOwner
+                                ) { rd ->
+                                    if (rd.isSuccessful) {
+                                        notificationAdapter.notifyDataSetChanged()
+                                        notificationAdapter.refresh()
+                                    }
                                 }
-                            })
-                    })
+                            }
+                        }
                 }
+            }
 
-                if(it.isSuccessful) {
-                    notificationViewModel.deleteNotification(tokenId!!, notification.id).observe(viewLifecycleOwner, {
-                            rd -> if(rd.isSuccessful) notificationAdapter.notifyDataSetChanged()
-                    })
-                    Thread.sleep(5000)
-                    notificationAdapter.notifyDataSetChanged()
-                    notificationAdapter.refresh()
-                }
+            if (it.isSuccessful) {
+                notificationViewModel.deleteNotification(tokenId!!, notification.id)
+                    .observe(viewLifecycleOwner) { rd ->
+                        if (rd.isSuccessful) notificationAdapter.notifyDataSetChanged()
+                    }
+                Thread.sleep(5000)
+                notificationAdapter.notifyDataSetChanged()
+                notificationAdapter.refresh()
+            }
 
-            })
+        }
     }
 
 
