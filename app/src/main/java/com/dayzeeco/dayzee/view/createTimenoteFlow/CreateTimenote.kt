@@ -69,6 +69,7 @@ import com.dayzeeco.dayzee.adapter.UsersPagingAdapter
 import com.dayzeeco.dayzee.adapter.UsersShareWithPagingAdapter
 import com.dayzeeco.dayzee.adapter.WebSearchAdapter
 import com.dayzeeco.dayzee.androidView.dialog.input
+import com.dayzeeco.dayzee.androidView.instaLike.GlideCacheEngine
 import com.dayzeeco.dayzee.androidView.instaLike.GlideEngine
 import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.listeners.BackToHomeListener
@@ -79,6 +80,7 @@ import com.dayzeeco.dayzee.model.*
 import com.dayzeeco.dayzee.viewModel.*
 import com.dayzeeco.picture_library.PictureSelectionModel
 import com.dayzeeco.picture_library.config.PictureMimeType
+import com.dayzeeco.picture_library.engine.CacheResourcesEngine
 import com.dayzeeco.picture_library.entity.LocalMedia
 import com.dayzeeco.picture_library.instagram.InsGallery
 import com.dayzeeco.picture_library.listener.OnResultCallbackListener
@@ -968,8 +970,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                 if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                     when (text) {
                         resources.getString(R.string.add_a_picture) -> {
-                            InsGallery
-                                .openGallery(requireActivity(), GlideEngine.createGlideEngine(), object : OnResultCallbackListener<LocalMedia> {
+                            InsGallery.openGallery(requireActivity(), GlideEngine.createGlideEngine(), GlideCacheEngine.createCacheEngine(), object : OnResultCallbackListener<LocalMedia> {
                                         override fun onResult(result: MutableList<LocalMedia>?) {
                                             for (media in result!!) {
                                                 val path: String =
@@ -1002,7 +1003,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                                         override fun onCancel() {
                                         }
 
-                                    }, 4) }
+                                    }, ) }
                         resources.getString(R.string.search_on_web) -> utils.createWebSearchDialog(
                             context,
                             webSearchViewModel,

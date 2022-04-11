@@ -9,9 +9,6 @@ import androidx.annotation.NonNull;
 import androidx.camera.camera2.Camera2Config;
 import androidx.camera.core.CameraX;
 import androidx.camera.core.CameraXConfig;
-import androidx.work.Configuration;
-import androidx.work.DelegatingWorkerFactory;
-import androidx.work.WorkerFactory;
 
 import com.appsflyer.AppsFlyerLib;
 import com.appsflyer.attribution.AppsFlyerRequestListener;

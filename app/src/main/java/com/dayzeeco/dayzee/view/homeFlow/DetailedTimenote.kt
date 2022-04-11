@@ -79,6 +79,7 @@ import kotlinx.android.synthetic.main.item_last_request.view.*
 import kotlinx.android.synthetic.main.item_profile_timenote_list_style.view.*
 import kotlinx.android.synthetic.main.item_timenote.view.*
 import kotlinx.android.synthetic.main.item_timenote_root.*
+import kotlinx.android.synthetic.main.item_timenote_root.view.*
 import kotlinx.android.synthetic.main.item_user.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
 import kotlinx.coroutines.flow.collectLatest
@@ -440,7 +441,9 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
 
             when (args.event?.joinedBy?.users?.size) {
                 1 -> {
-                    Glide
+                    if (args.event?.joinedBy?.users!![0].picture.isNullOrBlank()){
+                        timenote_pic_participant_three.setImageDrawable(utils.determineLetterLogo(args.event?.joinedBy?.users!![0].userName!!, requireContext()))
+                    } else Glide
                         .with(requireContext())
                         .load(args.event?.joinedBy?.users!![0].picture)
                         .apply(RequestOptions.circleCropTransform())
@@ -449,13 +452,17 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                     timenote_pic_participant_one_rl.visibility = View.GONE
                 }
                 2 -> {
-                    Glide
+                    if (args.event?.joinedBy?.users!![0].picture.isNullOrBlank()){
+                        timenote_pic_participant_two.setImageDrawable(utils.determineLetterLogo(args.event?.joinedBy?.users!![0].userName!!, requireContext()))
+                    } else Glide
                         .with(requireContext())
                         .load(args.event?.joinedBy?.users!![0].picture)
                         .apply(RequestOptions.circleCropTransform())
                         .into(timenote_pic_participant_two)
 
-                    Glide
+                    if (args.event?.joinedBy?.users!![1].picture.isNullOrBlank()){
+                        timenote_pic_participant_three.setImageDrawable(utils.determineLetterLogo(args.event?.joinedBy?.users!![1].userName!!, requireContext()))
+                    } else Glide
                         .with(requireContext())
                         .load(args.event?.joinedBy?.users!![1].picture)
                         .apply(RequestOptions.circleCropTransform())
@@ -463,19 +470,25 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                     timenote_pic_participant_one_rl.visibility = View.GONE
                 }
                 else -> {
-                    Glide
+                    if (args.event?.joinedBy?.users!![0].picture.isNullOrBlank()){
+                        timenote_pic_participant_one.setImageDrawable(utils.determineLetterLogo(args.event?.joinedBy?.users!![0].userName!!, requireContext()))
+                    } else Glide
                         .with(requireContext())
                         .load(args.event?.joinedBy?.users!![0].picture)
                         .apply(RequestOptions.circleCropTransform())
                         .into(timenote_pic_participant_one)
 
-                    Glide
+                    if (args.event?.joinedBy?.users!![0].picture.isNullOrBlank()){
+                        timenote_pic_participant_two.setImageDrawable(utils.determineLetterLogo(args.event?.joinedBy?.users!![1].userName!!, requireContext()))
+                    } else Glide
                         .with(requireContext())
                         .load(args.event?.joinedBy?.users!![1].picture)
                         .apply(RequestOptions.circleCropTransform())
                         .into(timenote_pic_participant_two)
 
-                    Glide
+                    if (args.event?.joinedBy?.users!![2].picture.isNullOrBlank()){
+                        timenote_pic_participant_three.setImageDrawable(utils.determineLetterLogo(args.event?.joinedBy?.users!![2].userName!!, requireContext()))
+                    } else Glide
                         .with(requireContext())
                         .load(args.event?.joinedBy?.users!![2].picture)
                         .apply(RequestOptions.circleCropTransform())
@@ -554,7 +567,9 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             timenote_username_desc.text = descriptionFormatted
         }
 
-        Glide
+        if (args.event?.createdBy?.picture.isNullOrBlank()){
+            detailed_timenote_pic_user.setImageDrawable(utils.determineLetterLogo(args.event?.createdBy?.userName!!, requireContext()))
+        } else Glide
             .with(this)
             .load(args.event?.createdBy?.picture)
             .apply(RequestOptions.circleCropTransform())

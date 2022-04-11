@@ -222,7 +222,8 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
                         .apply(RequestOptions.circleCropTransform())
                         .into(itemView.timenote_pic_participant_three)
                 }
-            } } else {
+            } }
+        else {
             if(timenote.joinedBy?.count!! > 0){
                 addedBy = itemView.context.resources.getQuantityString(R.plurals.saved_by_count, timenote.joinedBy.count, timenote.joinedBy.count)
                 val addedByFormated = SpannableStringBuilder(addedBy)
@@ -318,7 +319,8 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
 
         if(timenote.description.isNullOrBlank()){
             itemView.timenote_username_desc.visibility = View.GONE
-        } else {
+        }
+        else {
             itemView.timenote_username_desc.visibility = View.VISIBLE
             val ellipzise = "...more"
             val ellipsizeClickable = SpannableString(ellipzise)
@@ -361,7 +363,8 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
 
         if(formatOfDate == 1){
             showInTime(isFromFuture, utils, timenote)
-        } else {
+        }
+        else {
             itemView.separator_1.visibility = View.VISIBLE
             itemView.separator_2.visibility = View.VISIBLE
             itemView.timenote_day_month.visibility = View.VISIBLE

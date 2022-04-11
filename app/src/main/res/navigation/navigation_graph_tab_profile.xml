@@ -114,6 +114,9 @@
         <action
             android:id="@+id/action_settings_to_eventsHidden"
             app:destination="@id/eventsHidden" />
+        <action
+            android:id="@+id/action_settings_to_videoFragment"
+            app:destination="@id/videoFragment" />
     </fragment>
     <fragment
         android:id="@+id/notificationManager"
@@ -310,4 +313,8 @@
         android:id="@+id/QRCode"
         android:name="com.dayzeeco.dayzee.view.profileFlow.menuDirectory.QRCode"
         android:label="QRCode" />
+    <fragment
+        android:id="@+id/videoFragment"
+        android:name="com.dayzeeco.dayzee.video.VideoFragment"
+        android:label="VideoFragment" />
 </navigation>
