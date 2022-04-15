@@ -1,0 +1,98 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+}
+
+apply plugin: "maven-publish"
+
+android {
+    compileSdk 31
+
+    defaultConfig {
+        minSdk 28
+        targetSdk 31
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = '11'
+    }
+}
+
+ext {
+    moralisVersion = "master-SNAPSHOT"
+    //moralisVersion = "1"
+    moralisWalletConnectVersion = "0.9.9.8"
+    retrofitVersion = '2.9.0'
+    versions = [
+            kotlin                    : "1.6.0",
+            moshi                     : '1.12.0',
+            okhttp                    : '4.9.1',
+            khex                      : '1.1.2'
+    ]
+}
+
+dependencies {
+
+    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.4.0'
+    api files('libs/moralis-web3api-client-kotlin-1.0.0.jar')
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    api "com.github.mobilekosmos.Parse-SDK-Android:parse:$moralisVersion"
+    api "com.github.mobilekosmos:kotlin-walletconnect-lib:$moralisWalletConnectVersion"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0'
+
+    // Needed for wallet-connect-code
+    //------------------------------------------------------------------------
+    implementation "org.java-websocket:Java-WebSocket:1.5.2"
+
+    // KHex is a Kotlin multiplatform library to deal with hexadecimal encoding and decoding.
+    // Used for walletConnect in Application class.
+    implementation "com.github.komputing:khex:$versions.khex"
+
+    implementation "com.squareup.moshi:moshi:$versions.moshi"
+    api "com.squareup.moshi:moshi-kotlin:$versions.moshi"
+
+    implementation "com.squareup.okhttp3:okhttp:$versions.okhttp"
+
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0'
+
+    // We need to specify this extra because the kotlin plugin adds an older version leading
+    // to a warning about using different kotlin versions.
+//    implementation "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin"
+
+    // Needed for the toWei() function
+    implementation ('org.web3j:core:4.8.8-android')
+
+    // The generated moralis web3 api client depends on retrofit among others lib already
+    // being implemented here.
+    api "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    api "com.squareup.retrofit2:converter-moshi:$retrofitVersion"
+    api "com.squareup.retrofit2:converter-scalars:$retrofitVersion"
+    api "com.squareup.moshi:moshi-adapters:$versions.moshi"
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+            }
+        }
+    }
+}
