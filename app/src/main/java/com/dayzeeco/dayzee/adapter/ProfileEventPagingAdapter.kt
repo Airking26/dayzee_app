@@ -49,7 +49,7 @@ class ProfileEventPagingAdapter(diffUtilCallback: DiffUtil.ItemCallback<Timenote
 
     }
 
-    @ExperimentalTime
+    @OptIn(ExperimentalTime::class)
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             (holder as TimenoteListHolder).bindListStyleItem(

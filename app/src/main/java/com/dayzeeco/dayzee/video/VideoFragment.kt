@@ -23,7 +23,7 @@ import java.io.IOException
 
 class VideoFragment : Fragment() {
 
-    private val mList: ArrayList<BaseVideoItem> = ArrayList()
+    private val mList: ArrayList<UrlVideoItem> = ArrayList()
     private val mVideoVisibilityCalculator: ListItemsVisibilityCalculator = SingleListViewItemActiveCalculator(DefaultSingleItemCalculatorCallback(), mList)
     private lateinit var mRecyclerView: RecyclerView
     private lateinit var mLayoutManager: LinearLayoutManager
@@ -36,6 +36,12 @@ class VideoFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         try {
+            mList.add(UrlVideoItem("http://techslides.com/demos/sample-videos/small.mp4",mVideoPlayerManager, "https://cdn.mos.cms.futurecdn.net/6Kr3EWY2GKe738gpELRSAX.jpg"))
+            mList.add(UrlVideoItem(null,mVideoPlayerManager, "https://cdn.mos.cms.futurecdn.net/6Kr3EWY2GKe738gpELRSAX.jpg"))
+            mList.add(UrlVideoItem("http://techslides.com/demos/sample-videos/small.mp4",mVideoPlayerManager, "https://cdn.mos.cms.futurecdn.net/6Kr3EWY2GKe738gpELRSAX.jpg"))
+            mList.add(UrlVideoItem("http://techslides.com/demos/sample-videos/small.mp4",mVideoPlayerManager, "https://cdn.mos.cms.futurecdn.net/6Kr3EWY2GKe738gpELRSAX.jpg"))
+            mList.add(UrlVideoItem(null,mVideoPlayerManager, "https://cdn.mos.cms.futurecdn.net/6Kr3EWY2GKe738gpELRSAX.jpg"))
+            mList.add(UrlVideoItem(null,mVideoPlayerManager, "https://cdn.mos.cms.futurecdn.net/6Kr3EWY2GKe738gpELRSAX.jpg"))
             mList.add(UrlVideoItem("http://techslides.com/demos/sample-videos/small.mp4",mVideoPlayerManager, "https://cdn.mos.cms.futurecdn.net/6Kr3EWY2GKe738gpELRSAX.jpg"))
         } catch (e: IOException) {
             throw RuntimeException(e)

@@ -417,6 +417,8 @@
     <string name="to_connect">SE CONNECTER</string>
     <string name="subcategory_needed">Choisissez une sous-catégorie ou effacer la sélection</string>
     <string name="when_create_event">Quand*</string>
+    <string name="open_gallery_camera">Depuis ma gallerie</string>
+    <string name="from_nfts">Depuis mes NFTs</string>
     <plurals name="time_minutes_comment">
         <item quantity="one">%1$d minute</item>
         <item quantity="other">%1$d minutes</item>

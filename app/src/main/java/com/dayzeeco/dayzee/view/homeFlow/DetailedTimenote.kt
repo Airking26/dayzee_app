@@ -604,7 +604,6 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     }
 
     @SuppressLint("CheckResult")
-    @ExperimentalTime
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onClick(v: View?) {
         when (v) {

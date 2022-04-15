@@ -136,7 +136,6 @@ class FollowPage : Fragment(), UsersPagingAdapter.SearchPeopleListener,
         })
     }
 
-    @ExperimentalPagingApi
     override fun onAccept(userInfoDTO: UserInfoDTO, position: Int) {
         followViewModel.acceptFollowingRequest(tokenId!!, userInfoDTO.id!!).observe(viewLifecycleOwner, Observer {
             if(it.code() == 401){

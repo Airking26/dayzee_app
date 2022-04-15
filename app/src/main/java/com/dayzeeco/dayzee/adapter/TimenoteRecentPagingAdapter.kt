@@ -14,7 +14,7 @@ import kotlin.time.ExperimentalTime
 class TimenoteRecentPagingAdapter(diffCallback: DiffUtil.ItemCallback<TimenoteInfoDTO>, val timenoteRecentClicked: ItemTimenoteRecentAdapter.TimenoteRecentClicked, val utils: Utils) :
     PagingDataAdapter<TimenoteInfoDTO, ItemTimenoteRecentAdapter.TimenoteToComeViewHolder>(diffCallback){
 
-    @ExperimentalTime
+    @OptIn(ExperimentalTime::class)
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: ItemTimenoteRecentAdapter.TimenoteToComeViewHolder, position: Int) {
         holder.bindItem(getItem(position)!!, timenoteRecentClicked, utils)

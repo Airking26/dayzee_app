@@ -13,6 +13,7 @@ import com.dayzeeco.dayzee.video.video_player_manager.meta.MetaData
 import com.dayzeeco.dayzee.video.video_player_manager.ui.MediaPlayerWrapper
 import com.dayzeeco.dayzee.video.video_player_manager.utils.Logger
 import com.dayzeeco.dayzee.video.visibility_utils.items.ListItem
+import com.moralis.web3.Moralis
 
 
 abstract class BaseVideoItem protected constructor(private val mVideoPlayerManager: VideoPlayerManager<MetaData>) :
@@ -29,12 +30,14 @@ abstract class BaseVideoItem protected constructor(private val mVideoPlayerManag
      * When this item becomes active we start playback on the video in this item
      */
     override fun setActive(newActiveView: View, newActiveViewPosition: Int) {
-        val viewHolder = newActiveView.getTag() as VideoViewHolder
-        playNewVideo(
-            CurrentItemMetaData(newActiveViewPosition, newActiveView),
-            viewHolder.mPlayer,
-            mVideoPlayerManager
-        )
+        if (newActiveView.getTag() is VideoViewHolder) {
+            val viewHolder = newActiveView.getTag() as VideoViewHolder
+            playNewVideo(
+                CurrentItemMetaData(newActiveViewPosition, newActiveView),
+                viewHolder.mPlayer,
+                mVideoPlayerManager
+            )
+        }
     }
 
     /**
@@ -108,8 +111,8 @@ abstract class BaseVideoItem protected constructor(private val mVideoPlayerManag
             TAG,
             "setVisibilityPercentsText percents $percents"
         )
-        val videoViewHolder = currentView.getTag() as VideoViewHolder
-        val percentsText = "Visibility percents: $percents"
+        //val videoViewHolder = currentView.getTag() as VideoViewHolder
+        //val percentsText = "Visibility percents: $percents"
         //videoViewHolder.mVisibilityPercents.setText(percentsText)
     }
 

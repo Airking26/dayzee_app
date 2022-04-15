@@ -20,18 +20,21 @@ import com.dayzeeco.picture_library.app.PictureAppMaster;
 import com.dayzeeco.picture_library.crash.PictureSelectorCrashUtils;
 import com.dayzeeco.picture_library.engine.PictureSelectorEngine;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.moralis.web3.Moralis;
+import com.moralis.web3.MoralisApplication;
 
 import io.branch.referral.Branch;
 
 import static com.google.android.gms.common.util.CollectionUtils.listOf;
 
-public class customApplicationClass extends Application implements IApp, CameraXConfig.Provider {
+public class customApplicationClass extends MoralisApplication implements IApp, CameraXConfig.Provider {
 
     @Override
     public void onCreate() {
         super.onCreate();
         Branch.enableDebugMode();
 
+        Moralis.Companion.start("ACxQOTRAiZ7cNpHJign7xlILR22hc4nocV5yxqh4", "https://asn1xzuvjvew.usemoralis.com:2053/server");
         FirebaseAnalytics.getInstance(this);
         //AppsFlyerLib.getInstance().init("KdGKBY4Q3u3ooKjm4KT5am", null, this);
         AppsFlyerLib.getInstance().start(this, "KdGKBY4Q3u3ooKjm4KT5am", new AppsFlyerRequestListener() {

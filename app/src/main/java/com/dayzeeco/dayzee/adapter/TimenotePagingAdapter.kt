@@ -51,7 +51,7 @@ class TimenotePagingAdapter(diffCallbacks: DiffUtil.ItemCallback<TimenoteInfoDTO
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimenoteViewHolder =
         TimenoteViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_timenote, parent, false))
 
-    @ExperimentalTime
+    @OptIn(ExperimentalTime::class)
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: TimenoteViewHolder, position: Int) =
         holder.bindTimenote(getItem(position)!!, timenoteListenerListener, fragment, isFromFuture, utils, createdBy, formatOfDate, userInfoDTO)

@@ -9,7 +9,7 @@ import com.dayzeeco.dayzee.video.video_player_manager.ui.VideoPlayerView
 
 
 class UrlVideoItem(
-    private val mDirectUrl: String,
+    private val mDirectUrl: String?,
     videoPlayerManager: VideoPlayerManager<MetaData>,
     imageResource: String
 ) :
@@ -35,6 +35,14 @@ class UrlVideoItem(
 
     override fun stopPlayback(videoPlayerManager: VideoPlayerManager<*>) {
         videoPlayerManager.stopAnyPlayback()
+    }
+
+    fun isVideo(): Boolean{
+        return !mDirectUrl.isNullOrBlank()
+    }
+
+    fun getUrl(): String{
+        return mImageResource
     }
 
 }

@@ -1,6 +1,7 @@
 package com.dayzeeco.dayzee.common
 
 import android.content.Intent
+import android.os.Build
 import android.util.SparseArray
 import androidx.core.util.forEach
 import androidx.core.util.set
@@ -37,7 +38,7 @@ fun BottomNavigationView.setupWithNavController(navGraphIds: List<Int>, fragment
             firstFragmentGraphId = graphId
         }
 
-        graphIdToTagMap[graphId] = fragmentTag
+        graphIdToTagMap.put(graphId,fragmentTag)
 
         if (this.selectedItemId == graphId) {
             selectedNavController.value = navHostFragment.navController

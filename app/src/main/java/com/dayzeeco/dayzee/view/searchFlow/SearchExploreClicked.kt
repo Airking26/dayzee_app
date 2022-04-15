@@ -89,7 +89,6 @@ class SearchExploreClicked: Fragment(), UsersShareWithPagingAdapter.AddToSend,
         findNavController().navigate(SearchExploreClickedDirections.actionSearchExploreClickedToProfileSearch(userInfoDTO))
     }*/
 
-    @ExperimentalPagingApi
     override fun onAdd(userInfoDTO: UserInfoDTO, createGroup: Int?) {
         followViewModel.followPublicUser(tokenId!!, userInfoDTO.id!!)
             .observe(viewLifecycleOwner, {

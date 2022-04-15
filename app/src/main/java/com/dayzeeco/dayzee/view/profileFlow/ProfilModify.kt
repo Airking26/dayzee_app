@@ -26,9 +26,12 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.RecyclerView
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
+import com.afollestad.materialdialogs.customview.customView
+import com.afollestad.materialdialogs.customview.getCustomView
 import com.afollestad.materialdialogs.datetime.datePicker
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
@@ -52,6 +55,7 @@ import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.dayzeeco.dayzee.R
+import com.dayzeeco.dayzee.adapter.NftAdapter
 import com.dayzeeco.dayzee.adapter.WebSearchAdapter
 import com.dayzeeco.dayzee.androidView.dialog.input
 import com.dayzeeco.dayzee.androidView.instaLike.GlideEngine
@@ -60,16 +64,16 @@ import com.dayzeeco.dayzee.listeners.RefreshPicBottomNavListener
 import com.dayzeeco.dayzee.model.STATUS
 import com.dayzeeco.dayzee.model.UpdateUserInfoDTO
 import com.dayzeeco.dayzee.model.UserInfoDTO
-import com.dayzeeco.dayzee.viewModel.LoginViewModel
-import com.dayzeeco.dayzee.viewModel.MeViewModel
-import com.dayzeeco.dayzee.viewModel.ProfileModifyViewModel
-import com.dayzeeco.dayzee.viewModel.WebSearchViewModel
+import com.dayzeeco.dayzee.viewModel.*
 import com.dayzeeco.dayzee.webService.ProfileModifyData
 import com.dayzeeco.picture_library.config.PictureMimeType
 import com.dayzeeco.picture_library.entity.LocalMedia
 import com.dayzeeco.picture_library.instagram.InsGallery
 import com.dayzeeco.picture_library.listener.OnResultCallbackListener
 import com.google.android.material.switchmaterial.SwitchMaterial
+import com.moralis.web3.Moralis
+import com.moralis.web3.api.data.MoralisWeb3APIResult
+import com.moralis.web3.restapisdk.model.NftOwner
 import io.branch.indexing.BranchUniversalObject
 import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
@@ -77,6 +81,9 @@ import io.branch.referral.util.LinkProperties
 import kotlinx.android.synthetic.main.fragment_create_timenote.*
 import kotlinx.android.synthetic.main.fragment_my_profile.*
 import kotlinx.android.synthetic.main.fragment_profil_modify.*
+import kotlinx.android.synthetic.main.gridview_nft.*
+import kotlinx.android.synthetic.main.gridview_nft.view.*
+import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
@@ -87,7 +94,8 @@ import java.util.*
 
 
 class ProfilModify: Fragment(), View.OnClickListener,
-    WebSearchAdapter.ImageChoosedListener, WebSearchAdapter.MoreImagesClicked{
+    WebSearchAdapter.ImageChoosedListener, WebSearchAdapter.MoreImagesClicked,
+    Moralis.MoralisAuthenticationCallback {
 
     val PERMISSIONS_STORAGE = arrayOf(
         Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -96,7 +104,6 @@ class ProfilModify: Fragment(), View.OnClickListener,
     private lateinit var nameTv : TextView
     private lateinit var descTv: TextView
     private lateinit var profilModifyModel: UserInfoDTO
-    private var imagesUrl: String = ""
     private lateinit var am : AmazonS3Client
     private lateinit var prefs : SharedPreferences
     private val AUTOCOMPLETE_REQUEST_CODE: Int = 12
@@ -113,6 +120,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
     private val profileModViewModel: ProfileModifyViewModel by activityViewModels()
     private val meViewModel : MeViewModel by activityViewModels()
     private val authViewModel : LoginViewModel by activityViewModels()
+    private val walletConnectViewModel : WalletConnectViewModel by activityViewModels()
     private var placesList: List<Place.Field> = listOf(
         Place.Field.ID,
         Place.Field.NAME,
@@ -384,11 +392,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
                 }
             }
 
-            if (prefs.getString(
-                    pmtc,
-                    ""
-                ) != Gson().toJson(profileModifyData.loadProfileModifyModel())
-            ) {
+            if (prefs.getString(pmtc, "") != Gson().toJson(profileModifyData.loadProfileModifyModel())) {
                 modifyProfil(profilModifyModel)
             }
 
@@ -582,6 +586,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
         profile_modify_telegram.setOnClickListener(this)
     }
 
+    @SuppressLint("CheckResult")
     override fun onClick(v: View?) {
         when(v){
             profile_modify_gender -> MaterialDialog(
@@ -821,6 +826,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
 
 
             profile_modify_pic_imageview -> {
+
                 openGallery()
             }
             profile_modify_share_btn -> share()
@@ -828,51 +834,83 @@ class ProfilModify: Fragment(), View.OnClickListener,
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        Moralis.onStart(this)
+    }
+
+    @SuppressLint("CheckResult")
     private fun openGallery(){
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            ) == PackageManager.PERMISSION_GRANTED
-            && ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) == PackageManager.PERMISSION_GRANTED) {
+        MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+            title(R.string.add_a_picture)
+            listItems(items = listOf(resources.getString(R.string.open_gallery_camera), resources.getString(R.string.from_nfts))){
+                    _, index, text ->
 
-            profileModifyPicIv.visibility = View.GONE
-            profileModifyPb.visibility = View.VISIBLE
+                    profileModifyPicIv.visibility = View.GONE
+                    profileModifyPb.visibility = View.VISIBLE
 
-            InsGallery
-                .openGallery(
-                    requireActivity(),
-                    GlideEngine.createGlideEngine(),
-                    object : OnResultCallbackListener<LocalMedia> {
-                        override fun onResult(result: MutableList<LocalMedia>?) {
-                            for (media in result!!) {
-                                var path: String =
-                                    if (media.isCut && !media.isCompressed) {
-                                        media.cutPath
-                                    } else if (media.isCompressed || media.isCut && media.isCompressed) {
-                                        media.compressPath
-                                    } else if (PictureMimeType.isHasVideo(media.mimeType) && !TextUtils.isEmpty(
-                                            media.coverPath
+                        when(text){
+
+                            resources.getString(R.string.choose_from_gallery) -> {
+                                if (ContextCompat.checkSelfPermission(
+                                        requireContext(),
+                                        Manifest.permission.READ_EXTERNAL_STORAGE
+                                    ) == PackageManager.PERMISSION_GRANTED
+                                    && ContextCompat.checkSelfPermission(
+                                        requireContext(),
+                                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                    ) == PackageManager.PERMISSION_GRANTED) {
+                                    InsGallery
+                                        .openGallery(
+                                            requireActivity(),
+                                            GlideEngine.createGlideEngine(),
+                                            object : OnResultCallbackListener<LocalMedia> {
+                                                override fun onResult(result: MutableList<LocalMedia>?) {
+                                                    for (media in result!!) {
+                                                        var path: String =
+                                                            if (media.isCut && !media.isCompressed) {
+                                                                media.cutPath
+                                                            } else if (media.isCompressed || media.isCut && media.isCompressed) {
+                                                                media.compressPath
+                                                            } else if (PictureMimeType.isHasVideo(
+                                                                    media.mimeType
+                                                                ) && !TextUtils.isEmpty(
+                                                                    media.coverPath
+                                                                )
+                                                            ) {
+                                                                media.coverPath
+                                                            } else {
+                                                                media.path
+                                                            }
+                                                        ImageCompressor.compressBitmap(
+                                                            requireContext(),
+                                                            File(path)
+                                                        ) {
+                                                            pushPic(it)
+                                                        }
+                                                    }
+                                                }
+
+                                                override fun onCancel() {
+
+                                                }
+
+                                            }, 1
                                         )
-                                    ) {
-                                        media.coverPath
-                                    } else {
-                                        media.path
+                                } else requestPermissions(PERMISSIONS_STORAGE, 2)
+                            }
+                            resources.getString(R.string.from_nfts) -> {
+                                Moralis.authenticate("Press sign to authenticate with your wallet.") {
+                                    if (it != null) {
+                                        Toast.makeText(requireContext(), it.username, Toast.LENGTH_SHORT).show()
                                     }
-                                ImageCompressor.compressBitmap(requireContext(), File(path)) {
-                                    pushPic(it)
                                 }
                             }
                         }
 
-                        override fun onCancel() {
+            }
+        }
 
-                        }
-
-                    }, 1)
-        } else requestPermissions(PERMISSIONS_STORAGE, 2)
     }
 
     private fun share() {
@@ -927,8 +965,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
                 if (state == TransferState.COMPLETED) {
                     profileModifyPb.visibility = View.GONE
                     profileModifyPicIv.visibility = View.VISIBLE
-                    imagesUrl = am.getResourceUrl(bucket_dayzee_dev_image, key).toString()
-                    profileModifyData.setPicture(imagesUrl)
+                    profileModifyData.setPicture(am.getResourceUrl(bucket_dayzee_dev_image, key).toString())
                 }
 
             }
@@ -1002,10 +1039,11 @@ class ProfilModify: Fragment(), View.OnClickListener,
                     data?.let {
                         val place = Autocomplete.getPlaceFromIntent(data)
                         profileModViewModel.fetchLocation(place.id!!).observe(
-                            viewLifecycleOwner, {
-                                val location = utils.setLocation(it.body()!!, false, null)
-                                profileModifyData.setLocation(location)
-                            })
+                            viewLifecycleOwner
+                        ) {
+                            val location = utils.setLocation(it.body()!!, false, null)
+                            profileModifyData.setLocation(location)
+                        }
                     }
                 }
                 AutocompleteActivity.RESULT_ERROR -> {
@@ -1025,5 +1063,36 @@ class ProfilModify: Fragment(), View.OnClickListener,
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onConnect(accounts: List<String>?) {
+        var gridView : GridView?
+        var nftAdapter : NftAdapter?
+        walletConnectViewModel.getNFTS(accounts?.get(0)!!).observe(viewLifecycleOwner){
+            val images = it?.map { owner -> JSONObject(owner?.metadata!!)["image"] as String }
+            nftAdapter = NftAdapter(requireContext(), images!!)
+            val dialog = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
+                customView(R.layout.gridview_nft, scrollable = true)
+                cornerRadius(0f)
+                lifecycleOwner(viewLifecycleOwner)
+            }
+
+            gridView = dialog.getCustomView().nft_gv as GridView
+            gridView?.apply {
+                adapter = nftAdapter
+                setOnItemClickListener { parent, view, position, id ->
+                    profileModifyData.setPicture(images[position])
+                    modifyProfil(profilModifyModel)
+                    profileModifyPb.visibility = View.GONE
+                    profileModifyPicIv.visibility = View.VISIBLE
+                    dialog.dismiss()
+                }
+                nftAdapter?.notifyDataSetChanged()
+            }
+
+        }
+    }
+
+    override fun onDisconnect() {
     }
 }

@@ -42,10 +42,7 @@ import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.listeners.RefreshPicBottomNavListener
 import com.dayzeeco.dayzee.listeners.SynchronizeWithGoogleCalendarListener
 import com.dayzeeco.dayzee.model.*
-import com.dayzeeco.dayzee.viewModel.AlarmViewModel
-import com.dayzeeco.dayzee.viewModel.LoginViewModel
-import com.dayzeeco.dayzee.viewModel.MeViewModel
-import com.dayzeeco.dayzee.viewModel.TimenoteViewModel
+import com.dayzeeco.dayzee.viewModel.*
 import com.dayzeeco.dayzee.webService.ProfileModifyData
 import com.dayzeeco.dayzee.webService.service.AlarmData
 import com.google.android.gms.common.ConnectionResult
@@ -64,6 +61,8 @@ import com.google.api.services.calendar.model.Events
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.moralis.web3.Moralis
+import com.moralis.web3.api.MoralisWeb3ApiAccount
 import kotlinx.android.synthetic.main.fragment_settings.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -95,6 +94,7 @@ class Settings : Fragment(), View.OnClickListener, SynchronizeWithGoogleCalendar
     private val loginViewModel: LoginViewModel by activityViewModels()
     private val meViewModel : MeViewModel by activityViewModels()
     private val alarmViewModel : AlarmViewModel by activityViewModels()
+    private val walletConnectViewModel : WalletConnectViewModel by activityViewModels()
     private lateinit var profileModifyData: ProfileModifyData
     private lateinit var dsactv : TextView
     private lateinit var userInfoDTO: UserInfoDTO
@@ -298,9 +298,9 @@ class Settings : Fragment(), View.OnClickListener, SynchronizeWithGoogleCalendar
             }
             profile_settings_send_comments -> {
                 findNavController().navigate(SettingsDirections.actionSettingsToVideoFragment())
-                /*val intent = Intent(Intent.ACTION_VIEW)
+                val intent = Intent(Intent.ACTION_VIEW)
                 intent.data = Uri.parse("https://play.google.com/store/apps/details?id=com.dayzeeco.dayzee")
-                startActivity(intent)*/
+                startActivity(intent)
             }
             settings_synchro_cl -> checkPermission(callbackId, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)
             profile_settings_notification_manager -> findNavController().navigate(SettingsDirections.actionSettingsToNotificationManager())

@@ -102,7 +102,7 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
     ): View? =
         inflater.inflate(R.layout.fragment_profile_future_events, container, false)
 
-    @ExperimentalPagingApi
+    @OptIn(ExperimentalPagingApi::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if(!prefs.getString(accessToken, null).isNullOrBlank()){
             val typeUserInfo: Type = object : TypeToken<UserInfoDTO?>() {}.type

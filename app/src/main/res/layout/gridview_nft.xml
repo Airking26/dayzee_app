@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<GridView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:useDefaultMargins="true"
+    tools:listitem="@layout/item_nft"
+    android:id="@+id/nft_gv"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:footerDividersEnabled="false"
+    android:padding="4dp"
+    android:numColumns="2" />

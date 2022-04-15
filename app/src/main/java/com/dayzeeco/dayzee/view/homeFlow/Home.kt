@@ -125,7 +125,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         onRefreshPicBottomNavListener = context as RefreshPicBottomNavListener
     }
 
-    @ExperimentalPagingApi
+    @OptIn(ExperimentalPagingApi::class)
     override fun onResume() {
         super.onResume()
         if(prefs.getString(accessToken, null) != null) {
@@ -167,7 +167,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         return getPersistentView(inflater, container, savedInstanceState, R.layout.fragment_home)
     }
 
-    @ExperimentalPagingApi
+    @OptIn(ExperimentalPagingApi::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if(prefs.getString(accessToken, null) != null) {
 
@@ -323,7 +323,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
     }
 
-    @ExperimentalPagingApi
+    @OptIn(ExperimentalPagingApi::class)
     override fun onClick(v: View?) {
         when(v){
             home_past_timeline -> {

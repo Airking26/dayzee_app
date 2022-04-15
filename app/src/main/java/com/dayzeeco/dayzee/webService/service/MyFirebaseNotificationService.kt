@@ -21,7 +21,6 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.android.awaitFrame
-import okhttp3.internal.Util
 import org.json.JSONObject
 
 
@@ -52,7 +51,7 @@ class MyFirebaseNotificationService : FirebaseMessagingService() {
         val broadcastIntent = Intent("NotificationOnClickListener")
         if(type != 1){
             broadcastIntent.putExtra("userID", message.data["userID"])
-            if(type == 0 || type == 6 || type == 7) broadcastIntent.putExtra("event", message.data["event"])
+            if(type == 0 || type == 6 || type == 7) broadcastIntent.putExtra("eventID", message.data["eventID"])
         }
         broadcastIntent.putExtra("type", type)
         val intent = PendingIntent.getBroadcast(

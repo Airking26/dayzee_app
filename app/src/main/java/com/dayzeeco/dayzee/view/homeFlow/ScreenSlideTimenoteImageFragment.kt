@@ -56,7 +56,7 @@ class ScreenSlideTimenoteImageFragment : Fragment() {
             Glide.with(this)
                 .load(url)
                 .fitCenter()
-                .thumbnail(0.1f)
+                .thumbnail(0.25f)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .into(create_timenote_pic)}
 

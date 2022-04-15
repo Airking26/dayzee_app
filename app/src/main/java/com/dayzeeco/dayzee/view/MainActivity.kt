@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
@@ -34,10 +35,7 @@ import com.dayzeeco.dayzee.model.UserInfoDTO
 import com.dayzeeco.dayzee.view.homeFlow.Home
 import com.dayzeeco.dayzee.view.homeFlow.HomeDirections
 import com.dayzeeco.dayzee.view.loginFlow.SignupDirections
-import com.dayzeeco.dayzee.viewModel.LoginViewModel
-import com.dayzeeco.dayzee.viewModel.MeViewModel
-import com.dayzeeco.dayzee.viewModel.SwitchToNotifViewModel
-import com.dayzeeco.dayzee.viewModel.TimenoteViewModel
+import com.dayzeeco.dayzee.viewModel.*
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.branch.referral.Branch
@@ -46,7 +44,7 @@ import java.lang.reflect.Type
 import java.util.*
 
 
-class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby, ShowBarListener, ExitCreationTimenote, RefreshPicBottomNavListener, GoToProfile, GoToTop {
+class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby, ShowBarListener, ExitCreationTimenote, RefreshPicBottomNavListener, GoToProfile, GoToTop{
 
     private lateinit var control: NavController
     private var currentNavController: LiveData<NavController>? = null
@@ -57,6 +55,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
     private lateinit var lvm: LoginViewModel
     private lateinit var mvm : MeViewModel
     private lateinit var am : AmazonS3Client
+    private lateinit var wcvm: WalletConnectViewModel
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,10 +71,12 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
         tvm = ViewModelProvider(this).get(TimenoteViewModel::class.java)
         lvm = ViewModelProvider(this).get(LoginViewModel::class.java)
         mvm = ViewModelProvider(this).get(MeViewModel::class.java)
+        wcvm = ViewModelProvider(this).get(WalletConnectViewModel::class.java)
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
         registerNotificationReceiver()
         setupController()
     }
+
 
 
     private fun registerNotificationReceiver() {
@@ -87,7 +88,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
                 if(type != 1){
                     if(type == 0 || type == 6 || type == 7) {
                         lvm.refreshToken(prefs).observe(this@MainActivity){
-                            tvm.getSpecificTimenote(it!!, intent.getStringExtra("event")!!).observe(this@MainActivity){ i ->
+                            tvm.getSpecificTimenote(it!!, intent.getStringExtra("eventID")!!).observe(this@MainActivity){ i ->
                                 control.navigate(HomeDirections.actionGlobalDetailedTimenote(1, i.body()))
                             }
                         }
@@ -109,6 +110,7 @@ class MainActivity : AppCompatActivity(), BackToHomeListener, Home.OnGoToNearby,
 
     override fun onStart() {
         super.onStart()
+        //Moralis.onStart(this)
         Branch.sessionBuilder(this).withCallback { referringParams, error ->
             if (error == null) {
                 if (referringParams?.getBoolean("+clicked_branch_link")!!) {
