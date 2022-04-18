@@ -110,14 +110,18 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
 
         if (timenote.createdBy.picture.isNullOrBlank()){
             itemView.timenote_pic_user_imageview.setImageDrawable(utils.determineLetterLogo(timenote.createdBy.userName!!, itemView.context))
-        } else Glide
-            .with(itemView)
-            .load(timenote.createdBy.picture)
-            .thumbnail(0.1f)
-            .placeholder(R.drawable.circle_pic)
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .apply(RequestOptions.circleCropTransform())
-            .into(itemView.timenote_pic_user_imageview)
+        } else{
+            if (timenote.createdBy.isPictureNft!!) itemView.timenote_pic_user_imageview.vertices = 6
+            else itemView.timenote_pic_user_imageview.vertices = 0
+            Glide
+                .with(itemView)
+                .load(timenote.createdBy.picture)
+                .thumbnail(0.1f)
+                .placeholder(R.drawable.circle_pic)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .apply(RequestOptions.circleCropTransform())
+                .into(itemView.timenote_pic_user_imageview)
+        }
 
         if(timenote.commentAccount!! > 0){
             itemView.timenote_comment_account.visibility = View.VISIBLE

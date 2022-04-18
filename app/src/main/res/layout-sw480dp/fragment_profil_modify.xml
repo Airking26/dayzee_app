@@ -56,14 +56,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <ImageView
-                    app:layout_constraintTop_toTopOf="parent"
+                <com.dayzeeco.dayzee.androidView.view.PolygonImageView
+                    app:poly_vertices="0"
+                    app:poly_corner_radius="15"
                     android:id="@+id/profile_modify_pic_imageview"
-                    android:layout_marginTop="24dp"
-                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginTop="12dp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_width="92dp"
-                    android:layout_height="92dp"/>
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_width="108dp"
+                    android:layout_height="108dp"/>
 
                 <ProgressBar
                     android:visibility="gone"

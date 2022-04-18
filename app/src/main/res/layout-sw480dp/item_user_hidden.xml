@@ -16,14 +16,17 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_width="38dp"
-        android:layout_height="38dp">
+        android:layout_width="52dp"
+        android:layout_height="52dp">
 
-        <ImageView
-            android:layout_centerInParent="true"
-            android:id="@+id/user_hidden_imageview"
-            android:background="@drawable/border_pic_profile"
+
+        <com.dayzeeco.dayzee.androidView.view.PolygonImageView
+            app:poly_vertices="0"
             android:padding="0.8dp"
+            android:background="@drawable/border_pic_profile"
+            android:layout_centerInParent="true"
+            app:poly_corner_radius="15"
+            android:id="@+id/user_hidden_imageview"
             android:layout_width="50dp"
             android:layout_height="50dp"/>
 

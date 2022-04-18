@@ -15,7 +15,6 @@ For support, please feel free to contact me at https://www.linkedin.com/in/syeda
 
 
 data class UpdateUserInfoDTO (
-
 	@SerializedName("givenName") var givenName : String? = null,
 	@SerializedName("familyName") var familyName : String? = null,
 	@SerializedName("picture") var picture : String? = null,
@@ -26,5 +25,6 @@ data class UpdateUserInfoDTO (
 	@SerializedName("status") var status : Int? = null,
 	@SerializedName("dateFormat") var dateFormat : Int? = null,
 	@SerializedName("socialMedias") var socialMedias : SocialMedias? = null,
-	@SerializedName("language") var language: String? = null
+	@SerializedName("language") var language: String? = null,
+	@SerializedName("isPictureNft") var isPictureNft: Boolean? = false
 )

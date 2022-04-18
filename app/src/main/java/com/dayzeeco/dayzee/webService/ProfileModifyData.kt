@@ -125,6 +125,11 @@ class ProfileModifyData(context: Context) {
         notifyProfileDataChanged()
     }
 
+    fun setIsPictureNft(isPictureNft : Boolean){
+        profilModifyModel?.isPictureNft = isPictureNft
+        notifyProfileDataChanged()
+    }
+
     fun setStateSwitch(state: Int){
         when(state){
             0 -> {

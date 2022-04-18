@@ -47,5 +47,6 @@ data class UserInfoDTO (
     @SerializedName("language") var language: String? = null,
     @SerializedName("ip") var ip: String? = null,
     @SerializedName("platform") var platform: String? = null,
-    @SerializedName("updatedAt") var updatedAt: String? = null
+    @SerializedName("updatedAt") var updatedAt: String? = null,
+    @SerializedName("isPictureNft") var isPictureNft: Boolean? = false
 ) : Parcelable

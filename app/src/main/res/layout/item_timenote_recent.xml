@@ -57,15 +57,17 @@
             android:layout_width="120dp"
             android:layout_height="wrap_content"/>
 
-        <ImageView
+        <com.dayzeeco.dayzee.androidView.view.PolygonImageView
+            app:poly_vertices="0"
+            app:poly_corner_radius="15"
             android:id="@+id/timenote_recent_pic_user_imageview"
+            android:background="@drawable/border_pic_profile_recent"
+            app:layout_constraintTop_toTopOf="@id/timenote_recent_title"
+            app:layout_constraintBottom_toBottomOf="@id/timenote_recent_title"
             android:layout_marginEnd="8dp"
             app:layout_constraintStart_toEndOf="@id/timenote_recent_title"
             app:layout_constraintEnd_toEndOf="parent"
-            android:background="@drawable/border_pic_profile_recent"
             android:padding="0.5dp"
-            app:layout_constraintTop_toTopOf="@id/timenote_recent_title"
-            app:layout_constraintBottom_toBottomOf="@id/timenote_recent_title"
             android:layout_width="18dp"
             android:layout_height="18dp"/>
 

@@ -8,16 +8,18 @@
     android:layout_marginBottom="16dp"
     android:background="@color/colorBackground">
 
-    <ImageView
+    <com.dayzeeco.dayzee.androidView.view.PolygonImageView
+        app:poly_vertices="0"
+        app:poly_corner_radius="15"
         android:id="@+id/timenote_pic_user_imageview"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
+        android:background="@drawable/border_pic_profile"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:background="@drawable/border_pic_profile"
-        android:padding="0.8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:padding="0.6dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"/>
 
     <TextView
         android:id="@+id/timenote_username"

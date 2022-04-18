@@ -226,17 +226,16 @@
                         app:layout_constraintStart_toStartOf="@id/profile_calendar_cl"
                         app:layout_constraintTop_toTopOf="@id/profile_nbr_following" />
 
-
-                    <ImageView
-                        android:src="@drawable/circle_pic"
+                    <com.dayzeeco.dayzee.androidView.view.PolygonImageView
+                        app:poly_vertices="0"
+                        app:poly_corner_radius="15"
                         android:id="@+id/profile_pic_imageview"
-                        android:layout_width="108dp"
-                        android:layout_height="108dp"
                         android:layout_marginTop="12dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:layout_width="108dp"
+                        android:layout_height="108dp"/>
 
                     <mehdi.sakout.fancybuttons.FancyButton
                         android:id="@+id/profile_modify_btn"

@@ -8,6 +8,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+
     <ImageView
         android:src="@drawable/beach"
         android:id="@+id/notification_user_pic_imageview"

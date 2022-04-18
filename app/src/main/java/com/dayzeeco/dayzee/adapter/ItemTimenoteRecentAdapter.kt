@@ -70,14 +70,18 @@ class ItemTimenoteRecentAdapter(private val timenotesToCome: List<TimenoteInfoDT
 
             if (timenote.createdBy.picture.isNullOrBlank()){
                 itemView.timenote_recent_pic_user_imageview.setImageDrawable(utils.determineLetterLogo(timenote.createdBy.userName!!, itemView.context))
-            } else Glide
-                .with(itemView)
-                .load(timenote.createdBy.picture)
-                .thumbnail(0.1f)
-                .placeholder(R.drawable.circle_pic)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .apply(RequestOptions.circleCropTransform())
-                .into(itemView.timenote_recent_pic_user_imageview)
+            } else {
+                if (timenote.createdBy.isPictureNft!!) itemView.timenote_recent_pic_user_imageview.vertices = 6
+                else itemView.timenote_recent_pic_user_imageview.vertices = 0
+                Glide
+                    .with(itemView)
+                    .load(timenote.createdBy.picture)
+                    .thumbnail(0.1f)
+                    .placeholder(R.drawable.circle_pic)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(itemView.timenote_recent_pic_user_imageview)
+            }
 
 
             val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"

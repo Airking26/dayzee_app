@@ -72,14 +72,16 @@ class CommentAdapter(
             if(commentModel.createdBy.certified!!) itemView.comment_certified.visibility = View.VISIBLE
             else itemView.comment_certified.visibility = View.GONE
 
-            if (commentModel.picture.isNullOrBlank()){
+            if (commentModel.createdBy.picture.isNullOrBlank()){
                 itemView.comment_user_pic_imageview.setImageDrawable(utils.determineLetterLogo(commentModel.createdBy.userName!!, itemView.context))
-            } else Glide
-                .with(itemView)
-                .load(commentModel.createdBy.picture)
-                .apply(RequestOptions.circleCropTransform())
-                .placeholder(R.drawable.circle_pic)
-                .into(itemView.comment_user_pic_imageview)
+            } else {
+                if(commentModel.createdBy.isPictureNft!!) itemView.comment_user_pic_imageview.vertices = 6
+                else itemView.comment_user_pic_imageview.vertices = 0
+                Glide
+                    .with(itemView)
+                    .load(commentModel.createdBy.picture)
+                    .into(itemView.comment_user_pic_imageview)
+            }
 
             if(commentModel.picture.isNullOrBlank()) itemView.comment_cv?.visibility = View.GONE
             else {

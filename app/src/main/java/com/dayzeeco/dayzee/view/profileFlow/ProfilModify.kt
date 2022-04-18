@@ -59,6 +59,7 @@ import com.dayzeeco.dayzee.adapter.NftAdapter
 import com.dayzeeco.dayzee.adapter.WebSearchAdapter
 import com.dayzeeco.dayzee.androidView.dialog.input
 import com.dayzeeco.dayzee.androidView.instaLike.GlideEngine
+import com.dayzeeco.dayzee.androidView.view.PolygonImageView
 import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.listeners.RefreshPicBottomNavListener
 import com.dayzeeco.dayzee.model.STATUS
@@ -71,6 +72,7 @@ import com.dayzeeco.picture_library.entity.LocalMedia
 import com.dayzeeco.picture_library.instagram.InsGallery
 import com.dayzeeco.picture_library.listener.OnResultCallbackListener
 import com.google.android.material.switchmaterial.SwitchMaterial
+import com.google.gson.JsonParser
 import com.moralis.web3.Moralis
 import com.moralis.web3.api.data.MoralisWeb3APIResult
 import com.moralis.web3.restapisdk.model.NftOwner
@@ -107,9 +109,11 @@ class ProfilModify: Fragment(), View.OnClickListener,
     private lateinit var am : AmazonS3Client
     private lateinit var prefs : SharedPreferences
     private val AUTOCOMPLETE_REQUEST_CODE: Int = 12
-    private lateinit var profileModifyPicIv : ImageView
+    private lateinit var profileModifyPicIv : PolygonImageView
     private lateinit var profileModifyPb: ProgressBar
     private lateinit var profileModifyData: ProfileModifyData
+    private var nftRequested = false
+    private var isPicNft = false
     private var dateFormat : SimpleDateFormat
     private val ISO = "dd.MM.yyyy"
     private val webSearchViewModel : WebSearchViewModel by activityViewModels()
@@ -289,12 +293,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setProfilModifyViewModel() {
         profileModifyData = ProfileModifyData(requireContext())
-        prefs.stringLiveData(
-            user_info_dto,
-            Gson().toJson(profileModifyData.loadProfileModifyModel())
-        ).observe(
-            viewLifecycleOwner
-        ) {
+        prefs.stringLiveData(user_info_dto, Gson().toJson(profileModifyData.loadProfileModifyModel())).observe(viewLifecycleOwner) {
             val type: Type = object : TypeToken<UserInfoDTO?>() {}.type
             profilModifyModel = Gson().fromJson(it, type)
             setUserInfoDTO(profilModifyModel)
@@ -392,14 +391,17 @@ class ProfilModify: Fragment(), View.OnClickListener,
                 }
             }
 
-            if (prefs.getString(pmtc, "") != Gson().toJson(profileModifyData.loadProfileModifyModel())) {
-                modifyProfil(profilModifyModel)
-            }
+            val compareA = Gson().fromJson<UserInfoDTO>(prefs.getString(pmtc, null), type)
+            val compareB = profilModifyModel
 
-            prefs.edit().putString(
-                pmtc,
-                Gson().toJson(profileModifyData.loadProfileModifyModel())
-            ).apply()
+            if (compareA != null) {
+                compareA.updatedAt = null
+                compareB.updatedAt = null
+            }
+            if  (compareA != compareB) {
+                modifyProfil(profilModifyModel)
+                prefs.edit().putString(pmtc, it).apply()
+            }
         }
     }
 
@@ -415,7 +417,8 @@ class ProfilModify: Fragment(), View.OnClickListener,
                 profilModifyModel.gender,
                 if (profilModifyModel.status == 0) STATUS.PUBLIC.ordinal else STATUS.PRIVATE.ordinal,
                 if (profilModifyModel.dateFormat == 0) STATUS.PUBLIC.ordinal else STATUS.PRIVATE.ordinal,
-                profilModifyModel.socialMedias
+                profilModifyModel.socialMedias,
+                isPictureNft = profilModifyModel.isPictureNft
             )
         ).observe(viewLifecycleOwner) { usr ->
             if (usr.code() == 401) {
@@ -435,15 +438,16 @@ class ProfilModify: Fragment(), View.OnClickListener,
 
     private fun setUserInfoDTO(profilModifyModel: UserInfoDTO?) {
         if (profilModifyModel?.picture.isNullOrBlank()){
-            profile_pic_imageview.setImageDrawable(utils.determineLetterLogo(profilModifyModel?.userName!!, requireContext()))
-        } else
-        Glide
-            .with(this)
-            .load(profilModifyModel?.picture)
-            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-            .apply(RequestOptions.circleCropTransform())
-            .placeholder(R.drawable.circle_pic)
-            .into(profile_modify_pic_imageview)
+            profileModifyPicIv.setImageDrawable(utils.determineLetterLogo(profilModifyModel?.userName!!, requireContext()))
+        } else {
+            if(profilModifyModel?.isPictureNft!! or isPicNft)  profileModifyPicIv.vertices = 6
+            else profileModifyPicIv.vertices = 0
+            Glide
+                .with(this)
+                .load(profilModifyModel.picture)
+                .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                .into(profileModifyPicIv)
+        }
         profile_modify_name_appearance.text = profilModifyModel?.userName
         if (profilModifyModel?.givenName.isNullOrBlank()) {
             nameTv.hint = getString(R.string.your_name)
@@ -570,7 +574,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
             profile_modify_from.setOnClickListener(this)
             descTv.setOnClickListener(this)
             profile_modify_done_btn.setOnClickListener(this)
-            profile_modify_pic_imageview.setOnClickListener(this)
+            profileModifyPicIv.setOnClickListener(this)
             profile_modify_share_btn.setOnClickListener(this)
         } else {
             profile_modify_done_btn.visibility = View.GONE
@@ -825,7 +829,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
             }
 
 
-            profile_modify_pic_imageview -> {
+            profileModifyPicIv -> {
 
                 openGallery()
             }
@@ -851,7 +855,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
 
                         when(text){
 
-                            resources.getString(R.string.choose_from_gallery) -> {
+                            resources.getString(R.string.open_gallery_camera) -> {
                                 if (ContextCompat.checkSelfPermission(
                                         requireContext(),
                                         Manifest.permission.READ_EXTERNAL_STORAGE
@@ -900,6 +904,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
                                 } else requestPermissions(PERMISSIONS_STORAGE, 2)
                             }
                             resources.getString(R.string.from_nfts) -> {
+                                nftRequested = true
                                 Moralis.authenticate("Press sign to authenticate with your wallet.") {
                                     if (it != null) {
                                         Toast.makeText(requireContext(), it.username, Toast.LENGTH_SHORT).show()
@@ -940,11 +945,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
 
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if(requestCode == 2){
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                 openGallery()
@@ -963,6 +964,8 @@ class ProfilModify: Fragment(), View.OnClickListener,
             override fun onStateChanged(id: Int, state: TransferState?) {
                 Log.d(ContentValues.TAG, "onStateChanged: ${state?.name}")
                 if (state == TransferState.COMPLETED) {
+                    profileModifyData.setIsPictureNft(false)
+                    isPicNft = false
                     profileModifyPb.visibility = View.GONE
                     profileModifyPicIv.visibility = View.VISIBLE
                     profileModifyData.setPicture(am.getResourceUrl(bucket_dayzee_dev_image, key).toString())
@@ -1068,7 +1071,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
     override fun onConnect(accounts: List<String>?) {
         var gridView : GridView?
         var nftAdapter : NftAdapter?
-        walletConnectViewModel.getNFTS(accounts?.get(0)!!).observe(viewLifecycleOwner){
+        if(nftRequested) walletConnectViewModel.getNFTS(accounts?.get(0)!!).observe(viewLifecycleOwner){
             val images = it?.map { owner -> JSONObject(owner?.metadata!!)["image"] as String }
             nftAdapter = NftAdapter(requireContext(), images!!)
             val dialog = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
@@ -1082,10 +1085,13 @@ class ProfilModify: Fragment(), View.OnClickListener,
                 adapter = nftAdapter
                 setOnItemClickListener { parent, view, position, id ->
                     profileModifyData.setPicture(images[position])
+                    profileModifyData.setIsPictureNft(true)
+                    isPicNft = true
                     modifyProfil(profilModifyModel)
                     profileModifyPb.visibility = View.GONE
                     profileModifyPicIv.visibility = View.VISIBLE
                     dialog.dismiss()
+                    Moralis.onDestroy()
                 }
                 nftAdapter?.notifyDataSetChanged()
             }

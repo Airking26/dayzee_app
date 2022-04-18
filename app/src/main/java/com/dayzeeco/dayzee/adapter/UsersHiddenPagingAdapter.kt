@@ -49,13 +49,17 @@ class UsersHiddenPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>,
 
             if (userInfoDTO?.picture.isNullOrBlank()){
                 itemView.user_hidden_imageview.setImageDrawable(utils.determineLetterLogo(userInfoDTO?.userName!!, itemView.context))
-            } else Glide
+            } else {
+                if (userInfoDTO?.isPictureNft!!) itemView.user_hidden_imageview.vertices = 6
+                else itemView.user_hidden_imageview.vertices = 0
+                Glide
                     .with(itemView)
                     .load(userInfoDTO?.picture)
                     .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                     .apply(RequestOptions.circleCropTransform())
                     .placeholder(R.drawable.circle_pic)
                     .into(itemView.user_hidden_imageview)
+            }
 
             itemView.name_hidden_user.text = userInfoDTO?.userName
             if(userInfoDTO?.givenName.isNullOrBlank()) itemView.givenName_hidden.visibility = View.GONE else {

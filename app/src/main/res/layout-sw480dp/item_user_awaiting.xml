@@ -8,18 +8,19 @@
     android:padding="4dp"
     xmlns:fancy="http://schemas.android.com/apk/res-auto">
 
-    <ImageView
-        android:src="@drawable/beach"
+    <com.dayzeeco.dayzee.androidView.view.PolygonImageView
+        app:poly_vertices="0"
+        app:poly_corner_radius="15"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         android:id="@+id/user_imageview"
         android:layout_marginVertical="8dp"
         android:layout_marginStart="16dp"
         android:background="@drawable/border_pic_profile"
         android:padding="0.8dp"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_width="36dp"
+        android:layout_height="36dp"/>
 
     <TextView
         android:fontFamily="sans-serif-light"

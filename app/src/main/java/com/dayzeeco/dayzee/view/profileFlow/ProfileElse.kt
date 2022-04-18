@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -37,6 +38,7 @@ import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
 import io.branch.referral.util.LinkProperties
 import kotlinx.android.synthetic.main.fragment_my_profile.*
+import kotlinx.android.synthetic.main.fragment_profil_modify.*
 import kotlinx.android.synthetic.main.fragment_profile_else.*
 import kotlinx.android.synthetic.main.fragment_profile_else.profile_account_private
 import kotlinx.android.synthetic.main.fragment_profile_else.profile_calendar_btn
@@ -105,12 +107,14 @@ class ProfileElse : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterB
 
         if (userInfoDTO?.picture.isNullOrBlank()){
             profile_pic_imageview.setImageDrawable(utils.determineLetterLogo(userInfoDTO?.userName!!, requireContext()))
-        } else Glide
+        } else {
+            if(userInfoDTO?.isPictureNft!!) profile_pic_imageview.vertices = 6
+            else profile_pic_imageview.vertices = 0
+            Glide
                 .with(this)
                 .load(userInfoDTO?.picture)
-                .apply(RequestOptions.circleCropTransform())
-                .placeholder(R.drawable.circle_pic)
                 .into(profile_pic_imageview)
+        }
 
         profile_name_toolbar.text = userInfoDTO?.userName
 

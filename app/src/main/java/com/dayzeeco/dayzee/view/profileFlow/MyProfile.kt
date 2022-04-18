@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import android.view.WindowManager
+import android.widget.ImageView
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
@@ -37,6 +38,7 @@ import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
 import io.branch.referral.util.LinkProperties
 import kotlinx.android.synthetic.main.fragment_my_profile.*
+import kotlinx.android.synthetic.main.fragment_profil_modify.*
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
@@ -248,14 +250,14 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
 
             if (userInfoDTO?.picture.isNullOrBlank()){
                 profile_pic_imageview.setImageDrawable(utils.determineLetterLogo(userInfoDTO?.userName!!, requireContext()))
-            } else
-            Glide
-                .with(this)
-                .load(userInfoDTO?.picture)
-                .apply(RequestOptions.circleCropTransform())
-                .placeholder(R.drawable.circle_pic)
-                .into(profile_pic_imageview)
-
+            } else {
+                if(userInfoDTO?.isPictureNft!!) profile_pic_imageview.vertices = 6
+                else profile_pic_imageview.vertices = 0
+                Glide
+                    .with(this)
+                    .load(userInfoDTO?.picture)
+                    .into(profile_pic_imageview)
+            }
             profile_name_toolbar.text = userInfoDTO?.userName
 
             if(userInfoDTO?.certified!!) profile_name_toolbar.setCompoundDrawablesWithIntrinsicBounds(
@@ -281,39 +283,39 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
 
 
 
-                prefs.intLiveData(followers, userInfoDTO?.followers!!).observe(viewLifecycleOwner, {
+                prefs.intLiveData(followers, userInfoDTO?.followers!!).observe(viewLifecycleOwner) {
                     profile_nbr_followers.text = it.toString()
-                })
-                prefs.intLiveData(following, userInfoDTO?.following!!).observe(viewLifecycleOwner, {
-                    profile_nbr_following.text = it.toString()
-                })
+                }
+            prefs.intLiveData(following, userInfoDTO?.following!!).observe(viewLifecycleOwner) {
+                profile_nbr_following.text = it.toString()
+            }
 
-                meViewModel.getMyProfile(tokenId!!).observe(viewLifecycleOwner, {
+            meViewModel.getMyProfile(tokenId!!).observe(viewLifecycleOwner) {
                     if (it.code() == 401) {
-                        loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner,
-                            { newAccessToken ->
-                                tokenId = newAccessToken
-                                meViewModel.getMyProfile(tokenId!!).observe(viewLifecycleOwner,
-                                    { response ->
-                                        if (response.isSuccessful) {
-                                            prefs.edit().putInt(
-                                                followers,
-                                                response.body()?.followers!!
-                                            ).apply()
-                                            prefs.edit().putInt(
-                                                following,
-                                                response.body()?.following!!
-                                            ).apply()
+                        loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner
+                        ) { newAccessToken ->
+                            tokenId = newAccessToken
+                            meViewModel.getMyProfile(tokenId!!).observe(viewLifecycleOwner
+                            ) { response ->
+                                if (response.isSuccessful) {
+                                    prefs.edit().putInt(
+                                        followers,
+                                        response.body()?.followers!!
+                                    ).apply()
+                                    prefs.edit().putInt(
+                                        following,
+                                        response.body()?.following!!
+                                    ).apply()
 
-                                            profile_nbr_followers.text =
-                                                response.body()?.followers?.toString()
-                                            profile_nbr_following.text =
-                                                response.body()?.following?.toString()
-                                            profileModifyData.setNbrFollowers(response.body()?.followers!!)
-                                            profileModifyData.setNbrFollowing(response.body()?.following!!)
-                                        }
-                                    })
-                            })
+                                    profile_nbr_followers.text =
+                                        response.body()?.followers?.toString()
+                                    profile_nbr_following.text =
+                                        response.body()?.following?.toString()
+                                    profileModifyData.setNbrFollowers(response.body()?.followers!!)
+                                    profileModifyData.setNbrFollowing(response.body()?.following!!)
+                                }
+                            }
+                        }
                     }
                     if (it.isSuccessful) {
                         prefs.edit().putInt(followers, it.body()?.followers!!).apply()
@@ -324,13 +326,13 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
                         profileModifyData.setNbrFollowers(it.body()?.followers!!)
                         profileModifyData.setNbrFollowing(it.body()?.following!!)
                     }
-                })
+                }
 
-                profile_modify_btn.visibility = View.VISIBLE
+            profile_modify_btn.visibility = View.VISIBLE
                 profileModifyData = ProfileModifyData(requireContext())
 
                 prefs.intLiveData(location_pref, -1)
-                    .observe(viewLifecycleOwner, {
+                    .observe(viewLifecycleOwner) {
                         if (userInfoDTO?.location == null || it == -1 || it == 0) profile_location.visibility =
                             View.GONE
                         else if (it == 1 && userInfoDTO?.location?.address?.city == null) profile_location.visibility =
@@ -344,7 +346,7 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
                             else if (it == 2 && userInfoDTO?.location?.address?.address != null) profile_location.text =
                                 userInfoDTO?.location?.address?.address
                         }
-                    })
+                    }
 
 
             profileEventPagerAdapter = ProfileEventPagerAdapter(

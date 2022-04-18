@@ -48,13 +48,17 @@ class UsersAwaitingPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO
 
             if (userInfoDTO?.picture.isNullOrBlank()){
                 itemView.user_imageview.setImageDrawable(utils.determineLetterLogo(userInfoDTO?.userName!!, itemView.context))
-            } else Glide
+            } else {
+                if (userInfoDTO?.isPictureNft!!) itemView.user_imageview.vertices = 6
+                else itemView.user_imageview.vertices = 0
+                Glide
                     .with(itemView)
                     .load(userInfoDTO?.picture)
                     .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                     .apply(RequestOptions.circleCropTransform())
                     .placeholder(R.drawable.circle_pic)
                     .into(itemView.user_imageview)
+            }
 
             itemView.name_user.text = userInfoDTO?.userName
             if(userInfoDTO?.givenName.isNullOrBlank()) itemView.givenName.visibility = View.GONE else {
