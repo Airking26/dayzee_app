@@ -24,4 +24,7 @@
     <dimen name="media_grid_spacing">4dp</dimen>
 
     <dimen name="album_item_height">72dp</dimen>
+
+    <dimen name="penta_big_corner">20</dimen>
+    <dimen name="penta_small_corner">10</dimen>
 </resources>

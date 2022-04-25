@@ -31,13 +31,14 @@
 
     </LinearLayout>
 
-    <ImageView
+    <com.dayzeeco.dayzee.androidView.view.PolygonImageView
+        app:poly_vertices="0"
+        app:poly_corner_radius="@dimen/penta_big_corner"
         android:id="@+id/profile_menu_iv"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:src="@drawable/beach"
         app:layout_constraintStart_toStartOf="@id/menu_settings_cv"
-        app:layout_constraintTop_toBottomOf="@id/profile_menu_ll" />
+        app:layout_constraintTop_toBottomOf="@id/profile_menu_ll"
+        android:layout_width="72dp"
+        android:layout_height="72dp"/>
 
     <TextView
         android:id="@+id/profile_menu_name"

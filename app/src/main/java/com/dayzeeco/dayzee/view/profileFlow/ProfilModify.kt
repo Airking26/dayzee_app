@@ -400,8 +400,8 @@ class ProfilModify: Fragment(), View.OnClickListener,
             }
             if  (compareA != compareB) {
                 modifyProfil(profilModifyModel)
-                prefs.edit().putString(pmtc, it).apply()
             }
+            prefs.edit().putString(pmtc, it).apply()
         }
     }
 
@@ -418,7 +418,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
                 if (profilModifyModel.status == 0) STATUS.PUBLIC.ordinal else STATUS.PRIVATE.ordinal,
                 if (profilModifyModel.dateFormat == 0) STATUS.PUBLIC.ordinal else STATUS.PRIVATE.ordinal,
                 profilModifyModel.socialMedias,
-                isPictureNft = profilModifyModel.isPictureNft
+                isPictureNft = isPicNft
             )
         ).observe(viewLifecycleOwner) { usr ->
             if (usr.code() == 401) {
@@ -864,6 +864,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
                                         requireContext(),
                                         Manifest.permission.WRITE_EXTERNAL_STORAGE
                                     ) == PackageManager.PERMISSION_GRANTED) {
+                                    nftRequested = false
                                     InsGallery
                                         .openGallery(
                                             requireActivity(),
@@ -964,10 +965,9 @@ class ProfilModify: Fragment(), View.OnClickListener,
             override fun onStateChanged(id: Int, state: TransferState?) {
                 Log.d(ContentValues.TAG, "onStateChanged: ${state?.name}")
                 if (state == TransferState.COMPLETED) {
-                    profileModifyData.setIsPictureNft(false)
-                    isPicNft = false
                     profileModifyPb.visibility = View.GONE
                     profileModifyPicIv.visibility = View.VISIBLE
+                    isPicNft = false
                     profileModifyData.setPicture(am.getResourceUrl(bucket_dayzee_dev_image, key).toString())
                 }
 
@@ -1084,10 +1084,8 @@ class ProfilModify: Fragment(), View.OnClickListener,
             gridView?.apply {
                 adapter = nftAdapter
                 setOnItemClickListener { parent, view, position, id ->
-                    profileModifyData.setPicture(images[position])
-                    profileModifyData.setIsPictureNft(true)
                     isPicNft = true
-                    modifyProfil(profilModifyModel)
+                    profileModifyData.setPicture(images[position])
                     profileModifyPb.visibility = View.GONE
                     profileModifyPicIv.visibility = View.VISIBLE
                     dialog.dismiss()

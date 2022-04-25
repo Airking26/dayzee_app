@@ -24,7 +24,7 @@
             android:padding="0.8dp"
             android:background="@drawable/border_pic_profile"
             android:layout_centerInParent="true"
-            app:poly_corner_radius="15"
+            app:poly_corner_radius="@dimen/penta_small_corner"
             android:id="@+id/user_imageview"
             android:layout_width="50dp"
             android:layout_height="50dp"/>

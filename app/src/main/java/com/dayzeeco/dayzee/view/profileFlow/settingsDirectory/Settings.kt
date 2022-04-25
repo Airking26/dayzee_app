@@ -297,7 +297,7 @@ class Settings : Fragment(), View.OnClickListener, SynchronizeWithGoogleCalendar
                 alert.show()
             }
             profile_settings_send_comments -> {
-                findNavController().navigate(SettingsDirections.actionSettingsToVideoFragment())
+                //findNavController().navigate(SettingsDirections.actionSettingsToVideoFragment())
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.data = Uri.parse("https://play.google.com/store/apps/details?id=com.dayzeeco.dayzee")
                 startActivity(intent)

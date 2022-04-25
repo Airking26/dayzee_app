@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.dayzeeco.dayzee.BuildConfig
 import com.dayzeeco.dayzee.R
+import com.dayzeeco.dayzee.common.Utils
 import com.dayzeeco.dayzee.common.accessToken
 import com.dayzeeco.dayzee.common.gmail
 import com.dayzeeco.dayzee.common.user_info_dto
@@ -30,6 +31,7 @@ import com.google.api.services.calendar.CalendarScopes
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.fragment_menu.*
+import kotlinx.android.synthetic.main.fragment_my_profile.*
 import java.lang.reflect.Type
 import java.util.*
 
@@ -37,6 +39,7 @@ import java.util.*
 class Menu : Fragment(), View.OnClickListener {
 
     private lateinit var service: Calendar
+    private val utils = Utils()
     private lateinit var credential: GoogleAccountCredential
     private val transport = AndroidHttp.newCompatibleTransport()
     private val jsonFactory: JsonFactory = JacksonFactory.getDefaultInstance()
@@ -83,12 +86,16 @@ class Menu : Fragment(), View.OnClickListener {
         menu_invite_friends_cv.setOnClickListener(this)
         menu_synchro_wallet_cv.setOnClickListener(this)
 
-        Glide
-            .with(this)
-            .load(userInfoDTO.picture)
-            .apply(RequestOptions.circleCropTransform())
-            .placeholder(R.drawable.circle_pic)
-            .into(profile_menu_iv)
+        if (userInfoDTO.picture.isNullOrBlank()){
+            profile_menu_iv.setImageDrawable(utils.determineLetterLogo(userInfoDTO.userName!!, requireContext()))
+        } else {
+            if(userInfoDTO.isPictureNft!!) profile_menu_iv.vertices = 6
+            else profile_menu_iv.vertices = 0
+            Glide
+                .with(this)
+                .load(userInfoDTO.picture)
+                .into(profile_menu_iv)
+        }
 
         profile_menu_name.text = userInfoDTO.userName
         if(userInfoDTO.location != null) profile_menu_location.text = userInfoDTO.location?.address?.city else profile_menu_location.visibility = View.GONE

@@ -16,7 +16,7 @@
         <com.dayzeeco.dayzee.androidView.view.PolygonImageView
             app:poly_vertices="0"
             android:src="@drawable/beach"
-            app:poly_corner_radius="15"
+            app:poly_corner_radius="@dimen/penta_small_corner"
             android:id="@+id/comment_user_pic_imageview"
             android:layout_margin="8dp"
             android:layout_width="36dp"
