@@ -25,10 +25,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -41,6 +38,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
@@ -52,6 +50,7 @@ import com.afollestad.materialdialogs.color.ColorPalette
 import com.afollestad.materialdialogs.color.colorChooser
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
+import com.afollestad.materialdialogs.datetime.datePicker
 import com.afollestad.materialdialogs.datetime.dateTimePicker
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.listItems
@@ -64,10 +63,7 @@ import com.amazonaws.regions.Regions
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.CannedAccessControlList
 import com.dayzeeco.dayzee.R
-import com.dayzeeco.dayzee.adapter.ScreenSlideCreationTimenotePagerAdapter
-import com.dayzeeco.dayzee.adapter.UsersPagingAdapter
-import com.dayzeeco.dayzee.adapter.UsersShareWithPagingAdapter
-import com.dayzeeco.dayzee.adapter.WebSearchAdapter
+import com.dayzeeco.dayzee.adapter.*
 import com.dayzeeco.dayzee.androidView.dialog.input
 import com.dayzeeco.dayzee.androidView.instaLike.GlideCacheEngine
 import com.dayzeeco.dayzee.androidView.instaLike.GlideEngine
@@ -93,6 +89,8 @@ import com.google.android.libraries.places.widget.AutocompleteActivity
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.android.synthetic.main.dialog_reccurence.*
+import kotlinx.android.synthetic.main.dialog_reccurence.view.*
 import kotlinx.android.synthetic.main.fragment_create_timenote.*
 import kotlinx.android.synthetic.main.friends_search_cl.view.*
 import kotlinx.coroutines.flow.collectLatest
@@ -110,7 +108,8 @@ import java.util.*
 class CreateTimenote : Fragment(), View.OnClickListener,
     TimenoteCreationPicListeners, WebSearchAdapter.ImageChoosedListener, WebSearchAdapter.MoreImagesClicked,
     HashTagHelper.OnHashTagClickListener, UsersPagingAdapter.SearchPeopleListener,
-    UsersShareWithPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.AddToSend {
+    UsersShareWithPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.AddToSend,
+    DateAdapter.DateCloseListener {
 
     private val PERMISSIONS_STORAGE = arrayOf(
         Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -118,6 +117,8 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     )
     private lateinit var goToProfileLisner : GoToProfile
     private var accountType: Int = -1
+    private lateinit var dateAdapter: DateAdapter
+    private var dateToAdd : MutableList<String> = mutableListOf()
     private var sendTo: MutableList<String> = mutableListOf()
     private var organizers: MutableList<String> = mutableListOf()
     private var indexGroupChosen: MutableList<Int> = mutableListOf()
@@ -151,7 +152,6 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     private var endDate: Long? = null
     private var formCompleted: Boolean = true
     private var startDate: Long? = null
-    private var height : Int  = 700
     private val creationTimenoteViewModel: CreationTimenoteViewModel by activityViewModels()
     private val profileViewModel : ProfileViewModel by activityViewModels()
     private val webSearchViewModel : WebSearchViewModel by activityViewModels()
@@ -160,6 +160,8 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     private lateinit var categoryTv: TextView
     private lateinit var fromTv: TextView
     private lateinit var toTv: TextView
+    private lateinit var configureRecurrence: TextView
+    private lateinit var datesRv : RecyclerView
     private lateinit var titleTv: TextView
     private lateinit var shareWithTv: TextView
     private lateinit var moreColorTv: FancyButton
@@ -178,7 +180,12 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     private lateinit var whenError: ImageView
     private lateinit var paidLabelTv : TextView
     private val DATE_FORMAT_DAY_AND_TIME = "EEE, d MMM yyyy hh:mm aaa"
+    private val DATE_FORMAT_DAY_AND_TIME_DIALOG = "d MMM yyyy"
+    private val DATE_FORMAT_REPEAT = "d"
     private lateinit var dateFormatDateAndTime: SimpleDateFormat
+    private lateinit var dateFormatDateAndTimeISO: SimpleDateFormat
+    private lateinit var dateFormatDateAndTimeDialog: SimpleDateFormat
+    private lateinit var dateFormatDateRepeat: SimpleDateFormat
     private var placesList: List<Place.Field> = listOf(
         Place.Field.ID,
         Place.Field.NAME,
@@ -237,13 +244,8 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         onRefreshPicBottomNavListener = context as RefreshPicBottomNavListener
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? =
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_create_timenote, container, false)
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
@@ -321,10 +323,15 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         utils = Utils()
         create_timenote_clear.paintFlags = create_timenote_clear.paintFlags or Paint.UNDERLINE_TEXT_FLAG
         dateFormatDateAndTime = SimpleDateFormat(DATE_FORMAT_DAY_AND_TIME, Locale.getDefault())
+        dateFormatDateAndTimeDialog = SimpleDateFormat(DATE_FORMAT_DAY_AND_TIME_DIALOG, Locale.getDefault())
+        dateFormatDateRepeat = SimpleDateFormat(DATE_FORMAT_REPEAT, Locale.getDefault())
+        dateFormatDateAndTimeISO = SimpleDateFormat(ISO, Locale.getDefault())
         subcategoryCv = sub_category_cardview
         addEndDateTv = profile_add_end_date
+        configureRecurrence = profile_configure_recurrence
         fromLabel = from_label
         toLabel = to_label
+        datesRv = profile_recurence_rv
         paidTimenote = paid_timenote_cardview
         fixedDate = create_timenote_fixed_date
         fromTv = create_timenote_from
@@ -395,6 +402,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         desc_cardview.setOnClickListener(this)
         when_cardview.setOnClickListener(this)
         addEndDateTv.setOnClickListener(this)
+        configureRecurrence.setOnClickListener(this)
         paidTimenote.setOnClickListener(this)
         noAnswer.setOnClickListener(this)
         subcategoryCv.setOnClickListener(this)
@@ -404,7 +412,6 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         create_timenote_clear.setOnClickListener(this)
         url_title_cardview.setOnClickListener(this)
     }
-
 
     private fun populateModel(it: CreationTimenoteDTO) {
         when (it.price.price) {
@@ -612,7 +619,6 @@ class CreateTimenote : Fragment(), View.OnClickListener,
 
     }
 
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
             when (resultCode) {
@@ -657,19 +663,234 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onClick(v: View?) {
         when (v) {
-            when_cardview -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-                whenError.visibility = View.GONE
-                dateTimePicker { _, datetime ->
-                    fixedDate.visibility = View.VISIBLE
-                    toLabel.visibility = View.GONE
-                    fromLabel.visibility = View.GONE
-                    toTv.visibility = View.GONE
-                    fromTv.visibility = View.GONE
-                    startDateDisplayed = dateFormatDateAndTime.format(datetime.time.time)
-                    creationTimenoteViewModel.setStartDate(datetime.time.time, ISO)
-                    startDate = datetime.time.time
-                    creationTimenoteViewModel.setEndDate(datetime.time.time, ISO)
-                    addEndDateTv.visibility = View.VISIBLE
+            when_cardview -> if(dateToAdd.isNullOrEmpty()) MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                    whenError.visibility = View.GONE
+                    dateTimePicker { _, datetime ->
+                        fixedDate.visibility = View.VISIBLE
+                        toLabel.visibility = View.GONE
+                        fromLabel.visibility = View.GONE
+                        toTv.visibility = View.GONE
+                        fromTv.visibility = View.GONE
+                        startDateDisplayed = dateFormatDateAndTime.format(datetime.time.time)
+                        creationTimenoteViewModel.setStartDate(datetime.time.time, ISO)
+                        startDate = datetime.time.time
+                        creationTimenoteViewModel.setEndDate(datetime.time.time, ISO)
+                        addEndDateTv.visibility = View.VISIBLE
+                        configureRecurrence.visibility = View.VISIBLE
+                    }
+                }
+            configureRecurrence -> {
+                dateToAdd.clear()
+                val dial = MaterialDialog(requireContext(), BottomSheet(LayoutMode.MATCH_PARENT)).show {
+                    customView(R.layout.dialog_reccurence)
+                    lifecycleOwner(this@CreateTimenote)
+                }
+                val repeatAllNP = dial.getCustomView().numberPicker
+                val nbrOccurencesNP = dial.getCustomView().numberPicker_occurences
+
+                val pb = dial.getCustomView().pb
+                var status = 0
+                var endDateDialog = 0L
+                val spinner = dial.getCustomView().spinner_reccurence
+                val adapter = ArrayAdapter.createFromResource(requireContext(), R.array.period, R.layout.custom_spinner_dd)
+                spinner.adapter = adapter
+                val repeatMonth = dial.getCustomView().dialog_reccurence_repeat_month
+                val repeatWeek = dial.getCustomView().dialog_reccurence_repeat_week
+                val week = dial.getCustomView().dialog_reccurence_ll
+                val monday = dial.getCustomView().dialog_reccurence_monday
+                var mondayStatus = true
+                val tuesday = dial.getCustomView().dialog_reccurence_tuesday
+                var tuesdayStatus = false
+                val wednesday = dial.getCustomView().dialog_reccurence_wednesday
+                var wednesdayStatus = false
+                val thursday = dial.getCustomView().dialog_reccurence_thursday
+                var thursdayStatus = false
+                val friday = dial.getCustomView().dialog_reccurence_friday
+                var fridayStatus = false
+                val saturday = dial.getCustomView().dialog_reccurence_saturday
+                var saturdayStatus = false
+                val sunday = dial.getCustomView().dialog_reccurence_sunday
+                var sundayStatus = false
+                monday.setOnClickListener {
+                    mondayStatus = !mondayStatus
+                    if(mondayStatus) monday.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.colorAccent)) else monday.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.colorText)) }
+                tuesday.setOnClickListener {
+                    tuesdayStatus = !tuesdayStatus
+                    if(tuesdayStatus) tuesday.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.colorAccent)) else tuesday.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.colorText)) }
+                wednesday.setOnClickListener {
+                    wednesdayStatus = !wednesdayStatus
+                    if(wednesdayStatus) wednesday.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.colorAccent)) else wednesday.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.colorText)) }
+                thursday.setOnClickListener {
+                    thursdayStatus = !thursdayStatus
+                    if(thursdayStatus) thursday.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.colorAccent)) else thursday.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.colorText)) }
+                friday.setOnClickListener {
+                    fridayStatus = !fridayStatus
+                    if(fridayStatus) friday.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.colorAccent)) else friday.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.colorText)) }
+                saturday.setOnClickListener {
+                    saturdayStatus = !saturdayStatus
+                    if(saturdayStatus) saturday.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.colorAccent)) else saturday.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.colorText)) }
+                sunday.setOnClickListener {
+                    sundayStatus = !sundayStatus
+                    if(sundayStatus) sunday.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.colorAccent)) else sunday.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.colorText)) }
+                spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+                    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                        status = p2
+                        when(p2){
+                            0 -> {
+                                repeatMonth.visibility = View.GONE
+                                repeatWeek.visibility = View.GONE
+                                week.visibility = View.GONE
+                            }
+                            1 -> {
+                                repeatMonth.visibility = View.GONE
+                                repeatMonth.text = String.format(resources.getString(R.string.every_month), dateFormatDateRepeat.format(startDate))
+                                repeatWeek.visibility = View.GONE
+                                week.visibility = View.GONE
+                            }
+                            2 -> {
+                                repeatMonth.visibility = View.GONE
+                                repeatWeek.visibility = View.VISIBLE
+                                week.visibility = View.VISIBLE
+                            }
+                            3 -> {
+                                repeatMonth.visibility = View.GONE
+                                repeatWeek.visibility = View.GONE
+                                week.visibility = View.GONE
+                            }
+                        }                    }
+
+                    override fun onNothingSelected(p0: AdapterView<*>?) {
+                    }
+                }
+                val endChoiceThe = dial.getCustomView().dialog_reccurence_the
+                endChoiceThe.isChecked = true
+                val endChoiceAfter = dial.getCustomView().dialog_reccurence_after
+                endChoiceThe.setOnCheckedChangeListener { _, b ->
+                    if(b) endChoiceAfter.isChecked = false
+                }
+                endChoiceAfter.setOnCheckedChangeListener{_,b ->
+                    if(b) endChoiceThe.isChecked = false
+                }
+                val endDate = dial.getCustomView().dialog_reccurence_date
+                endDate.text = dateFormatDateAndTimeDialog.format(startDate)
+                endDate.setOnClickListener {
+                    MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
+                        val c = Calendar.getInstance()
+                        if(startDate != null) c.timeInMillis = startDate!!
+                        datePicker(requireFutureDate = true, currentDate = c) { dialog, datetime ->
+                            endDateDialog = datetime.time.time
+                            endDate.text = dateFormatDateAndTimeDialog.format(datetime.time.time)
+                        }
+                    }
+                }
+
+                val validateBtn = dial.getCustomView().dialog_reccurence_validate
+                validateBtn.setOnClickListener {
+                    dateToAdd.add(dateFormatDateAndTimeISO.format(startDate!!))
+                    val every = repeatAllNP.progress
+                    var ocurence = nbrOccurencesNP.progress
+                    val c = Calendar.getInstance()
+                    c.timeInMillis = startDate!!
+                    when(status){
+                        0 -> {
+                            validateBtn.visibility = View.GONE
+                            pb.visibility = View.VISIBLE
+                            if(endChoiceAfter.isChecked){
+                                while(ocurence > 0){
+                                    c.add(Calendar.DAY_OF_MONTH, every)
+                                    dateToAdd.add(dateFormatDateAndTimeISO.format(c.timeInMillis))
+                                    ocurence--
+                                }
+                            } else{
+                                var date = 0L
+                                while(endDateDialog > date){
+                                    c.add(Calendar.DAY_OF_MONTH, every)
+                                    dateToAdd.add(dateFormatDateAndTimeISO.format(c.timeInMillis))
+                                    date = c.timeInMillis
+                                }
+                                dateToAdd.removeLast()
+                            }
+                            if(dateToAdd.size > 30) Toast.makeText(
+                                requireContext(),
+                                resources.getString(R.string.too_many_occurrences),
+                                Toast.LENGTH_SHORT
+                            )
+                                .show() else dial.dismiss()                        }
+                        1 -> {
+                            validateBtn.visibility = View.GONE
+                            pb.visibility = View.VISIBLE
+                            if(endChoiceAfter.isChecked){
+                                while (ocurence > 0){
+                                    c.add(Calendar.MONTH, every)
+                                    dateToAdd.add(dateFormatDateAndTimeISO.format(c.timeInMillis))
+                                    ocurence--
+                                }
+                            } else{
+                                var date = 0L
+                                while(endDateDialog > date){
+                                    c.add(Calendar.MONTH, every)
+                                    dateToAdd.add(dateFormatDateAndTimeISO.format(c.timeInMillis))
+                                    date = c.timeInMillis
+                                }
+                                dateToAdd.removeLast()
+                            }
+                            if(dateToAdd.size > 30) Toast.makeText(
+                                requireContext(),
+                                resources.getString(R.string.too_many_occurrences),
+                                Toast.LENGTH_SHORT
+                            )
+                                .show() else dial.dismiss()                        }
+                        2 -> {
+                            validateBtn.visibility = View.GONE
+                            pb.visibility = View.VISIBLE
+                            val statusDay = listOf(mondayStatus, tuesdayStatus, wednesdayStatus, thursdayStatus, fridayStatus, saturdayStatus, sundayStatus)
+                            val calendarDay = listOf(Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY, Calendar.SATURDAY, Calendar.SUNDAY)
+                            if(endChoiceAfter.isChecked){
+                                statusDay.forEachIndexed { index, b ->  if(b) repeatEveryWeekAtDay(ocurence, c, every, calendarDay[index], true, endDateDialog) }
+                            } else{
+                                statusDay.forEachIndexed { index, b ->  if(b) {
+                                    repeatEveryWeekAtDay(ocurence, c, every, calendarDay[index], false, endDateDialog)
+                                    dateToAdd.removeLast()
+                                } }
+                            }
+                            if(dateToAdd.size > 30) Toast.makeText(
+                                requireContext(),
+                                resources.getString(R.string.too_many_occurrences),
+                                Toast.LENGTH_SHORT
+                            )
+                                .show() else dial.dismiss()                        }
+                        3 -> {
+                            validateBtn.visibility = View.GONE
+                            pb.visibility = View.VISIBLE
+                            if(endChoiceAfter.isChecked){
+                                while (ocurence > 0){
+                                    c.add(Calendar.YEAR, every)
+                                    dateToAdd.add(dateFormatDateAndTimeISO.format(c.timeInMillis))
+                                    ocurence--
+                                }
+                            } else{
+                                var date = 0L
+                                while(endDateDialog > date){
+                                    c.add(Calendar.YEAR, every)
+                                    dateToAdd.add(dateFormatDateAndTimeISO.format(c.timeInMillis))
+                                    date = c.timeInMillis
+                                }
+                                dateToAdd.removeLast()
+                            }
+                            if(dateToAdd.size > 30) Toast.makeText(
+                                requireContext(),
+                                resources.getString(R.string.too_many_occurrences),
+                                Toast.LENGTH_SHORT
+                            )
+                                .show() else dial.dismiss()
+                        }
+                    }
+                    addEndDateTv.visibility = View.GONE
+                    configureRecurrence.visibility = View.GONE
+                    datesRv.visibility = View.VISIBLE
+                    dateAdapter = DateAdapter(dateToAdd, this)
+                    datesRv.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+                    datesRv.adapter = dateAdapter
                 }
             }
             addEndDateTv -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
@@ -682,6 +903,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                     fromLabel.visibility = View.VISIBLE
                     toTv.visibility = View.VISIBLE
                     fromTv.visibility = View.VISIBLE
+                    configureRecurrence.visibility = View.GONE
                     creationTimenoteViewModel.setEndDate(datetime.time.time, ISO)
                     startDateDisplayed = dateFormatDateAndTime.format(startDate)
                     endDateDisplayed = dateFormatDateAndTime.format(datetime.time.time)
@@ -703,12 +925,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                 }
                 lifecycleOwner(this@CreateTimenote)
             }
-            where_cardview -> startActivityForResult(
-                Autocomplete.IntentBuilder(
-                    AutocompleteActivityMode.OVERLAY,
-                    placesList
-                ).build(requireContext()), AUTOCOMPLETE_REQUEST_CODE
-            )
+            where_cardview -> startActivityForResult(Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, placesList).build(requireContext()), AUTOCOMPLETE_REQUEST_CODE)
             share_with_cardview -> shareWith()
             category_cardview -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.category)
@@ -786,10 +1003,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                     creationTimenoteViewModel.setDescription(descWithoutHashtag)
                 }
             }
-            create_timenote_fifth_color -> MaterialDialog(
-                requireContext(),
-                BottomSheet(LayoutMode.WRAP_CONTENT)
-            ).show {
+            create_timenote_fifth_color -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.colors)
                 colorChooser(
                     colors = ColorPalette.Primary,
@@ -857,10 +1071,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                 images?.clear()
                 openDialogToChoosePic()
             }
-            paid_timenote_cardview -> MaterialDialog(
-                requireContext(),
-                BottomSheet(LayoutMode.WRAP_CONTENT)
-            ).show {
+            paid_timenote_cardview -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.paid_timenote)
                 listItems(
                     items = listOf(
@@ -921,6 +1132,8 @@ class CreateTimenote : Fragment(), View.OnClickListener,
             }
             organizers_cv -> createFriendsBottomSheet(2, null)
             create_timenote_clear -> {
+                dateToAdd.clear()
+                datesRv.visibility = View.GONE
                 creationTimenoteViewModel.clear()
                 images = mutableListOf()
                 sendTo.clear()
@@ -932,7 +1145,6 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                 if (args.from == 0) backToHomeListener.onBackHome()
                 else findNavController().popBackStack()
             }
-
             create_timenote_next_btn -> {
                 if (checkFormCompleted()) {
                     if (!images?.isNullOrEmpty()!!) {
@@ -958,7 +1170,23 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                     }
                 }
             }
+        }
+    }
 
+    private fun repeatEveryWeekAtDay(ocurence: Int, c: Calendar, every: Int, day: Int, isAfter: Boolean, endDateDialog : Long) {
+        var localOccurrence = ocurence
+        var date = 0L
+        c.set(Calendar.DAY_OF_WEEK, day)
+        if (c.timeInMillis > startDate!!)
+            dateToAdd.add(dateFormatDateAndTimeISO.format(c.timeInMillis))
+        if(isAfter) while (localOccurrence > 0) {
+            c.add(Calendar.WEEK_OF_YEAR, every)
+            dateToAdd.add(dateFormatDateAndTimeISO.format(c.timeInMillis))
+            localOccurrence--
+        } else while (endDateDialog > date) {
+            c.add(Calendar.WEEK_OF_YEAR, every)
+            dateToAdd.add(dateFormatDateAndTimeISO.format(c.timeInMillis))
+            date = c.timeInMillis
         }
     }
 
@@ -1019,19 +1247,21 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     }
 
     private fun modifyTimenote() {
-        timenoteViewModel.modifySpecificTimenote(tokenId!!, args.id!!, creationTimenoteViewModel.getCreateTimeNoteLiveData().value!!).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            if(it.code() == 401) {
-                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, androidx.lifecycle.Observer {newAccessToken ->
-                    tokenId = newAccessToken
-                    modifyTimenote()
-                })
+        timenoteViewModel.modifySpecificTimenote(tokenId!!, args.id!!, creationTimenoteViewModel.getCreateTimeNoteLiveData().value!!).observe(viewLifecycleOwner
+        ) {
+            if (it.code() == 401) {
+                authViewModel.refreshToken(prefs)
+                    .observe(viewLifecycleOwner, androidx.lifecycle.Observer { newAccessToken ->
+                        tokenId = newAccessToken
+                        modifyTimenote()
+                    })
             }
-            if(it.isSuccessful) clearAndPreview(it)
-        })
+            if (it.isSuccessful) clearAndPreview(it.body()!!)
+        }
     }
 
     private fun createTimenoteEmptyPic() {
-        timenoteViewModel.createTimenote(tokenId!!, creationTimenoteViewModel.getCreateTimeNoteLiveData().value!!
+        if (dateToAdd.isNullOrEmpty()) timenoteViewModel.createTimenote(tokenId!!, creationTimenoteViewModel.getCreateTimeNoteLiveData().value!!
         ).observe(viewLifecycleOwner) {
             if (it.code() == 401) {
                 authViewModel.refreshToken(prefs)
@@ -1040,11 +1270,26 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                         createTimenoteEmptyPic()
                     }
             }
-            if (it.isSuccessful) clearAndPreview(it)
+            else if (it.isSuccessful) clearAndPreview(it.body()!!)
+        } else {
+            val timenotes : MutableList<CreationTimenoteDTO> = mutableListOf()
+            dateToAdd.forEach {
+                creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.startingAt = it
+                creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.endingAt = it
+                timenotes.add(creationTimenoteViewModel.getCreateTimeNoteLiveData().value!!.copy())
+            }
+            timenoteViewModel.bulkTimenote(tokenId!!, timenotes).observe(viewLifecycleOwner){
+                if(it.code() == 401){
+                    authViewModel.refreshToken(prefs).observe(viewLifecycleOwner){
+                            newAccessToken -> tokenId = newAccessToken
+                        createTimenoteEmptyPic()
+                    }
+                } else if(it.isSuccessful) clearAndPreview(it.body()?.first()!!)
+            }
         }
     }
 
-    private fun clearAndPreview(it: Response<TimenoteInfoDTO>) {
+    private fun clearAndPreview(it: TimenoteInfoDTO) {
         startDateDisplayed = null
         endDateDisplayed = null
         create_timenote_next_btn.visibility = View.VISIBLE
@@ -1058,7 +1303,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         imagesUrl = mutableListOf()
         findNavController().popBackStack()
         goToProfileLisner.goToProfile()
-        switchToPreviewDetailedTimenoteViewModel.setTimenoteInfoDTO(it.body()!!)
+        switchToPreviewDetailedTimenoteViewModel.setTimenoteInfoDTO(it)
         switchToPreviewDetailedTimenoteViewModel.switchToPreviewDetailedTimenoteViewModel(true)
     }
 
@@ -1344,11 +1589,12 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                         modifyTimenotePic()
                     }
             }
-            if (it.isSuccessful) clearAndPreview(it)
+            if (it.isSuccessful) clearAndPreview(it.body()!!)
         }
     }
 
     private fun createTimenotePic() {
+        if(dateToAdd.isNullOrEmpty())
         timenoteViewModel.createTimenote(
             tokenId!!,
             creationTimenoteViewModel.getCreateTimeNoteLiveData().value!!
@@ -1362,7 +1608,22 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                         createTimenotePic()
                     }
             }
-            if (it.isSuccessful) clearAndPreview(it)
+            else if (it.isSuccessful) clearAndPreview(it.body()!!)
+        } else {
+            val timenotes : MutableList<CreationTimenoteDTO> = mutableListOf()
+            dateToAdd.forEach {
+                creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.startingAt = it
+                creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.endingAt = it
+                timenotes.add(creationTimenoteViewModel.getCreateTimeNoteLiveData().value!!.copy())
+            }
+            timenoteViewModel.bulkTimenote(tokenId!!, timenotes).observe(viewLifecycleOwner){
+                if(it.code() == 401){
+                    authViewModel.refreshToken(prefs).observe(viewLifecycleOwner){
+                            newAccessToken -> tokenId = newAccessToken
+                        createTimenoteEmptyPic()
+                    }
+                } else if(it.isSuccessful) clearAndPreview(it.body()?.first()!!)
+            }
         }
     }
 
@@ -1444,6 +1705,16 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     override fun onRemove(userInfoDTO: UserInfoDTO, createGroup: Int?) {
         if(createGroup != null && createGroup == 2) organizers.remove(userInfoDTO.id)
         else sendTo.remove(userInfoDTO.id)
+    }
+
+    override fun onClose(date: String) {
+        dateToAdd.remove(date)
+        dateAdapter.notifyDataSetChanged()
+        if(dateToAdd.isNullOrEmpty()) {
+            datesRv.visibility = View.GONE
+            addEndDateTv.visibility = View.VISIBLE
+            configureRecurrence.visibility = View.VISIBLE
+        }
     }
 
 }

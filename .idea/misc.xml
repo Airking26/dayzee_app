@@ -9,11 +9,17 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../layout/custom_preview.xml" value="0.4004085801838611" />
+        <entry key="../../.gradle/caches/transforms-3/04364d0f4adf6256bfbf9d6d29d9eb61/transformed/jetified-number-sliding-picker-1.1.1/res/drawable/mtrl_background_filled.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/custom_bg_spinner.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_a.xml" value="0.1755" />
         <entry key="app/src/main/res/drawable/ic_b.xml" value="0.244" />
+        <entry key="app/src/main/res/drawable/ic_baseline_arrow_drop_down_24.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/ic_baseline_error_24.xml" value="0.1175" />
+        <entry key="app/src/main/res/drawable/ic_checktwo.xml" value="0.1175" />
         <entry key="app/src/main/res/drawable/ic_v.xml" value="0.1085" />
         <entry key="app/src/main/res/drawable/ic_w.xml" value="0.1085" />
         <entry key="app/src/main/res/layout-sw480dp/activity_main.xml" value="0.1" />
+        <entry key="app/src/main/res/layout-sw480dp/fragment_create_timenote.xml" value="0.1" />
         <entry key="app/src/main/res/layout-sw480dp/fragment_menu.xml" value="0.1" />
         <entry key="app/src/main/res/layout-sw480dp/fragment_my_profile.xml" value="0.1" />
         <entry key="app/src/main/res/layout-sw480dp/fragment_nearby_filters.xml" value="0.27867590454195534" />
@@ -34,17 +40,23 @@
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.240234375" />
         <entry key="app/src/main/res/layout/adapter_suggestion_card.xml" value="0.11458333333333333" />
         <entry key="app/src/main/res/layout/custom_layout.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/custom_spinner.xml" value="0.4542021009657118" />
+        <entry key="app/src/main/res/layout/custom_spinner_dd.xml" value="0.11805555555555555" />
+        <entry key="app/src/main/res/layout/dialog_reccurence.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_create_account.xml" value="0.12361111111111112" />
-        <entry key="app/src/main/res/layout/fragment_create_timenote.xml" value="0.27867590454195534" />
+        <entry key="app/src/main/res/layout/fragment_create_timenote.xml" value="0.22194513715710723" />
         <entry key="app/src/main/res/layout/fragment_detailed_fragment.xml" value="0.121875" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.240234375" />
+        <entry key="app/src/main/res/layout/fragment_login.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_menu.xml" value="0.10416666666666667" />
         <entry key="app/src/main/res/layout/fragment_my_profile.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_nearby_filters.xml" value="0.165" />
+        <entry key="app/src/main/res/layout/fragment_preference_sub_category.xml" value="0.2611111111111111" />
         <entry key="app/src/main/res/layout/fragment_profil_modify.xml" value="0.17761033369214208" />
         <entry key="app/src/main/res/layout/fragment_profile_else.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_qr_code.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_settings.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/fragment_signup.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_signup_new.xml" value="0.12361111111111112" />
         <entry key="app/src/main/res/layout/fragment_video.xml" value="0.2828125" />
         <entry key="app/src/main/res/layout/gridview_nft.xml" value="0.25" />
@@ -58,6 +70,7 @@
         <entry key="app/src/main/res/layout/item_pref_sub_category.xml" value="0.27361111111111114" />
         <entry key="app/src/main/res/layout/item_pref_sub_category_chip.xml" value="0.27361111111111114" />
         <entry key="app/src/main/res/layout/item_profile_calendar.xml" value="0.11458333333333333" />
+        <entry key="app/src/main/res/layout/item_remove_filter_bar.xml" value="0.2611111111111111" />
         <entry key="app/src/main/res/layout/item_search_explore.xml" value="0.27361111111111114" />
         <entry key="app/src/main/res/layout/item_test.xml" value="0.240234375" />
         <entry key="app/src/main/res/layout/item_timenote.xml" value="0.27867590454195534" />

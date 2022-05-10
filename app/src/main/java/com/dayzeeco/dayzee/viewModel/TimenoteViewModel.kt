@@ -32,6 +32,7 @@ class TimenoteViewModel: ViewModel() {
     fun hideToOthers(token: String, id: String) = flow { emit(timenoteService.joinPrivateTimenote("Bearer $token",id)) }.asLiveData(viewModelScope.coroutineContext)
     fun signalTimenote(token: String, timenoteCreationSignalementDTO: TimenoteCreationSignalementDTO) = flow { emit(timenoteService.signaleTimenote("Bearer $token",timenoteCreationSignalementDTO)) }.asLiveData(viewModelScope.coroutineContext)
     fun createTimenote(token: String, creationTimenoteDTO: CreationTimenoteDTO) = flow { emit(timenoteService.createTimenote("Bearer $token", creationTimenoteDTO)) }.asLiveData(viewModelScope.coroutineContext)
+    fun bulkTimenote(token: String, creationTimenoteDTO: List<CreationTimenoteDTO>) = flow { emit(timenoteService.bulkTimenote("Bearer $token", creationTimenoteDTO)) }.asLiveData(viewModelScope.coroutineContext)
     fun getUsersParticipating(token: String, id: String, sharedPreferences: SharedPreferences) = Pager(PagingConfig(pageSize = 1)){UsersParticipatingPagingSource(token, id, timenoteService, sharedPreferences)}.flow.cachedIn(viewModelScope)
     fun shareWith(token: String, shareTimenoteDTO: ShareTimenoteDTO) = flow { emit(timenoteService.shareWith("Bearer $token", shareTimenoteDTO)) }.asLiveData(viewModelScope.coroutineContext)
 

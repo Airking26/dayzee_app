@@ -30,6 +30,9 @@ interface TimenoteService {
     @POST("timenote")
     suspend fun createTimenote(@Header("Authorization") token: String, @Body timenoteModel: CreationTimenoteDTO) : Response<TimenoteInfoDTO>
 
+    @POST("timenote/bulk")
+    suspend fun bulkTimenote(@Header("Authorization") token: String, @Body timenoteModel: List<CreationTimenoteDTO>) : Response<List<TimenoteInfoDTO>>
+
     @PUT("timenote/join/{id}")
     suspend fun joinTimenote(@Header("Authorization") token: String, @Path("id") id: String) : Response<Any>
 

@@ -210,7 +210,7 @@
     <string name="alarm">Alarm</string>
     <string name="report">Report</string>
     <string name="hide_to_others">Hide to others</string>
-    <string name="add_end_date">Add End Date</string>
+    <string name="add_end_date">• Add an end date (Optional)</string>
     <string name="paid_timenote">Cost</string>
     <string name="no_answer">No Answer</string>
     <string name="free">Free</string>
@@ -441,6 +441,24 @@
     <string name="title_create_event">Title*</string>
     <string name="open_gallery_camera">From my gallery</string>
     <string name="from_nfts">From my NFTs</string>
+    <string name="repeat_all">Repeat all</string>
+    <string name="ends_in">End</string>
+    <string name="the">The</string>
+    <string name="after">After</string>
+    <string name="occurences">occurences</string>
+    <string name="validate">VALIDATE</string>
+    <string name="repeat_the">Repeat the</string>
+    <string name="monday_initial">M</string>
+    <string name="tuesday_initial">T</string>
+    <string name="wednesday_initial">W</string>
+    <string name="thursday_initial">T</string>
+    <string name="friday_initial">F</string>
+    <string name="saturday_initial">S</string>
+    <string name="sunday_initial">S</string>
+    <string name="configure_reccurence">• Configure a recurence (Optional)</string>
+    <string name="every_month">The %1$s</string>
+    <string name="_30_occurrences_maximum_are_allowed">30 occurrences maximum</string>
+    <string name="too_many_occurrences">Too many occurrences</string>
     <plurals name="time_minutes_comment">
         <item quantity="one">%1$d minute</item>
         <item quantity="other">%1$d minutes</item>
@@ -565,5 +583,10 @@
         <item quantity="one">Since %1$d year and %2$d month</item>
         <item quantity="other">Since %1$d year and %2$d months</item>
     </plurals>
-
+    <string-array name="period">
+        <item>Day</item>
+        <item>Month</item>
+        <item>Week</item>
+        <item>Year</item>
+    </string-array>
 </resources>
