@@ -81,6 +81,7 @@
         <entry key="app/src/main/res/layout/item_user_hidden.xml" value="0.11458333333333333" />
         <entry key="app/src/main/res/layout/item_user_send.xml" value="0.11458333333333333" />
         <entry key="app/src/main/res/layout/item_video.xml" value="0.2828125" />
+        <entry key="app/src/main/res/layout/layout_video_list_item.xml" value="0.18888888888888888" />
         <entry key="app/src/main/res/layout/timenote_view_image.xml" value="0.27361111111111114" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.240234375" />
       </map>

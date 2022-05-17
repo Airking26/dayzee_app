@@ -45,6 +45,8 @@ import com.dayzeeco.dayzee.model.*
 import com.dayzeeco.dayzee.viewModel.*
 import com.dayzeeco.dayzee.webService.ProfileModifyData
 import com.dayzeeco.dayzee.webService.service.AlarmData
+import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.upstream.cache.CacheDataSource
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GooglePlayServicesUtil
 import com.google.api.client.extensions.android.http.AndroidHttp
@@ -297,10 +299,10 @@ class Settings : Fragment(), View.OnClickListener, SynchronizeWithGoogleCalendar
                 alert.show()
             }
             profile_settings_send_comments -> {
-                //findNavController().navigate(SettingsDirections.actionSettingsToVideoFragment())
-                val intent = Intent(Intent.ACTION_VIEW)
-                intent.data = Uri.parse("https://play.google.com/store/apps/details?id=com.dayzeeco.dayzee")
-                startActivity(intent)
+                findNavController().navigate(SettingsDirections.actionSettingsToVideoFragment())
+                //val intent = Intent(Intent.ACTION_VIEW)
+                //intent.data = Uri.parse("https://play.google.com/store/apps/details?id=com.dayzeeco.dayzee")
+                //startActivity(intent)
             }
             settings_synchro_cl -> checkPermission(callbackId, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)
             profile_settings_notification_manager -> findNavController().navigate(SettingsDirections.actionSettingsToNotificationManager())

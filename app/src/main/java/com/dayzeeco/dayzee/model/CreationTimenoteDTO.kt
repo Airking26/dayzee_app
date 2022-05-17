@@ -20,5 +20,6 @@ data class CreationTimenoteDTO (
 	@SerializedName("url") var url : String? = null,
 	@SerializedName("price") var price : Price,
 	@SerializedName("sharedWith") var sharedWith : List<String>? = null,
-	@SerializedName("urlTitle") var urlTitle: String? = null
+	@SerializedName("urlTitle") var urlTitle: String? = null,
+	@SerializedName("video") var video: String? = null
 ) : Parcelable

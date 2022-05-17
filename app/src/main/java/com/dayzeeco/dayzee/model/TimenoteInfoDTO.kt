@@ -26,5 +26,6 @@ data class TimenoteInfoDTO (
 	@SerializedName("joinedBy") val joinedBy : JoinedBy?,
 	@SerializedName("comments") val commentAccount: Int?,
 	@SerializedName("participating") val isParticipating: Boolean,
-	@SerializedName("urlTitle") val urlTitle: String?
+	@SerializedName("urlTitle") val urlTitle: String?,
+	@SerializedName("video") val video: String?
 ) : Parcelable

@@ -29,9 +29,11 @@ import com.dayzeeco.dayzee.common.HashTagHelper
 import com.dayzeeco.dayzee.common.Utils
 import com.dayzeeco.dayzee.common.bytesEqualTo
 import com.dayzeeco.dayzee.common.pixelsEqualTo
+import com.dayzeeco.dayzee.exo.VideoPlayerViewHolder
 import com.dayzeeco.dayzee.listeners.TimenoteOptionsListener
 import com.dayzeeco.dayzee.model.TimenoteInfoDTO
 import com.dayzeeco.dayzee.model.UserInfoDTO
+import com.dayzeeco.dayzee.video.VideoAdapter
 import kotlinx.android.synthetic.main.item_timenote.view.*
 import kotlinx.android.synthetic.main.item_timenote_root.view.*
 import java.text.SimpleDateFormat
@@ -46,18 +48,38 @@ class TimenotePagingAdapter(diffCallbacks: DiffUtil.ItemCallback<TimenoteInfoDTO
                             private val timenoteListenerListener: TimenoteOptionsListener,
                             val fragment: Fragment, private val isFromFuture: Boolean,
                             private val utils: Utils, private val createdBy: String?, private val formatOfDate: Int, private val userInfoDTO: UserInfoDTO?)
-    : PagingDataAdapter<TimenoteInfoDTO, TimenoteViewHolder>(diffCallbacks){
+    : PagingDataAdapter<TimenoteInfoDTO, RecyclerView.ViewHolder>(diffCallbacks){
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimenoteViewHolder =
-        TimenoteViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_timenote, parent, false))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        if(viewType == 1) return TimenoteViewHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.item_timenote, parent, false))
+        else return VideoPlayerViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.layout_video_list_item, parent, false))
+    }
 
     @OptIn(ExperimentalTime::class)
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun onBindViewHolder(holder: TimenoteViewHolder, position: Int) =
-        holder.bindTimenote(getItem(position)!!, timenoteListenerListener, fragment, isFromFuture, utils, createdBy, formatOfDate, userInfoDTO)
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        if(holder.itemViewType == 1)
+            (holder as TimenoteViewHolder).bindTimenote(
+            getItem(position)!!,
+            timenoteListenerListener,
+            fragment,
+            isFromFuture,
+            utils,
+            createdBy,
+            formatOfDate,
+            userInfoDTO
+        )
+        else (holder as VideoPlayerViewHolder).onBind(getItem(position), null)
+    }
 
     fun resetAllSelected(){
         allSelected.clear()
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return if(getItem(position)?.video.isNullOrEmpty()) 0
+        else 1
     }
 
 }
@@ -519,7 +541,6 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
     }
 
 }
-
 
 object TimenoteComparator : DiffUtil.ItemCallback<TimenoteInfoDTO>(){
 

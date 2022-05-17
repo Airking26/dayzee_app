@@ -3,9 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
+    <com.dayzeeco.dayzee.exo.VideoPlayerRecyclerView
         android:layout_width="match_parent"
-        android:id="@+id/video_rv"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:id="@+id/recycler_view"
+        android:orientation="vertical"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

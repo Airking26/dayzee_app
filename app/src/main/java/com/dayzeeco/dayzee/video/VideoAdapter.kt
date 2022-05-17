@@ -25,8 +25,8 @@ class VideoAdapter(private val videoPlayerManager: VideoPlayerManager<MetaData>,
     class ImageViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         val image = itemView.test
 
-        fun bindImage(urlVideoItem: UrlVideoItem) {
-            image.setImageURI(Uri.parse(urlVideoItem.getUrl()))
+        fun bindImage(urlVideoItem: String) {
+            image.setImageURI(Uri.parse(urlVideoItem))
         }
 
     }
@@ -51,7 +51,7 @@ class VideoAdapter(private val videoPlayerManager: VideoPlayerManager<MetaData>,
                 val item = videos[position]
                 item.update(position, holder as VideoViewHolder, videoPlayerManager)
             }
-            1 -> (holder as ImageViewHolder).bindImage(videos[position])
+            1 -> (holder as ImageViewHolder).bindImage(videos[position].toString())
         }
 
     }

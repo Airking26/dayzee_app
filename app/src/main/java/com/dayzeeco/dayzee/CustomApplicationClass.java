@@ -12,6 +12,7 @@ import androidx.camera.core.CameraXConfig;
 
 import com.appsflyer.AppsFlyerLib;
 import com.appsflyer.attribution.AppsFlyerRequestListener;
+import com.danikula.videocache.HttpProxyCacheServer;
 import com.dayzeeco.dayzee.androidView.instaLike.PictureSelectorEngineImp;
 import com.dayzeeco.dayzee.webService.repo.DayzeeRepository;
 import com.dayzeeco.dayzee.webService.service.TimenoteService;
@@ -19,6 +20,9 @@ import com.dayzeeco.picture_library.app.IApp;
 import com.dayzeeco.picture_library.app.PictureAppMaster;
 import com.dayzeeco.picture_library.crash.PictureSelectorCrashUtils;
 import com.dayzeeco.picture_library.engine.PictureSelectorEngine;
+import com.google.android.exoplayer2.database.ExoDatabaseProvider;
+import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor;
+import com.google.android.exoplayer2.upstream.cache.SimpleCache;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.moralis.web3.Moralis;
 import com.moralis.web3.MoralisApplication;
@@ -27,8 +31,19 @@ import io.branch.referral.Branch;
 
 import static com.google.android.gms.common.util.CollectionUtils.listOf;
 
-public class customApplicationClass extends MoralisApplication implements IApp, CameraXConfig.Provider {
+public class CustomApplicationClass extends MoralisApplication implements IApp, CameraXConfig.Provider {
 
+    private HttpProxyCacheServer proxy;
+    public static HttpProxyCacheServer getProxy(Context context) {
+        CustomApplicationClass app = (CustomApplicationClass) context.getApplicationContext();
+        return app.proxy == null ? (app.proxy = app.newProxy()) : app.proxy;
+    }
+
+    private HttpProxyCacheServer newProxy() {
+        return new HttpProxyCacheServer.Builder(this)
+                .maxCacheSize(1024 * 1024 * 1024)
+                .build();
+    }
     @Override
     public void onCreate() {
         super.onCreate();
