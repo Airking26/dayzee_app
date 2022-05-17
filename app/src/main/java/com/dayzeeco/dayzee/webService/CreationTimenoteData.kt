@@ -46,6 +46,11 @@ class CreationTimenoteData {
         return timenoteModel
     }
 
+    fun setVideo(video: String): CreationTimenoteDTO{
+        timenoteModel.video = video
+        return timenoteModel
+    }
+
     fun setHashtags(hashtags: List<String>): CreationTimenoteDTO{
         timenoteModel.hashtags = hashtags
         return timenoteModel

@@ -51,9 +51,9 @@ class TimenotePagingAdapter(diffCallbacks: DiffUtil.ItemCallback<TimenoteInfoDTO
     : PagingDataAdapter<TimenoteInfoDTO, RecyclerView.ViewHolder>(diffCallbacks){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        if(viewType == 1) return TimenoteViewHolder(
+        return if(viewType == 0) TimenoteViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.item_timenote, parent, false))
-        else return VideoPlayerViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.layout_video_list_item, parent, false))
+        else VideoPlayerViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.layout_video_list_item, parent, false))
     }
 
     @OptIn(ExperimentalTime::class)

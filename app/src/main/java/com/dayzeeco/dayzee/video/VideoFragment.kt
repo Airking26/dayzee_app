@@ -10,8 +10,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.RequestOptions
 import com.dayzeeco.dayzee.R
-import com.dayzeeco.dayzee.exo.MediaObject
-import com.dayzeeco.dayzee.exo.VideoPlayerRecyclerAdapater
 import com.dayzeeco.dayzee.video.video_player_manager.Config
 import com.dayzeeco.dayzee.video.video_player_manager.manager.SingleVideoPlayerManager
 import com.dayzeeco.dayzee.video.video_player_manager.manager.VideoPlayerManager
@@ -25,78 +23,6 @@ class VideoFragment : Fragment() {
 
     private val mList: ArrayList<UrlVideoItem> = ArrayList()
     private val mVideoPlayerManager: VideoPlayerManager<MetaData> = SingleVideoPlayerManager { }
-    private val MEDIA_OBJECTS = arrayListOf(
-        MediaObject(
-            "Sending Data to a New Activity with Intent Extras",
-            "https://file-examples.com/storage/fe87de2c5a6282dd89eaa48/2017/04/file_example_MP4_480_1_5MG.mp4",
-            "https://s3.ca-central-1.amazonaws.com/codingwithmitch/media/VideoPlayerRecyclerView/Sending+Data+to+a+New+Activity+with+Intent+Extras.png",
-            "Description for media object #1",
-            0
-        ),
-        MediaObject(
-            "Sending Data to a New Activity with Intent Extras",
-            "https://file-examples.com/storage/fe87de2c5a6282dd89eaa48/2017/04/file_example_MP4_480_1_5MG.mp4",
-            "https://s3.ca-central-1.amazonaws.com/codingwithmitch/media/VideoPlayerRecyclerView/Sending+Data+to+a+New+Activity+with+Intent+Extras.png",
-            "Description for media object #1",
-            1
-        ),
-        MediaObject(
-            "Sending Data to a New Activity with Intent Extras",
-            "https://file-examples.com/storage/fe87de2c5a6282dd89eaa48/2017/04/file_example_MP4_480_1_5MG.mp4",
-            "https://s3.ca-central-1.amazonaws.com/codingwithmitch/media/VideoPlayerRecyclerView/Sending+Data+to+a+New+Activity+with+Intent+Extras.png",
-            "Description for media object #1",
-            1
-        ),
-        MediaObject(
-            "Sending Data to a New Activity with Intent Extras",
-            "https://file-examples.com/storage/fe87de2c5a6282dd89eaa48/2017/04/file_example_MP4_480_1_5MG.mp4",
-            "https://s3.ca-central-1.amazonaws.com/codingwithmitch/media/VideoPlayerRecyclerView/Sending+Data+to+a+New+Activity+with+Intent+Extras.png",
-            "Description for media object #1",
-            0
-        ),
-        MediaObject(
-            "Sending Data to a New Activity with Intent Extras",
-            "https://file-examples.com/storage/fe87de2c5a6282dd89eaa48/2017/04/file_example_MP4_480_1_5MG.mp4",
-            "https://s3.ca-central-1.amazonaws.com/codingwithmitch/media/VideoPlayerRecyclerView/Sending+Data+to+a+New+Activity+with+Intent+Extras.png",
-            "Description for media object #1",
-            1
-        ),
-        MediaObject(
-            "Sending Data to a New Activity with Intent Extras",
-            "https://file-examples.com/storage/fe87de2c5a6282dd89eaa48/2017/04/file_example_MP4_480_1_5MG.mp4",
-            "https://s3.ca-central-1.amazonaws.com/codingwithmitch/media/VideoPlayerRecyclerView/Sending+Data+to+a+New+Activity+with+Intent+Extras.png",
-            "Description for media object #1",
-            0
-        ),
-        MediaObject(
-            "Sending Data to a New Activity with Intent Extras",
-            "https://file-examples.com/storage/fe87de2c5a6282dd89eaa48/2017/04/file_example_MP4_480_1_5MG.mp4",
-            "https://s3.ca-central-1.amazonaws.com/codingwithmitch/media/VideoPlayerRecyclerView/Sending+Data+to+a+New+Activity+with+Intent+Extras.png",
-            "Description for media object #1",
-            0
-        ),
-        MediaObject(
-            "Sending Data to a New Activity with Intent Extras",
-            "https://file-examples.com/storage/fe87de2c5a6282dd89eaa48/2017/04/file_example_MP4_480_1_5MG.mp4",
-            "https://s3.ca-central-1.amazonaws.com/codingwithmitch/media/VideoPlayerRecyclerView/Sending+Data+to+a+New+Activity+with+Intent+Extras.png",
-            "Description for media object #1",
-            1
-        ),
-        MediaObject(
-            "Sending Data to a New Activity with Intent Extras",
-            "https://file-examples.com/storage/fe87de2c5a6282dd89eaa48/2017/04/file_example_MP4_480_1_5MG.mp4",
-            "https://s3.ca-central-1.amazonaws.com/codingwithmitch/media/VideoPlayerRecyclerView/Sending+Data+to+a+New+Activity+with+Intent+Extras.png",
-            "Description for media object #1",
-            1
-        ),
-        MediaObject(
-            "Sending Data to a New Activity with Intent Extras",
-            "https://file-examples.com/storage/fe87de2c5a6282dd89eaa48/2017/04/file_example_MP4_480_1_5MG.mp4",
-            "https://s3.ca-central-1.amazonaws.com/codingwithmitch/media/VideoPlayerRecyclerView/Sending+Data+to+a+New+Activity+with+Intent+Extras.png",
-            "Description for media object #1",
-            0
-        ),
-    )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -154,10 +80,6 @@ class VideoFragment : Fragment() {
     private fun initRecyclerView() {
         val layoutManager = LinearLayoutManager(requireContext())
         recycler_view.layoutManager = layoutManager
-        val mediaObjects: ArrayList<MediaObject> = MEDIA_OBJECTS
-        recycler_view.setMediaObjects(mediaObjects)
-        val adapter = VideoPlayerRecyclerAdapater(mediaObjects, initGlide())
-        recycler_view.adapter = adapter
     }
 
 

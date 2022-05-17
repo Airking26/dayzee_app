@@ -155,6 +155,6 @@ dependencies {
     implementation 'it.sephiroth.android.library:number-sliding-picker:1.1.1'
     implementation "com.google.android.exoplayer:exoplayer:2.11.1"
     implementation 'com.danikula:videocache:2.7.1'
-    implementation 'com.github.AbedElazizShe:LightCompressor:1.1.1'
-
+    implementation 'com.google.android.exoplayer:exoplayer-dash:2.11.0'
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.11.0'
 }

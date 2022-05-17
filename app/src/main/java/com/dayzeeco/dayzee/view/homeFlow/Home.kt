@@ -231,6 +231,7 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
                 format_date_default, 0
             ), userInfoDTO
         )
+
         lifecycleScope.launch {
             timenoteViewModel.getUpcomingTimenotePagingFlow(tokenId!!, true, prefs).collectLatest {
                 timenotePagingAdapter?.submitData(it)
@@ -244,9 +245,9 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
             }
         }
 
+
         home_rv?.apply {
             setHasFixedSize(true)
-
             layoutManager = LinearLayoutManager(
                 requireContext(),
                 LinearLayoutManager.VERTICAL,

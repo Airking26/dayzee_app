@@ -38,8 +38,6 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
-import com.abedelazizshe.lightcompressorlibrary.CompressionListener
-import com.abedelazizshe.lightcompressorlibrary.VideoCompressor
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.WhichButton
@@ -150,6 +148,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     private lateinit var screenSlideCreationTimenotePagerAdapter: ScreenSlideCreationTimenotePagerAdapter
     private var images: MutableList<File>? = mutableListOf()
     private var video : File? = null
+    private var videoUrl : String? = null
     private lateinit var titleInput: String
     private var endDate: Long? = null
     private var formCompleted: Boolean = true
@@ -1531,7 +1530,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
             formCompleted = false
             create_timenote_title_error.visibility = View.VISIBLE
         }
-        if(images.isNullOrEmpty() && values?.colorHex.isNullOrBlank() && creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.pictures.isNullOrEmpty()) formCompleted = false
+        if(images.isNullOrEmpty() && values?.colorHex.isNullOrBlank() && creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.pictures.isNullOrEmpty() && videoUrl.isNullOrBlank()) formCompleted = false
         if(values?.location != null){
             prefs.stringLiveData(offset, "+00:00").observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                 if(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.startingAt?.isNotBlank()!!)
@@ -1558,6 +1557,9 @@ class CreateTimenote : Fragment(), View.OnClickListener,
             override fun onStateChanged(id: Int, state: TransferState?) {
                 if (state == TransferState.COMPLETED) {
                     val path = am.getResourceUrl(bucket_dayzee_dev_image, key).toString()
+                    videoUrl = path
+                    creationTimenoteViewModel.setVideo(videoUrl!!)
+                    createTimenotePic()
                     imagesUrl.add(am.getResourceUrl(bucket_dayzee_dev_image, key).toString())
                     if (images?.size == imagesUrl.size) {
                         creationTimenoteViewModel.setPicUser(imagesUrl)

@@ -30,6 +30,7 @@ class CreationTimenoteViewModel: ViewModel() {
         return timenoteLiveData
     }
 
+    fun setVideo(video: String) = timenoteLiveData.postValue(createTimenoteData.setVideo(video))
     fun setTitle(title : String) = timenoteLiveData.postValue(createTimenoteData.setTtile(title))
     fun setPrice(price: Price) = timenoteLiveData.postValue(createTimenoteData.setPrice(price))
     fun setHashtags(hashtags: List<String>) = timenoteLiveData.postValue(createTimenoteData.setHashtags(hashtags))

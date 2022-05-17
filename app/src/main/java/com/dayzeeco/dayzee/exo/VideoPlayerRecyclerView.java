@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.RequestManager;
 import com.dayzeeco.dayzee.CustomApplicationClass;
 import com.dayzeeco.dayzee.R;
+import com.dayzeeco.dayzee.model.TimenoteInfoDTO;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -69,7 +70,7 @@ public class VideoPlayerRecyclerView extends RecyclerView {
     private SimpleExoPlayer videoPlayer;
 
     // vars
-    private ArrayList<MediaObject> mediaObjects = new ArrayList<>();
+    private ArrayList<TimenoteInfoDTO> mediaObjects = new ArrayList<>();
     private int videoSurfaceDefaultHeight = 0;
     private int screenDefaultHeight = 0;
     private Context context;
@@ -298,12 +299,8 @@ public class VideoPlayerRecyclerView extends RecyclerView {
             playPosition = -1;
             return;
         }
-        thumbnail = holder.thumbnail;
-        progressBar = holder.progressBar;
-        volumeControl = holder.volumeControl;
         viewHolderParent = holder.itemView;
         requestManager = holder.requestManager;
-        frameLayout = holder.itemView.findViewById(R.id.media_container);
 
         videoSurfaceView.setPlayer(videoPlayer);
 
@@ -311,7 +308,7 @@ public class VideoPlayerRecyclerView extends RecyclerView {
 
         DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(
                 context, Util.getUserAgent(context, "RecyclerView VideoPlayer"));
-        String mediaUrl = mediaObjects.get(targetPosition).getMedia_url();
+        String mediaUrl = mediaObjects.get(targetPosition).getVideo();
         if (mediaUrl != null) {
             //MediaSourceFactory k = new MediaSourceFactory.createMediaSource();
             String url = CustomApplicationClass.getProxy(context).getProxyUrl(mediaUrl);
@@ -439,7 +436,7 @@ public class VideoPlayerRecyclerView extends RecyclerView {
         }
     }
 
-    public void setMediaObjects(ArrayList<MediaObject> mediaObjects){
+    public void setMediaObjects(ArrayList<TimenoteInfoDTO> mediaObjects){
         this.mediaObjects = mediaObjects;
     }
 }

@@ -20,6 +20,7 @@
         <entry key="app/src/main/res/drawable/ic_w.xml" value="0.1085" />
         <entry key="app/src/main/res/layout-sw480dp/activity_main.xml" value="0.1" />
         <entry key="app/src/main/res/layout-sw480dp/fragment_create_timenote.xml" value="0.1" />
+        <entry key="app/src/main/res/layout-sw480dp/fragment_home.xml" value="0.12708333333333333" />
         <entry key="app/src/main/res/layout-sw480dp/fragment_menu.xml" value="0.1" />
         <entry key="app/src/main/res/layout-sw480dp/fragment_my_profile.xml" value="0.1" />
         <entry key="app/src/main/res/layout-sw480dp/fragment_nearby_filters.xml" value="0.27867590454195534" />
