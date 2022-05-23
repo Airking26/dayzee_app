@@ -2,7 +2,9 @@ package com.dayzeeco.dayzee.paging
 
 import android.content.SharedPreferences
 import androidx.paging.PagingSource
+import androidx.paging.PagingState
 import com.dayzeeco.dayzee.common.Utils
+import com.dayzeeco.dayzee.model.CommentInfoDTO
 import com.dayzeeco.dayzee.model.TimenoteInfoDTO
 import com.dayzeeco.dayzee.webService.service.TimenoteHiddedService
 
@@ -23,5 +25,9 @@ class HiddedEventsPagingSource(val token: String, val hiddedService: TimenoteHid
         }catch (e:Exception){
             LoadResult.Error(e)
         }
+    }
+
+    override fun getRefreshKey(state: PagingState<Int, TimenoteInfoDTO>): Int? {
+        return 0
     }
 }

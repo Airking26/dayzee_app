@@ -2,8 +2,10 @@ package com.dayzeeco.dayzee.paging
 
 import android.content.SharedPreferences
 import androidx.paging.PagingSource
+import androidx.paging.PagingState
 import com.dayzeeco.dayzee.common.Utils
 import com.dayzeeco.dayzee.model.NotificationInfoDTO
+import com.dayzeeco.dayzee.model.TimenoteInfoDTO
 import com.dayzeeco.dayzee.webService.service.NotificationService
 
 class NotificationPagingSource(val token: String, val id: String, val notificationService: NotificationService, val sharedPreferences: SharedPreferences): PagingSource<Int, NotificationInfoDTO>() {
@@ -23,5 +25,10 @@ class NotificationPagingSource(val token: String, val id: String, val notificati
         }catch (e:Exception){
             LoadResult.Error(e)
         }
+    }
+
+
+    override fun getRefreshKey(state: PagingState<Int, NotificationInfoDTO>): Int? {
+        return 0
     }
 }

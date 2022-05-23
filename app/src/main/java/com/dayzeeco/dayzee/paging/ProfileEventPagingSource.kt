@@ -28,5 +28,8 @@ class ProfileEventPagingSource(val token : String, val id: String, val profileSe
         }
     }
 
+    override fun getRefreshKey(state: PagingState<Int, TimenoteInfoDTO>): Int? {
+        return 0
+    }
 }
 

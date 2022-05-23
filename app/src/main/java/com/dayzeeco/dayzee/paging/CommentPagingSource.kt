@@ -2,6 +2,7 @@ package com.dayzeeco.dayzee.paging
 
 import android.content.SharedPreferences
 import androidx.paging.PagingSource
+import androidx.paging.PagingState
 import com.dayzeeco.dayzee.model.CommentInfoDTO
 import com.dayzeeco.dayzee.webService.service.CommentService
 import mehdi.sakout.fancybuttons.Utils
@@ -23,5 +24,9 @@ class CommentPagingSource(val token: String, val id: String, val commentService:
         } catch (e: Exception){
             LoadResult.Error(e)
         }
+    }
+
+    override fun getRefreshKey(state: PagingState<Int, CommentInfoDTO>): Int? {
+        return 0
     }
 }

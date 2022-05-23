@@ -66,7 +66,7 @@ class SearchExploreClicked: Fragment(), UsersShareWithPagingAdapter.AddToSend,
 
         lifecycleScope.launch {
             searchViewModel.searchBasedOnCategory(tokenId!!, args.category!!).collectLatest {
-                userByCategoryAdapter.submitData(it.filterSync { userInfoDTO -> !userInfoDTO.isInFollowers })
+                userByCategoryAdapter.submitData(it.filter { userInfoDTO -> !userInfoDTO.isInFollowers })
 
             }
         }
@@ -91,9 +91,9 @@ class SearchExploreClicked: Fragment(), UsersShareWithPagingAdapter.AddToSend,
 
     override fun onAdd(userInfoDTO: UserInfoDTO, createGroup: Int?) {
         followViewModel.followPublicUser(tokenId!!, userInfoDTO.id!!)
-            .observe(viewLifecycleOwner, {
-                if(it.isSuccessful) userByCategoryAdapter.refresh()
-            })
+            .observe(viewLifecycleOwner) {
+                if (it.isSuccessful) userByCategoryAdapter.refresh()
+            }
     }
 
     override fun onRemove(userInfoDTO: UserInfoDTO, createGroup: Int?) {

@@ -29,5 +29,8 @@ class NearbyPagingSource(private val nearbyRequestBody: NearbyRequestBody,
         }
     }
 
+    override fun getRefreshKey(state: PagingState<Int, TimenoteInfoDTO>): Int? {
+        return 0
+    }
 
 }

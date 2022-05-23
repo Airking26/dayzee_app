@@ -7,7 +7,7 @@
 
     <ImageView
         android:layout_gravity="center"
-        android:id="@+id/create_timenote_pic"
+        android:id="@+id/create_timenote_pic_web"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"

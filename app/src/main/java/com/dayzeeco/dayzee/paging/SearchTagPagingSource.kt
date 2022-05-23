@@ -26,4 +26,9 @@ class SearchTagPagingSource(val token: String, val search: String, val searchSer
             LoadResult.Error(e)
         }
     }
+
+
+    override fun getRefreshKey(state: PagingState<Int, TimenoteInfoDTO>): Int? {
+        return 0
+    }
 }

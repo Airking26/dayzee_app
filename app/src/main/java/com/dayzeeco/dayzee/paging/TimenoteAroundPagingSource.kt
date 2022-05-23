@@ -26,4 +26,8 @@ class TimenoteAroundPagingSource(val token: String, private val timenoteService:
             LoadResult.Error(e)
         }
     }
+
+    override fun getRefreshKey(state: PagingState<Int, TimenoteInfoDTO>): Int? {
+        return 0
+    }
 }

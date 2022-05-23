@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.dayzeeco.dayzee.common.Utils
+import com.dayzeeco.dayzee.model.TimenoteInfoDTO
 import com.dayzeeco.dayzee.model.UserInfoDTO
 import com.dayzeeco.dayzee.webService.service.SearchService
 
@@ -26,4 +27,7 @@ class SearchUserPagingSource(val token: String, val search: String, private val 
         }
     }
 
+    override fun getRefreshKey(state: PagingState<Int, UserInfoDTO>): Int? {
+        return 0
+    }
 }

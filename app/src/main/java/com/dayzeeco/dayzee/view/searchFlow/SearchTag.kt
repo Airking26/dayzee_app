@@ -79,29 +79,34 @@ class SearchTag : Fragment(), TimenoteOptionsListener, UsersPagingAdapter.Search
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            userAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils, userInfoDTO.id, prefs.getInt(
+        val lm = LinearLayoutManager(
+            requireContext(),
+            LinearLayoutManager.VERTICAL,
+            false
+        )
+            userAdapter = TimenotePagingAdapter(TimenoteComparator,lm,requireContext(), this, this, true, utils, userInfoDTO.id, prefs.getInt(
                 format_date_default, 0), userInfoDTO)
             search_tag_rv.apply {
-                layoutManager = LinearLayoutManager(requireContext())
+                layoutManager = lm
                 adapter =  userAdapter.withLoadStateFooter(
                     footer = TimenoteLoadStateAdapter{ userAdapter.retry() }
                 )
             }
-            searchViewModel.getTagSearchLiveData().observe(viewLifecycleOwner, {
+            searchViewModel.getTagSearchLiveData().observe(viewLifecycleOwner) {
                 lifecycleScope.launch {
                     it.collectLatest {
                         userAdapter.submitData(it)
                     }
                 }
-            })
+            }
 
-        searchViewModel.getSearchIsEmptyLiveData().observe(viewLifecycleOwner, {
-            if(it) {
+        searchViewModel.getSearchIsEmptyLiveData().observe(viewLifecycleOwner) {
+            if (it) {
                 lifecycleScope.launch {
                     userAdapter.submitData(PagingData.empty())
                 }
             }
-        })
+        }
 
     }
 

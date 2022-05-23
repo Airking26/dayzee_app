@@ -154,7 +154,7 @@
                 android:textSize="14sp"
                 android:visibility="gone"/>
 
-            <androidx.recyclerview.widget.RecyclerView
+            <com.dayzeeco.dayzee.exo.VideoPlayerRecyclerView
                 android:background="@color/colorBackground"
                 android:id="@+id/home_rv"
                 android:paddingBottom="8dp"

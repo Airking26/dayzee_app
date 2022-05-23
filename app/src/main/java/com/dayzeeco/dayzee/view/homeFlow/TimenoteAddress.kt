@@ -47,7 +47,9 @@ import com.dayzeeco.dayzee.viewModel.*
 import kotlinx.android.synthetic.main.fragment_timenote_address.*
 import kotlinx.android.synthetic.main.friends_search_cl.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 
@@ -103,10 +105,15 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
         mapFragment?.getMapAsync(callback)
         timenote_address_toolbar.text = args.timenoteInfoDTO?.location?.address?.address?.plus(", ")?.plus(args.timenoteInfoDTO?.location?.address?.city)?.plus(" ")?.plus(args.timenoteInfoDTO?.location?.address?.country)
 
-        timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator, this, this, true, utils, userInfoDTO.id, prefs.getInt(
+        val lm = LinearLayoutManager(
+            requireContext(),
+            LinearLayoutManager.VERTICAL,
+            false
+        )
+        timenotePagingAdapter = TimenotePagingAdapter(TimenoteComparator,lm, requireContext(), this, this, true, utils, userInfoDTO.id, prefs.getInt(
             format_date_default, 0), userInfoDTO)
         timenote_around_rv.apply {
-            layoutManager = LinearLayoutManager(requireContext())
+            layoutManager = lm
             adapter =  timenotePagingAdapter!!.withLoadStateFooter(
                 footer = TimenoteLoadStateAdapter{ timenotePagingAdapter!!.retry() }
             )
@@ -118,11 +125,14 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
                 timenotePagingAdapter?.submitData(it)
             }
         }
+
+        lifecycleScope.launch {
+            timenotePagingAdapter?.loadStateFlow?.distinctUntilChangedBy { it.source }?.collect {
+                timenote_around_rv.setMediaObjects(timenotePagingAdapter?.snapshot()?.items!!)
+            }
+        }
         timenote_address_btn_back.setOnClickListener(this)
     }
-
-
-
 
     override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO, type: Int) {}
     override fun onDuplicateClicked(timenoteInfoDTO: TimenoteInfoDTO) {

@@ -91,6 +91,9 @@ class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
         itemView.setOnClickListener { onCardClicked.onCardClicked(event) }
 
+        if(event.video.isNullOrEmpty()) itemView.profile_item_is_video.visibility = View.GONE
+        else itemView.profile_item_is_video.visibility = View.VISIBLE
+
         itemView.profile_item_name_event.text = event.title
         if(event.location != null) {
             if(event.location.address.address.isEmpty() && event.location.address.city.isNotEmpty() && event.location.address.country.isNotEmpty()){

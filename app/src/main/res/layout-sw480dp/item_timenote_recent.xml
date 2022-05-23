@@ -26,6 +26,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ImageView
+            android:id="@+id/timenote_recent_is_video"
+            android:visibility="gone"
+            android:src="@drawable/ic_baseline_slow_motion_video_24"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
         <View
             android:background="@drawable/gradient_timenote_top"
             app:layout_constraintTop_toTopOf="@id/timenote_recent_pic_imageview"

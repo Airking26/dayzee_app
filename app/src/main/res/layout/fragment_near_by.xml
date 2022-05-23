@@ -147,7 +147,7 @@
                     android:textSize="14sp"
                     android:visibility="gone"/>
 
-                <androidx.recyclerview.widget.RecyclerView
+                <com.dayzeeco.dayzee.exo.VideoPlayerRecyclerView
                     android:visibility="visible"
                     tools:listitem="@layout/item_timenote"
                     android:background="@color/colorBackground"

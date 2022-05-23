@@ -26,4 +26,7 @@ class TimenotePagingSource(val token: String?, val timenoteService: TimenoteServ
         }
     }
 
+    override fun getRefreshKey(state: PagingState<Int, TimenoteInfoDTO>): Int? {
+        return 0
+    }
 }

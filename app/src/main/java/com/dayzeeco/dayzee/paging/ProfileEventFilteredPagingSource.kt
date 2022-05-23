@@ -27,5 +27,8 @@ class ProfileEventFilteredPagingSource(val token : String, val timenoteFilteredD
         }
     }
 
+    override fun getRefreshKey(state: PagingState<Int, TimenoteInfoDTO>): Int? {
+        return 0
+    }
 }
 

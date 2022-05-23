@@ -27,4 +27,8 @@ class TimenoteRecentPagingSource(private val token: String, private val timenote
             LoadResult.Error(e)
         }
     }
+
+    override fun getRefreshKey(state: PagingState<Int, TimenoteInfoDTO>): Int? {
+        return 0
+    }
 }

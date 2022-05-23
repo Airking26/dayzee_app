@@ -52,7 +52,7 @@
         app:layout_constraintTop_toBottomOf="@id/timenote_address_ll"
         tools:context=".MapsFragment" />
 
-    <androidx.recyclerview.widget.RecyclerView
+    <com.dayzeeco.dayzee.exo.VideoPlayerRecyclerView
         android:id="@+id/timenote_around_rv"
         tools:listitem="@layout/item_timenote"
         app:layout_constraintEnd_toEndOf="parent"

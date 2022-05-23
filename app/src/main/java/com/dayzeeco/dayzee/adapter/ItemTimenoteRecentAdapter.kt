@@ -55,6 +55,9 @@ class ItemTimenoteRecentAdapter(private val timenotesToCome: List<TimenoteInfoDT
         @RequiresApi(Build.VERSION_CODES.O)
         fun bindItem(timenote: TimenoteInfoDTO, timenoteClicked: TimenoteRecentClicked, utils: Utils){
 
+            if(timenote.video.isNullOrEmpty()) itemView.timenote_recent_is_video.visibility = View.GONE
+            else itemView.timenote_recent_is_video.visibility = View.VISIBLE
+
             if(timenote.pictures.isNullOrEmpty()){
                 if(!timenote.colorHex.isNullOrEmpty() && !timenote.colorHex.isNullOrBlank())
                 itemView.timenote_recent_pic_imageview.setBackgroundColor(Color.parseColor(if(timenote.colorHex.contains("#")) timenote.colorHex else  "#${timenote.colorHex}"))

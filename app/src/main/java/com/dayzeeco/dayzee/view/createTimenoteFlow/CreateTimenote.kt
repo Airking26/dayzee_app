@@ -8,11 +8,8 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.content.res.Configuration
-import android.database.Cursor
-import android.graphics.Bitmap
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Rect
+import android.graphics.*
+import android.media.ThumbnailUtils
 import android.net.Uri
 import android.os.*
 import android.provider.MediaStore
@@ -20,6 +17,7 @@ import android.text.Editable
 import android.text.InputType
 import android.text.TextUtils
 import android.text.TextWatcher
+import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,7 +29,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
@@ -60,6 +57,7 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.CannedAccessControlList
+import com.bumptech.glide.Glide
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.*
 import com.dayzeeco.dayzee.androidView.dialog.input
@@ -72,29 +70,25 @@ import com.dayzeeco.dayzee.listeners.RefreshPicBottomNavListener
 import com.dayzeeco.dayzee.listeners.TimenoteCreationPicListeners
 import com.dayzeeco.dayzee.model.*
 import com.dayzeeco.dayzee.viewModel.*
-import com.dayzeeco.picture_library.PictureSelectionModel
 import com.dayzeeco.picture_library.config.PictureMimeType
-import com.dayzeeco.picture_library.engine.CacheResourcesEngine
 import com.dayzeeco.picture_library.entity.LocalMedia
 import com.dayzeeco.picture_library.instagram.InsGallery
 import com.dayzeeco.picture_library.listener.OnResultCallbackListener
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.AutocompleteActivity
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.android.synthetic.main.dialog_reccurence.*
 import kotlinx.android.synthetic.main.dialog_reccurence.view.*
 import kotlinx.android.synthetic.main.fragment_create_timenote.*
 import kotlinx.android.synthetic.main.friends_search_cl.view.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import mehdi.sakout.fancybuttons.FancyButton
-import retrofit2.Response
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.lang.reflect.InvocationTargetException
@@ -104,8 +98,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.Executors
 
-class CreateTimenote : Fragment(), View.OnClickListener,
-    TimenoteCreationPicListeners, WebSearchAdapter.ImageChoosedListener, WebSearchAdapter.MoreImagesClicked,
+class CreateTimenote : Fragment(), View.OnClickListener, WebSearchAdapter.ImageChoosedListener, WebSearchAdapter.MoreImagesClicked,
     HashTagHelper.OnHashTagClickListener, UsersPagingAdapter.SearchPeopleListener,
     UsersShareWithPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.AddToSend,
     DateAdapter.DateCloseListener {
@@ -144,8 +137,6 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     private lateinit var picCl: ConstraintLayout
     private lateinit var labelCv: CardView
     private lateinit var noAnswer: TextView
-    private lateinit var vp: ViewPager2
-    private lateinit var screenSlideCreationTimenotePagerAdapter: ScreenSlideCreationTimenotePagerAdapter
     private var images: MutableList<File>? = mutableListOf()
     private var video : File? = null
     private var videoUrl : String? = null
@@ -180,6 +171,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     private lateinit var titleError : ImageView
     private lateinit var whenError: ImageView
     private lateinit var paidLabelTv : TextView
+    private lateinit var picVideoIv : ImageView
     private val DATE_FORMAT_DAY_AND_TIME = "EEE, d MMM yyyy hh:mm aaa"
     private val DATE_FORMAT_DAY_AND_TIME_DIALOG = "d MMM yyyy"
     private val DATE_FORMAT_REPEAT = "d"
@@ -338,6 +330,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         fromTv = create_timenote_from
         toTv = create_timenote_to
         categoryTv = create_timenote_category
+        picVideoIv = timenote_pic
         titleTv = create_timenote_title_btn
         noAnswer = create_timenote_paid_timenote_status_no_answer
         shareWithTv = create_timenote_share_with
@@ -358,33 +351,6 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         paidLabelTv = create_timenote_paid_timenote_label
         labelCv = url_title_cardview
         picCl = pic_cl
-        vp = vp_pic
-        if(args.modify == 0) {
-            screenSlideCreationTimenotePagerAdapter = ScreenSlideCreationTimenotePagerAdapter(
-                this@CreateTimenote,
-                images,
-                hideIcons = false,
-                fromDuplicateOrEdit = false,
-                pictures = listOf()
-            )
-            vp_pic.apply {
-                adapter = screenSlideCreationTimenotePagerAdapter
-            }
-        } else {
-            screenSlideCreationTimenotePagerAdapter = ScreenSlideCreationTimenotePagerAdapter(
-                this@CreateTimenote,
-                images,
-                hideIcons = true,
-                fromDuplicateOrEdit = true,
-                pictures = args.timenoteBody?.pictures
-            )
-            vp_pic.apply {
-                adapter = screenSlideCreationTimenotePagerAdapter
-            }
-        }
-
-        indicator.setViewPager(vp_pic)
-        screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(indicator.adapterDataObserver)
 
         create_timenote_next_btn.setOnClickListener(this)
         from_label.setOnClickListener(this)
@@ -492,6 +458,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                 takeAddPicTv.visibility = View.GONE
                 progressBar.visibility = View.GONE
                 picCl.visibility = View.VISIBLE
+                Glide.with(requireContext()).load(images!![0]).into(picVideoIv)
             }
         } else {
             if (it.pictures?.isNullOrEmpty()!!) {
@@ -504,6 +471,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                 takeAddPicTv.visibility = View.GONE
                 progressBar.visibility = View.GONE
                 picCl.visibility = View.VISIBLE
+                Glide.with(requireContext()).load(it.pictures!![0]).into(picVideoIv)
             }
         }
 
@@ -1149,12 +1117,12 @@ class CreateTimenote : Fragment(), View.OnClickListener,
             create_timenote_next_btn -> {
                 if (checkFormCompleted()) {
                     if (!images?.isNullOrEmpty()!!) {
-                        //progressDialog.show()
                         create_timenote_next_btn.visibility = View.GONE
                         done_pb.visibility = View.VISIBLE
-                        for (image in images!!) {
-                            pushPic(image)
+                        images?.forEach {
+                            pushFile(it, false)
                         }
+
                     } else if (!creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.colorHex.isNullOrBlank() || !creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.pictures.isNullOrEmpty()) {
                         create_timenote_next_btn.visibility = View.GONE
                         done_pb.visibility = View.VISIBLE
@@ -1203,29 +1171,28 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                                                         media.cutPath
                                                     } else if (media.isCompressed || media.isCut && media.isCompressed) {
                                                         media.compressPath
-                                                    } /*else if (PictureMimeType.isHasVideo(media.mimeType) && !TextUtils.isEmpty(media.coverPath)) {
-                                                        media.coverPath
-                                                    }*/ else {
+                                                    } else if (PictureMimeType.isHasVideo(media.mimeType) && !TextUtils.isEmpty(media.coverPath)) {
+                                                        val o = ThumbnailUtils.createVideoThumbnail(File(media.path), Size(1024, 500), null)
+                                                        val f = File(requireContext().cacheDir, UUID.randomUUID().toString())
+                                                        f.createNewFile()
+                                                        val bos = ByteArrayOutputStream()
+                                                        o.compress(Bitmap.CompressFormat.PNG, 0, bos)
+                                                        val fos = FileOutputStream(f)
+                                                        fos.write(bos.toByteArray())
+                                                        fos.flush()
+                                                        fos.close()
+                                                        f.path
+                                                    } else {
                                                         media.path
                                                     }
 
-                                                pushPic(File(media.path))
 
-                                                /*Executors.newSingleThreadExecutor().execute(Runnable {
-                                                    val o = SiliCompressor.with(requireContext()).compressVideo(media.path, Environment.DIRECTORY_MOVIES)
-                                                    //val f = File.createTempFile("looooool", ".mp4", requireActivity().getExternalFilesDir(Environment.DIRECTORY_MOVIES))
-                                                    if(PictureMimeType.isHasVideo(media.mimeType)) video = File(o)
-                                                    Handler(Looper.getMainLooper()).post {
-                                                        pushPic(video!!)
-                                                        val s = video!!.length() / 1024
-                                                    }
-                                                })
-                                            ImageCompressor.compressBitmap(requireContext(), File(path)) {
+                                                if(PictureMimeType.isHasVideo(media.mimeType)) video = File(media.path)
+                                                ImageCompressor.compressBitmap(requireContext(), File(path)) {
                                                     images?.add(it)
-                                                }*/
+                                                }
                                             }
-                                            screenSlideCreationTimenotePagerAdapter.images = images
-                                            screenSlideCreationTimenotePagerAdapter.notifyDataSetChanged()
+                                            Glide.with(requireContext()).load(images!![0]).into(picVideoIv)
                                             indicator?.setViewPager(vp_pic)
                                             pic_cl?.visibility = View.VISIBLE
                                             progressBar.visibility = View.GONE
@@ -1472,10 +1439,7 @@ class CreateTimenote : Fragment(), View.OnClickListener,
         outputStream.close()
         ImageCompressor.compressBitmap(requireContext(), outputFile){
             images?.add(it)
-            //images?.add("file://${it.absolutePath}")
-            screenSlideCreationTimenotePagerAdapter.images = images
-            screenSlideCreationTimenotePagerAdapter.notifyDataSetChanged()
-            indicator.setViewPager(vp_pic)
+            Glide.with(requireContext()).load(images!![0]).into(picVideoIv)
             pic_cl.visibility = View.VISIBLE
             progressBar.visibility = View.GONE
             takeAddPicTv.visibility = View.GONE
@@ -1549,19 +1513,17 @@ class CreateTimenote : Fragment(), View.OnClickListener,
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
-    fun pushPic(file: File){
+    fun pushFile(file: File, isVideo : Boolean){
         val transferUtiliy = TransferUtility(am, requireContext())
         val key = "timenote/${UUID.randomUUID().mostSignificantBits}"
         val transferObserver = transferUtiliy.upload(bucket_dayzee_dev_image, key, file, CannedAccessControlList.Private)
         transferObserver.setTransferListener(object : TransferListener {
             override fun onStateChanged(id: Int, state: TransferState?) {
                 if (state == TransferState.COMPLETED) {
-                    val path = am.getResourceUrl(bucket_dayzee_dev_image, key).toString()
-                    videoUrl = path
-                    creationTimenoteViewModel.setVideo(videoUrl!!)
-                    createTimenotePic()
-                    imagesUrl.add(am.getResourceUrl(bucket_dayzee_dev_image, key).toString())
-                    if (images?.size == imagesUrl.size) {
+                    if(!isVideo) imagesUrl.add(am.getResourceUrl(bucket_dayzee_dev_image, key).toString())
+                    else creationTimenoteViewModel.setVideo(am.getResourceUrl(bucket_dayzee_dev_image, key).toString())
+                    if(video != null && !isVideo) pushFile(video!!, true)
+                    else if (images?.size == imagesUrl.size) {
                         creationTimenoteViewModel.setPicUser(imagesUrl)
                         if (args.modify == 0 || args.modify == 1) {
                             createTimenotePic()
@@ -1632,40 +1594,6 @@ class CreateTimenote : Fragment(), View.OnClickListener,
                     }
                 } else if(it.isSuccessful) clearAndPreview(it.body()?.first()!!)
             }
-        }
-    }
-
-    override fun onCropPicClicked(uri: Uri?) {
-    }
-
-    override fun onAddClicked() {
-        openDialogToChoosePic()
-    }
-
-    override fun onDeleteClicked(uri: Uri?) {
-        images?.remove(File(uri?.path!!))
-        vp_pic.apply {
-            screenSlideCreationTimenotePagerAdapter = ScreenSlideCreationTimenotePagerAdapter(
-                this@CreateTimenote,
-                images,
-                false,
-                false,
-                listOf()
-            )
-            adapter = screenSlideCreationTimenotePagerAdapter
-        }
-        indicator.setViewPager(vp_pic)
-        if(images?.size == 0){
-            picCl.visibility = View.GONE
-            takeAddPicTv.visibility = View.VISIBLE
-            progressBar.visibility = View.GONE
-            card_line_0.visibility = View.VISIBLE
-            choose_color_label.visibility = View.VISIBLE
-            create_timenote_first_color.visibility = View.VISIBLE
-            create_timenote_second_color.visibility = View.VISIBLE
-            create_timenote_third_color.visibility = View.VISIBLE
-            create_timenote_fourth_color.visibility = View.VISIBLE
-            create_timenote_fifth_color.visibility = View.VISIBLE
         }
     }
 

@@ -9,6 +9,7 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.bumptech.glide.Glide
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.common.Utils
+import kotlinx.android.synthetic.main.item_image_web_search.view.*
 import kotlinx.android.synthetic.main.item_more_web_search.view.*
 import kotlinx.android.synthetic.main.timenote_view_image.view.*
 
@@ -62,9 +63,9 @@ class WebSearchAdapter(
                     .load(Uri.parse(bitmap))
                     .placeholder(circularProgressDrawable)
                     .centerInside()
-                    .into(itemView.create_timenote_pic)
+                    .into(itemView.create_timenote_pic_web)
 
-                itemView.create_timenote_pic.setOnClickListener{
+                itemView.create_timenote_pic_web.setOnClickListener{
                     imageChoosedListener.onImageSelectedFromWeb(bitmap, dialog)
                 }
         }

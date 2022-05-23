@@ -21,8 +21,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
+import androidx.paging.LoadState
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.WhichButton
@@ -51,7 +53,7 @@ import io.branch.referral.util.LinkProperties
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.friends_search_cl.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 import java.util.*
@@ -172,7 +174,6 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         if(prefs.getString(accessToken, null) != null) {
 
             if(tokenId == null) tokenId = prefs.getString(accessToken, null)
-           // changePasswordTemporary()
 
             if(prefs.getString(alarms, null) == null) getAlarms()
 
@@ -185,16 +186,10 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
             )
             home_swipe_refresh.setOnRefreshListener {
                 timenotePagingAdapter?.resetAllSelected()
-                if(home_future_timeline.drawable.bytesEqualTo(resources.getDrawable(R.drawable.ic_futur_ok)) && home_future_timeline.drawable.pixelsEqualTo(
-                        resources.getDrawable(
-                            R.drawable.ic_futur_ok
-                        )
-                    )) loadPastData()
-                else if(home_past_timeline.drawable.bytesEqualTo(resources.getDrawable(R.drawable.ic_passe_ok)) && home_past_timeline.drawable.pixelsEqualTo(
-                        resources.getDrawable(
-                            R.drawable.ic_passe_ok
-                        )
-                    )) loadUpcomingData()
+                if(home_future_timeline.drawable.bytesEqualTo(resources.getDrawable(R.drawable.ic_futur_ok)) && home_future_timeline.drawable.pixelsEqualTo(resources.getDrawable(R.drawable.ic_futur_ok)))
+                    loadPastData()
+                else if(home_past_timeline.drawable.bytesEqualTo(resources.getDrawable(R.drawable.ic_passe_ok)) && home_past_timeline.drawable.pixelsEqualTo(resources.getDrawable(R.drawable.ic_passe_ok)))
+                    loadUpcomingData()
             }
 
             home_past_timeline.setOnClickListener(this)
@@ -226,11 +221,17 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         home_swipe_refresh?.isRefreshing = true
         timenotePagingAdapter?.resetAllSelected()
 
+        val lm = LinearLayoutManager(
+            requireContext(),
+            LinearLayoutManager.VERTICAL,
+            false
+        )
         timenotePagingAdapter = TimenotePagingAdapter(
-            TimenoteComparator, this, this, true, utils, userInfoDTO.id, prefs.getInt(
+            TimenoteComparator,lm, requireContext(), this, this, true, utils, userInfoDTO.id, prefs.getInt(
                 format_date_default, 0
             ), userInfoDTO
         )
+
 
         lifecycleScope.launch {
             timenoteViewModel.getUpcomingTimenotePagingFlow(tokenId!!, true, prefs).collectLatest {
@@ -245,14 +246,9 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
             }
         }
 
-
         home_rv?.apply {
             setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(
-                requireContext(),
-                LinearLayoutManager.VERTICAL,
-                false
-            )
+            layoutManager = lm
             adapter = timenotePagingAdapter!!.withLoadStateFooter(
                 footer = TimenoteLoadStateAdapter { timenotePagingAdapter!!.retry() }
             )
@@ -267,21 +263,22 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
             adapter = timenoteRecentPagingAdapter!!.withLoadStateFooter(footer = TimenoteRecentLoadStateAdapter { timenoteRecentPagingAdapter!!.retry() })
         }
 
-        timenotePagingAdapter?.addDataRefreshListener {
-            home_swipe_refresh?.isRefreshing = false
-            if(it){
+        lifecycleScope.launch {
+        timenotePagingAdapter?.loadStateFlow?.distinctUntilChangedBy { it.source }?.collect {
+            if(it.refresh is LoadState.NotLoading){
+                home_swipe_refresh?.isRefreshing = false
+                home_recent_rv?.visibility = View.VISIBLE
+                home_rv?.visibility = View.VISIBLE
+                home_posted_recently?.visibility = View.VISIBLE
+                home_nothing_to_display?.visibility = View.GONE
+            } else {
                 home_recent_rv?.visibility = View.GONE
                 home_rv?.visibility = View.GONE
                 home_posted_recently?.visibility = View.GONE
                 home_nothing_to_display?.visibility = View.VISIBLE
             }
-            else {
-                home_recent_rv?.visibility = View.VISIBLE
-                home_rv?.visibility = View.VISIBLE
-                home_posted_recently?.visibility = View.VISIBLE
-                home_nothing_to_display?.visibility = View.GONE
-            }
-        }
+            home_rv?.setMediaObjects(timenotePagingAdapter?.snapshot()?.items!!)
+        }}
     }
 
     @ExperimentalPagingApi
@@ -290,8 +287,13 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
         timenotePagingAdapter?.resetAllSelected()
 
+        val lm = LinearLayoutManager(
+            requireContext(),
+            LinearLayoutManager.VERTICAL,
+            false
+        )
         timenotePagingAdapter = TimenotePagingAdapter(
-            TimenoteComparator, this, this, false, utils, userInfoDTO.id, prefs.getInt(
+            TimenoteComparator,lm, requireContext(), this, this, false, utils, userInfoDTO.id, prefs.getInt(
                 format_date_default, 0
             ), userInfoDTO
         )
@@ -303,23 +305,26 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
         home_rv?.apply {
             setHasFixedSize(true)
-
-            layoutManager = LinearLayoutManager(requireContext())
+            layoutManager = lm
             adapter = timenotePagingAdapter!!.withLoadStateFooter(
                 footer = TimenoteLoadStateAdapter { timenotePagingAdapter!!.retry() }
             )        }
 
-        timenotePagingAdapter?.addDataRefreshListener {
-            home_swipe_refresh?.isRefreshing = false
-            if(it){
-                home_recent_rv?.visibility = View.GONE
-                home_rv?.visibility = View.GONE
-                home_posted_recently?.visibility = View.GONE
-                home_nothing_to_display?.visibility = View.VISIBLE
-            } else {
-                home_rv?.visibility = View.VISIBLE
-                home_nothing_to_display?.visibility = View.GONE
+        lifecycleScope.launch {
+            timenotePagingAdapter?.loadStateFlow?.distinctUntilChangedBy { it.source }?.collect {
+                if (it.refresh is LoadState.NotLoading) {
+                    home_swipe_refresh?.isRefreshing = false
+                    home_rv?.visibility = View.VISIBLE
+                    home_nothing_to_display?.visibility = View.GONE
+                } else {
+                    home_recent_rv?.visibility = View.GONE
+                    home_rv?.visibility = View.GONE
+                    home_posted_recently?.visibility = View.GONE
+                    home_nothing_to_display?.visibility = View.VISIBLE
+                }
+
             }
+            home_rv?.setMediaObjects(timenotePagingAdapter?.snapshot()?.items!!)
         }
 
     }

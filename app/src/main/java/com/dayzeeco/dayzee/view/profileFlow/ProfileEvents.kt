@@ -17,6 +17,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
+import androidx.paging.LoadState
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.materialdialogs.LayoutMode
@@ -46,7 +47,9 @@ import com.dayzeeco.dayzee.webService.service.AlarmData
 import kotlinx.android.synthetic.main.fragment_profile_future_events.*
 import kotlinx.android.synthetic.main.friends_search_cl.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
@@ -154,14 +157,16 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
             }
         }
 
-        profileEventPagingAdapter?.addDataRefreshListener {
-            profile_pb?.visibility = View.GONE
-            if(it){
-                profile_nothing_to_display?.visibility = View.VISIBLE
-                profile_rv?.visibility = View.GONE
-            } else {
-                profile_nothing_to_display?.visibility = View.GONE
-                profile_rv?.visibility = View.VISIBLE
+        lifecycleScope.launch {
+            profileEventPagingAdapter?.loadStateFlow?.distinctUntilChangedBy { it.source }?.collect {
+                profile_pb?.visibility = View.GONE
+                if(it.refresh is LoadState.NotLoading){
+                    profile_nothing_to_display?.visibility = View.GONE
+                    profile_rv?.visibility = View.VISIBLE
+                } else {
+                    profile_nothing_to_display?.visibility = View.VISIBLE
+                    profile_rv?.visibility = View.GONE
+                }
             }
         }
     }

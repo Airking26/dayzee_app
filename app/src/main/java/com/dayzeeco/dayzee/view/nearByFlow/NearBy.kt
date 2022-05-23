@@ -27,6 +27,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
+import androidx.paging.LoadState
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -73,7 +74,9 @@ import kotlinx.android.synthetic.main.fragment_near_by.*
 import kotlinx.android.synthetic.main.fragment_near_by.view.*
 import kotlinx.android.synthetic.main.friends_search_cl.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
@@ -133,8 +136,13 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
             prefs.getString(user_info_dto, null),
             typeUserInfo
         )
+        val lm = LinearLayoutManager(
+            requireContext(),
+            LinearLayoutManager.VERTICAL,
+            false
+        )
         timenotePagingAdapter = TimenotePagingAdapter(
-            TimenoteComparator, this, this, true, Utils(), userInfoDTO?.id, prefs.getInt(
+            TimenoteComparator,lm, requireContext(), this, this, true, Utils(), userInfoDTO?.id, prefs.getInt(
                 format_date_default, 0
             )
         , userInfoDTO)
@@ -327,14 +335,17 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
             }
         }
 
-        timenotePagingAdapter?.addDataRefreshListener { i ->
-            nearby_swipe_refresh?.isRefreshing = false
-            if(i){
-                nearby_rv?.visibility = View.GONE
-                nearby_nothing_to_display?.visibility = View.VISIBLE
-            } else {
-                nearby_rv?.visibility = View.VISIBLE
-                nearby_nothing_to_display?.visibility = View.GONE
+        lifecycleScope.launch {
+            timenotePagingAdapter?.loadStateFlow?.distinctUntilChangedBy { it.source }?.collect {
+                if(it.refresh is LoadState.NotLoading){
+                    nearby_swipe_refresh?.isRefreshing = false
+                    nearby_rv?.visibility = View.VISIBLE
+                    nearby_nothing_to_display?.visibility = View.GONE
+                } else {
+                    nearby_rv?.visibility = View.GONE
+                    nearby_nothing_to_display?.visibility = View.VISIBLE
+                }
+                nearby_rv.setMediaObjects(timenotePagingAdapter?.snapshot()?.items!!)
             }
         }
     }

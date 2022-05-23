@@ -132,9 +132,8 @@ public final class InsGallery {
                 .showCropGrid(true)
                 .isOpenClickSound(false)
                 //.isDragFrame(false)
-                //.videoMinSecond(10)
                 //.cropImageWideHigh(300, 400)
-                .videoMaxSecond(600)
+                .videoMaxSecond(30)
                 .videoMinSecond(3)
                 .recordVideoSecond(60)
                 .recordVideoMinSecond(3)
@@ -142,9 +141,7 @@ public final class InsGallery {
                 .minimumCompressSize(100)
                 //.rotateEnabled(false)
                 .scaleEnabled(true)
-                //.videoQuality()
-                //.videoSecond()
-
+//                .videoQuality(1)
                 ;
     }
 
