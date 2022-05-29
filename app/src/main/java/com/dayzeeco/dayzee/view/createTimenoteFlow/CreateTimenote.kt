@@ -80,6 +80,7 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.AutocompleteActivity
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.dialog_reccurence.view.*
@@ -152,6 +153,8 @@ class CreateTimenote : Fragment(), View.OnClickListener, WebSearchAdapter.ImageC
     private lateinit var categoryTv: TextView
     private lateinit var fromTv: TextView
     private lateinit var toTv: TextView
+    private lateinit var imageLogo : FloatingActionButton
+    private lateinit var videoLogo : FloatingActionButton
     private lateinit var configureRecurrence: TextView
     private lateinit var datesRv : RecyclerView
     private lateinit var titleTv: TextView
@@ -323,6 +326,8 @@ class CreateTimenote : Fragment(), View.OnClickListener, WebSearchAdapter.ImageC
         addEndDateTv = profile_add_end_date
         configureRecurrence = profile_configure_recurrence
         fromLabel = from_label
+        imageLogo = create_timenote_image_logo
+        videoLogo = create_timenote_video_logo
         toLabel = to_label
         datesRv = profile_recurence_rv
         paidTimenote = paid_timenote_cardview
@@ -459,6 +464,14 @@ class CreateTimenote : Fragment(), View.OnClickListener, WebSearchAdapter.ImageC
                 progressBar.visibility = View.GONE
                 picCl.visibility = View.VISIBLE
                 Glide.with(requireContext()).load(images!![0]).into(picVideoIv)
+                if(video == null) {
+                    imageLogo.visibility = View.VISIBLE
+                    videoLogo.visibility = View.GONE
+                }
+                else {
+                    videoLogo.visibility = View.VISIBLE
+                    imageLogo.visibility = View.GONE
+                }
             }
         } else {
             if (it.pictures?.isNullOrEmpty()!!) {
@@ -472,6 +485,14 @@ class CreateTimenote : Fragment(), View.OnClickListener, WebSearchAdapter.ImageC
                 progressBar.visibility = View.GONE
                 picCl.visibility = View.VISIBLE
                 Glide.with(requireContext()).load(it.pictures!![0]).into(picVideoIv)
+                if(video == null) {
+                    imageLogo.visibility = View.VISIBLE
+                    videoLogo.visibility = View.GONE
+                }
+                else {
+                    videoLogo.visibility = View.VISIBLE
+                    imageLogo.visibility = View.GONE
+                }
             }
         }
 
@@ -1105,6 +1126,9 @@ class CreateTimenote : Fragment(), View.OnClickListener, WebSearchAdapter.ImageC
                 datesRv.visibility = View.GONE
                 creationTimenoteViewModel.clear()
                 images = mutableListOf()
+                video = null
+                videoUrl = null
+                imagesUrl = mutableListOf()
                 sendTo.clear()
                 organizers.clear()
                 indexGroupChosen.clear()
@@ -1193,8 +1217,15 @@ class CreateTimenote : Fragment(), View.OnClickListener, WebSearchAdapter.ImageC
                                                 }
                                             }
                                             Glide.with(requireContext()).load(images!![0]).into(picVideoIv)
-                                            indicator?.setViewPager(vp_pic)
-                                            pic_cl?.visibility = View.VISIBLE
+                                            if(video == null) {
+                                                imageLogo.visibility = View.VISIBLE
+                                                videoLogo.visibility = View.GONE
+                                            }
+                                            else {
+                                                videoLogo.visibility = View.VISIBLE
+                                                imageLogo.visibility = View.GONE
+                                            }
+                                            picCl.visibility = View.VISIBLE
                                             progressBar.visibility = View.GONE
                                             takeAddPicTv.visibility = View.GONE
                                             hideChooseBackground()
@@ -1269,6 +1300,8 @@ class CreateTimenote : Fragment(), View.OnClickListener, WebSearchAdapter.ImageC
         done_pb.visibility = View.GONE
         creationTimenoteViewModel.clear()
         images = mutableListOf()
+        video = null
+        videoUrl = null
         sendTo.clear()
         organizers.clear()
         indexGroupChosen.clear()

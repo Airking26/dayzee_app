@@ -36,6 +36,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.paging.filter
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
@@ -55,6 +56,7 @@ import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.CannedAccessControlList
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.dayzeeco.dayzee.CustomApplicationClass
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.*
 import com.dayzeeco.dayzee.androidView.instaLike.GlideEngine
@@ -66,6 +68,15 @@ import com.dayzeeco.picture_library.config.PictureMimeType
 import com.dayzeeco.picture_library.entity.LocalMedia
 import com.dayzeeco.picture_library.instagram.InsGallery
 import com.dayzeeco.picture_library.listener.OnResultCallbackListener
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.source.MediaSource
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
+import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.upstream.DataSource
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.util.Util
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.branch.indexing.BranchUniversalObject
@@ -295,76 +306,114 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             timenote_in_label.visibility = View.INVISIBLE
         }
 
-        screenSlideCreationTimenotePagerAdapter = ScreenSlideTimenotePagerAdapter(
-            this,
-            if (args.event?.pictures.isNullOrEmpty()) listOf(if (args.event?.colorHex.isNullOrEmpty()) "#09539d" else args.event?.colorHex!!) else args.event?.pictures,
-            true,
-            args.event?.pictures.isNullOrEmpty()
-        ) { i: Int, i1: Int ->
-            if (i1 == 0) {
-                if (args.event?.price?.price!! >= 0 && !args.event?.url.isNullOrBlank()) {
-                    timenote_buy_cl.visibility = View.VISIBLE
-                    if (args.event?.price?.price!! > 0) timenote_buy.text =
-                        args.event?.price?.price!!.toString()
-                            .plus(args.event?.price?.currency)
-                    if (!args.event?.urlTitle.isNullOrEmpty() || !args.event?.urlTitle.isNullOrBlank()) {
-                        more_label.text = args.event?.urlTitle?.capitalize()
-                    } else more_label.text = resources.getString(R.string.find_out_more)
-                } else if(args.event?.price?.price!! > 0 && args.event?.url.isNullOrBlank()){
-                    timenote_buy_cl.visibility = View.VISIBLE
-                    timenote_buy.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
-                    timenote_buy.setPadding(0, 0, 48, 0)
-                    timenote_buy.text =
-                        args.event?.price?.price!!.toString()
-                            .plus(args.event?.price?.currency)
-                }
-            } else {
-                if (userInfoDTO.id != args.event?.createdBy?.id) {
-                    if (timenote_plus.drawable.bytesEqualTo(resources.getDrawable(R.drawable.ic_ajout_cal)) && timenote_plus.drawable.pixelsEqualTo(
-                            resources.getDrawable(R.drawable.ic_ajout_cal)
-                        )
-                    ) {
-                        timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal_plein_gradient))
-                        timenoteViewModel.joinTimenote(tokenId!!, args.event?.id!!).observe(
-                            viewLifecycleOwner,
-                            Observer {
-                                if (it.code() == 401) {
-                                    authViewModel.refreshToken(prefs).observe(
-                                        viewLifecycleOwner,
-                                        Observer { newAccessToken ->
-                                            tokenId = newAccessToken
-                                            timenoteViewModel.joinTimenote(
-                                                tokenId!!,
-                                                args.event?.id!!
-                                            )
-                                        })
-                                }
-                            })
-                    } else {
-                        timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal))
-                        timenoteViewModel.leaveTimenote(tokenId!!, args.event?.id!!)
-                            .observe(viewLifecycleOwner, Observer {
-                                if (it.code() == 401) {
-                                    authViewModel.refreshToken(prefs).observe(
-                                        viewLifecycleOwner,
-                                        Observer { newAccessToken ->
-                                            tokenId = newAccessToken
-                                            timenoteViewModel.leaveTimenote(
-                                                tokenId!!,
-                                                args.event?.id!!
-                                            )
-                                        })
-                                }
-                            })
+        if(args.event?.video.isNullOrEmpty()) {
+            timenote_vp.visibility = View.VISIBLE
+            detailed_media_container.visibility = View.GONE
+            screenSlideCreationTimenotePagerAdapter = ScreenSlideTimenotePagerAdapter(
+                this,
+                if (args.event?.pictures.isNullOrEmpty()) listOf(if (args.event?.colorHex.isNullOrEmpty()) "#09539d" else args.event?.colorHex!!) else args.event?.pictures,
+                true,
+                args.event?.pictures.isNullOrEmpty()
+            ) { i: Int, i1: Int ->
+                if (i1 == 0) {
+                    if (args.event?.price?.price!! >= 0 && !args.event?.url.isNullOrBlank()) {
+                        timenote_buy_cl.visibility = View.VISIBLE
+                        if (args.event?.price?.price!! > 0) timenote_buy.text =
+                            args.event?.price?.price!!.toString()
+                                .plus(args.event?.price?.currency)
+                        if (!args.event?.urlTitle.isNullOrEmpty() || !args.event?.urlTitle.isNullOrBlank()) {
+                            more_label.text = args.event?.urlTitle?.capitalize()
+                        } else more_label.text = resources.getString(R.string.find_out_more)
+                    } else if (args.event?.price?.price!! > 0 && args.event?.url.isNullOrBlank()) {
+                        timenote_buy_cl.visibility = View.VISIBLE
+                        timenote_buy.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+                        timenote_buy.setPadding(0, 0, 48, 0)
+                        timenote_buy.text =
+                            args.event?.price?.price!!.toString()
+                                .plus(args.event?.price?.currency)
+                    }
+                } else {
+                    if (userInfoDTO.id != args.event?.createdBy?.id) {
+                        if (timenote_plus.drawable.bytesEqualTo(resources.getDrawable(R.drawable.ic_ajout_cal)) && timenote_plus.drawable.pixelsEqualTo(
+                                resources.getDrawable(R.drawable.ic_ajout_cal)
+                            )
+                        ) {
+                            timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal_plein_gradient))
+                            timenoteViewModel.joinTimenote(tokenId!!, args.event?.id!!).observe(
+                                viewLifecycleOwner,
+                                Observer {
+                                    if (it.code() == 401) {
+                                        authViewModel.refreshToken(prefs).observe(
+                                            viewLifecycleOwner,
+                                            Observer { newAccessToken ->
+                                                tokenId = newAccessToken
+                                                timenoteViewModel.joinTimenote(
+                                                    tokenId!!,
+                                                    args.event?.id!!
+                                                )
+                                            })
+                                    }
+                                })
+                        } else {
+                            timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal))
+                            timenoteViewModel.leaveTimenote(tokenId!!, args.event?.id!!)
+                                .observe(viewLifecycleOwner, Observer {
+                                    if (it.code() == 401) {
+                                        authViewModel.refreshToken(prefs).observe(
+                                            viewLifecycleOwner,
+                                            Observer { newAccessToken ->
+                                                tokenId = newAccessToken
+                                                timenoteViewModel.leaveTimenote(
+                                                    tokenId!!,
+                                                    args.event?.id!!
+                                                )
+                                            })
+                                    }
+                                })
+                        }
                     }
                 }
             }
+
+            timenote_vp.adapter = screenSlideCreationTimenotePagerAdapter
+            timenote_indicator.setViewPager(timenote_vp)
+            screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(timenote_indicator.adapterDataObserver)
+        } else {
+            timenote_vp.adapter = ScreenSlideTimenotePagerAdapter(this, args.event?.pictures, true, false) { i: Int, i1: Int -> }
+            timenote_vp.visibility = View.INVISIBLE
+            detailed_media_container.visibility = View.VISIBLE
+            detailed_thumbnail.visibility= View.VISIBLE
+            Glide.with(requireContext()).load(args.event?.pictures?.get(0)).into(detailed_thumbnail)
+            val surfaceView = PlayerView(requireContext())
+            surfaceView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH
+            surfaceView.useController = false
+            val videoPlayer = SimpleExoPlayer.Builder(requireContext()).build()
+            surfaceView.player = videoPlayer
+            val urlCached = CustomApplicationClass.getProxy(requireContext()).getProxyUrl(args.event?.video!!)
+            val dataSourceFactory: DataSource.Factory = DefaultDataSourceFactory(
+                requireContext(), Util.getUserAgent(requireContext(), "VideoPlayer")
+            )
+            val mediaSource: MediaSource =
+                ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(
+                    Uri.parse(urlCached)
+                )
+            videoPlayer.prepare(mediaSource)
+            videoPlayer.playWhenReady = true
+            videoPlayer.addListener(object: Player.EventListener {
+                override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+                    when(playbackState){
+                        Player.STATE_BUFFERING -> video_progressBar?.visibility = View.VISIBLE
+                        Player.STATE_READY -> {
+                            video_progressBar?.visibility = View.GONE
+                            detailed_thumbnail.visibility = View.INVISIBLE
+                            detailed_media_container.addView(surfaceView)
+                            surfaceView.visibility = RecyclerView.VISIBLE
+                            surfaceView.alpha = 1f
+                        }
+                    }
+                }
+            })
         }
-
-        timenote_vp.adapter = screenSlideCreationTimenotePagerAdapter
-        timenote_indicator.setViewPager(timenote_vp)
-        screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(timenote_indicator.adapterDataObserver)
-
         timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal))
         if (args.event?.isParticipating!! || userInfoDTO.id == args.event?.createdBy?.id) timenote_plus.setImageDrawable(
             resources.getDrawable(R.drawable.ic_ajout_cal_plein_gradient)

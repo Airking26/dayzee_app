@@ -136,7 +136,7 @@ class NearbyFilters : Fragment(), View.OnClickListener {
             }
             when(nearbyModifyModel.price.price){
                 0.0 -> nearby_filter_paid_timenote_tv.text = getString(R.string.free)
-                in 0.1 .. Double.MAX_VALUE  -> nearby_filter_paid_timenote_tv.text = getString(R.string.paid)
+                in 0.1 .. 2147483648.0  -> nearby_filter_paid_timenote_tv.text = getString(R.string.paid)
                 else -> nearby_filter_paid_timenote_tv.text = getText(R.string.free)
             }
             when(nearbyModifyModel.maxDistance){
@@ -202,10 +202,11 @@ class NearbyFilters : Fragment(), View.OnClickListener {
             }
             nearby_filter_paid_timenote -> MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT)).show {
                 title(R.string.from)
-                listItems(null, listOf(getString(R.string.free), getString(R.string.paid))) { _, index, _ ->
+                listItems(null, listOf(getString(R.string.free), getString(R.string.paid), getString(R.string.all))) { _, index, _ ->
                     when(index){
                         0 -> nearbyFilterData.setPaidTimenote(Price(0.0, ""))
-                        1 -> nearbyFilterData.setPaidTimenote(Price(Double.MAX_VALUE, ""))
+                        1 -> nearbyFilterData.setPaidTimenote(Price(2147483647.0, ""))
+                        2 -> nearbyFilterData.setPaidTimenote(Price(2147483647.0, currency = ""))
                     }
                 }
                 lifecycleOwner(this@NearbyFilters)

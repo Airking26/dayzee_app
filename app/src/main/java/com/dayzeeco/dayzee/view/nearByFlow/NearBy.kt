@@ -148,7 +148,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         , userInfoDTO)
         timenotePagingAdapter?.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
         tokenId = prefs.getString(accessToken, null)
-        loginViewModel.getAuthenticationState().observe(requireActivity(), {
+        loginViewModel.getAuthenticationState().observe(requireActivity()) {
             when (it) {
                 LoginViewModel.AuthenticationState.UNAUTHENTICATED -> {
                     findNavController().navigate(NearByDirections.actionGlobalNavigation())
@@ -160,7 +160,7 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
                 LoginViewModel.AuthenticationState.GUEST ->
                     findNavController().popBackStack(R.id.nearBy, false)
             }
-        })
+        }
         Places.initialize(requireContext(), getString(R.string.api_web_key))
         placesClient = Places.createClient(requireContext())
 
@@ -375,17 +375,17 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
                         )
                         nearbyViewModel.fetchLocation(place.id!!, getString(R.string.api_web_key))
                             .observe(
-                                viewLifecycleOwner,
-                                { detailedPlace ->
-                                    val location = Utils().setLocation(
-                                        detailedPlace.body()!!,
-                                        false,
-                                        null
-                                    )
-                                    if (detailedPlace.isSuccessful) nearbyFilterData.setWhere(
-                                        location
-                                    )
-                                })
+                                viewLifecycleOwner
+                            ) { detailedPlace ->
+                                val location = Utils().setLocation(
+                                    detailedPlace.body()!!,
+                                    false,
+                                    null
+                                )
+                                if (detailedPlace.isSuccessful) nearbyFilterData.setWhere(
+                                    location
+                                )
+                            }
                     }
                 }
                 AutocompleteActivity.RESULT_ERROR -> {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,6 +10,10 @@
 
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/abl"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -110,48 +115,36 @@
         </LinearLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <ScrollView
-        android:id="@+id/detailed_timenote_scc"
+
+    <include
+        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        app:layout_constraintBottom_toTopOf="@+id/fragment_detailed_comment_ll"
+        android:id="@+id/timenote_root"
+        layout="@layout/item_timenote_root"
+        app:layout_constraintTop_toBottomOf="@id/abl" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/detailed_timenote_sv"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="68dp"
+        android:paddingTop="8dp"
+        android:fillViewport="true"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/detailed_timenote_ll">
+        app:layout_constraintTop_toBottomOf="@id/timenote_root">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.recyclerview.widget.RecyclerView
+            tools:listitem="@layout/item_comment_pic"
+            android:id="@+id/detailed_timenote_comments_rv"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <include
-                android:id="@+id/timenote_root"
-                layout="@layout/item_timenote_root"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <androidx.core.widget.NestedScrollView
-                android:id="@+id/detailed_timenote_sv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="68dp"
-                android:fillViewport="true"
-                android:visibility="visible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/timenote_root">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    tools:listitem="@layout/item_comment_pic"
-                    android:id="@+id/detailed_timenote_comments_rv"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+            android:layout_height="wrap_content" />
 
 
-            </androidx.core.widget.NestedScrollView>
+    </androidx.core.widget.NestedScrollView>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
 
     <androidx.recyclerview.widget.RecyclerView
         android:visibility="gone"
@@ -159,20 +152,22 @@
         tools:listitem="@layout/item_user"
         android:id="@+id/detailed_timenote_rv"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        app:layout_constraintBottom_toTopOf="@+id/fragment_detailed_comment_ll"
+        app:layout_constraintBottom_toTopOf="@+id/detailed_timenote_sv"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/detailed_timenote_ll"
+        app:layout_constraintTop_toBottomOf="@id/detailed_timenote_sv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/detailed_timenote_sv"
         android:background="@color/colorBackground"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
-        app:layout_anchor="@id/detailed_timenote_scc"
         app:layout_anchorGravity="bottom">
 
 
@@ -249,4 +244,4 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

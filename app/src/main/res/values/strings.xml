@@ -58,7 +58,7 @@
     <string name="send_comments">Send comments</string>
     <string name="disconnect">DISCONNECT</string>
     <string name="new_timenote">New Event</string>
-    <string name="take_add_a_picture">ADD A PICTURE</string>
+    <string name="take_add_a_picture">ADD PICTURE(S)/VIDEO</string>
     <string name="choose_a_color">OR CHOOSE A BACKGROUND COLOR</string>
     <string name="when">When</string>
     <string name="to">To</string>
@@ -269,7 +269,7 @@
     <string name="nothing_to_show_add_some_people_or_center_of_interest_to_begin_your_adventure_with_dayzee">Nothing to show, add some people or center of interest to begin your adventure with Dayzee</string>
     <string name="nothing_to_show_nearby">Nothing around, try another set of filters</string>
     <string name="nothing_to_show_profile">Nothing Planned</string>
-    <string name="add_a_picture">Add a picture</string>
+    <string name="add_a_picture">From gallery/camera</string>
     <string name="default_notification_channel_id">dayzee_channel</string>
     <string name="visibility">Visibility</string>
     <string name="subcategory">Subcategory</string>
@@ -459,6 +459,8 @@
     <string name="every_month">The %1$s</string>
     <string name="_30_occurrences_maximum_are_allowed">30 occurrences maximum</string>
     <string name="too_many_occurrences">Too many occurrences</string>
+    <string name="since">Starting from</string>
+    <string name="who">Visibility of the events</string>
     <plurals name="time_minutes_comment">
         <item quantity="one">%1$d minute</item>
         <item quantity="other">%1$d minutes</item>

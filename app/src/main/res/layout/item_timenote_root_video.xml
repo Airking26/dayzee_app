@@ -22,25 +22,29 @@
             android:background="#fff"
             android:scaleType="fitCenter" />
 
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/discover_volume_on"
+            android:layout_gravity="end|bottom"
+            android:id="@+id/volume_control"
+            android:alpha="0"
+            android:animateLayoutChanges="true"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="15dp"/>
+
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyle"
+            android:visibility="gone"
+            android:layout_gravity="center" />
+
     </FrameLayout>
 
-    <com.google.android.exoplayer2.ui.AspectRatioFrameLayout
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:id="@+id/arfl"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <com.google.android.exoplayer2.ui.SimpleExoPlayerView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:resize_mode="fixed_width"
-            app:use_controller="false"
-            android:id="@+id/exo"/>
-
-    </com.google.android.exoplayer2.ui.AspectRatioFrameLayout>
 
     <TextView
         android:id="@+id/timenote_title"

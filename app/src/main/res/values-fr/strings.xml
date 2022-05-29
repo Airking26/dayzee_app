@@ -44,7 +44,7 @@
     <string name="send_comments">Envoyer un commentaire</string>
     <string name="disconnect">SE DECONNECTER</string>
     <string name="new_timenote">Nouvel Évènement</string>
-    <string name="take_add_a_picture">AJOUTER UNE PHOTO</string>
+    <string name="take_add_a_picture">AJOUTER PHOTO(S)/VIDÉO</string>
     <string name="choose_a_color">OU CHOISISSER UN FOND DE COULEUR</string>
     <string name="when">Quand</string>
     <string name="to">A</string>
@@ -260,7 +260,7 @@
     <string name="nothing_to_show_add_some_people_or_center_of_interest_to_begin_your_adventure_with_dayzee">Aucun Dayzee, ajouter des amis et/ou des centres d\'intérets</string>
     <string name="nothing_to_show_nearby">Aucun évènements aux alentours, essayez avec différents filtres</string>
     <string name="nothing_to_show_profile">Rien de Prévu</string>
-    <string name="add_a_picture">Ajouter une photo</string>
+    <string name="add_a_picture">Depuis la galerie/caméra</string>
     <string name="default_notification_channel_id">dayzee_channel</string>
     <string name="visibility">Visibilité</string>
     <string name="subcategory">Sous-catégorie</string>
@@ -437,6 +437,8 @@
     <string name="every_month">Le %1$s</string>
     <string name="_30_occurrences_maximum_are_allowed">30 occurrences maximum</string>
     <string name="too_many_occurrences">Trop d\'occurrences</string>
+    <string name="since">À partir de</string>
+    <string name="who">Visibilités des évènements</string>
     <plurals name="time_minutes_comment">
         <item quantity="one">%1$d minute</item>
         <item quantity="other">%1$d minutes</item>

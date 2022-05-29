@@ -15,6 +15,47 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
+    <FrameLayout
+        android:visibility="gone"
+        android:id="@+id/detailed_media_container"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:adjustViewBounds="true"
+            android:id="@+id/detailed_thumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#fff"
+            android:scaleType="fitCenter" />
+
+
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_baseline_volume_up_24"
+            android:layout_gravity="end|bottom"
+            android:id="@+id/volume_control"
+            android:alpha="0"
+            android:animateLayoutChanges="true"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="15dp"/>
+
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/video_progressBar"
+            style="?android:attr/progressBarStyle"
+            android:visibility="gone"
+            android:layout_gravity="center" />
+
+    </FrameLayout>
+
     <TextView
         android:id="@+id/timenote_title"
         android:layout_width="match_parent"
@@ -190,8 +231,6 @@
             android:layout_height="0.1dp"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 
 
     <ImageView

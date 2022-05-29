@@ -16,12 +16,14 @@
         <entry key="app/src/main/res/drawable/ic_b.xml" value="0.244" />
         <entry key="app/src/main/res/drawable/ic_baseline_arrow_drop_down_24.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_baseline_error_24.xml" value="0.1175" />
+        <entry key="app/src/main/res/drawable/ic_baseline_filter_24.xml" value="0.1055" />
         <entry key="app/src/main/res/drawable/ic_baseline_slow_motion_video_24.xml" value="0.217" />
         <entry key="app/src/main/res/drawable/ic_checktwo.xml" value="0.1175" />
         <entry key="app/src/main/res/drawable/ic_v.xml" value="0.1085" />
         <entry key="app/src/main/res/drawable/ic_w.xml" value="0.1085" />
         <entry key="app/src/main/res/layout-sw480dp/activity_main.xml" value="0.1" />
         <entry key="app/src/main/res/layout-sw480dp/fragment_create_timenote.xml" value="0.1" />
+        <entry key="app/src/main/res/layout-sw480dp/fragment_detailed_fragment.xml" value="0.11041666666666666" />
         <entry key="app/src/main/res/layout-sw480dp/fragment_home.xml" value="0.12708333333333333" />
         <entry key="app/src/main/res/layout-sw480dp/fragment_menu.xml" value="0.1" />
         <entry key="app/src/main/res/layout-sw480dp/fragment_my_profile.xml" value="0.1" />
@@ -53,8 +55,9 @@
         <entry key="app/src/main/res/layout/custom_spinner_dd.xml" value="0.11805555555555555" />
         <entry key="app/src/main/res/layout/dialog_reccurence.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_create_account.xml" value="0.12361111111111112" />
-        <entry key="app/src/main/res/layout/fragment_create_timenote.xml" value="0.10040735639538848" />
-        <entry key="app/src/main/res/layout/fragment_detailed_fragment.xml" value="0.121875" />
+        <entry key="app/src/main/res/layout/fragment_create_timenote.xml" value="0.335" />
+        <entry key="app/src/main/res/layout/fragment_detailed_fragment.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/fragment_detailed_fragment_test.xml" value="0.12832794189453123" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.240234375" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_menu.xml" value="0.10416666666666667" />

@@ -45,6 +45,8 @@ class VideoPlayerRecyclerView : RecyclerView {
     private var imageView: ImageView? = null
     private lateinit var frameLayout: FrameLayout
     private lateinit var videoSurfaceView: PlayerView
+    private lateinit var pb: ProgressBar
+    private var volumeControle: ImageView? = null
     private var videoPlayer: SimpleExoPlayer? = null
 
     // vars
@@ -113,12 +115,14 @@ class VideoPlayerRecyclerView : RecyclerView {
             override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
                 when (playbackState) {
                     Player.STATE_BUFFERING -> {
+                        pb.visibility = VISIBLE
                     }
                     Player.STATE_ENDED -> {
                         videoPlayer!!.seekTo(0)
                     }
                     Player.STATE_IDLE -> {}
                     Player.STATE_READY -> {
+                        pb.visibility = GONE
                         if (!isVideoViewAdded) {
                             addVideoView()
                         }
@@ -169,6 +173,8 @@ class VideoPlayerRecyclerView : RecyclerView {
             return
         }
         viewHolderParent = holder.itemView
+        volumeControle = holder.itemView.volume_control
+        pb = holder.itemView.progressBar
         imageView = holder.itemView.thumbnail
         frameLayout = holder.itemView.findViewById(R.id.media_container)
         videoSurfaceView.player = videoPlayer
@@ -214,6 +220,7 @@ class VideoPlayerRecyclerView : RecyclerView {
         val group : ViewGroup = videoView.parent as ViewGroup
         val index: Int = group.indexOfChild(videoView)
         if (index >= 0) {
+            videoPlayer?.stop(true)
             group.removeViewAt(index)
             isVideoViewAdded = false
             viewHolderParent!!.setOnClickListener(null)
@@ -260,28 +267,32 @@ class VideoPlayerRecyclerView : RecyclerView {
         volumeState = state
         if (state == VolumeState.OFF) {
             videoPlayer!!.volume = 0f
-            //animateVolumeControl()
+            animateVolumeControl()
         } else if (state == VolumeState.ON) {
             videoPlayer!!.volume = 1f
-            //animateVolumeControl()
+            animateVolumeControl()
         }
     }
 
-    /*private fun animateVolumeControl() {
-        volumeControl.bringToFront()
-        if (volumeState == VolumeState.OFF) {
-            requestManager!!.load(R.drawable.ic_add_circle_yellow_notif)
-                .into(volumeControl)
-        } else if (volumeState == VolumeState.ON) {
-            requestManager!!.load(R.drawable.ic_add_circle_black_24dp)
-                .into(volumeControl)
+    private fun animateVolumeControl() {
+        if(volumeControle != null) {
+            volumeControle!!.bringToFront()
+            if (volumeState == VolumeState.OFF) {
+                volumeControle!!.setImageDrawable(resources.getDrawable(R.drawable.discover_volume_off))
+            } else if (volumeState == VolumeState.ON) {
+                volumeControle!!.setImageDrawable(
+                    resources.getDrawable(
+                        R.drawable.discover_volume_on
+                    )
+                )
+            }
+            volumeControle!!.animate().cancel()
+            volumeControle!!.alpha = 1f
+            volumeControle!!.animate()
+                .alpha(0f)
+                .setDuration(600).startDelay = 1000
         }
-        volumeControl.animate().cancel()
-        volumeControl.alpha = 1f
-        volumeControl.animate()
-            .alpha(0f)
-            .setDuration(600).startDelay = 1000
-    }*/
+    }
 
     fun setMediaObjects(mediaObjects: List<TimenoteInfoDTO>) {
         (adapter as? TimenotePagingAdapter)?.snapshot()?.items

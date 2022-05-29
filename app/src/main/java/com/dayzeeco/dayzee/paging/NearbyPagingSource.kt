@@ -16,7 +16,6 @@ class NearbyPagingSource(private val nearbyRequestBody: NearbyRequestBody,
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, TimenoteInfoDTO> {
         return try {
             val nextPageNumber = params.key ?: 0
-            val nb = nearbyRequestBody
             val response = nearbyService.getNearbyResults(nextPageNumber, nearbyRequestBody)
             LoadResult.Page(
                 data = response.body()!!,
