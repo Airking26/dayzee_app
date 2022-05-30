@@ -12,7 +12,6 @@
         app:poly_vertices="0"
         app:poly_corner_radius="@dimen/penta_small_corner"
         android:id="@+id/timenote_pic_user_imageview"
-        android:background="@drawable/border_pic_profile"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginStart="16dp"

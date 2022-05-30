@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -74,8 +75,14 @@ class ItemTimenoteRecentAdapter(private val timenotesToCome: List<TimenoteInfoDT
             if (timenote.createdBy.picture.isNullOrBlank()){
                 itemView.timenote_recent_pic_user_imageview.setImageDrawable(utils.determineLetterLogo(timenote.createdBy.userName!!, itemView.context))
             } else {
-                if (timenote.createdBy.isPictureNft!!) itemView.timenote_recent_pic_user_imageview.vertices = 6
-                else itemView.timenote_recent_pic_user_imageview.vertices = 0
+                if (timenote.createdBy.isPictureNft!!){
+                    itemView.timenote_recent_pic_user_imageview.vertices = 6
+                    itemView.timenote_recent_pic_user_imageview.background = null
+                }
+                else {
+                    itemView.timenote_recent_pic_user_imageview.vertices = 0
+                    itemView.timenote_recent_pic_user_imageview.background = ResourcesCompat.getDrawable(itemView.resources, R.drawable.border_pic_profile_recent, null)
+                }
                 Glide
                     .with(itemView)
                     .load(timenote.createdBy.picture)

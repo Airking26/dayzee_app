@@ -264,60 +264,64 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
 
 
         prefs.stringLiveData(nearby, Gson().toJson(nearbyFilterData.loadNearbyFilter())).observe(
-            viewLifecycleOwner,
-            {
-                val typeNearby: Type = object : TypeToken<NearbyRequestBody?>() {}.type
-                val nearbyModifyModel: NearbyRequestBody? = Gson().fromJson<NearbyRequestBody>(
-                    it,
+            viewLifecycleOwner
+        ) {
+            val typeNearby: Type = object : TypeToken<NearbyRequestBody?>() {}.type
+            val nearbyModifyModel: NearbyRequestBody? = Gson().fromJson<NearbyRequestBody>(
+                it,
+                typeNearby
+            )
+            nearby_place.text = nearbyModifyModel?.location?.address?.address
+            if (nearbyModifyModel?.date == null || nearbyModifyModel.date.isBlank())
+                nearby_time.text = dateFormat.format(System.currentTimeMillis())
+            else nearby_time.text = SimpleDateFormat(DATE_FORMAT, Locale.getDefault()).format(
+                SimpleDateFormat(
+                    ISO,
+                    Locale.getDefault()
+                ).parse(nearbyModifyModel.date).time
+            )
+            if (nearbyToCompare.isNotBlank() && nearbyToCompare.isNotEmpty()) {
+                val nearbyToCompareFormatted = Gson().fromJson<NearbyRequestBody>(
+                    nearbyToCompare,
                     typeNearby
                 )
-                nearby_place.text = nearbyModifyModel?.location?.address?.address
-                if (nearbyModifyModel?.date == null || nearbyModifyModel.date.isBlank())
-                    nearby_time.text = dateFormat.format(System.currentTimeMillis())
-                else nearby_time.text = SimpleDateFormat(DATE_FORMAT, Locale.getDefault()).format(
-                    SimpleDateFormat(
-                        ISO,
-                        Locale.getDefault()
-                    ).parse(nearbyModifyModel.date).time
-                )
+                if (nearbyToCompareFormatted != nearbyModifyModel) loaded = false
+            }
+            if (nearbyModifyModel?.location?.latitude != 0.0 && nearbyModifyModel?.location?.longitude != 0.0) {
+                if (!loaded) {
+                    nearby_swipe_refresh.isRefreshing = true
+                    loadData(nearbyModifyModel)
+                }
                 if (nearbyToCompare.isNotBlank() && nearbyToCompare.isNotEmpty()) {
                     val nearbyToCompareFormatted = Gson().fromJson<NearbyRequestBody>(
                         nearbyToCompare,
                         typeNearby
                     )
-                    if (nearbyToCompareFormatted != nearbyModifyModel) loaded = false
-                }
-                if (nearbyModifyModel?.location?.latitude != 0.0 && nearbyModifyModel?.location?.longitude != 0.0) {
-                    if (!loaded) {
-                        nearby_swipe_refresh.isRefreshing = true
-                        loadData(nearbyModifyModel)
-                    }
-                    if (nearbyToCompare.isNotBlank() && nearbyToCompare.isNotEmpty()) {
-                        val nearbyToCompareFormatted = Gson().fromJson<NearbyRequestBody>(
-                            nearbyToCompare,
-                            typeNearby
-                        )
-                        if (nearbyToCompareFormatted.location != nearbyModifyModel?.location) {
-                            this.googleMap?.addMarker(
-                                MarkerOptions()
-                                    .position(LatLng(nearbyModifyModel?.location?.latitude!!, nearbyModifyModel.location.longitude))
-                                    //.icon(bitmapFromDrawable(requireContext(), R.drawable.gradient_futur))
-                            )
-                            this.googleMap?.animateCamera(
-                                CameraUpdateFactory.newLatLngZoom(
+                    if (nearbyToCompareFormatted.location != nearbyModifyModel?.location) {
+                        this.googleMap?.addMarker(
+                            MarkerOptions()
+                                .position(
                                     LatLng(
                                         nearbyModifyModel?.location?.latitude!!,
                                         nearbyModifyModel.location.longitude
-                                    ), 15F
+                                    )
                                 )
+                        )
+                        this.googleMap?.animateCamera(
+                            CameraUpdateFactory.newLatLngZoom(
+                                LatLng(
+                                    nearbyModifyModel?.location?.latitude!!,
+                                    nearbyModifyModel.location.longitude
+                                ), 15F
                             )
-                        }
+                        )
                     }
                 }
+            }
 
-                nearbyToCompare = Gson().toJson(nearbyFilterData.loadNearbyFilter())
-            })
-     }
+            nearbyToCompare = Gson().toJson(nearbyFilterData.loadNearbyFilter())
+        }
+    }
 
     @ExperimentalPagingApi
     private fun loadData(nearbyModifyModel: NearbyRequestBody?) {
@@ -337,13 +341,15 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
 
         lifecycleScope.launch {
             timenotePagingAdapter?.loadStateFlow?.distinctUntilChangedBy { it.source }?.collect {
-                if(it.refresh is LoadState.NotLoading){
-                    nearby_swipe_refresh?.isRefreshing = false
+                if(it.refresh is LoadState.Loading) nearby_swipe_refresh?.isRefreshing = true
+                else if(it.refresh is LoadState.NotLoading && !timenotePagingAdapter?.snapshot()?.items.isNullOrEmpty()){
                     nearby_rv?.visibility = View.VISIBLE
                     nearby_nothing_to_display?.visibility = View.GONE
+                    nearby_swipe_refresh?.isRefreshing = false
                 } else {
                     nearby_rv?.visibility = View.GONE
                     nearby_nothing_to_display?.visibility = View.VISIBLE
+                    nearby_swipe_refresh?.isRefreshing = false
                 }
                 nearby_rv.setMediaObjects(timenotePagingAdapter?.snapshot()?.items!!)
             }

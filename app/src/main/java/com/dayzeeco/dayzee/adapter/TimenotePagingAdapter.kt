@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import androidx.annotation.RequiresApi
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.paging.PagingDataAdapter
@@ -183,8 +184,14 @@ class TimenoteViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         if (timenote.createdBy.picture.isNullOrBlank()){
             itemView.timenote_pic_user_imageview.setImageDrawable(utils.determineLetterLogo(timenote.createdBy.userName!!, itemView.context))
         } else{
-            if (timenote.createdBy.isPictureNft!!) itemView.timenote_pic_user_imageview.vertices = 6
-            else itemView.timenote_pic_user_imageview.vertices = 0
+            if (timenote.createdBy.isPictureNft!!) {
+                itemView.timenote_pic_user_imageview.vertices = 6
+                itemView.timenote_pic_user_imageview.background = null
+            }
+            else {
+                itemView.timenote_pic_user_imageview.vertices = 0
+                itemView.timenote_pic_user_imageview.background = ResourcesCompat.getDrawable(itemView.resources, R.drawable.border_pic_profile, null)
+            }
             Glide
                 .with(itemView)
                 .load(timenote.createdBy.picture)

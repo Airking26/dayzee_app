@@ -159,13 +159,15 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
 
         lifecycleScope.launch {
             profileEventPagingAdapter?.loadStateFlow?.distinctUntilChangedBy { it.source }?.collect {
-                profile_pb?.visibility = View.GONE
-                if(it.refresh is LoadState.NotLoading){
+                if(it.refresh is LoadState.Loading) profile_pb?.visibility = View.VISIBLE
+                else if(it.refresh is LoadState.NotLoading && !profileEventPagingAdapter?.snapshot()?.items.isNullOrEmpty()){
                     profile_nothing_to_display?.visibility = View.GONE
                     profile_rv?.visibility = View.VISIBLE
+                    profile_pb?.visibility = View.GONE
                 } else {
                     profile_nothing_to_display?.visibility = View.VISIBLE
                     profile_rv?.visibility = View.GONE
+                    profile_pb?.visibility = View.GONE
                 }
             }
         }
@@ -203,36 +205,36 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
         timenoteViewModel.signalTimenote(
             tokenId!!,
             TimenoteCreationSignalementDTO(userInfoDTO?.id!!, timenoteInfoDTO.id, reason)
-        ).observe(viewLifecycleOwner,
-            {
-                if (it.code() == 401) {
-                    authViewModel.refreshToken(prefs)
-                        .observe(viewLifecycleOwner, { newAccessToken ->
-                            tokenId = newAccessToken
-                            timenoteViewModel.signalTimenote(
-                                tokenId!!,
-                                TimenoteCreationSignalementDTO(
-                                    userInfoDTO?.id!!,
-                                    timenoteInfoDTO.id,
-                                    reason
-                                )
-                            ).observe(viewLifecycleOwner,
-                                { rsp ->
-                                    if (rsp.isSuccessful) Toast.makeText(
-                                        requireContext(),
-                                        getString(R.string.reported),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                })
-                        })
-                }
+        ).observe(viewLifecycleOwner
+        ) {
+            if (it.code() == 401) {
+                authViewModel.refreshToken(prefs)
+                    .observe(viewLifecycleOwner) { newAccessToken ->
+                        tokenId = newAccessToken
+                        timenoteViewModel.signalTimenote(
+                            tokenId!!,
+                            TimenoteCreationSignalementDTO(
+                                userInfoDTO?.id!!,
+                                timenoteInfoDTO.id,
+                                reason
+                            )
+                        ).observe(viewLifecycleOwner
+                        ) { rsp ->
+                            if (rsp.isSuccessful) Toast.makeText(
+                                requireContext(),
+                                getString(R.string.reported),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+            }
 
-                if (it.isSuccessful) Toast.makeText(
-                    requireContext(),
-                    getString(R.string.reported),
-                    Toast.LENGTH_SHORT
-                ).show()
-            })
+            if (it.isSuccessful) Toast.makeText(
+                requireContext(),
+                getString(R.string.reported),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 
     override fun onEditClicked(timenoteInfoDTO: TimenoteInfoDTO) {
@@ -356,16 +358,21 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
     }
 
     override fun onHideToOthersClicked(timenoteInfoDTO: TimenoteInfoDTO) {
-        timenoteViewModel.hideToOthers(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner, {
-            if(it.code() == 401) {
-                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, { newAccessToken ->
+        timenoteViewModel.hideToOthers(tokenId!!, timenoteInfoDTO.id).observe(viewLifecycleOwner) {
+            if (it.code() == 401) {
+                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner) { newAccessToken ->
                     tokenId = newAccessToken
                     timenoteViewModel.hideToOthers(tokenId!!, timenoteInfoDTO.id)
-                    Toast.makeText(requireContext(), getString(R.string.hided), Toast.LENGTH_SHORT).show()
-                })
+                    Toast.makeText(requireContext(), getString(R.string.hided), Toast.LENGTH_SHORT)
+                        .show()
+                }
             }
-            if(it.isSuccessful) Toast.makeText(requireContext(), getString(R.string.hided), Toast.LENGTH_SHORT).show()
-        })
+            if (it.isSuccessful) Toast.makeText(
+                requireContext(),
+                getString(R.string.hided),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 
     override fun onSeeParticipants(timenoteInfoDTO: TimenoteInfoDTO) {
@@ -624,28 +631,41 @@ class ProfileEvents : Fragment(), TimenoteOptionsListener, OnRemoveFilterBarList
     override fun onDoubleClick() {}
 
     override fun onHidePostClicked(timenoteInfoDTO: TimenoteInfoDTO, position: Int) {
-        timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO?.id!!, timenote = timenoteInfoDTO.id)).observe(viewLifecycleOwner, {
-            if(it.code() == 401){
-                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
-                        newAccessToken -> tokenId = newAccessToken
-                    timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO?.id!!,timenote= timenoteInfoDTO.id)).observe(viewLifecycleOwner, {
-                        nr -> if(nr.isSuccessful) profileEventPagingAdapter?.refresh()
-                    })
-                })
-            } else if(it.isSuccessful) profileEventPagingAdapter?.refresh()
-        })
+        timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO?.id!!, timenote = timenoteInfoDTO.id)).observe(viewLifecycleOwner) {
+            if (it.code() == 401) {
+                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner) { newAccessToken ->
+                    tokenId = newAccessToken
+                    timenoteHiddedViewModel.hideEventOrUSer(
+                        tokenId!!,
+                        TimenoteHiddedCreationDTO(
+                            createdBy = userInfoDTO?.id!!,
+                            timenote = timenoteInfoDTO.id
+                        )
+                    ).observe(viewLifecycleOwner) { nr ->
+                        if (nr.isSuccessful) profileEventPagingAdapter?.refresh()
+                    }
+                }
+            } else if (it.isSuccessful) profileEventPagingAdapter?.refresh()
+        }
     }
 
     override fun onHideUserClicked(timenoteInfoDTO: TimenoteInfoDTO, position: Int) {
-        timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO?.id!!, user = timenoteInfoDTO.createdBy.id)).observe(viewLifecycleOwner, {
-            if(it.code() == 401){
-                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner, {
-                        newAccessToken -> tokenId = newAccessToken
-                    timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO?.id!!,user= timenoteInfoDTO.createdBy.id)).observe(viewLifecycleOwner, {
-                        nr -> if(nr.isSuccessful) profileEventPagingAdapter?.refresh()
-                    })
-                })
-            } else if(it.isSuccessful) profileEventPagingAdapter?.refresh()
-        })    }
+        timenoteHiddedViewModel.hideEventOrUSer(tokenId!!, TimenoteHiddedCreationDTO(createdBy = userInfoDTO?.id!!, user = timenoteInfoDTO.createdBy.id)).observe(viewLifecycleOwner) {
+            if (it.code() == 401) {
+                authViewModel.refreshToken(prefs).observe(viewLifecycleOwner) { newAccessToken ->
+                    tokenId = newAccessToken
+                    timenoteHiddedViewModel.hideEventOrUSer(
+                        tokenId!!,
+                        TimenoteHiddedCreationDTO(
+                            createdBy = userInfoDTO?.id!!,
+                            user = timenoteInfoDTO.createdBy.id
+                        )
+                    ).observe(viewLifecycleOwner) { nr ->
+                        if (nr.isSuccessful) profileEventPagingAdapter?.refresh()
+                    }
+                }
+            } else if (it.isSuccessful) profileEventPagingAdapter?.refresh()
+        }
+    }
 
 }

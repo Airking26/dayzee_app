@@ -3,6 +3,7 @@ package com.dayzeeco.dayzee.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.res.ResourcesCompat
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -76,8 +77,14 @@ class UsersPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO>,
             if (userInfoDTO.picture.isNullOrBlank()){
                 itemView.user_imageview.setImageDrawable(utils.determineLetterLogo(userInfoDTO.userName!!, itemView.context))
             } else {
-                if (userInfoDTO.isPictureNft!!) itemView.user_imageview.vertices = 6
-                else itemView.user_imageview.vertices = 0
+                if (userInfoDTO.isPictureNft!!){
+                    itemView.user_imageview.vertices = 6
+                    itemView.user_imageview.background = null
+                }
+                else {
+                    itemView.user_imageview.vertices = 0
+                    itemView.user_imageview.background = ResourcesCompat.getDrawable(itemView.resources, R.drawable.border_pic_profile, null)
+                }
                 Glide
                     .with(itemView)
                     .load(userInfoDTO.picture)

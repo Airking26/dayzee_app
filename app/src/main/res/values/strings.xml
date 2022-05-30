@@ -489,6 +489,10 @@
         <item quantity="one">In %1$d month</item>
         <item quantity="other">In %1$d months</item>
     </plurals>
+    <plurals name="in_years">
+        <item quantity="one">In %1$d year</item>
+        <item quantity="other">In %1$d years</item>
+    </plurals>
     <plurals name="time_days_comment">
         <item quantity="one">%1$d day</item>
         <item quantity="other">%1$d days</item>

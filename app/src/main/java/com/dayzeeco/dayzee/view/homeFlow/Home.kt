@@ -265,17 +265,23 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
         lifecycleScope.launch {
         timenotePagingAdapter?.loadStateFlow?.distinctUntilChangedBy { it.source }?.collect {
-            if(it.refresh is LoadState.NotLoading){
-                home_swipe_refresh?.isRefreshing = false
+
+            if(it.refresh is LoadState.Loading) {
+                home_posted_recently?.visibility = View.GONE
+                home_swipe_refresh?.isRefreshing = true
+            }
+            else if(it.refresh is LoadState.NotLoading && !timenotePagingAdapter?.snapshot()?.items.isNullOrEmpty()){
                 home_recent_rv?.visibility = View.VISIBLE
                 home_rv?.visibility = View.VISIBLE
                 home_posted_recently?.visibility = View.VISIBLE
                 home_nothing_to_display?.visibility = View.GONE
+                home_swipe_refresh?.isRefreshing = false
             } else {
                 home_recent_rv?.visibility = View.GONE
                 home_rv?.visibility = View.GONE
                 home_posted_recently?.visibility = View.GONE
                 home_nothing_to_display?.visibility = View.VISIBLE
+                home_swipe_refresh?.isRefreshing = false
             }
             home_rv?.setMediaObjects(timenotePagingAdapter?.snapshot()?.items!!)
         }}
@@ -312,15 +318,19 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
 
         lifecycleScope.launch {
             timenotePagingAdapter?.loadStateFlow?.distinctUntilChangedBy { it.source }?.collect {
-                if (it.refresh is LoadState.NotLoading) {
-                    home_swipe_refresh?.isRefreshing = false
+                if(it.refresh is LoadState.Loading) {
+                    home_swipe_refresh?.isRefreshing = true
+                }
+               else if (it.refresh is LoadState.NotLoading && !timenotePagingAdapter?.snapshot()?.items.isNullOrEmpty()) {
                     home_rv?.visibility = View.VISIBLE
                     home_nothing_to_display?.visibility = View.GONE
+                    home_swipe_refresh?.isRefreshing = false
                 } else {
                     home_recent_rv?.visibility = View.GONE
                     home_rv?.visibility = View.GONE
                     home_posted_recently?.visibility = View.GONE
                     home_nothing_to_display?.visibility = View.VISIBLE
+                    home_swipe_refresh?.isRefreshing = false
                 }
 
             }

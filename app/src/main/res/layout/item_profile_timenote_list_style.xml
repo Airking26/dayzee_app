@@ -34,9 +34,9 @@
                 android:layout_height="match_parent"/>
 
             <ImageView
+                android:padding="4dp"
                 android:id="@+id/profile_item_is_video"
                 android:visibility="gone"
-                android:padding="4dp"
                 android:src="@drawable/ic_baseline_slow_motion_video_24"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
@@ -86,7 +86,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-        <ImageView
+        <com.dayzeeco.dayzee.androidView.view.PolygonImageView
+            app:poly_vertices="0"
+            app:poly_corner_radius="5"
             android:id="@+id/profile_item_pic_profile_imageview"
             android:layout_marginStart="8dp"
             app:layout_constraintStart_toEndOf="@id/item_card"

@@ -3,16 +3,19 @@ package com.dayzeeco.dayzee.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.res.ResourcesCompat
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.ResourceCallback
 import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.common.Utils
 import com.dayzeeco.dayzee.model.TimenoteInfoDTO
 import com.dayzeeco.dayzee.model.UserInfoDTO
+import io.reactivex.observers.ResourceCompletableObserver
 import kotlinx.android.synthetic.main.item_user.view.givenName
 import kotlinx.android.synthetic.main.item_user.view.name_user
 import kotlinx.android.synthetic.main.item_user.view.user_imageview
@@ -49,8 +52,14 @@ class UsersAwaitingPagingAdapter(diffCallback: DiffUtil.ItemCallback<UserInfoDTO
             if (userInfoDTO?.picture.isNullOrBlank()){
                 itemView.user_imageview.setImageDrawable(utils.determineLetterLogo(userInfoDTO?.userName!!, itemView.context))
             } else {
-                if (userInfoDTO?.isPictureNft!!) itemView.user_imageview.vertices = 6
-                else itemView.user_imageview.vertices = 0
+                if (userInfoDTO?.isPictureNft!!) {
+                    itemView.user_imageview.vertices = 6
+                    itemView.user_imageview.background = null
+                }
+                else {
+                    itemView.user_imageview.vertices = 0
+                    itemView.user_imageview.background = ResourcesCompat.getDrawable(itemView.resources, R.drawable.border_pic_profile, null)
+                }
                 Glide
                     .with(itemView)
                     .load(userInfoDTO?.picture)

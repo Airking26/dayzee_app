@@ -70,9 +70,8 @@
 
         <com.dayzeeco.dayzee.androidView.view.PolygonImageView
             app:poly_vertices="0"
-            app:poly_corner_radius="@dimen/penta_small_corner"
+            app:poly_corner_radius="5"
             android:id="@+id/timenote_recent_pic_user_imageview"
-            android:background="@drawable/border_pic_profile_recent"
             app:layout_constraintTop_toTopOf="@id/timenote_recent_title"
             app:layout_constraintBottom_toBottomOf="@id/timenote_recent_title"
             android:layout_marginEnd="8dp"

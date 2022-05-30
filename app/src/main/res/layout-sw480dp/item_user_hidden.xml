@@ -23,7 +23,6 @@
         <com.dayzeeco.dayzee.androidView.view.PolygonImageView
             app:poly_vertices="0"
             android:padding="0.8dp"
-            android:background="@drawable/border_pic_profile"
             android:layout_centerInParent="true"
             app:poly_corner_radius="@dimen/penta_small_corner"
             android:id="@+id/user_hidden_imageview"

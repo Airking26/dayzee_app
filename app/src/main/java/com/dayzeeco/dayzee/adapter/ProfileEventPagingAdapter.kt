@@ -232,13 +232,17 @@ class TimenoteListHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
         if (event.createdBy.picture.isNullOrBlank()){
             itemView.profile_item_pic_profile_imageview.setImageDrawable(utils.determineLetterLogo(event.createdBy.userName!!, itemView.context))
-        } else Glide
-            .with(itemView)
-            .load(event.createdBy.picture)
-            .apply(RequestOptions.circleCropTransform())
-            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-            .placeholder(R.drawable.circle_pic)
-            .into(itemView.profile_item_pic_profile_imageview)
+        } else {
+            if (event.createdBy.isPictureNft!!) itemView.profile_item_pic_profile_imageview.vertices = 6
+            else itemView.profile_item_pic_profile_imageview.vertices = 0
+            Glide
+                    .with(itemView)
+                    .load(event.createdBy.picture)
+                    .apply(RequestOptions.circleCropTransform())
+                    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                    .placeholder(R.drawable.circle_pic)
+                    .into(itemView.profile_item_pic_profile_imageview)
+        }
     }
     private fun createOptionsOnTimenote(
         context: Context,

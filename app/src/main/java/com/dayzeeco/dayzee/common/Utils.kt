@@ -371,8 +371,7 @@ class Utils {
 
         val decountTime: String
         if(nbrYear <= 0 && nbrMonth <= 0 && nbrDay <= 0 && nbrHour <= 0 && nbrMin < 0 && nbrSec <= 0){
-            decountTime = context.getString(R.string.live)
-        }
+            decountTime = context.getString(R.string.live) }
         else
         if(nbrYear <= 0){
             if(nbrMonth <= 0){
@@ -380,8 +379,8 @@ class Utils {
                     if (nbrHour <= 0) {
                         decountTime =
                             when {
-                                nbrMin == 0L -> {
-                                    context.resources.getQuantityString(R.plurals.in_seconds, nbrSec.toInt(), nbrSec, nbrSec)
+                                nbrSec == 0L -> {
+                                    context.resources.getQuantityString(R.plurals.in_minutes, nbrMin.toInt(), nbrMin, nbrMin)
                                 }
                                 nbrMin > 1 -> {
                                     context.resources.getQuantityString(R.plurals.minutes_plural_seconds_vary, nbrMin.toInt(), nbrMin, nbrSec)
@@ -393,8 +392,8 @@ class Utils {
                     }
                     else {
                         decountTime =
-                            if (nbrHour == 0L){
-                                context.resources.getQuantityString(R.plurals.in_minutes, nbrMin.toInt(), nbrMin, nbrMin)
+                            if (nbrMin == 0L){
+                                context.resources.getQuantityString(R.plurals.in_hours, nbrHour.toInt(), nbrHour, nbrHour)
                             }
                             else if (nbrHour > 1) {
                                 if (nbrMin > 1) {
@@ -434,8 +433,8 @@ class Utils {
                 }
                 else {
                     decountTime =
-                    if (nbrDay == 0L){
-                        context.resources.getQuantityString(R.plurals.in_hours, nbrHour.toInt(), nbrHour, nbrHour)
+                    if(nbrHour == 0L){
+                        context.resources.getQuantityString(R.plurals.in_days, nbrDay.toInt(), nbrDay, nbrDay)
                     }
                         else if(nbrDay > 1){
                         if(nbrHour > 1) context.resources.getQuantityString(
@@ -469,8 +468,8 @@ class Utils {
             }
             else {
                 decountTime =
-                if (nbrMonth == 0L){
-                    context.resources.getQuantityString(R.plurals.in_days, nbrDay.toInt(), nbrDay, nbrDay)
+                if (nbrDay == 0L){
+                    context.resources.getQuantityString(R.plurals.in_months, nbrMonth.toInt(), nbrMonth, nbrMonth)
                 }
                     else if(nbrMonth > 1){
                     if(nbrDay > 1){
@@ -508,8 +507,8 @@ class Utils {
             }
         } else {
             decountTime =
-            if (nbrYear == 0L){
-                context.resources.getQuantityString(R.plurals.in_months, nbrMonth.toInt(), nbrMonth, nbrMonth)
+            if (nbrMonth == 0L){
+                context.resources.getQuantityString(R.plurals.in_years, nbrYear.toInt(), nbrYear, nbrYear)
             }
                 else if(nbrYear > 1){
                 if(nbrMonth > 1) {

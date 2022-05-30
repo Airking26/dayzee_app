@@ -16,7 +16,6 @@
         android:id="@+id/user_imageview"
         android:layout_marginVertical="8dp"
         android:layout_marginStart="16dp"
-        android:background="@drawable/border_pic_profile"
         android:padding="0.8dp"
         android:layout_width="36dp"
         android:layout_height="36dp"/>
