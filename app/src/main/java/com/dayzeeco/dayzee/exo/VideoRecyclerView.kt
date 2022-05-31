@@ -220,7 +220,7 @@ class VideoPlayerRecyclerView : RecyclerView {
         val group : ViewGroup = videoView.parent as ViewGroup
         val index: Int = group.indexOfChild(videoView)
         if (index >= 0) {
-            videoPlayer?.stop(true)
+            videoPlayer?.stop()
             group.removeViewAt(index)
             isVideoViewAdded = false
             viewHolderParent!!.setOnClickListener(null)

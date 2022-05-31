@@ -323,6 +323,11 @@ class NearBy : BaseThroughFragment(), View.OnClickListener, TimenoteOptionsListe
         }
     }
 
+    override fun onDestroy() {
+        nearby_rv?.releasePlayer()
+        super.onDestroy()
+    }
+
     @ExperimentalPagingApi
     private fun loadData(nearbyModifyModel: NearbyRequestBody?) {
         loaded = true

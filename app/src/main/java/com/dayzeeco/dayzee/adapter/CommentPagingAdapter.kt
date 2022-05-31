@@ -26,6 +26,7 @@ class CommentPagingAdapter(
         )
     }
 
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int

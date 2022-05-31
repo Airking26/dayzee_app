@@ -115,6 +115,10 @@ class TimenoteTAG: Fragment(), TimenoteOptionsListener, View.OnClickListener,
         timenote_tag_btn_back.setOnClickListener(this)
     }
 
+    override fun onDestroy() {
+        timenote_tag_rv?.releasePlayer()
+        super.onDestroy()
+    }
 
     override fun onClick(v: View?) {
         when(v){

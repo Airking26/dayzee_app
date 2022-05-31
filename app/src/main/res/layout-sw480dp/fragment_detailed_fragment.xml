@@ -4,171 +4,171 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/colorBackground"
-    tools:context=".view.homeFlow.DetailedTimenote">
+    android:layout_height="match_parent">
 
-
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/abl"
-        app:layout_constraintTop_toTopOf="parent"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/colorBackground"
+        tools:context=".view.homeFlow.DetailedTimenote">
 
-        <LinearLayout
-            android:id="@+id/detailed_timenote_ll"
-            style="@style/AppTheme.Toolbar.LinearLayout"
-            tools:ignore="MissingConstraints">
 
-            <androidx.appcompat.widget.Toolbar style="@style/AppTheme.Toolbar">
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+            <com.dayzeeco.dayzee.androidView.CollapsibleToolbar
+                android:id="@+id/detailed_timenote_ll"
+                android:fitsSystemWindows="false"
+                app:layout_scrollFlags="scroll|snap|enterAlwaysCollapsed"
+                style="@style/AppTheme.Toolbar.LinearLayout"
+                tools:ignore="MissingConstraints">
 
-                    <TextView
-                        android:id="@+id/detailed_timenote_btn_back"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:drawableStart="@drawable/ic_back_thin"
-                        android:fontFamily="sans-serif-light"
-                        android:text=""
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/tb"
+                    style="@style/AppTheme.Toolbar">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="16dp"
-                        android:gravity="center"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/detailed_timenote_btn_more"
-                        app:layout_constraintStart_toEndOf="@id/detailed_timenote_btn_back"
-                        app:layout_constraintTop_toTopOf="parent">
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/detailed_timenote_btn_back"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:drawableStart="@drawable/ic_back_thin"
+                            android:fontFamily="sans-serif-light"
+                            android:text=""
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="16dp"
+                            android:gravity="center"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/detailed_timenote_btn_more"
+                            app:layout_constraintStart_toEndOf="@id/detailed_timenote_btn_back"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <ImageView
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                android:background="@drawable/border_pic_profile"
+                                android:padding="0.6dp"
+                                android:id="@+id/detailed_timenote_pic_user"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp" />
+
+                            <TextView
+                                app:layout_constraintTop_toTopOf="@id/detailed_timenote_pic_user"
+                                app:layout_constraintStart_toEndOf="@id/detailed_timenote_pic_user"
+                                tools:text="Samuel"
+                                android:id="@+id/detailed_timenote_username"
+                                android:layout_width="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_height="wrap_content"
+                                android:ellipsize="end"
+                                app:layout_constraintBottom_toTopOf="@id/detailed_timenote_address"
+                                android:maxLines="1"
+                                app:layout_constrainedWidth="true"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintHorizontal_bias="0"
+                                android:textColor="@color/colorText"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/detailed_timenote_address"
+                                android:maxLines="1"
+                                app:layout_constraintHorizontal_bias="0"
+                                android:fontFamily="sans-serif-light"
+                                android:textSize="12sp"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                android:ellipsize="end"
+                                app:layout_constrainedWidth="true"
+                                app:layout_constraintTop_toBottomOf="@id/detailed_timenote_username"
+                                tools:text="14 avenue de la marée chaussée 18009 Marseille France"
+                                android:textColor="@color/colorText"
+                                android:layout_marginStart="8dp"
+                                app:layout_constraintBottom_toBottomOf="@id/detailed_timenote_pic_user"
+                                app:layout_constraintStart_toEndOf="@id/detailed_timenote_pic_user"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"/>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
 
                         <ImageView
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            android:background="@drawable/border_pic_profile"
-                            android:padding="0.6dp"
-                            android:id="@+id/detailed_timenote_pic_user"
-                            android:layout_width="36dp"
-                            android:layout_height="36dp" />
-
-                        <TextView
-                            app:layout_constraintTop_toTopOf="@id/detailed_timenote_pic_user"
-                            app:layout_constraintStart_toEndOf="@id/detailed_timenote_pic_user"
-                            tools:text="Samuel"
-                            android:id="@+id/detailed_timenote_username"
+                            android:id="@+id/detailed_timenote_btn_more"
                             android:layout_width="wrap_content"
-                            android:layout_marginStart="8dp"
                             android:layout_height="wrap_content"
-                            android:ellipsize="end"
-                            app:layout_constraintBottom_toTopOf="@id/detailed_timenote_address"
-                            android:maxLines="1"
-                            app:layout_constrainedWidth="true"
+                            android:layout_marginEnd="8dp"
+                            android:src="@drawable/ic_more_vert_black_profile_24dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="0"
-                            android:textColor="@color/colorText"
-                            android:textSize="14sp" />
-
-                        <TextView
-                            android:id="@+id/detailed_timenote_address"
-                            android:maxLines="1"
-                            app:layout_constraintHorizontal_bias="0"
-                            android:fontFamily="sans-serif-light"
-                            android:textSize="12sp"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            android:ellipsize="end"
-                            app:layout_constrainedWidth="true"
-                            app:layout_constraintTop_toBottomOf="@id/detailed_timenote_username"
-                            tools:text="14 avenue de la marée chaussée 18009 Marseille France"
-                            android:textColor="@color/colorText"
-                            android:layout_marginStart="8dp"
-                            app:layout_constraintBottom_toBottomOf="@id/detailed_timenote_pic_user"
-                            app:layout_constraintStart_toEndOf="@id/detailed_timenote_pic_user"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                            app:layout_constraintTop_toTopOf="parent" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <ImageView
-                        android:id="@+id/detailed_timenote_btn_more"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:src="@drawable/ic_more_vert_black_profile_24dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.appcompat.widget.Toolbar>
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView style="@style/AppTheme.Divider.Toolbar" />
 
-            </androidx.appcompat.widget.Toolbar>
+                <include
+                    android:id="@+id/timenote_root"
+                    layout="@layout/item_timenote_root"
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"
+                    app:layout_constraintTop_toBottomOf="@id/tb" />
 
-            <TextView style="@style/AppTheme.Divider.Toolbar" />
+            </com.dayzeeco.dayzee.androidView.CollapsibleToolbar>
 
-        </LinearLayout>
-    </com.google.android.material.appbar.AppBarLayout>
+        </com.google.android.material.appbar.AppBarLayout>
 
 
-    <include
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:id="@+id/timenote_root"
-        layout="@layout/item_timenote_root"
-        app:layout_constraintTop_toBottomOf="@id/abl" />
+        <androidx.core.widget.NestedScrollView
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:id="@+id/detailed_timenote_scc"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/detailed_timenote_sv"
-        android:paddingTop="8dp"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginBottom="68dp"
-        android:fillViewport="true"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/timenote_root">
+            <androidx.recyclerview.widget.RecyclerView
+                tools:listitem="@layout/item_comment_pic"
+                android:id="@+id/detailed_timenote_comments_rv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </androidx.core.widget.NestedScrollView>
 
         <androidx.recyclerview.widget.RecyclerView
-            tools:listitem="@layout/item_comment_pic"
-            android:id="@+id/detailed_timenote_comments_rv"
+            android:visibility="gone"
+            android:background="@color/colorBackground"
+            tools:listitem="@layout/item_user"
+            android:id="@+id/detailed_timenote_rv"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:layout_constraintBottom_toTopOf="@+id/fragment_detailed_comment_ll"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/detailed_timenote_ll"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent"/>
 
 
-    </androidx.core.widget.NestedScrollView>
 
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:visibility="gone"
-        android:background="@color/colorBackground"
-        tools:listitem="@layout/item_user"
-        android:id="@+id/detailed_timenote_rv"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        app:layout_constraintBottom_toTopOf="@+id/detailed_timenote_sv"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/detailed_timenote_sv"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/detailed_timenote_sv"
         android:background="@color/colorBackground"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        app:layout_anchorGravity="bottom">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="wrap_content">
 
 
         <ImageView
@@ -242,6 +242,5 @@
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -134,6 +134,11 @@ class TimenoteAddress : Fragment(), TimenoteOptionsListener,
         timenote_address_btn_back.setOnClickListener(this)
     }
 
+    override fun onDestroy() {
+        timenote_around_rv?.releasePlayer()
+        super.onDestroy()
+    }
+
     override fun onAlarmClicked(timenoteInfoDTO: TimenoteInfoDTO, type: Int) {}
     override fun onDuplicateClicked(timenoteInfoDTO: TimenoteInfoDTO) {
         findNavController().navigate(TimenoteAddressDirections.actionGlobalCreateTimenote().setFrom(args.from).setModify(1).setId(timenoteInfoDTO.id).setTimenoteBody(CreationTimenoteDTO(timenoteInfoDTO.createdBy.id!!, null, timenoteInfoDTO.title, timenoteInfoDTO.description, timenoteInfoDTO.pictures,

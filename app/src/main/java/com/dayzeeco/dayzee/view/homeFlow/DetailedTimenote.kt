@@ -26,6 +26,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -93,7 +94,9 @@ import kotlinx.android.synthetic.main.item_timenote_root.*
 import kotlinx.android.synthetic.main.item_timenote_root.view.*
 import kotlinx.android.synthetic.main.item_user.view.*
 import kotlinx.android.synthetic.main.users_participating.view.*
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.launch
 import java.io.File
 import java.lang.reflect.Type
@@ -145,6 +148,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         Manifest.permission.READ_EXTERNAL_STORAGE,
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     )
+    private var videoPlayer : SimpleExoPlayer? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -159,6 +163,8 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
 
     }
 
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -167,6 +173,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         return inflater.inflate(R.layout.fragment_detailed_fragment, container, false)
     }
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -340,36 +347,36 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                         ) {
                             timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal_plein_gradient))
                             timenoteViewModel.joinTimenote(tokenId!!, args.event?.id!!).observe(
-                                viewLifecycleOwner,
-                                Observer {
-                                    if (it.code() == 401) {
-                                        authViewModel.refreshToken(prefs).observe(
-                                            viewLifecycleOwner,
-                                            Observer { newAccessToken ->
-                                                tokenId = newAccessToken
-                                                timenoteViewModel.joinTimenote(
-                                                    tokenId!!,
-                                                    args.event?.id!!
-                                                )
-                                            })
+                                viewLifecycleOwner
+                            ) {
+                                if (it.code() == 401) {
+                                    authViewModel.refreshToken(prefs).observe(
+                                        viewLifecycleOwner
+                                    ) { newAccessToken ->
+                                        tokenId = newAccessToken
+                                        timenoteViewModel.joinTimenote(
+                                            tokenId!!,
+                                            args.event?.id!!
+                                        )
                                     }
-                                })
+                                }
+                            }
                         } else {
-                            timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal))
+                            timenote_plus.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_ajout_cal, null))
                             timenoteViewModel.leaveTimenote(tokenId!!, args.event?.id!!)
-                                .observe(viewLifecycleOwner, Observer {
+                                .observe(viewLifecycleOwner) {
                                     if (it.code() == 401) {
                                         authViewModel.refreshToken(prefs).observe(
-                                            viewLifecycleOwner,
-                                            Observer { newAccessToken ->
-                                                tokenId = newAccessToken
-                                                timenoteViewModel.leaveTimenote(
-                                                    tokenId!!,
-                                                    args.event?.id!!
-                                                )
-                                            })
+                                            viewLifecycleOwner
+                                        ) { newAccessToken ->
+                                            tokenId = newAccessToken
+                                            timenoteViewModel.leaveTimenote(
+                                                tokenId!!,
+                                                args.event?.id!!
+                                            )
+                                        }
                                     }
-                                })
+                                }
                         }
                     }
                 }
@@ -378,42 +385,8 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             timenote_vp.adapter = screenSlideCreationTimenotePagerAdapter
             timenote_indicator.setViewPager(timenote_vp)
             screenSlideCreationTimenotePagerAdapter.registerAdapterDataObserver(timenote_indicator.adapterDataObserver)
-        } else {
-            timenote_vp.adapter = ScreenSlideTimenotePagerAdapter(this, args.event?.pictures, true, false) { i: Int, i1: Int -> }
-            timenote_vp.visibility = View.INVISIBLE
-            detailed_media_container.visibility = View.VISIBLE
-            detailed_thumbnail.visibility= View.VISIBLE
-            Glide.with(requireContext()).load(args.event?.pictures?.get(0)).into(detailed_thumbnail)
-            val surfaceView = PlayerView(requireContext())
-            surfaceView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH
-            surfaceView.useController = false
-            val videoPlayer = SimpleExoPlayer.Builder(requireContext()).build()
-            surfaceView.player = videoPlayer
-            val urlCached = CustomApplicationClass.getProxy(requireContext()).getProxyUrl(args.event?.video!!)
-            val dataSourceFactory: DataSource.Factory = DefaultDataSourceFactory(
-                requireContext(), Util.getUserAgent(requireContext(), "VideoPlayer")
-            )
-            val mediaSource: MediaSource =
-                ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(
-                    Uri.parse(urlCached)
-                )
-            videoPlayer.prepare(mediaSource)
-            videoPlayer.playWhenReady = true
-            videoPlayer.addListener(object: Player.EventListener {
-                override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-                    when(playbackState){
-                        Player.STATE_BUFFERING -> video_progressBar?.visibility = View.VISIBLE
-                        Player.STATE_READY -> {
-                            video_progressBar?.visibility = View.GONE
-                            detailed_thumbnail.visibility = View.INVISIBLE
-                            detailed_media_container.addView(surfaceView)
-                            surfaceView.visibility = RecyclerView.VISIBLE
-                            surfaceView.alpha = 1f
-                        }
-                    }
-                }
-            })
         }
+
         timenote_plus.setImageDrawable(resources.getDrawable(R.drawable.ic_ajout_cal))
         if (args.event?.isParticipating!! || userInfoDTO.id == args.event?.createdBy?.id) timenote_plus.setImageDrawable(
             resources.getDrawable(R.drawable.ic_ajout_cal_plein_gradient)
@@ -650,6 +623,50 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         detailed_timenote_picture_prev.setOnClickListener(this)
 
         detailed_timenote_btn_back.setOnClickListener { findNavController().popBackStack() }
+    }
+
+    private fun playVideo() {
+        timenote_vp.adapter = ScreenSlideTimenotePagerAdapter(
+            this,
+            args.event?.pictures,
+            true,
+            false
+        ) { i: Int, i1: Int -> }
+        timenote_vp.visibility = View.INVISIBLE
+        detailed_media_container.visibility = View.VISIBLE
+        detailed_thumbnail.visibility = View.VISIBLE
+        Glide.with(requireContext()).load(args.event?.pictures?.get(0)).into(detailed_thumbnail)
+        val surfaceView = PlayerView(requireContext())
+        surfaceView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH
+        surfaceView.useController = false
+        videoPlayer = SimpleExoPlayer.Builder(requireContext()).build()
+        surfaceView.player = videoPlayer
+        val urlCached =
+            CustomApplicationClass.getProxy(requireContext()).getProxyUrl(args.event?.video!!)
+        val dataSourceFactory: DataSource.Factory = DefaultDataSourceFactory(
+            requireContext(), Util.getUserAgent(requireContext(), "VideoPlayer")
+        )
+        val mediaSource: MediaSource =
+            ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(
+                Uri.parse(urlCached)
+            )
+        videoPlayer?.prepare(mediaSource)
+        videoPlayer?.playWhenReady = true
+        videoPlayer?.addListener(object : Player.EventListener {
+            override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+                when (playbackState) {
+                    Player.STATE_BUFFERING -> video_progressBar?.visibility = View.VISIBLE
+                    Player.STATE_READY -> {
+                        video_progressBar?.visibility = View.GONE
+                        detailed_thumbnail.visibility = View.INVISIBLE
+                        detailed_media_container.addView(surfaceView)
+                        surfaceView.visibility = RecyclerView.VISIBLE
+                        surfaceView.alpha = 1f
+                    }
+                    //Player.STATE_ENDED -> videoPlayer?.seekTo(0)
+                }
+            }
+        })
     }
 
     @SuppressLint("CheckResult")
@@ -968,6 +985,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
             previewPic.visibility = View.VISIBLE
             detailed_timenote_add_picture_pb.visibility = View.GONE
         }
+        if(!args.event?.video.isNullOrEmpty() && ( videoPlayer == null || !videoPlayer?.isPlaying!!)) playVideo()
     }
 
     private fun openGallery(){
@@ -1461,6 +1479,13 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
                 openGallery()
             }
         }
+    }
+
+    override fun onPause() {
+        videoPlayer?.stop()
+        videoPlayer?.release()
+        videoPlayer = null
+        super.onPause()
     }
 
 }

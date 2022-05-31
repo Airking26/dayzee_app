@@ -215,6 +215,11 @@ class Home : BaseThroughFragment(), TimenoteOptionsListener, View.OnClickListene
         }
     }
 
+    override fun onDestroy() {
+        home_rv?.releasePlayer()
+        super.onDestroy()
+    }
+
     @ExperimentalPagingApi
     private fun loadUpcomingData() {
 
