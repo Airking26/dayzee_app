@@ -22,7 +22,7 @@
 
             <com.dayzeeco.dayzee.androidView.CollapsibleToolbar
                 android:id="@+id/detailed_timenote_ll"
-                android:fitsSystemWindows="false"
+                android:fitsSystemWindows="true"
                 app:layout_scrollFlags="scroll|snap|enterAlwaysCollapsed"
                 style="@style/AppTheme.Toolbar.LinearLayout"
                 tools:ignore="MissingConstraints">
@@ -56,19 +56,31 @@
                             app:layout_constraintStart_toEndOf="@id/detailed_timenote_btn_back"
                             app:layout_constraintTop_toTopOf="parent">
 
-                            <ImageView
+                            <androidx.constraintlayout.widget.ConstraintLayout
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                android:background="@drawable/border_pic_profile"
-                                android:padding="0.6dp"
-                                android:id="@+id/detailed_timenote_pic_user"
                                 android:layout_width="36dp"
-                                android:layout_height="36dp" />
+                                android:id="@+id/clpi"
+                                android:layout_height="36dp">
+
+
+                                <com.dayzeeco.dayzee.androidView.view.PolygonImageView
+                                    app:poly_vertices="0"
+                                    android:id="@+id/detailed_timenote_pic_user"
+                                    app:poly_corner_radius="@dimen/penta_small_corner"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    android:padding="0.6dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"/>
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
                             <TextView
-                                app:layout_constraintTop_toTopOf="@id/detailed_timenote_pic_user"
-                                app:layout_constraintStart_toEndOf="@id/detailed_timenote_pic_user"
+                                app:layout_constraintTop_toTopOf="@id/clpi"
+                                app:layout_constraintStart_toEndOf="@id/clpi"
                                 tools:text="Samuel"
                                 android:id="@+id/detailed_timenote_username"
                                 android:layout_width="wrap_content"
@@ -96,8 +108,8 @@
                                 tools:text="14 avenue de la marée chaussée 18009 Marseille France"
                                 android:textColor="@color/colorText"
                                 android:layout_marginStart="8dp"
-                                app:layout_constraintBottom_toBottomOf="@id/detailed_timenote_pic_user"
-                                app:layout_constraintStart_toEndOf="@id/detailed_timenote_pic_user"
+                                app:layout_constraintBottom_toBottomOf="@id/clpi"
+                                app:layout_constraintStart_toEndOf="@id/clpi"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"/>
 
@@ -118,6 +130,7 @@
                 </androidx.appcompat.widget.Toolbar>
 
                 <TextView style="@style/AppTheme.Divider.Toolbar" />
+
 
                 <include
                     android:id="@+id/timenote_root"
@@ -238,6 +251,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:src="@drawable/ic_round_send_24" />
+
 
         </LinearLayout>
 

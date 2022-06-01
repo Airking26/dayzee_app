@@ -313,7 +313,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
-        <ScrollView
+        <androidx.core.widget.NestedScrollView
             android:background="@color/colorBackground"
             android:id="@+id/scrollable"
             android:layout_width="match_parent"
@@ -328,8 +328,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-        </ScrollView>
-
+        </androidx.core.widget.NestedScrollView>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

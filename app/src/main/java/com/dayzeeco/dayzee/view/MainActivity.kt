@@ -32,6 +32,7 @@ import com.dayzeeco.dayzee.common.*
 import com.dayzeeco.dayzee.listeners.*
 import com.dayzeeco.dayzee.model.TimenoteInfoDTO
 import com.dayzeeco.dayzee.model.UserInfoDTO
+import com.dayzeeco.dayzee.videocompressor.VideoCompress
 import com.dayzeeco.dayzee.view.homeFlow.Home
 import com.dayzeeco.dayzee.view.homeFlow.HomeDirections
 import com.dayzeeco.dayzee.view.loginFlow.SignupDirections

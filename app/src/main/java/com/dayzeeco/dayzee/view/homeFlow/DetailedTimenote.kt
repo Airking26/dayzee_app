@@ -56,6 +56,7 @@ import com.amazonaws.regions.Regions
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.CannedAccessControlList
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.dayzeeco.dayzee.CustomApplicationClass
 import com.dayzeeco.dayzee.R
@@ -591,12 +592,23 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
 
         if (args.event?.createdBy?.picture.isNullOrBlank()){
             detailed_timenote_pic_user.setImageDrawable(utils.determineLetterLogo(args.event?.createdBy?.userName!!, requireContext()))
-        } else Glide
-            .with(this)
-            .load(args.event?.createdBy?.picture)
-            .apply(RequestOptions.circleCropTransform())
-            .placeholder(R.drawable.circle_pic)
-            .into(detailed_timenote_pic_user)
+        } else {
+            if(args.event?.createdBy?.isPictureNft!!) {
+                detailed_timenote_pic_user.vertices = 6
+                detailed_timenote_pic_user.background = null
+            } else {
+                detailed_timenote_pic_user.vertices = 0
+                detailed_timenote_pic_user.background = ResourcesCompat.getDrawable(resources, R.drawable.border_pic_profile, null)
+            }
+            Glide
+                .with(requireContext())
+                .load(args.event?.createdBy?.picture)
+                .thumbnail(0.1f)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .apply(RequestOptions.circleCropTransform())
+                .placeholder(R.drawable.circle_pic)
+                .into(detailed_timenote_pic_user)
+        }
 
         detailed_timenote_username.text = args.event?.createdBy?.userName
         if(args.event?.createdBy?.certified!!) detailed_timenote_username.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_certified_other, 0)

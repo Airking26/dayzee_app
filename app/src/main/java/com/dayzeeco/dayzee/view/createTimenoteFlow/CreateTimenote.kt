@@ -17,6 +17,7 @@ import android.text.Editable
 import android.text.InputType
 import android.text.TextUtils
 import android.text.TextWatcher
+import android.text.format.Formatter
 import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
@@ -69,6 +70,7 @@ import com.dayzeeco.dayzee.listeners.GoToProfile
 import com.dayzeeco.dayzee.listeners.RefreshPicBottomNavListener
 import com.dayzeeco.dayzee.listeners.TimenoteCreationPicListeners
 import com.dayzeeco.dayzee.model.*
+import com.dayzeeco.dayzee.videocompressor.VideoCompress
 import com.dayzeeco.dayzee.viewModel.*
 import com.dayzeeco.picture_library.config.PictureMimeType
 import com.dayzeeco.picture_library.entity.LocalMedia
@@ -1211,25 +1213,63 @@ class CreateTimenote : Fragment(), View.OnClickListener, WebSearchAdapter.ImageC
                                                     }
 
 
-                                                if(PictureMimeType.isHasVideo(media.mimeType)) video = File(media.path)
-                                                ImageCompressor.compressBitmap(requireContext(), File(path)) {
-                                                    images?.add(it)
+                                                if(PictureMimeType.isHasVideo(media.mimeType)){
+                                                VideoCompress.compressVideoLow(media.path, "/storage/emulated/0/Android/data/com.dayzeeco.dayzee/files/Movies/TrimVideos/examplefinal.mp4", object : VideoCompress.CompressListener{
+                                                    override fun onStart() {
+                                                        val o = ""
+                                                    }
+
+                                                    override fun onSuccess() {
+                                                        val o = Formatter.formatFileSize(requireContext(), File("/storage/emulated/0/Android/data/com.dayzeeco.dayzee/files/Movies/TrimVideos/examplefinal.mp4").length())
+                                                        video = File("/storage/emulated/0/Android/data/com.dayzeeco.dayzee/files/Movies/TrimVideos/examplefinal.mp4")
+                                                        ImageCompressor.compressBitmap(requireContext(), File(path)) {
+                                                            images?.add(it)
+                                                        }
+                                                        Glide.with(requireContext()).load(images!![0]).into(picVideoIv)
+                                                        if(video == null) {
+                                                            imageLogo.visibility = View.VISIBLE
+                                                            videoLogo.visibility = View.GONE
+                                                        }
+                                                        else {
+                                                            videoLogo.visibility = View.VISIBLE
+                                                            imageLogo.visibility = View.GONE
+                                                        }
+                                                        picCl.visibility = View.VISIBLE
+                                                        progressBar.visibility = View.GONE
+                                                        takeAddPicTv.visibility = View.GONE
+                                                        hideChooseBackground()
+                                                        creationTimenoteViewModel.setTitle(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.title ?: getString(R.string.title_create_event))
+                                                    }
+
+                                                    override fun onFail() {
+                                                        val o = ""
+                                                    }
+
+                                                    override fun onProgress(percent: Float) {
+                                                        val o = percent
+                                                    }
+                                                })} else {
+                                                    ImageCompressor.compressBitmap(requireContext(), File(path)) {
+                                                        images?.add(it)
+                                                    }
+                                                    Glide.with(requireContext()).load(images!![0]).into(picVideoIv)
+                                                    if(video == null) {
+                                                        imageLogo.visibility = View.VISIBLE
+                                                        videoLogo.visibility = View.GONE
+                                                    }
+                                                    else {
+                                                        videoLogo.visibility = View.VISIBLE
+                                                        imageLogo.visibility = View.GONE
+                                                    }
+                                                    picCl.visibility = View.VISIBLE
+                                                    progressBar.visibility = View.GONE
+                                                    takeAddPicTv.visibility = View.GONE
+                                                    hideChooseBackground()
+                                                    creationTimenoteViewModel.setTitle(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.title ?: getString(R.string.title_create_event))
                                                 }
+
                                             }
-                                            Glide.with(requireContext()).load(images!![0]).into(picVideoIv)
-                                            if(video == null) {
-                                                imageLogo.visibility = View.VISIBLE
-                                                videoLogo.visibility = View.GONE
-                                            }
-                                            else {
-                                                videoLogo.visibility = View.VISIBLE
-                                                imageLogo.visibility = View.GONE
-                                            }
-                                            picCl.visibility = View.VISIBLE
-                                            progressBar.visibility = View.GONE
-                                            takeAddPicTv.visibility = View.GONE
-                                            hideChooseBackground()
-                                            creationTimenoteViewModel.setTitle(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.title ?: getString(R.string.title_create_event))
+
                                         }
 
                                         override fun onCancel() {

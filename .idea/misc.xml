@@ -23,7 +23,7 @@
         <entry key="app/src/main/res/drawable/ic_w.xml" value="0.1085" />
         <entry key="app/src/main/res/layout-sw480dp/activity_main.xml" value="0.1" />
         <entry key="app/src/main/res/layout-sw480dp/fragment_create_timenote.xml" value="0.1" />
-        <entry key="app/src/main/res/layout-sw480dp/fragment_detailed_fragment.xml" value="0.11041666666666666" />
+        <entry key="app/src/main/res/layout-sw480dp/fragment_detailed_fragment.xml" value="0.25" />
         <entry key="app/src/main/res/layout-sw480dp/fragment_home.xml" value="0.12708333333333333" />
         <entry key="app/src/main/res/layout-sw480dp/fragment_menu.xml" value="0.1" />
         <entry key="app/src/main/res/layout-sw480dp/fragment_my_profile.xml" value="0.1" />
@@ -56,7 +56,7 @@
         <entry key="app/src/main/res/layout/dialog_reccurence.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_create_account.xml" value="0.12361111111111112" />
         <entry key="app/src/main/res/layout/fragment_create_timenote.xml" value="0.335" />
-        <entry key="app/src/main/res/layout/fragment_detailed_fragment.xml" value="0.165" />
+        <entry key="app/src/main/res/layout/fragment_detailed_fragment.xml" value="0.18611111111111112" />
         <entry key="app/src/main/res/layout/fragment_detailed_fragment_test.xml" value="0.12832794189453123" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.240234375" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.1" />
@@ -107,6 +107,12 @@
         <entry key="app/src/main/res/layout/timenote_view_image_creation.xml" value="0.17708333333333334" />
         <entry key="app/src/main/res/layout/timenote_view_image_exp.xml" value="0.11041666666666666" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.240234375" />
+        <entry key="picture_library/src/main/res/layout/instagram_image_grid_item.xml" value="0.146875" />
+        <entry key="picture_library/src/main/res/layout/picture_activity_external_preview.xml" value="0.146875" />
+        <entry key="picture_library/src/main/res/layout/picture_activity_video_play.xml" value="0.146875" />
+        <entry key="picture_library/src/main/res/layout/picture_album_folder_item.xml" value="0.146875" />
+        <entry key="picture_library/src/main/res/layout/picture_dialog_camera_selected.xml" value="0.146875" />
+        <entry key="picture_library/src/main/res/layout/picture_selector.xml" value="0.1597222222222222" />
       </map>
     </option>
   </component>
