@@ -63,6 +63,7 @@ import com.dayzeeco.dayzee.R
 import com.dayzeeco.dayzee.adapter.*
 import com.dayzeeco.dayzee.androidView.instaLike.GlideEngine
 import com.dayzeeco.dayzee.common.*
+import com.dayzeeco.dayzee.exo.VideoPlayerRecyclerView
 import com.dayzeeco.dayzee.listeners.GoToProfile
 import com.dayzeeco.dayzee.model.*
 import com.dayzeeco.dayzee.viewModel.*
@@ -114,6 +115,7 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
     UsersShareWithPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.AddToSend,
     CommentAdapter.UserTaggedListener {
 
+    private var volumeState: VideoPlayerRecyclerView.VolumeState? = null
     private var isLoading = false
     private lateinit var mentionHelper: MentionHelper
     private var imagesUrl: String? = null
@@ -652,6 +654,8 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         surfaceView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH
         surfaceView.useController = false
         videoPlayer = SimpleExoPlayer.Builder(requireContext()).build()
+        setVolumeControl(VideoPlayerRecyclerView.VolumeState.ON)
+        detailed_media_container?.setOnClickListener { toggleVolume() }
         surfaceView.player = videoPlayer
         val urlCached =
             CustomApplicationClass.getProxy(requireContext()).getProxyUrl(args.event?.video!!)
@@ -1498,6 +1502,47 @@ class DetailedTimenote : Fragment(), View.OnClickListener, CommentAdapter.Commen
         videoPlayer?.release()
         videoPlayer = null
         super.onPause()
+    }
+
+    private fun toggleVolume() {
+        if (videoPlayer != null) {
+            if (volumeState == VideoPlayerRecyclerView.VolumeState.OFF) {
+                setVolumeControl(VideoPlayerRecyclerView.VolumeState.ON)
+            } else if (volumeState == VideoPlayerRecyclerView.VolumeState.ON) {
+                setVolumeControl(VideoPlayerRecyclerView.VolumeState.OFF)
+            }
+        }
+    }
+
+    private fun setVolumeControl(state: VideoPlayerRecyclerView.VolumeState) {
+        volumeState = state
+        if (state == VideoPlayerRecyclerView.VolumeState.OFF) {
+            videoPlayer!!.volume = 0f
+            animateVolumeControl()
+        } else if (state == VideoPlayerRecyclerView.VolumeState.ON) {
+            videoPlayer!!.volume = 1f
+            animateVolumeControl()
+        }
+    }
+
+    private fun animateVolumeControl() {
+        if(volume_control != null) {
+            volume_control!!.bringToFront()
+            if (volumeState == VideoPlayerRecyclerView.VolumeState.OFF) {
+                volume_control!!.setImageDrawable(resources.getDrawable(R.drawable.discover_volume_off))
+            } else if (volumeState == VideoPlayerRecyclerView.VolumeState.ON) {
+                volume_control!!.setImageDrawable(
+                    resources.getDrawable(
+                        R.drawable.discover_volume_on
+                    )
+                )
+            }
+            volume_control!!.animate().cancel()
+            volume_control!!.alpha = 1f
+            volume_control!!.animate()
+                .alpha(0f)
+                .setDuration(600).startDelay = 1000
+        }
     }
 
 }

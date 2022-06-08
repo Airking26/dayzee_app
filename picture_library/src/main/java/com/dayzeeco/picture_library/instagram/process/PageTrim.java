@@ -77,7 +77,7 @@ public class PageTrim implements Page {
 
     public void trimVideo(InstagramMediaProcessActivity activity, CountDownLatch count) {
         if (mContainer != null) {
-//            mContainer.trimVideo(activity, count);
+            //mContainer.trimVideo(activity, count);
             mContainer.cropVideo(activity, mIsAspectRatio);
         }
     }

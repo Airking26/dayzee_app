@@ -36,6 +36,7 @@ import com.dayzeeco.picture_library.tools.DateUtils;
 import com.dayzeeco.picture_library.tools.ScreenUtils;
 import com.dayzeeco.picture_library.tools.SdkVersionUtils;
 import com.dayzeeco.picture_library.tools.ToastUtils;
+import com.dayzeeco.picture_library.videocompressor.VideoCompress;
 import com.otaliastudios.transcoder.Transcoder;
 import com.otaliastudios.transcoder.TranscoderListener;
 import com.otaliastudios.transcoder.TranscoderOptions;
@@ -316,7 +317,7 @@ public class TrimContainer extends FrameLayout {
         } else {
             builder.addDataSource(new ClipDataSource(new FilePathDataSource(mMedia.getPath()), startTimeUS, endTimeUS));
         }
-        mTranscodeFuture = builder.setListener(new TranscoderListenerImpl(this, activity, startTime, endTime, transcodeOutputFile))
+        mTranscodeFuture = builder.setListener(new TranscoderListenerImpl(TrimContainer.this, activity, startTime, endTime, transcodeOutputFile))
                 .setVideoTrackStrategy(videoStrategy)
                 .transcode();
     }

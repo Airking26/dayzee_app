@@ -36,7 +36,7 @@ import kotlinx.android.synthetic.main.item_timenote_root_video.view.*
 
 
 class VideoPlayerRecyclerView : RecyclerView {
-    private enum class VolumeState {
+    enum class VolumeState {
         ON, OFF
     }
 
@@ -101,6 +101,15 @@ class VideoPlayerRecyclerView : RecyclerView {
 
         })
 
+        addOnAttachStateChangeListener(object : OnAttachStateChangeListener{
+            override fun onViewAttachedToWindow(p0: View?) {
+                if(viewHolderParent != null) playVideo(false)
+            }
+
+            override fun onViewDetachedFromWindow(view: View?) {
+                resetVideoView()
+            }
+        })
         addOnChildAttachStateChangeListener(object : OnChildAttachStateChangeListener {
             override fun onChildViewAttachedToWindow(view: View) {
             }

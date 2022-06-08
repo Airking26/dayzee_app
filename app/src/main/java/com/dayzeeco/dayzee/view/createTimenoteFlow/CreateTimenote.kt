@@ -75,6 +75,7 @@ import com.dayzeeco.dayzee.viewModel.*
 import com.dayzeeco.picture_library.config.PictureMimeType
 import com.dayzeeco.picture_library.entity.LocalMedia
 import com.dayzeeco.picture_library.instagram.InsGallery
+import com.dayzeeco.picture_library.instagram.process.InstagramLoadingDialog
 import com.dayzeeco.picture_library.listener.OnResultCallbackListener
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
@@ -106,6 +107,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, WebSearchAdapter.ImageC
     UsersShareWithPagingAdapter.SearchPeopleListener, UsersShareWithPagingAdapter.AddToSend,
     DateAdapter.DateCloseListener {
 
+    private lateinit var compressDial: InstagramLoadingDialog
     private val PERMISSIONS_STORAGE = arrayOf(
         Manifest.permission.READ_EXTERNAL_STORAGE,
         Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -1189,93 +1191,137 @@ class CreateTimenote : Fragment(), View.OnClickListener, WebSearchAdapter.ImageC
                 if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                     when (text) {
                         resources.getString(R.string.add_a_picture) -> {
-                            InsGallery.openGallery(requireActivity(), GlideEngine.createGlideEngine(), GlideCacheEngine.createCacheEngine(), object : OnResultCallbackListener<LocalMedia> {
-                                        override fun onResult(result: MutableList<LocalMedia>?) {
-                                            for (media in result!!) {
-                                                val path: String =
-                                                    if (media.isCut && !media.isCompressed) {
-                                                        media.cutPath
-                                                    } else if (media.isCompressed || media.isCut && media.isCompressed) {
-                                                        media.compressPath
-                                                    } else if (PictureMimeType.isHasVideo(media.mimeType) && !TextUtils.isEmpty(media.coverPath)) {
-                                                        val o = ThumbnailUtils.createVideoThumbnail(File(media.path), Size(1024, 500), null)
-                                                        val f = File(requireContext().cacheDir, UUID.randomUUID().toString())
-                                                        f.createNewFile()
-                                                        val bos = ByteArrayOutputStream()
-                                                        o.compress(Bitmap.CompressFormat.PNG, 0, bos)
-                                                        val fos = FileOutputStream(f)
-                                                        fos.write(bos.toByteArray())
-                                                        fos.flush()
-                                                        fos.close()
-                                                        f.path
-                                                    } else {
-                                                        media.path
-                                                    }
-
-
-                                                if(PictureMimeType.isHasVideo(media.mimeType)){
-                                                VideoCompress.compressVideoLow(media.path, "/storage/emulated/0/Android/data/com.dayzeeco.dayzee/files/Movies/TrimVideos/examplefinal.mp4", object : VideoCompress.CompressListener{
-                                                    override fun onStart() {
-                                                        val o = ""
-                                                    }
-
-                                                    override fun onSuccess() {
-                                                        val o = Formatter.formatFileSize(requireContext(), File("/storage/emulated/0/Android/data/com.dayzeeco.dayzee/files/Movies/TrimVideos/examplefinal.mp4").length())
-                                                        video = File("/storage/emulated/0/Android/data/com.dayzeeco.dayzee/files/Movies/TrimVideos/examplefinal.mp4")
-                                                        ImageCompressor.compressBitmap(requireContext(), File(path)) {
-                                                            images?.add(it)
-                                                        }
-                                                        Glide.with(requireContext()).load(images!![0]).into(picVideoIv)
-                                                        if(video == null) {
-                                                            imageLogo.visibility = View.VISIBLE
-                                                            videoLogo.visibility = View.GONE
-                                                        }
-                                                        else {
-                                                            videoLogo.visibility = View.VISIBLE
-                                                            imageLogo.visibility = View.GONE
-                                                        }
-                                                        picCl.visibility = View.VISIBLE
-                                                        progressBar.visibility = View.GONE
-                                                        takeAddPicTv.visibility = View.GONE
-                                                        hideChooseBackground()
-                                                        creationTimenoteViewModel.setTitle(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.title ?: getString(R.string.title_create_event))
-                                                    }
-
-                                                    override fun onFail() {
-                                                        val o = ""
-                                                    }
-
-                                                    override fun onProgress(percent: Float) {
-                                                        val o = percent
-                                                    }
-                                                })} else {
-                                                    ImageCompressor.compressBitmap(requireContext(), File(path)) {
-                                                        images?.add(it)
-                                                    }
-                                                    Glide.with(requireContext()).load(images!![0]).into(picVideoIv)
-                                                    if(video == null) {
-                                                        imageLogo.visibility = View.VISIBLE
-                                                        videoLogo.visibility = View.GONE
-                                                    }
-                                                    else {
-                                                        videoLogo.visibility = View.VISIBLE
-                                                        imageLogo.visibility = View.GONE
-                                                    }
-                                                    picCl.visibility = View.VISIBLE
-                                                    progressBar.visibility = View.GONE
-                                                    takeAddPicTv.visibility = View.GONE
-                                                    hideChooseBackground()
-                                                    creationTimenoteViewModel.setTitle(creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.title ?: getString(R.string.title_create_event))
+                            InsGallery.openGallery(
+                                requireActivity(),
+                                GlideEngine.createGlideEngine(),
+                                GlideCacheEngine.createCacheEngine(),
+                                object : OnResultCallbackListener<LocalMedia> {
+                                    override fun onResult(result: MutableList<LocalMedia>?) {
+                                        for (media in result!!) {
+                                            val path: String =
+                                                if (media.isCut && !media.isCompressed) {
+                                                    media.cutPath
+                                                } else if (media.isCompressed || media.isCut && media.isCompressed) {
+                                                    media.compressPath
+                                                } else if (PictureMimeType.isHasVideo(media.mimeType) && !TextUtils.isEmpty(
+                                                        media.coverPath
+                                                    )
+                                                ) {
+                                                    val o = ThumbnailUtils.createVideoThumbnail(
+                                                        File(media.path), Size(1024, 500), null
+                                                    )
+                                                    val f = File(
+                                                        requireContext().cacheDir,
+                                                        UUID.randomUUID().toString()
+                                                    )
+                                                    f.createNewFile()
+                                                    val bos = ByteArrayOutputStream()
+                                                    o.compress(Bitmap.CompressFormat.PNG, 0, bos)
+                                                    val fos = FileOutputStream(f)
+                                                    fos.write(bos.toByteArray())
+                                                    fos.flush()
+                                                    fos.close()
+                                                    f.path
+                                                } else {
+                                                    media.path
                                                 }
 
+
+                                            if (PictureMimeType.isHasVideo(media.mimeType)) {
+                                                VideoCompress.compressVideoLow(
+                                                    media.path,
+                                                    "/storage/emulated/0/Android/data/com.dayzeeco.dayzee/files/Movies/TrimVideos/examplefinal.mp4",
+                                                    object : VideoCompress.CompressListener {
+                                                        override fun onStart() {
+                                                            Toast.makeText(
+                                                                requireContext(),
+                                                                getString(R.string.compressing),
+                                                                Toast.LENGTH_SHORT
+                                                            )
+                                                                .show()
+                                                            compressDial = InstagramLoadingDialog(
+                                                                requireContext()
+                                                            )
+                                                            compressDial.updateProgress(0.0)
+                                                            compressDial.show()
+                                                            compressDial.updateProgress(0.0)
+                                                        }
+
+                                                        override fun onSuccess() {
+                                                            compressDial.dismiss()
+                                                            val o = Formatter.formatFileSize(
+                                                                requireContext(),
+                                                                File("/storage/emulated/0/Android/data/com.dayzeeco.dayzee/files/Movies/TrimVideos/examplefinal.mp4").length()
+                                                            )
+                                                            video =
+                                                                File("/storage/emulated/0/Android/data/com.dayzeeco.dayzee/files/Movies/TrimVideos/examplefinal.mp4")
+                                                            ImageCompressor.compressBitmap(
+                                                                requireContext(),
+                                                                File(path)
+                                                            ) {
+                                                                images?.add(it)
+                                                            }
+                                                            Glide.with(requireContext())
+                                                                .load(images!![0]).into(picVideoIv)
+                                                            if (video == null) {
+                                                                imageLogo.visibility = View.VISIBLE
+                                                                videoLogo.visibility = View.GONE
+                                                            } else {
+                                                                videoLogo.visibility = View.VISIBLE
+                                                                imageLogo.visibility = View.GONE
+                                                            }
+                                                            picCl.visibility = View.VISIBLE
+                                                            progressBar.visibility = View.GONE
+                                                            takeAddPicTv.visibility = View.GONE
+                                                            hideChooseBackground()
+                                                            creationTimenoteViewModel.setTitle(
+                                                                creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.title
+                                                                    ?: getString(R.string.title_create_event)
+                                                            )
+                                                        }
+
+                                                        override fun onFail() {
+                                                        }
+
+                                                        override fun onProgress(percent: Float) {
+                                                            compressDial.updateProgress(percent.toDouble() / 100)
+                                                        }
+                                                    })
+                                            } else {
+                                                ImageCompressor.compressBitmap(
+                                                    requireContext(),
+                                                    File(path)
+                                                ) {
+                                                    images?.add(it)
+                                                }
+                                                Glide.with(requireContext()).load(images!![0])
+                                                    .into(picVideoIv)
+                                                if (video == null) {
+                                                    imageLogo.visibility = View.VISIBLE
+                                                    videoLogo.visibility = View.GONE
+                                                } else {
+                                                    videoLogo.visibility = View.VISIBLE
+                                                    imageLogo.visibility = View.GONE
+                                                }
+                                                picCl.visibility = View.VISIBLE
+                                                progressBar.visibility = View.GONE
+                                                takeAddPicTv.visibility = View.GONE
+                                                hideChooseBackground()
+                                                creationTimenoteViewModel.setTitle(
+                                                    creationTimenoteViewModel.getCreateTimeNoteLiveData().value?.title
+                                                        ?: getString(R.string.title_create_event)
+                                                )
                                             }
 
                                         }
 
-                                        override fun onCancel() {
-                                        }
+                                    }
 
-                                    }, ) }
+                                    override fun onCancel() {
+                                    }
+
+                                },
+                            ) }
                         resources.getString(R.string.search_on_web) -> utils.createWebSearchDialog(
                             context,
                             webSearchViewModel,
@@ -1637,6 +1683,7 @@ class CreateTimenote : Fragment(), View.OnClickListener, WebSearchAdapter.ImageC
     }
 
     private fun createTimenotePic() {
+        Toast.makeText(requireContext(), getString(R.string.event_creation_wait), Toast.LENGTH_SHORT).show()
         if(dateToAdd.isNullOrEmpty())
         timenoteViewModel.createTimenote(
             tokenId!!,
