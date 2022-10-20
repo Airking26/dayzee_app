@@ -32,4 +32,6 @@ interface MeService{
     @PATCH("users/changePassword/{password}")
     suspend fun changePassword(@Header("Authorization") token: String, @Path("password") password : String) : Response<UserInfoDTO>
 
+    @DELETE("users/{id}")
+    suspend fun deleteAccount(@Header("Authorization") token: String, @Path("id") id: String): Response<UserInfoDTO>
 }

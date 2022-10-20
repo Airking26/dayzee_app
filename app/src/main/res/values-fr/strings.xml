@@ -441,6 +441,7 @@
     <string name="who">Visibilités des évènements</string>
     <string name="compressing">En compression</string>
     <string name="event_creation_wait">Event is being created. Please wait.</string>
+    <string name="delete_account">Supprimer mon compte</string>
     <plurals name="time_minutes_comment">
         <item quantity="one">%1$d minute</item>
         <item quantity="other">%1$d minutes</item>

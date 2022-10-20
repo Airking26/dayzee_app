@@ -449,12 +449,7 @@ class MyProfile : BaseThroughFragment(), View.OnClickListener, OnRemoveFilterBar
 
     override fun onClick(v: View?) {
         when(v){
-            profile_modify_btn -> findNavController().navigate(
-                MyProfileDirections.actionGlobalProfilModify(
-                    false,
-                    null
-                )
-            )
+            profile_modify_btn -> findNavController().navigate(MyProfileDirections.actionGlobalProfilModify(false, null))
             profile_calendar_btn -> findNavController().navigate(
                 MyProfileDirections.actionGlobalProfileCalendar(
                     userInfoDTO?.id!!

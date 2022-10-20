@@ -1341,10 +1341,10 @@ class CreateTimenote : Fragment(), View.OnClickListener, WebSearchAdapter.ImageC
         ) {
             if (it.code() == 401) {
                 authViewModel.refreshToken(prefs)
-                    .observe(viewLifecycleOwner, androidx.lifecycle.Observer { newAccessToken ->
+                    .observe(viewLifecycleOwner) { newAccessToken ->
                         tokenId = newAccessToken
                         modifyTimenote()
-                    })
+                    }
             }
             if (it.isSuccessful) clearAndPreview(it.body()!!)
         }

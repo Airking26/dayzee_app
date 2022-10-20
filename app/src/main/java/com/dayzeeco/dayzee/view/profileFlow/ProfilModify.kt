@@ -73,9 +73,6 @@ import com.dayzeeco.picture_library.instagram.InsGallery
 import com.dayzeeco.picture_library.listener.OnResultCallbackListener
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.gson.JsonParser
-import com.moralis.web3.Moralis
-import com.moralis.web3.api.data.MoralisWeb3APIResult
-import com.moralis.web3.restapisdk.model.NftOwner
 import io.branch.indexing.BranchUniversalObject
 import io.branch.referral.util.BranchEvent
 import io.branch.referral.util.ContentMetadata
@@ -96,8 +93,7 @@ import java.util.*
 
 
 class ProfilModify: Fragment(), View.OnClickListener,
-    WebSearchAdapter.ImageChoosedListener, WebSearchAdapter.MoreImagesClicked,
-    Moralis.MoralisAuthenticationCallback {
+    WebSearchAdapter.ImageChoosedListener, WebSearchAdapter.MoreImagesClicked{
 
     val PERMISSIONS_STORAGE = arrayOf(
         Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -840,7 +836,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
 
     override fun onStart() {
         super.onStart()
-        Moralis.onStart(this)
+        //Moralis.onStart(this)
     }
 
     @SuppressLint("CheckResult")
@@ -906,11 +902,12 @@ class ProfilModify: Fragment(), View.OnClickListener,
                             }
                             resources.getString(R.string.from_nfts) -> {
                                 nftRequested = true
-                                Moralis.authenticate("Press sign to authenticate with your wallet.") {
+                                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("wc:00e46b69-d0cc-4b3e-b6a2-cee442f97188@1?bridge=https%3A%2F%2Fbridge.walletconnect.org")))
+                                /*Moralis.authenticate("Press sign to authenticate with your wallet.") {
                                     if (it != null) {
                                         Toast.makeText(requireContext(), it.username, Toast.LENGTH_SHORT).show()
                                     }
-                                }
+                                }*/
                             }
                         }
 
@@ -1068,7 +1065,7 @@ class ProfilModify: Fragment(), View.OnClickListener,
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    override fun onConnect(accounts: List<String>?) {
+    /*override fun onConnect(accounts: List<String>?) {
         var gridView : GridView?
         var nftAdapter : NftAdapter?
         if(nftRequested) walletConnectViewModel.getNFTS(accounts?.get(0)!!).observe(viewLifecycleOwner){
@@ -1089,14 +1086,11 @@ class ProfilModify: Fragment(), View.OnClickListener,
                     profileModifyPb.visibility = View.GONE
                     profileModifyPicIv.visibility = View.VISIBLE
                     dialog.dismiss()
-                    Moralis.onDestroy()
+                    //Moralis.onDestroy()
                 }
                 nftAdapter?.notifyDataSetChanged()
             }
 
         }
-    }
-
-    override fun onDisconnect() {
-    }
+    }*/
 }

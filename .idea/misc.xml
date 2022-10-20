@@ -33,6 +33,7 @@
         <entry key="app/src/main/res/layout-sw480dp/fragment_profile_else.xml" value="0.1" />
         <entry key="app/src/main/res/layout-sw480dp/fragment_qr_code.xml" value="0.1" />
         <entry key="app/src/main/res/layout-sw480dp/fragment_settings.xml" value="0.2828125" />
+        <entry key="app/src/main/res/layout-sw480dp/fragment_signup_new.xml" value="0.13359375" />
         <entry key="app/src/main/res/layout-sw480dp/fragment_timenote_address.xml" value="0.11041666666666666" />
         <entry key="app/src/main/res/layout-sw480dp/fragment_timenote_tag.xml" value="0.11041666666666666" />
         <entry key="app/src/main/res/layout-sw480dp/item_comment_pic.xml" value="0.1383067896060352" />

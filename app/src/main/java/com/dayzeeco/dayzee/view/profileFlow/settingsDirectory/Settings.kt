@@ -63,8 +63,6 @@ import com.google.api.services.calendar.model.Events
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.moralis.web3.Moralis
-import com.moralis.web3.api.MoralisWeb3ApiAccount
 import kotlinx.android.synthetic.main.fragment_settings.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -247,6 +245,7 @@ class Settings : Fragment(), View.OnClickListener, SynchronizeWithGoogleCalendar
         settings_synchro_cl.setOnClickListener(this)
         profile_settings_users_hidden.setOnClickListener(this)
         profile_settings_dayzee_hidden.setOnClickListener(this)
+        profile_settings_delete_account.setOnClickListener(this)
         profile_settings_switch_account_status.setOnCheckedChangeListener { _, isChecked ->
             if(isChecked) profileModifyData.setStatusAccount(1)
             else profileModifyData.setStatusAccount(0)
@@ -439,7 +438,7 @@ class Settings : Fragment(), View.OnClickListener, SynchronizeWithGoogleCalendar
                     withContext(Dispatchers.IO) {
                         prefs.edit().clear().apply()
                         prefs.edit().putBoolean(already_signed_in, true).apply()
-                        onRefreshPicBottomNavListener.onrefreshPicBottomNav(null, "")
+                        //onRefreshPicBottomNavListener.onrefreshPicBottomNav(null, "")
                         FirebaseMessaging.getInstance().deleteToken()
                         loginViewModel.markAsDisconnected()
                     }
@@ -458,6 +457,32 @@ class Settings : Fragment(), View.OnClickListener, SynchronizeWithGoogleCalendar
             )
             profile_settings_users_hidden -> findNavController().navigate(SettingsDirections.actionSettingsToUsersHidden())
             profile_settings_dayzee_hidden -> findNavController().navigate(SettingsDirections.actionSettingsToEventsHidden())
+            profile_settings_delete_account -> meViewModel.deleteAccount(tokenId!!, userInfoDTO.id!!).observe(viewLifecycleOwner){
+                if(it.isSuccessful){
+                    lifecycleScope.launch {
+                        withContext(Dispatchers.IO) {
+                            prefs.edit().clear().apply()
+                            prefs.edit().putBoolean(already_signed_in, true).apply()
+                            FirebaseMessaging.getInstance().deleteToken()
+                            loginViewModel.markAsDisconnected()
+                        }
+                    }
+                } else {
+                    loginViewModel.refreshToken(prefs).observe(viewLifecycleOwner){
+                        newToken -> tokenId = newToken
+                        meViewModel.deleteAccount(tokenId!!, userInfoDTO.id!!).observe(viewLifecycleOwner){
+                            lifecycleScope.launch {
+                                withContext(Dispatchers.IO) {
+                                    prefs.edit().clear().apply()
+                                    prefs.edit().putBoolean(already_signed_in, true).apply()
+                                    FirebaseMessaging.getInstance().deleteToken()
+                                    loginViewModel.markAsDisconnected()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 

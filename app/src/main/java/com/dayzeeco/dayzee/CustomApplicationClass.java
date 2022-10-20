@@ -24,14 +24,12 @@ import com.google.android.exoplayer2.database.ExoDatabaseProvider;
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor;
 import com.google.android.exoplayer2.upstream.cache.SimpleCache;
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.moralis.web3.Moralis;
-import com.moralis.web3.MoralisApplication;
 
 import io.branch.referral.Branch;
 
 import static com.google.android.gms.common.util.CollectionUtils.listOf;
 
-public class CustomApplicationClass extends MoralisApplication implements IApp, CameraXConfig.Provider {
+public class CustomApplicationClass extends Application implements IApp, CameraXConfig.Provider {
 
     private HttpProxyCacheServer proxy;
     public static HttpProxyCacheServer getProxy(Context context) {
@@ -49,7 +47,7 @@ public class CustomApplicationClass extends MoralisApplication implements IApp, 
         super.onCreate();
         Branch.enableDebugMode();
 
-        Moralis.Companion.start("ACxQOTRAiZ7cNpHJign7xlILR22hc4nocV5yxqh4", "https://asn1xzuvjvew.usemoralis.com:2053/server");
+        //Moralis.Companion.start("ACxQOTRAiZ7cNpHJign7xlILR22hc4nocV5yxqh4", "https://asn1xzuvjvew.usemoralis.com:2053/server");
         FirebaseAnalytics.getInstance(this);
         //AppsFlyerLib.getInstance().init("KdGKBY4Q3u3ooKjm4KT5am", null, this);
         AppsFlyerLib.getInstance().start(this, "KdGKBY4Q3u3ooKjm4KT5am", new AppsFlyerRequestListener() {
